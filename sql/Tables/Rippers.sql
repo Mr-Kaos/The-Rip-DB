@@ -1,6 +1,7 @@
 CREATE TABLE RipDB.Rippers (
 	RipperID INT auto_increment NOT NULL,
 	RipperName varchar(256) NOT NULL,
+	Aliases json DEFAULT NULL,
 	CONSTRAINT PK_Rippers PRIMARY KEY (RipperID),
 	CONSTRAINT UQ_RipperName UNIQUE KEY (RipperName)
 )

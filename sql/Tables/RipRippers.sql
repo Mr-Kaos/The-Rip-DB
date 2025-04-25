@@ -1,0 +1,12 @@
+CREATE TABLE RipDB.RipRippers (
+	RipID int NOT NULL,
+	RipperId int NOT NULL,
+	CONSTRAINT RipID_FK FOREIGN KEY (RipID) REFERENCES RipDB.Rips(RipID),
+	CONSTRAINT RipperId_FK FOREIGN KEY (RipperId) REFERENCES RipDB.Rippers(RipperId),
+	CONSTRAINT PK_RipRipper PRIMARY KEY (RipID,RipperID) 
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Defines associations between rips and rippers.'
+AUTO_INCREMENT=1;
