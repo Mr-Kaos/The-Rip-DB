@@ -3,6 +3,8 @@ CREATE TABLE RipDB.Rips (
   RipName varchar(1024) NOT NULL COMMENT 'Name of rip given on YouTube',
   RipDate datetime NOT NULL COMMENT 'Date rip was uploaded',
   RipAlternateName varchar(2048) DEFAULT NULL COMMENT 'Alternative (album) name for rip',
+  RipChannel int NOT NULL COMMENT 'The YouTube channel that uploaded the rip',
+	CONSTRAINT Channels_RipChannel_FK FOREIGN KEY (RipChannel) REFERENCES RipDB.Channels(ChannelID),
   PRIMARY KEY (`RipID`)
 )
 ENGINE=InnoDB

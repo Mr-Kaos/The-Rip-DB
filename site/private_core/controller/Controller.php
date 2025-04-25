@@ -1,0 +1,37 @@
+<?php
+
+namespace RipDB;
+
+abstract class Controller
+{
+	private array $data = [];
+	protected ?Model $model;
+
+	public function __construct(?Model $model = null) {
+		$this->model = $model;
+
+		if (!empty($_SERVER['QUERY_STRING'])) {
+			$this->performRequest();
+		}
+
+	}
+
+	/**
+	 * Sets some data to a key that can be retrieved in a view.
+	 */
+	protected function setData(string $key, mixed $value): void
+	{
+		$this->data[$key] = $value;
+	}
+
+	/**
+	 * Retrieves a specific piece of data from the controller's data array.
+	 * @param string $key The key in the Controller's data that the data is stored in.
+	 */
+	public function getData($key): mixed
+	{
+		return $this->data[$key] ?? null;
+	}
+
+	public abstract function performRequest(): void;
+}
