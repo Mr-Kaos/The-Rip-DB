@@ -1,0 +1,11 @@
+CREATE TABLE RipDB.RipTypes (
+	TypeID INT auto_increment NOT NULL,
+	TypeName varchar(128) NOT NULL,
+	TypeDescription varchar(1024) DEFAULT NULL,
+	CONSTRAINT PK_Types PRIMARY KEY (TypeID),
+	CONSTRAINT UQ_TypeName UNIQUE KEY (TypeName)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci
+AUTO_INCREMENT=1;

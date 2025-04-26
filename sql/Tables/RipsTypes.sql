@@ -1,0 +1,9 @@
+CREATE TABLE RipDB.RipsTypes (
+	RipID INT auto_increment NOT NULL,
+	RipTypeID int NOT NULL,
+	CONSTRAINT PK_RipsTypes PRIMARY KEY (RipID, RipTypeID)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci
+AUTO_INCREMENT=1;

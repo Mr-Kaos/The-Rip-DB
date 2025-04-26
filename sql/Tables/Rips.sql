@@ -3,6 +3,7 @@ CREATE TABLE RipDB.Rips (
 	RipName varchar(1024) NOT NULL COMMENT 'Name of rip given on YouTube',
 	RipDate datetime NOT NULL COMMENT 'Date rip was uploaded',
 	RipAlternateName varchar(2048) DEFAULT NULL COMMENT 'Alternative (album) name for rip',
+	RipLength time NOT NULL DEFAULT 0,
 	RipGame int NOT NULL,
 	RipURL varchar(512) DEFAULT NULL COMMENT 'The URL of the rip, accessible online',
 	RipDescription text DEFAULT NULL,
