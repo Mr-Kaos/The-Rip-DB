@@ -18,9 +18,8 @@ class RipsController extends Controller
 	 */
 	public function performRequest(): void
 	{
-		$result = $this->search($_GET['search']);
+		$this->setData('results', $this->search($_GET['search']));
 
-		echo "<pre>" . print_r($result, true) . "</pre>";
 	}
 
 	private function search(string $name)
