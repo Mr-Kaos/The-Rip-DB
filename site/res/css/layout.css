@@ -1,0 +1,10 @@
+body {
+	background-color: var(--bg-color);
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	color: var(--text-color);
+}
+
+table, td, th {
+	border: thin solid var(--element-color);
+	border-collapse: collapse;
+}

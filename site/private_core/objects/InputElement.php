@@ -43,10 +43,17 @@ class InputElement extends PageElement
 	private InputTypes $type;
 	protected ?string $name;
 
+	/**
+	 * If either a name and no id or id and no name attribute is given, it will copy the value of the given attribute to the missing one.
+	 */
 	public function __construct(string $label, InputTypes $type, ?array $attributes = [])
 	{
+		// Ensure that an ID or name is set.
 		$id = $attributes['id'] ?? null;
 		$name = $attributes['name'] ?? $id;
+		if (empty($id) && !empty($name)) {
+			$attributes['id'] = $name;
+		}
 
 		parent::__construct($attributes);
 		$this->type = $type;
@@ -98,7 +105,7 @@ class InputElement extends PageElement
 
 		$id = $this->attributes['id'] ?? null;
 		$value = isset($this->attributes['value']) ? $this->attributes['value'] : null;
-		
+
 		if (!$error) {
 			switch ($this->type) {
 				case InputTypes::button:

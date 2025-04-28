@@ -133,20 +133,20 @@ class DropDownElement extends InputElement
 			} else {
 				$element .= ">";
 			}
-			$isAssociative = $this->checkIsAssociative($this->options);
+			$isList = array_is_list($this->options);
 
 			foreach ($this->options as $option => &$value) {
 				if (is_array($value)) {
 					$keys = array_keys($value);
 					$option = $value[$keys[0]];
 					$value = $value[$keys[1]];
-					if (!$isAssociative) {
+					if ($isList) {
 						$temp = $value;
 						$value = $option;
 						$option = $temp;
 					}
 				} else {
-					if (!$isAssociative) {
+					if ($isList) {
 						$temp = $value;
 						$value = $option;
 						$option = $temp;
@@ -163,20 +163,5 @@ class DropDownElement extends InputElement
 		$element .= '</select>';
 
 		return $element;
-	}
-
-	/**
-	 * Checks to see if the given array is an associative array, i.e. uses non-numeric keys.
-	 */
-	private function checkIsAssociative(array $array): bool
-	{
-		$isAssociative  = false;
-		foreach ($array as $key => &$val) {
-			if (!is_int($key)) {
-				$isAssociative = true;
-				break;
-			}
-		}
-		return $isAssociative;
 	}
 }
