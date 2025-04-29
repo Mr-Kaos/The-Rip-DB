@@ -29,7 +29,7 @@ $controller = new RipDB\RipsController();
 			<tbody>
 				<?php foreach ($controller->getData('results') as $record): ?>
 					<tr>
-						<td><?= $record['RipName'] ?></td>
+						<td><a href="/rip/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
 						<td><?= $record['RipAlternateName'] ?></td>
 						<td></td>
 						<td></td>
@@ -37,6 +37,15 @@ $controller = new RipDB\RipsController();
 					</tr>
 				<?php endforeach; ?>
 			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="5" style="text-align:center">
+						<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'rip_search', 'value' => $controller->getData('Page')]))->buildElement() ?>
+						<button type="submit" form="rip_search">Go</button>
+						<span>Showing <?= $controller->getData('RecordStart') ?> to <?= $controller->getData('RecordEnd') ?></span>
+					</td>
+				</tr>
+			</tfoot>
 		</table>
 	<?php endif; ?>
 </main>

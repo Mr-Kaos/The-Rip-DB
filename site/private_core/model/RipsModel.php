@@ -12,8 +12,12 @@ class RipsModel extends Model
 		
 	}
 
-	public function getRipsByName(string $name) {
+	public function getRipsByName(string $name, int $count, int $offset) {
 		return $this->db->table(self::TABLE)
-			->like('RipName', "%$name%")->findAll();
+			->ilike('RipName', "%$name%")->limit($count)->offset($offset)->findAll();
+	}
+
+	public function getRipCount(){
+		return $this->db->table(self::TABLE)->count();
 	}
 }

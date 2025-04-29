@@ -46,7 +46,7 @@ class InputElement extends PageElement
 	/**
 	 * If either a name and no id or id and no name attribute is given, it will copy the value of the given attribute to the missing one.
 	 */
-	public function __construct(string $label, InputTypes $type, ?array $attributes = [])
+	public function __construct(?string $label, InputTypes $type, ?array $attributes = [])
 	{
 		// Ensure that an ID or name is set.
 		$id = $attributes['id'] ?? null;
@@ -90,7 +90,10 @@ class InputElement extends PageElement
 	 */
 	public function buildElement(): string
 	{
-		$field = $this->buildLabel(isset($this->attributes['required']));
+		$field = '';
+		if (!is_null($this->label)) {
+			$field .= $this->buildLabel(isset($this->attributes['required']));
+		}
 		$error = false;
 		$attributes = "";
 

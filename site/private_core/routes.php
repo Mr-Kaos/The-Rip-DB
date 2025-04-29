@@ -11,26 +11,21 @@ const RESOURCE_EXTENSIONS = ['css', 'js', 'ico', 'jpg', 'jpeg', 'png']; // All a
 
 $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
 
-// List of valid routes for the web app. If the request does not fall into any of these cases, return a 404.
-switch ($uri) {
-	case '/':
-	case '':
-		displayPage('home');
-		break;
-	case '/home':
-		displayPage($uri);
-		break;
-	case '/rips':
-		displayPage($uri);
-		break;
-	default:
-		http_response_code(404);
-		// Check to see if a resource was requested (uri ends in a file extension). If it does, do not render page.
-		preg_match('/([.{1}][a-zA-Z]*)$/', $uri, $matches);
-		if (count($matches) == 0) {
-			displayPage('404');
-		}
-}
+// Home Page
+Flight::route('/', function () {
+	displayPage('home', 'Home');
+});
+
+// Rips Page (search)
+Flight::route('/rips', function () {
+	displayPage('rips');
+});
+
+// Rips Page (search)
+Flight::route('/rip/@id', function (int $id) {
+	displayPage('rip');
+});
+
 
 /**
  * Displays the page with a header and footer.
@@ -45,7 +40,8 @@ function displayPage(string $page, ?string $pageTitle = null): void
 	define('PAGE_TITLE', $pageTitle ?? "The Rip Database - $page");
 	require('templates/head.php');
 	require('templates/nav.php');
-	require("view/$page.php");
+	// require("view/$page.php");
+	Flight::render($page);
 
 	echo "<body>";
 	require('templates/footer.php');
