@@ -58,7 +58,11 @@ abstract class PageElement
 	{
 		$attrs = '';
 		foreach ($this->attributes as $key => $val) {
-			$attrs .= ' $key="' . $val . '"';
+			if (is_bool($val) && $val == true) {
+				$attrs .= ' ' . $key . '="' . $val . '"';
+			} elseif (!is_bool($val)) {
+				$attrs .= ' ' . $key . '="' . $val . '"';
+			}
 		}
 		return $attrs;
 	}

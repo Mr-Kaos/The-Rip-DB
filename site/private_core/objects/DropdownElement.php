@@ -6,11 +6,11 @@ require_once('InputElement.php');
 /**
  * Defines a dropdown element to be built in HTML
  */
-class DropDownElement extends InputElement
+class DropdownElement extends InputElement
 {
-	private array $options;
+	protected array $options;
 	private ?string $selected;
-	private bool $disabled;
+	protected bool $disabled;
 
 	/**
 	 * Sets up a dropdown element object.
@@ -40,7 +40,7 @@ class DropDownElement extends InputElement
 
 	public function __destruct()
 	{
-		return "DropDownElement destroyed.";
+		return "DropdownElement destroyed.";
 	}
 
 	/**

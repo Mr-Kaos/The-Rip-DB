@@ -1,36 +1,31 @@
 <?php
 
 use RipDB\Objects as o;
-
-require('private_core/controller/RipsController.php');
-
-$controller = new RipDB\RipsController();
 ?>
-
 <main>
 	<h1>Rips</h1>
-
 	<form id="rip_search" method="GET">
-		<?= (new o\InputElement('Search', o\InputTypes::search, ['id' => 'search']))->buildElement() ?>
-		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary']))->buildElement() ?>
+		<?= (new o\InputElement('Search', o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
+		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
 	</form>
-
-	<?php if (!empty($controller->getData('results'))): ?>
+	<?php if (!empty($results)): ?>
 		<table id="results">
 			<thead>
 				<tr>
 					<th>Rip Name</th>
 					<th>Alternative Name</th>
+					<th>Length</th>
 					<th>Ripper</th>
 					<th>Jokes</th>
 					<th>Upload Date</th>
 				</tr>
 			</thead>
 			<tbody>
-				<?php foreach ($controller->getData('results') as $record): ?>
+				<?php foreach ($results as $record): ?>
 					<tr>
 						<td><a href="/rip/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
 						<td><?= $record['RipAlternateName'] ?></td>
+						<td><?= $record['RipLength'] ?></td>
 						<td></td>
 						<td></td>
 						<td><?= $record['RipDate'] ?></td>
@@ -40,9 +35,9 @@ $controller = new RipDB\RipsController();
 			<tfoot>
 				<tr>
 					<td colspan="5" style="text-align:center">
-						<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'rip_search', 'value' => $controller->getData('Page')]))->buildElement() ?>
+						<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'rip_search', 'value' => $Page]))->buildElement() ?>
 						<button type="submit" form="rip_search">Go</button>
-						<span>Showing <?= $controller->getData('RecordStart') ?> to <?= $controller->getData('RecordEnd') ?></span>
+						<span>Showing <?= $RecordStart ?> to <?= $RecordEnd ?></span>
 					</td>
 				</tr>
 			</tfoot>

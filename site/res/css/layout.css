@@ -4,7 +4,9 @@ body {
 	color: var(--text-color);
 }
 
-table, td, th {
+table,
+td,
+th {
 	border: thin solid var(--element-color);
 	border-collapse: collapse;
 }

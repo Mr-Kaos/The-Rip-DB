@@ -7,13 +7,11 @@ abstract class Controller
 	private array $data = [];
 	protected ?Model $model;
 
-	public function __construct(?Model $model = null) {
+	public function __construct(?Model $model = null)
+	{
 		$this->model = $model;
 
-		if (!empty($_SERVER['QUERY_STRING'])) {
-			$this->performRequest();
-		}
-
+		$this->performRequest();
 	}
 
 	/**
@@ -33,5 +31,10 @@ abstract class Controller
 		return $this->data[$key] ?? null;
 	}
 
-	public abstract function performRequest(): void;
+	public function getPreparedData(): array
+	{
+		return $this->data;
+	}
+
+	public abstract function performRequest(array $data = []): void;
 }

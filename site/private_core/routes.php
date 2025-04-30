@@ -13,54 +13,46 @@ $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
 
 // Home Page
 Flight::route('/', function () {
-	displayPage('home', 'Home');
+	displayPage('home');
 });
 
 // Rips Page (search)
 Flight::route('/rips', function () {
-	displayPage('rips');
+	displayPage('rips', 'RipsController');
 });
 
 // Rips Page (search)
 Flight::route('/rip/@id', function (int $id) {
-	displayPage('rip');
+	displayPage('rip', 'RipController', ['id' => $id]);
 });
 
 
 /**
  * Displays the page with a header and footer.
  */
-function displayPage(string $page, ?string $pageTitle = null): void
+function displayPage(string $page, ?string $controllerName = null, array $data = [], ?string $pageTitle = null,): void
 {
 	// Include page objects that are commonly used across pages
 	include_once('private_core/objects/InputElement.php');
-	include_once('private_core/objects/DropDownElement.php');
+	include_once('private_core/objects/DropdownElement.php');
+	include_once('private_core/objects/MultiSelectDropdownElement.php');
+
+	// Create controller if one exists
+	$pageData = null;
+	if (!is_null($controllerName)) {
+		require_once("private_core/controller/$controllerName.php");
+		$controllerName = "\RipDB\\$controllerName";
+		$controller = new $controllerName($data);
+
+		$pageData = $controller->getPreparedData();
+	}
 
 	echo '<!DOCTYPE HTML><html>';
 	define('PAGE_TITLE', $pageTitle ?? "The Rip Database - $page");
 	require('templates/head.php');
-	require('templates/nav.php');
-	// require("view/$page.php");
-	Flight::render($page);
-
 	echo "<body>";
+	require('templates/nav.php');
+	Flight::render($page, $pageData);
 	require('templates/footer.php');
 	echo "</body></html>";
-}
-
-/**
- * Returns the string that the URI ends in.
- * @return ?string The extension the URI ends in, if it ends in one. Else, null.
- */
-function uriEndsWith(string $haystack, array $needles): ?string
-{
-	$endsWith = null;
-	foreach ($needles as $needle) {
-		if (str_ends_with($haystack, ".$needle")) {
-			$endsWith = ".$needle";
-			break;
-		}
-	}
-
-	return $endsWith;
 }
