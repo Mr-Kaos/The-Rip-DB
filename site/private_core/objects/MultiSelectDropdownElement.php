@@ -63,7 +63,7 @@ class MultiSelectDropdownElement extends DropdownElement
 		}
 		$element .= $this->buildLabel($this->getAttribute('required') ? true : false);
 		$element .= '<div class="options">' . $options . '</div>';
-		$element .= '</multiselect>';
+		$element .= '</span>';
 
 		return $element;
 	}

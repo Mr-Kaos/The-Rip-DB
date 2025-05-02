@@ -22,13 +22,14 @@ class RipsController extends Controller
 	{
 		$useAltName = ($_GET['use_secondary'] ?? 0) == 1;
 		$ripCount = $this->model->getRipCount($useAltName);
+		$recordCount = intval($_GET['c'] ?? self::RIPS_PER_PAGE);
 
-		$page = empty($_GET['p']) ? 1 : (int)$_GET['p'];
-		$recordStart = (($page - 1) * self::RIPS_PER_PAGE) + 1;
+		$page = empty($_GET['p'] ?? null) ? 1 : (int)$_GET['p'];
+		$recordStart = (($page - 1) * $recordCount) + 1;
 
 		// If the page number exceeds the number of rips, go to the highest page
 		if ($recordStart > $ripCount) {
-			$page = ceil($ripCount / 25);
+			$page = ceil($ripCount / $recordCount);
 			$request = $_GET;
 			if (!array_key_exists('p', $request)) {
 				$request['p'] = 1;
@@ -42,10 +43,21 @@ class RipsController extends Controller
 
 		// Get records of rips
 		$rips = [];
+		$offset = $recordCount * ($page - 1);
 		if (array_key_exists('search', $_GET)) {
-			$rips = $this->search(($page - 1), $useAltName);
+			$rips = $this->model->searchRips(
+				$recordCount,
+				$offset,
+				$_GET['search'] ?? null,
+				$_GET['tags'] ?? [],
+				$_GET['jokes'] ?? [],
+				$useAltName
+			);
 		} else {
-			$rips = $this->model->getRips(self::RIPS_PER_PAGE, ($page - 1));
+			$rips = $this->model->searchRips(
+				$recordCount,
+				$offset
+			);
 		}
 
 		$this->setData('results', $rips);
@@ -55,8 +67,8 @@ class RipsController extends Controller
 		$this->setData('jokes', $this->model->getJokes());
 
 		// Pagination values
-		$recordStart = (($page - 1) * self::RIPS_PER_PAGE) + 1;
-		$recordEnd = $page * self::RIPS_PER_PAGE;
+		$recordStart = (($page - 1) * $recordCount) + 1;
+		$recordEnd = $page * $recordCount;
 
 		if ($recordEnd > $ripCount) {
 			$recordEnd = $ripCount;
@@ -65,17 +77,6 @@ class RipsController extends Controller
 		$this->setData('RecordStart', $recordStart);
 		$this->setData('RecordEnd', $recordEnd);
 		$this->setData('Page', $page);
-	}
-
-	private function search(int $offset, bool $useAltName)
-	{
-		$offset = self::RIPS_PER_PAGE * $offset;
-		return $this->model->searchRips(
-			$_GET['search'] ?? null,
-			$_GET['tags'] ?? [],
-			self::RIPS_PER_PAGE,
-			$offset,
-			$useAltName
-		);
+		$this->setData('Count', $recordCount);
 	}
 }

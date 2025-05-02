@@ -11,33 +11,35 @@ class RipsModel extends Model
 	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipLength'];
 
 	/**
-	 * Default rip retrieval for use without search.
-	 */
-	public function getRips(int $count, int $offset)
-	{
-		return $this->db->table(self::VIEW)
-			->columns(...self::COLUMNS)
-			->groupBy('RipID')
-			->limit($count)
-			->offset($offset)
-			->findAll();
-	}
-
-	/**
 	 * Returns a resultset of rips based on the given search criteria.
-	 * 
+	 * @param int $count The number of rips to retrieve
+	 * @param int $offset How many records to offset the resultset by.
+	 * @param ?string $name A string to query the rip by its name. The RipName or RipAlternateName fields use this string. The column is toggled by $useAltName.
+	 * @param ?array $tags An array of tag IDs to query rips by.
+	 * @param bool $useAltName If true and $name is given, it will find rips based on their alternate name. Defaults to the RipName column.
+	 * @return array An array of rips found by the given search criteria.
 	 */
-	public function searchRips(string $name, ?array $tags, int $count, int $offset, bool $useAltName = false)
+	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], bool $useAltName = false)
 	{
-		$col = $useAltName ? 'RipAlternateName' : 'RipName';
-
 		$qry = $this->db->table(self::VIEW)
-			->ilike($col, "%$name%")
 			->columns(...self::COLUMNS);
 
+		// Apply name search if name is given.
+		if (!empty($name)) {
+			$qry->ilike($useAltName ? 'RipAlternateName' : 'RipName', "%$name%");
+		}
+
+		// Apply tag search if tags are given.
 		if (!empty($tags)) {
 			foreach ($tags as $tag) {
 				$qry->eq('TagID', $tag);
+			}
+		}
+
+		// Apply joke search if jokes are given.
+		if (!empty($jokes)) {
+			foreach ($jokes as $joke) {
+				$qry->eq('JokeID', $joke);
 			}
 		}
 
@@ -46,11 +48,13 @@ class RipsModel extends Model
 			->offset($offset);
 		$rips = $qry->findAll();
 		$rips = $this->setSubArrayValueToKey($rips, 'RipID', false);
-		$jokes = $this->getRipJokes($qry);
+
+		// Get jokes and rips from the resultset of rips.
+		$ripJokes = $this->getRipJokes($qry);
 		$rippers = $this->getRipRippers($qry);
 
 		// Apply jokes to rips
-		foreach ($jokes as $joke) {
+		foreach ($ripJokes as $joke) {
 			$ripId = $joke['RipID'];
 
 			if (!isset($rips[$ripId]['Jokes'])) {
