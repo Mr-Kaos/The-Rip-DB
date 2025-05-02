@@ -1,4 +1,4 @@
--- RipDB.Games definition
+-- Games definition
 
 CREATE TABLE Games (
 	GameID int NOT NULL AUTO_INCREMENT,

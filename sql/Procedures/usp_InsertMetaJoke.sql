@@ -2,8 +2,6 @@
 
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertMetaJoke;
 
-DELIMITER $$
-$$
 CREATE PROCEDURE RipDB.usp_InsertMetaJoke(
 	IN MetaName varchar(128),
 	IN MetaDescription text,
@@ -33,5 +31,3 @@ BEGIN
 
 	COMMIT;
 END
-$$
-DELIMITER ;

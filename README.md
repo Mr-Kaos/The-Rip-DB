@@ -15,12 +15,25 @@ Some examples of what the database should be able to do:
 - If someone wanted to find all rips that are "melody swaps" (a video game track in another game's soundfont or style), the database should provide this data.
 - If someone wanted to find all rips by the channel "SiIvaGunner uploaded between May 2017 and May 2018, the database will provide this.
 
-## Sample Setup/Install
+## Local Setup/Install
 
-If you want to set this project up locally, you'll have to do a few things manually (for the time being).
+If you want to set this database up locally (with or without sample data), follow the steps below:
 
-- First create a Database in MySQL and deploy all tables, stored procedures and triggers to it.
-- Then in a terminal, move into the `site` directory and use `php -S localhost:8080` to host the site locally.
+Ensure you have the following dependencies too:
+
+- PHP 8.1 or newer (Tested with PHP 8.3.2)
+- MySQL 8.0.41 or newer (Tested with 8.0.41)
+
+To install and run locally:
+
+1. Clone this repository `git clone https://github.com/Mr-Kaos/The-Rip-DB.git`
+2. Open `sql/deploy.php` and change the database constants to that of your database.  
+   > *The password is left blank in this file, so be sure to fill it in!*
+3. In the terminal, navigate to the `sql` directory and run the command `php deploy.php`. This will deploy the database for you.  
+   > **Optional:** When running this command, after the database is deployed, it will prompt to ask if you want to deploy sample data. Type `y` and press enter to insert some sample data.
+4. Open the file `site/private_core/config/db.php` and edit its database constants to suit your database setup.  
+   > *The password is left blank in this file too!*
+5. Finally, in the terminal, move into the `site` directory and use `php -S localhost:8080` to run the site locally.
 
 A more detailed (and automated) guide will be produced as the project progresses.
 

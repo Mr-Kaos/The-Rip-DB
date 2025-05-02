@@ -1,4 +1,4 @@
-CREATE TABLE RipDB.Tags (
+CREATE TABLE Tags (
 	TagID INT auto_increment NOT NULL,
 	TagName varchar(128) NOT NULL,
 	CONSTRAINT PK_Tags PRIMARY KEY (TagID),

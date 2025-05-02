@@ -1,4 +1,4 @@
-CREATE TABLE RipDB.Rips (
+CREATE TABLE Rips (
 	RipID int NOT NULL AUTO_INCREMENT,
 	RipName varchar(1024) NOT NULL COMMENT 'Name of rip given on YouTube',
 	RipDate datetime NOT NULL COMMENT 'Date rip was uploaded',
@@ -8,8 +8,8 @@ CREATE TABLE RipDB.Rips (
 	RipURL varchar(512) DEFAULT NULL COMMENT 'The URL of the rip, accessible online',
 	RipDescription text DEFAULT NULL,
 	RipChannel int DEFAULT NULL COMMENT 'The YouTube channel that uploaded the rip',
-	CONSTRAINT Channels_RipChannel_FK FOREIGN KEY (RipChannel) REFERENCES RipDB.Channels(ChannelID),
-	CONSTRAINT Games_RipGame_FK FOREIGN KEY (RipGame) REFERENCES RipDB.Games(GameID),
+	CONSTRAINT Channels_RipChannel_FK FOREIGN KEY (RipChannel) REFERENCES Channels(ChannelID),
+	CONSTRAINT Games_RipGame_FK FOREIGN KEY (RipGame) REFERENCES Games(GameID),
 	PRIMARY KEY (`RipID`)
 )
 ENGINE=InnoDB

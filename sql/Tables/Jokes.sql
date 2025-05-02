@@ -1,4 +1,4 @@
--- RipDB.Jokes definition
+-- Jokes definition
 
 CREATE TABLE Jokes (
 	JokeID int NOT NULL AUTO_INCREMENT,

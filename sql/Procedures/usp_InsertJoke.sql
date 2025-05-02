@@ -2,8 +2,6 @@
 
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertJoke;
 
-DELIMITER $$
-$$
 CREATE PROCEDURE RipDB.usp_InsertJoke(
 	IN JokeName varchar(128),
 	IN JokeDescription text,
@@ -82,5 +80,3 @@ BEGIN
 
 	COMMIT;
 END
-$$
-DELIMITER ;

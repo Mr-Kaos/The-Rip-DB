@@ -1,4 +1,4 @@
-CREATE TABLE RipDB.Rippers (
+CREATE TABLE Rippers (
 	RipperID INT auto_increment NOT NULL,
 	RipperName varchar(256) NOT NULL,
 	Aliases json DEFAULT NULL,

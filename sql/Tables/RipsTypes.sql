@@ -1,4 +1,4 @@
-CREATE TABLE RipDB.RipsTypes (
+CREATE TABLE RipsTypes (
 	RipID INT auto_increment NOT NULL,
 	RipTypeID int NOT NULL,
 	CONSTRAINT PK_RipsTypes PRIMARY KEY (RipID, RipTypeID)

@@ -1,4 +1,4 @@
--- RipDB.Channels definition
+-- Channels definition
 
 CREATE TABLE Channels (
 	ChannelID int NOT NULL AUTO_INCREMENT,

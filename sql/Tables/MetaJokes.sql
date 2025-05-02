@@ -1,4 +1,4 @@
--- RipDB.MetaJokes definition
+-- MetaJokes definition
 
 CREATE TABLE MetaJokes (
 	MetaJokeID int NOT NULL AUTO_INCREMENT,
@@ -6,7 +6,7 @@ CREATE TABLE MetaJokes (
 	MetaJokeDescription text NOT NULL,
 	MetaTag int NOT NULL,
 	PRIMARY KEY (MetaJokeID),
-	CONSTRAINT MetaJokes_Tag_FK FOREIGN KEY (MetaTag) REFERENCES RipDB.Tags(TagID),
+	CONSTRAINT MetaJokes_Tag_FK FOREIGN KEY (MetaTag) REFERENCES Tags(TagID),
 	UNIQUE KEY UQ_MetaJokeName (MetaJokeName)
 )
 ENGINE=InnoDB

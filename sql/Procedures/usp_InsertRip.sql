@@ -3,8 +3,6 @@
 
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertRip;
 
-DELIMITER $$
-$$
 CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN RipName varchar(1024),
 	IN AlternateName varchar(2048),
@@ -76,5 +74,3 @@ BEGIN
 
 	COMMIT;
 END
-$$
-DELIMITER ;

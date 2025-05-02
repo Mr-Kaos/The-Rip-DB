@@ -1,4 +1,4 @@
-CREATE TABLE RipDB.RipTypes (
+CREATE TABLE RipTypes (
 	TypeID INT auto_increment NOT NULL,
 	TypeName varchar(128) NOT NULL,
 	TypeDescription varchar(1024) DEFAULT NULL,
