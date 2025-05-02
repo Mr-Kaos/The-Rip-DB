@@ -10,3 +10,17 @@ th {
 	border: thin solid var(--element-color);
 	border-collapse: collapse;
 }
+
+.multi-select {
+	/* display: none; */
+	user-select: none;
+	border: thin solid #777;
+}
+
+.multi-select>div.options {
+	background: var(--bg-color);
+	border: solid thin #777;
+	display: none;
+	flex-direction: column;
+	position: absolute;
+}

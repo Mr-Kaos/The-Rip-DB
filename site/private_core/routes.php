@@ -26,7 +26,6 @@ Flight::route('/rip/@id', function (int $id) {
 	displayPage('rip', 'RipController', ['id' => $id]);
 });
 
-
 /**
  * Displays the page with a header and footer.
  */
@@ -51,6 +50,7 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	define('PAGE_TITLE', $pageTitle ?? "The Rip Database - $page");
 	require('templates/head.php');
 	echo "<body>";
+	require('templates/globalScripts.php');
 	require('templates/nav.php');
 	Flight::render($page, $pageData);
 	require('templates/footer.php');

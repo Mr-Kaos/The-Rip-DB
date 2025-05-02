@@ -7,6 +7,8 @@ use RipDB\Objects as o;
 	<form id="rip_search" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
+		<?= (new o\MultiSelectDropdownElement('Tags', $tags, ['name' => 'tags']))->buildElement() ?>
+		<?= (new o\MultiSelectDropdownElement('Jokes', $jokes, ['name' => 'jokes']))->buildElement() ?>
 	</form>
 	<?php if (!empty($results)): ?>
 		<table id="results">
@@ -26,8 +28,16 @@ use RipDB\Objects as o;
 						<td><a href="/rip/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
 						<td><?= $record['RipAlternateName'] ?></td>
 						<td><?= $record['RipLength'] ?></td>
-						<td></td>
-						<td></td>
+						<td>
+							<?php foreach ($record['Rippers'] as $ripper): ?>
+								<button type="button"><?= $ripper['RipperName'] ?></button>
+							<?php endforeach; ?>
+						</td>
+						<td>
+							<?php foreach ($record['Jokes'] as $joke): ?>
+								<button type="button"><?= $joke['JokeName'] ?></button>
+							<?php endforeach; ?>
+						</td>
 						<td><?= $record['RipDate'] ?></td>
 					</tr>
 				<?php endforeach; ?>

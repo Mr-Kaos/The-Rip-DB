@@ -40,17 +40,19 @@ class RipsController extends Controller
 			die();
 		}
 
-
 		// Get records of rips
+		$rips = [];
 		if (array_key_exists('search', $_GET)) {
-			$this->setData('results', $this->search($_GET['search'] ?? null, ($page - 1), $useAltName));
+			$rips = $this->search(($page - 1), $useAltName);
 		} else {
-			$this->setData('results', $this->model->getRips(self::RIPS_PER_PAGE, ($page - 1)));
+			$rips = $this->model->getRips(self::RIPS_PER_PAGE, ($page - 1));
 		}
 
+		$this->setData('results', $rips);
+
 		// Get search filters
-		$this->setData('tags', $this->model->getSearchTags());
-		$this->setData('jokes', $this->model->getSearchJokes());
+		$this->setData('tags', $this->model->getTags());
+		$this->setData('jokes', $this->model->getJokes());
 
 		// Pagination values
 		$recordStart = (($page - 1) * self::RIPS_PER_PAGE) + 1;
@@ -65,9 +67,15 @@ class RipsController extends Controller
 		$this->setData('Page', $page);
 	}
 
-	private function search(?string $name, int $offset, bool $useAltName)
+	private function search(int $offset, bool $useAltName)
 	{
 		$offset = self::RIPS_PER_PAGE * $offset;
-		return $this->model->getRipsByName($name, self::RIPS_PER_PAGE, $offset, $useAltName);
+		return $this->model->searchRips(
+			$_GET['search'] ?? null,
+			$_GET['tags'] ?? [],
+			self::RIPS_PER_PAGE,
+			$offset,
+			$useAltName
+		);
 	}
 }

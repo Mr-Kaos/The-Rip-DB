@@ -19,12 +19,8 @@ class DropdownElement extends InputElement
 	 */
 	public function __construct(string $label, ?array $options = [], ?array $attributes = [])
 	{
-		parent::__construct($label, InputTypes::dropdown, $attributes);
-
 		if (is_null($options)) {
-			$this->options = array();
-		} else {
-			$this->options = $options;
+			$options = array();
 		}
 		if (isset($attributes['selected'])) {
 			$this->selected = isset($attributes['selected']) ? $attributes['selected'] : '';
@@ -35,7 +31,8 @@ class DropdownElement extends InputElement
 		if (is_null($attributes)) {
 			$attributes = array();
 		}
-		$this->attributes = $attributes;
+		$this->options = $options;
+		parent::__construct($label, InputTypes::dropdown, $attributes);
 	}
 
 	public function __destruct()

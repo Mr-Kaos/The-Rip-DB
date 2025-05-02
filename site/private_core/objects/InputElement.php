@@ -91,8 +91,9 @@ class InputElement extends PageElement
 	public function buildElement(): string
 	{
 		$field = '';
+		$label = '';
 		if (!is_null($this->label)) {
-			$field .= $this->buildLabel(isset($this->attributes['required']));
+			$label = $this->buildLabel(isset($this->attributes['required']));
 		}
 		$error = false;
 
@@ -113,7 +114,7 @@ class InputElement extends PageElement
 					$field = '<button id="' . $id . '" type="button"' . "$attributes>$this->label</button>";
 					break;
 				case InputTypes::textarea:
-					$field .= '<textarea id="' . $id . '" ' . $attributes . '>$value</textarea>';
+					$field = '<textarea id="' . $id . '" ' . $attributes . '>$value</textarea>';
 					break;
 				case InputTypes::checkbox:
 					// If an alt value is specified, create the hidden checkbox.
@@ -121,22 +122,34 @@ class InputElement extends PageElement
 						if (empty($this->name)) {
 							throw (new Exception('Checkboxes with an alternate (hidden) value must have a name attribute specified.'));
 						}
-						$field .= '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="' . $valueAlt . '">';
+						$field = '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="' . $valueAlt . '">';
 					}
-					$field .= '<input id="' . $id . '" type="' . $this->type->name . '" ' . $value . "$attributes>";
+					$field = '<input id="' . $id . '" type="' . $this->type->name . '" ' . $value . "$attributes>";
 					break;
 				case InputTypes::list:
-					$field .= '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="0">' . '<input id="' . $id . '" type="' . $this->type->name . '"' . "$attributes>";
+					$field = '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="0">' . '<input id="' . $id . '" type="' . $this->type->name . '"' . "$attributes>";
 					break;
 				case InputTypes::datetime:
-					$field .= '<input id="' . $id . '" type="datetime"' . $attributes . ">";
+					$field = '<input id="' . $id . '" type="datetime"' . $attributes . ">";
 					break;
 				case InputTypes::radio:
-					$field .= '<input id="' . $id . '" type="radio"' . $attributes . ">";
+					$field = '<input id="' . $id . '" type="radio"' . $attributes . ">";
 					break;
 				default:
-					$field .= '<input id="' . $id . '" type="' . $this->type->value . '"' . "$attributes>";
+					$field = '<input id="' . $id . '" type="' . $this->type->value . '"' . "$attributes>";
 			}
+		}
+
+		// Some elements require the label to be placed after the input
+		switch ($this->type) {
+			case InputTypes::checkbox:
+				$field = $field . $label;
+				break;
+			case InputTypes::button:
+				break;
+			default:
+				$field = $label . $field;
+				break;
 		}
 
 		return $field;
