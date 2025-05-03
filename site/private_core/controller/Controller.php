@@ -6,10 +6,17 @@ abstract class Controller
 {
 	private array $data = [];
 	protected ?Model $model;
+	private string $page;
 
-	public function __construct(?Model $model = null)
+	public function __construct(string $page, ?Model $model = null)
 	{
 		$this->model = $model;
+		$this->page = $page;
+	}
+
+	protected function getPage(): string
+	{
+		return $this->page;
 	}
 
 	/**

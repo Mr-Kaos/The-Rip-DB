@@ -9,9 +9,9 @@ class RipsController extends Controller
 {
 	const RIPS_PER_PAGE = 25;
 
-	public function __construct()
+	public function __construct(string $page)
 	{
-		parent::__construct(new RipsModel());
+		parent::__construct($page, new RipsModel());
 	}
 
 	/**

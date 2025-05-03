@@ -105,5 +105,4 @@ CALL usp_InsertRip('MEGALOVANIA (Beta Mix) - Undertale', 'Grand Dadlovania', '20
 CALL usp_InsertRip('Last Goodbye (Alternate Mix) - Undertale', 'Everlasting Goodbye', '2016-01-29', '0049', 3, 'https://www.youtube.com/watch?v=rSuYr0dR2gw', 1, '[2]', '[2]', '[18]');
 CALL usp_InsertRip('Last Goodbye (Beta Mix) - Undertale', NULL, '2016-01-29', '0215', 3, 'https://www.youtube.com/watch?v=gIEbix3m68g', 1, '[8]', '[5]', '[7]');
 CALL usp_InsertRip('My Room (Naturale) - Hatsune Miku: Project Mirai DX', NULL, '2016-01-31', '0308', 9, 'https://www.youtube.com/watch?v=yS80Lx9d6ug', 1, '[2]', '[7]', '[19]');
-CALL usp_InsertRip('Battle! (Wild Pokémon) - Pokémon Ruby & Sapphire', 'A Wild Fred Flintstone Appeared!', '2016-01-09', '0102', 1, 'https://www.youtube.com/watch?v=vJsjd8alc8Y', 1, '[6]', '[1]', '[2,3]');
 -- CALL usp_InsertRip('', NULL, '2016-01-20', '', 1, '', 1, '[1]', '[]', '[]');

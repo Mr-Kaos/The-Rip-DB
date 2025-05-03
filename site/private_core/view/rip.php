@@ -1,8 +1,3 @@
-<?php
-
-use RipDB\Objects as o;
-
-?>
 <main>
 	<?php if (empty($rip)) : ?>
 		<h2>This rip does not exist.</h2>

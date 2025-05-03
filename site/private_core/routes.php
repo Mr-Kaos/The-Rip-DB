@@ -21,9 +21,14 @@ Flight::route('/rips', function () {
 	displayPage('rips', 'RipsController');
 });
 
-// Rips Page (search)
+// Rip page
 Flight::route('/rip/@id', function ($id) {
 	displayPage('rip', 'RipController', ['id' => $id]);
+});
+
+// New Rip Page
+Flight::route('/new-rip', function () {
+	displayPage('new-rip', 'RipController');
 });
 
 /**
@@ -41,7 +46,7 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	if (!is_null($controllerName)) {
 		require_once("private_core/controller/$controllerName.php");
 		$controllerName = "\RipDB\\$controllerName";
-		$controller = new $controllerName();
+		$controller = new $controllerName($page);
 		$controller->performRequest($data);
 
 		$pageData = $controller->getPreparedData();
