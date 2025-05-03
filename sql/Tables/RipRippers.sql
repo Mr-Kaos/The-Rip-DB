@@ -1,6 +1,7 @@
 CREATE TABLE RipRippers (
 	RipID int NOT NULL,
 	RipperId int NOT NULL,
+	Alias varchar(256) DEFAULT NULL,
 	CONSTRAINT RipID_FK FOREIGN KEY (RipID) REFERENCES Rips(RipID),
 	CONSTRAINT RipperId_FK FOREIGN KEY (RipperId) REFERENCES Rippers(RipperId),
 	CONSTRAINT PK_RipRipper PRIMARY KEY (RipID,RipperID) 

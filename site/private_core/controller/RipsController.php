@@ -2,8 +2,8 @@
 
 namespace RipDB;
 
-require('Controller.php');
-require('private_core/model/RipsModel.php');
+require_once('Controller.php');
+require_once('private_core/model/RipsModel.php');
 
 class RipsController extends Controller
 {

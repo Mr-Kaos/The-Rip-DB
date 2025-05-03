@@ -10,8 +10,6 @@ abstract class Controller
 	public function __construct(?Model $model = null)
 	{
 		$this->model = $model;
-
-		$this->performRequest();
 	}
 
 	/**
