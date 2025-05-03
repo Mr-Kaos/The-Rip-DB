@@ -9,11 +9,11 @@ require_once('DropdownElement.php');
  */
 class MultiSelectDropdownElement extends DropdownElement
 {
-	private array $selected = [];
 	/**
-	 * Sets up a dropdown element object.
-	 * Checks if any options were given. If none were given, options can be added later via {@see DropdownElement/addOption()}, else the dropdown is automatically disabled.
-	 * Also checks if a selected value was set for the dropdown. If a HTML attribute of 'value' or 'selected' is given, it sets the dropdown's value to the specified value, if it exists in its options. The 'selected' attribute takes precedence over 'value' if both are given.
+	 * Constructs a dropdown where multiple options can be selected.
+	 * @param ?string $label The label of the input element.
+	 * @param ?array $options An array of values to use as options in the dropdown.
+	 * @param ?array $attributes An associative array of html attributes to add to the element.
 	 */
 	public function __construct(string $label, ?array $options = [], ?array $attributes = [])
 	{
@@ -26,7 +26,7 @@ class MultiSelectDropdownElement extends DropdownElement
 	public function buildElement(): string
 	{
 		$options = '';
-		$attributes = $this->buildAttributes();
+		$attributes = $this->buildAttributes($this->attributes);
 
 		$element = '<span class="multi-select"' . $attributes;
 		if (count($this->options) === 0) {

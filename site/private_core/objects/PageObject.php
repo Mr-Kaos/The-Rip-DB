@@ -6,18 +6,17 @@ namespace RipDB\Objects;
  * This script defines the class used to build page objects dynamically.
  */
 
-abstract class PageElement
+abstract class PageObject
 {
 	protected array $attributes;
 
+	/**
+	 * Base constructor for a page object.
+	 * @param ?array $attributes An associative array of html attributes to add to the element.
+	 */
 	public function __construct(array $attributes = [])
 	{
 		$this->attributes = $attributes;
-	}
-
-	public function __destruct()
-	{
-		return "PageElement destroyed.";
 	}
 
 	/**
@@ -45,19 +44,21 @@ abstract class PageElement
 	 * @param string $name The name of the attribute to add to the input.
 	 * @param string|int $value The value to be assigned to the attribute.
 	 */
-	public function addAttribute(string $name, string | int $value): void
+	public function setAttribute(string $name, string | int $value): void
 	{
 		$this->attributes[$name] = $value;
 	}
 
 	/**
 	 * Build a string of all attributes for use in the element.
+	 * @param array $attributes An override for attributes to use. If null, uses $this->attributes.
 	 * @return string
 	 */
-	protected function buildAttributes(): string
+	protected function buildAttributes(array $attributes): string
 	{
 		$attrs = '';
-		foreach ($this->attributes as $key => $val) {
+
+		foreach ($attributes as $key => $val) {
 			if (is_bool($val) && $val == true) {
 				$attrs .= ' ' . $key . '="' . $val . '"';
 			} elseif (!is_bool($val)) {

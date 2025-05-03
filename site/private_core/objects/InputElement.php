@@ -4,7 +4,7 @@ namespace RipDB\Objects;
 
 use Exception;
 
-require_once('PageElement.php');
+require_once('PageObject.php');
 
 enum InputTypes: string
 {
@@ -34,20 +34,26 @@ enum InputTypes: string
 	case textarea = "textarea";
 	case list = 'list';
 	case dropdown = 'dropdown';
+	case custom = 'custom';
 }
 
 /**
  * This script defines the class used to build page objects dynamically.
  */
-class InputElement extends PageElement
+class InputElement extends PageObject
 {
-	private ?string $label;
+	protected ?string $label;
+	private array $labelAttributes;
 	private InputTypes $type;
 
 	/**
 	 * If either a name and no id or id and no name attribute is given, it will copy the value of the given attribute to the missing one.
+	 * @param ?string $label The label of the input element.
+	 * @param InputTypes $type The InputType of the element.
+	 * @param ?array $attributes An associative array of html attributes to add to the element.
+	 * @param ?array $labelAttributes An associative array of html attributes to add to the element's label.
 	 */
-	public function __construct(?string $label, InputTypes $type, ?array $attributes = [])
+	public function __construct(?string $label, InputTypes $type, ?array $attributes = [], ?array $labelAttributes = [])
 	{
 		// Ensure that an ID or name is set.
 		$id = $attributes['id'] ?? null;
@@ -55,16 +61,27 @@ class InputElement extends PageElement
 		if (empty($id) && !empty($name)) {
 			$attributes['id'] = $name;
 		}
-		$attributes['name'] = $name;
+		if (!empty($name)) {
+			$attributes['name'] = $name;
+		}
 
 		parent::__construct($attributes);
 		$this->type = $type;
 		$this->label = $label;
+		$this->labelAttributes = $labelAttributes;
 	}
 
 	public function __destruct()
 	{
-		return "PageElement destroyed.";
+		return "PageObject destroyed.";
+	}
+
+	/**
+	 * Gets the input element type.
+	 */
+	public function getType(): InputTypes
+	{
+		return $this->type;
 	}
 
 	/** Builds a HTML label element.
@@ -74,8 +91,9 @@ class InputElement extends PageElement
 	{
 		$label = '';
 		if ($this->type !== InputTypes::hidden) {
-			$for = array_key_exists('id', $this->attributes) ? ' for="' . $this->attributes['id'] . '"' : '';
-			$label = '<label' . $for . '>' . $this->label;
+			$for = array_key_exists('id', $this->attributes) ? ' for="' . $this->attributes['id'] . '" ' : ' ';
+			$attributes = $this->buildAttributes($this->labelAttributes);
+			$label = '<label' . $for . $attributes . '>' . $this->label;
 			if ($required) {
 				$label .= ' *';
 			}
@@ -106,7 +124,7 @@ class InputElement extends PageElement
 			unset($this->attributes['value-alt']);
 		}
 
-		$attributes = $this->buildAttributes();
+		$attributes = $this->buildAttributes($this->attributes);
 
 		if (!$error) {
 			switch ($this->type) {

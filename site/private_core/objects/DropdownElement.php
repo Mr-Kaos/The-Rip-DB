@@ -16,6 +16,9 @@ class DropdownElement extends InputElement
 	 * Sets up a dropdown element object.
 	 * Checks if any options were given. If none were given, options can be added later via {@see DropdownElement/addOption()}, else the dropdown is automatically disabled.
 	 * Also checks if a selected value was set for the dropdown. If a HTML attribute of 'value' or 'selected' is given, it sets the dropdown's value to the specified value, if it exists in its options. The 'selected' attribute takes precedence over 'value' if both are given.
+	 * @param ?string $label The label of the input element.
+	 * @param ?array $options An array of values to use as options in the dropdown.
+	 * @param ?array $attributes An associative array of html attributes to add to the element.
 	 */
 	public function __construct(string $label, ?array $options = [], ?array $attributes = [])
 	{
@@ -73,8 +76,6 @@ class DropdownElement extends InputElement
 	 */
 	public function setSelected(string $optionValue): void
 	{
-		// echo '<pre>' . print_r($this->options, true) . '</pre>';
-		// echo 'desired selection: ' . $optionValue . '<br>';
 		foreach ($this->options as $option => $value) {
 			if (is_array($value)) {
 				$keys = array_keys($value);
@@ -119,7 +120,7 @@ class DropdownElement extends InputElement
 			$attributes .= 'modal="Modal_' . $id . '"';
 		}
 
-		$element .= '<select id="' . $id . '" name="' . $this->name . '"' . $attributes;
+		$element .= '<select ' . $attributes;
 		if (count($this->options) === 0) {
 			$element .= 'disabled><option>No options available</option>';
 		} else {
