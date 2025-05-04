@@ -27,6 +27,9 @@ Flight::route('/rip/@id', function ($id) {
 });
 
 // New Rip Page
+Flight::route('POST /new-rip', function () {
+	submitForm('new-rip', 'RipController');
+});
 Flight::route('/new-rip', function () {
 	displayPage('new-rip', 'RipController');
 });
@@ -61,4 +64,18 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	Flight::render($page, $pageData);
 	require('templates/footer.php');
 	echo "</body></html>";
+}
+
+/**
+ * Submits a form from a POST request.
+ */
+function submitForm(string $page, string $controllerName) {
+	if (!is_null($controllerName)) {
+		require_once("private_core/controller/$controllerName.php");
+		$controllerName = "\RipDB\\$controllerName";
+		$controller = new $controllerName($page);
+		$controller->submitRequest();
+	}
+	echo 'posted!';
+	die();
 }

@@ -8,6 +8,9 @@ class RipModel extends Model
 {
 	const TABLE = 'Rips';
 
+	/**
+	 * Gets data about a specific rip.
+	 */
 	public function getRip(int $id)
 	{
 		$qry = $this->db->table(self::TABLE)
@@ -40,6 +43,46 @@ class RipModel extends Model
 			$rip['Rippers'][$ripper['RipperID']] = $ripper;
 		}
 		return $rip;
+	}
+
+	public function getRippers(bool $idOnly = false) {
+		$values = $this->db->table('Rippers');
+		if ($idOnly) {
+			$values = $this->setSubArrayValueToKey($values->columns('RipperID')->findAll(), 'RipperID');
+			return array_keys($values);
+		} else {
+			return $values->columns('RipperID', 'RipperName')->findAll();
+		}
+	}
+
+	public function getChannels(bool $idOnly = false) {
+		$values = $this->db->table('Channels');
+		if ($idOnly) {
+			$values = $this->setSubArrayValueToKey($values->columns('ChannelID')->findAll(), 'ChannelID');
+			return array_keys($values);
+		} else {
+			return $values->columns('ChannelID', 'ChannelName')->findAll();
+		}
+	}
+
+	public function getGames(bool $idOnly = false) {
+		$values = $this->db->table('Games');
+		if ($idOnly) {
+			$values = $this->setSubArrayValueToKey($values->columns('GameID')->findAll(), 'GameID');
+			return array_keys($values);
+		} else {
+			return $values->columns('GameID', 'GameName')->findAll();
+		}
+	}
+
+	public function getJokes(bool $idOnly = false) {
+		$values = $this->db->table('Jokes');
+		if ($idOnly) {
+			$values = $this->setSubArrayValueToKey($values->columns('JokeID')->findAll(), 'JokeID');
+			return array_keys($values);
+		} else {
+			return $values->columns('JokeID', 'JokeName')->findAll();
+		}
 	}
 
 	/**

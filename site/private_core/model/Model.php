@@ -42,7 +42,7 @@ abstract class Model
 	 * @param string $subArrayKey The key from within the sub-arrays to obtain the value from which will overwrite the array's index.
 	 * @param bool $unsetKey If true, unsets the original key from the source array. Set to true by default.
 	 */
-	protected function setSubArrayValueToKey(array &$resultSet, string $subArrayKey, bool $unsetKey = true)
+	protected function setSubArrayValueToKey(array $resultSet, string $subArrayKey, bool $unsetKey = true)
 	{
 		$result = [];
 		foreach ($resultSet as $data) {
@@ -66,7 +66,7 @@ abstract class Model
 	 * @param string $subArrayKey The key from within the sub-arrays to obtain the value from which will overwrite the array's index.
 	 * @param bool $unsetKey If true, unsets the original key from the source array. Set to true by default.
 	 */
-	protected function setSubArrayValueToKey2D(array &$resultSet, string $subArrayKey, bool $unsetKey = true)
+	protected function setSubArrayValueToKey2D(array $resultSet, string $subArrayKey, bool $unsetKey = true)
 	{
 		$result = [];
 		foreach ($resultSet as $data) {
@@ -82,5 +82,12 @@ abstract class Model
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * Executes a stored procedure with the given data from the array.
+	 */
+	protected function submitFormData(array $data, string $storedProcedure) {
+		// loop through each data item and check that none are of type Error. If they are, get the message and exit.
 	}
 }

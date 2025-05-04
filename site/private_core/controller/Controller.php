@@ -2,6 +2,8 @@
 
 namespace RipDB;
 
+use Exception;
+
 abstract class Controller
 {
 	private array $data = [];
@@ -42,4 +44,11 @@ abstract class Controller
 	}
 
 	public abstract function performRequest(array $data = []): void;
+
+	// Optional function used for submitting forms through.
+	public function submitRequest(): array
+	{
+		throw (new Exception("This controller's submitRequest function has not been initialised!"));
+		return [];
+	}
 }
