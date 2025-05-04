@@ -1,7 +1,7 @@
-CREATE TABLE RipsTypes (
+CREATE TABLE RipGenres (
 	RipID INT auto_increment NOT NULL,
-	RipTypeID int NOT NULL,
-	CONSTRAINT PK_RipsTypes PRIMARY KEY (RipID, RipTypeID)
+	GenreID int NOT NULL,
+	CONSTRAINT PK_RipGenres PRIMARY KEY (RipID, GenreID)
 )
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4

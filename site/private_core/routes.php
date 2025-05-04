@@ -69,13 +69,20 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 /**
  * Submits a form from a POST request.
  */
-function submitForm(string $page, string $controllerName) {
+function submitForm(string $page, string $controllerName)
+{
 	if (!is_null($controllerName)) {
 		require_once("private_core/controller/$controllerName.php");
 		$controllerName = "\RipDB\\$controllerName";
 		$controller = new $controllerName($page);
-		$controller->submitRequest();
+		$result = $controller->submitRequest();
+
+		if ($result instanceof Error) {
+			echo $result->getMessage();
+			echo '<a href="' . $_SERVER['HTTP_REFERER'] . '">Go Back (this page temporary)</a>';
+		} else {
+			header('location:' . $result);
+			die();
+		}
 	}
-	echo 'posted!';
-	die();
 }

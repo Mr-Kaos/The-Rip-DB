@@ -71,8 +71,8 @@ VALUES
 	('Cryptrik', NULL)
 	;
 
-INSERT INTO RipTypes
-	(TypeName, TypeDescription)
+INSERT INTO Genres
+	(GenreName, GenreDescription)
 VALUES
 	('Uncategorised', 'Rips in this category need to be categorised!'),
 	('Mashup', 'When the rip is mashed up with one or more songs.'),
@@ -86,23 +86,23 @@ VALUES
 	;
 
 -- Rips
-CALL usp_InsertRip('Battle! (Wild Pokémon) - Pokémon Ruby & Sapphire', 'A Wild Fred Flintstone Appeared!', '2016-01-09', '0102', 1, 'https://www.youtube.com/watch?v=vJsjd8alc8Y', 1, '[1]', '[2]', '[1,2,3]');
-CALL usp_InsertRip('Route 110 - Pokémon Ruby & Sapphire', NULL, '2016-06-09', '0031', 1, 'https://www.youtube.com/watch?v=hRKTKaOtP0I', 1, '[1]', '[2]', '[4]');
-CALL usp_InsertRip('Gerudo Valley - The Legend of Zelda: Ocarina of Time', 'Gerudo Countdown', '2016-01-11', '0146', 2, 'https://www.youtube.com/watch?v=zdFPVzFgl68', 1, '[1]', '[1]', '[5]');
-CALL usp_InsertRip('MEGALOVANIA - Undertale', 'Descending MEGALOVANIA', '2016-01-12', '0137', 3, 'https://www.youtube.com/watch?v=Q9wDLSrLeUE', 1, '[1]', '[2]', '[6,7]');
-CALL usp_InsertRip('Once Upon A Time - Undertale', NULL, '2016-01-13', '0127', 3, 'https://www.youtube.com/watch?v=2_yoDiuwSwE', 1, '[1]', '[2]', '[10]');
-CALL usp_InsertRip('Lost Woods - The Legend of Zelda: Ocarina of Time', NULL, '2016-01-14', '0106', 2, 'https://www.youtube.com/watch?v=da5kSUVbaI4', 1, '[1]', '[1]', '[2]');
-CALL usp_InsertRip('A Secret Course - Super Mario Sunshine', NULL, '2016-01-14', '0131', 3, 'https://www.youtube.com/watch?v=ZTga1rjryhE', 1, '[1]', '[1]', '[11]');
-CALL usp_InsertRip('Secret Course - Super Mario Sunshine', 'Super Mario Shrekshine: All Secret Course', '2016-01-15', '0130', 4, 'https://www.youtube.com/watch?v=ryZvC68xE_s', 1, '[1]', '[1]', '[11]');
-CALL usp_InsertRip('Luigi''s Mansion - Mario Kart DS', NULL, '2016-01-17', '0131', 5, 'https://www.youtube.com/watch?v=p7RsftFX9ak', 1, '[1]', '[2]', '[12]');
-CALL usp_InsertRip('Uncontrollable - Xenoblade Chronicles X', NULL, '2016-01-18', '0349', 6, 'https://www.youtube.com/watch?v=pTeXKobmqWk', 1, '[1]', '[3]', '[3]');
-CALL usp_InsertRip('Map (Day) - Tomodachi Life', 'On the Island', '2016-01-18', '0053', 7, 'https://www.youtube.com/watch?v=XhG9rWtjcGQ', 1, '[1]', '[4]', '[13]');
-CALL usp_InsertRip('Uncontrollable (Alternate Mix) - Xenoblade Chronicles X', NULL, '2016-01-19', '0345', 6, 'https://www.youtube.com/watch?v=6nRC_dlsJ1I', 1, '[1]', '[5]', '[14]');
-CALL usp_InsertRip('Overworld Theme (Original Mix) - New Super Mario Bros.', NULL, '2016-01-19', '0128', 8, 'https://www.youtube.com/watch?v=Ct3Z7LEoOPM', 1, '[1]', '[2]', '[15]');
-CALL usp_InsertRip('Hopes and Dreams - Undertale', NULL, '2016-01-20', '0301', 3, 'https://www.youtube.com/watch?v=Bhs3Q7-kLHs', 1, '[1]', '[6]', '[16]');
-CALL usp_InsertRip('The key we''ve lost - Xenoblade Chronicles X', 'The channel ytp4life lost', '2016-01-20', '0611', 6, 'https://www.youtube.com/watch?v=SezWmzgp6uQ', 1, '[1]', '[3]', '[17]');
-CALL usp_InsertRip('MEGALOVANIA (Beta Mix) - Undertale', 'Grand Dadlovania', '2016-01-28', '0049', 3, 'https://www.youtube.com/watch?v=4wXW_ex5Nvs', 1, '[1]', '[1]', '[2, 6]');
-CALL usp_InsertRip('Last Goodbye (Alternate Mix) - Undertale', 'Everlasting Goodbye', '2016-01-29', '0049', 3, 'https://www.youtube.com/watch?v=rSuYr0dR2gw', 1, '[2]', '[2]', '[18]');
-CALL usp_InsertRip('Last Goodbye (Beta Mix) - Undertale', NULL, '2016-01-29', '0215', 3, 'https://www.youtube.com/watch?v=gIEbix3m68g', 1, '[8]', '[5]', '[7]');
-CALL usp_InsertRip('My Room (Naturale) - Hatsune Miku: Project Mirai DX', NULL, '2016-01-31', '0308', 9, 'https://www.youtube.com/watch?v=yS80Lx9d6ug', 1, '[2]', '[7]', '[19]');
--- CALL usp_InsertRip('', NULL, '2016-01-20', '', 1, '', 1, '[1]', '[]', '[]');
+CALL usp_InsertRip_Sample('Battle! (Wild Pokémon) - Pokémon Ruby & Sapphire', 'A Wild Fred Flintstone Appeared!', '2016-01-09', '0102', 1, 'https://www.youtube.com/watch?v=vJsjd8alc8Y', 1, '[1]', '[2]', '[1,2,3]');
+CALL usp_InsertRip_Sample('Route 110 - Pokémon Ruby & Sapphire', NULL, '2016-06-09', '0031', 1, 'https://www.youtube.com/watch?v=hRKTKaOtP0I', 1, '[1]', '[2]', '[4]');
+CALL usp_InsertRip_Sample('Gerudo Valley - The Legend of Zelda: Ocarina of Time', 'Gerudo Countdown', '2016-01-11', '0146', 2, 'https://www.youtube.com/watch?v=zdFPVzFgl68', 1, '[1]', '[1]', '[5]');
+CALL usp_InsertRip_Sample('MEGALOVANIA - Undertale', 'Descending MEGALOVANIA', '2016-01-12', '0137', 3, 'https://www.youtube.com/watch?v=Q9wDLSrLeUE', 1, '[1]', '[2]', '[6,7]');
+CALL usp_InsertRip_Sample('Once Upon A Time - Undertale', NULL, '2016-01-13', '0127', 3, 'https://www.youtube.com/watch?v=2_yoDiuwSwE', 1, '[1]', '[2]', '[10]');
+CALL usp_InsertRip_Sample('Lost Woods - The Legend of Zelda: Ocarina of Time', NULL, '2016-01-14', '0106', 2, 'https://www.youtube.com/watch?v=da5kSUVbaI4', 1, '[1]', '[1]', '[2]');
+CALL usp_InsertRip_Sample('A Secret Course - Super Mario Sunshine', NULL, '2016-01-14', '0131', 3, 'https://www.youtube.com/watch?v=ZTga1rjryhE', 1, '[1]', '[1]', '[11]');
+CALL usp_InsertRip_Sample('Secret Course - Super Mario Sunshine', 'Super Mario Shrekshine: All Secret Course', '2016-01-15', '0130', 4, 'https://www.youtube.com/watch?v=ryZvC68xE_s', 1, '[1]', '[1]', '[11]');
+CALL usp_InsertRip_Sample('Luigi''s Mansion - Mario Kart DS', NULL, '2016-01-17', '0131', 5, 'https://www.youtube.com/watch?v=p7RsftFX9ak', 1, '[1]', '[2]', '[12]');
+CALL usp_InsertRip_Sample('Uncontrollable - Xenoblade Chronicles X', NULL, '2016-01-18', '0349', 6, 'https://www.youtube.com/watch?v=pTeXKobmqWk', 1, '[1]', '[3]', '[3]');
+CALL usp_InsertRip_Sample('Map (Day) - Tomodachi Life', 'On the Island', '2016-01-18', '0053', 7, 'https://www.youtube.com/watch?v=XhG9rWtjcGQ', 1, '[1]', '[4]', '[13]');
+CALL usp_InsertRip_Sample('Uncontrollable (Alternate Mix) - Xenoblade Chronicles X', NULL, '2016-01-19', '0345', 6, 'https://www.youtube.com/watch?v=6nRC_dlsJ1I', 1, '[1]', '[5]', '[14]');
+CALL usp_InsertRip_Sample('Overworld Theme (Original Mix) - New Super Mario Bros.', NULL, '2016-01-19', '0128', 8, 'https://www.youtube.com/watch?v=Ct3Z7LEoOPM', 1, '[1]', '[2]', '[15]');
+CALL usp_InsertRip_Sample('Hopes and Dreams - Undertale', NULL, '2016-01-20', '0301', 3, 'https://www.youtube.com/watch?v=Bhs3Q7-kLHs', 1, '[1]', '[6]', '[16]');
+CALL usp_InsertRip_Sample('The key we''ve lost - Xenoblade Chronicles X', 'The channel ytp4life lost', '2016-01-20', '0611', 6, 'https://www.youtube.com/watch?v=SezWmzgp6uQ', 1, '[1]', '[3]', '[17]');
+CALL usp_InsertRip_Sample('MEGALOVANIA (Beta Mix) - Undertale', 'Grand Dadlovania', '2016-01-28', '0049', 3, 'https://www.youtube.com/watch?v=4wXW_ex5Nvs', 1, '[1]', '[1]', '[2, 6]');
+CALL usp_InsertRip_Sample('Last Goodbye (Alternate Mix) - Undertale', 'Everlasting Goodbye', '2016-01-29', '0049', 3, 'https://www.youtube.com/watch?v=rSuYr0dR2gw', 1, '[2]', '[2]', '[18]');
+CALL usp_InsertRip_Sample('Last Goodbye (Beta Mix) - Undertale', NULL, '2016-01-29', '0215', 3, 'https://www.youtube.com/watch?v=gIEbix3m68g', 1, '[8]', '[5]', '[7]');
+CALL usp_InsertRip_Sample('My Room (Naturale) - Hatsune Miku: Project Mirai DX', NULL, '2016-01-31', '0308', 9, 'https://www.youtube.com/watch?v=yS80Lx9d6ug', 1, '[2]', '[7]', '[19]');
+-- CALL usp_InsertRip_Sample('', NULL, '2016-01-20', '', 1, '', 1, '[1]', '[]', '[]');

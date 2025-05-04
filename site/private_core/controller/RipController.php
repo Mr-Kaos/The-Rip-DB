@@ -35,6 +35,7 @@ class RipController extends Controller
 				$this->setData('channels', $this->model->getChannels());
 				$this->setData('games', $this->model->getGames());
 				$this->setData('jokes', $this->model->getJokes());
+				$this->setData('genres', $this->model->getGenres());
 				break;
 		}
 	}
@@ -90,23 +91,46 @@ class RipController extends Controller
 
 	/**
 	 * Handles the submission of the new rip form.
+	 * @return Error|string Returns an Error if an error occurred, or a string of a URI to redirect to upon completion.
 	 */
-	public function submitRequest(): array
+	public function submitRequest(): Error|string
 	{
+		$result = null;
 		// Only submit the form if the form is submitted from the new-rip page.
 		if ($this->getPage() == 'new-rip') {
+			// Validate data in order of stored procedure parameters.
 			$validated = [];
-			echo "<pre>" . print_r($_POST, true) . "</pre>";
-
 			$validated['RipName'] = $this->validateString($_POST['name'], 'The given rip name is invalid.', 1024);
-			$validated['RipDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
-			$validated['RipAlternateName'] = $this->validateString($_POST['altName'], 'The given alternate name is invalid.');
-			$validated['RipDescription'] = $this->validateString($_POST['description'], 'The given description is invalid.');
-			$validated['RipURL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)');
+			$validated['AlternateName'] = $this->validateString($_POST['altName'], 'The given alternate name is invalid.');
+			$validated['Description'] = $this->validateString($_POST['description'], 'The given description is invalid.');
+			$validated['UploadDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
 			$validated['RipLength'] = $this->validateTimestamp($_POST['length']);
-			$validated['RipGame'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
-			$validated['RipChannel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
-			$validated['Jokes'] = $this->validateArray($_POST['jokes'], 'validateFromList', [$this->model->getJokes(true)], 'One or more of the given jokes do not exist in the database.');
+			$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)');
+			$validated['Game'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
+			$validated['Channel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
+			$validated['Genres'] = $this->validateArray($_POST['genres'], 'validateFromList', [$this->model->getGenres(true)], 'One or more of the give genres do not exist in the database.');
+
+			$jokes = $this->validateArray($_POST['jokes'], 'validateFromList', [$this->model->getJokes(true)], 'One or more of the given jokes do not exist in the database.', false);
+			$starts = $this->validateArray($_POST['jokeStart'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);
+			$ends = $this->validateArray($_POST['jokeEnd'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);
+			if ($jokes instanceof Error) {
+				$validated['Jokes'] = $jokes;
+			} elseif ($starts instanceof Error) {
+				$validated['Jokes'] = $starts;
+			} elseif ($ends instanceof Error) {
+				$validated['Jokes'] = $ends;
+			} else {
+				$validated['Jokes'] = [];
+				for ($i = 0; $i < count($jokes); $i++) {
+					$jokeId = $jokes[$i];
+					if (!is_array($validated['Jokes'][$jokeId] ?? null)) {
+						$validated['Jokes'][$jokeId] = ['timestamps' => [], 'comment' => null];
+					}
+
+					array_push($validated['Jokes'][$jokeId]['timestamps'], ['start' => $starts[$i], 'end' => $ends[$i]]);
+				}
+				$validated['Jokes'] = json_encode($validated['Jokes']);
+			}
 
 			$rippers = $this->validateArray($_POST['rippers'], 'validateFromList', [$this->model->getRippers(true)], 'One or more of the given rippers do not exist in the database.', false);
 			$aliases = $this->validateArray($_POST['aliases'], 'validateString', [], 'One of the given given alias names is invalid.', false);
@@ -118,10 +142,14 @@ class RipController extends Controller
 				$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
 			}
 
-			// $this->model->submitFormData($validated, 'usp_InsertRip');
+			$submission = $this->model->submitFormData($validated, 'usp_InsertRip');
+			if ($submission == true) {
+				$result = '/rips';
+			} else {
+				$result = $submission;
+			}
 		}
-		echo "<pre>" . print_r($validated, true) . "</pre>";
 
-		return [];
+		return $result;
 	}
 }

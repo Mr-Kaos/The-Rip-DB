@@ -46,9 +46,9 @@ abstract class Controller
 	public abstract function performRequest(array $data = []): void;
 
 	// Optional function used for submitting forms through.
-	public function submitRequest(): array
+	public function submitRequest(): Error|string
 	{
 		throw (new Exception("This controller's submitRequest function has not been initialised!"));
-		return [];
+		return '';
 	}
 }

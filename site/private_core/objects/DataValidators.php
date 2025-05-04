@@ -158,21 +158,29 @@ trait DataValidator
 	protected function validateTimestamp(string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.'): Error|string
 	{
 		$validated = new Error($errorMessage);
+		error_log("REMINDER: ADD NUMERIC VALIDATION TO TIMES!!!");
+
 		// Ensure that colons are placed in the correct positions
-		if ($time[strlen($time) - 3] == ':') {
+		if (strlen($time) > 2) {
+			if ($time[strlen($time) - 3] == ':') {
+				// If the string is longer than 5 characters, i.e. specifies hours, check that the hours colon is correctly placed.
+				if (strlen($time) > 5) {
+					if ($time[strlen($time) - 6] == ':') {
+						$validated = str_replace(':', '', $time);
 
-			// If the string is longer than 5 characters, i.e. specifies hours, check that the hours colon is correctly placed.
-			if (strlen($time) > 5) {
-				if ($time[strlen($time) - 6] == ':') {
-					$validated = str_replace(':', '', $time);
-
-					// If the hours are just zeros, remove them.
-					if (str_starts_with($validated, '00')) {
-						$validated = substr($validated, 2);
+						// If the hours are just zeros, remove them.
+						if (str_starts_with($validated, '00')) {
+							$validated = substr($validated, 2);
+						}
 					}
+				} else {
+					$validated = str_replace(':', '', $time);
 				}
-			} else {
-				$validated = str_replace(':', '', $time);
+
+				// If the validated timestamp is odd, add a leading 0.
+				if (strlen($validated) % 2 == 1) {
+					$validated = '0' . $validated;
+				}
 			}
 		}
 

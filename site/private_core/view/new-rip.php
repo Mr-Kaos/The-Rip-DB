@@ -14,15 +14,20 @@ include_once('private_core/objects/InputTable.php');
 			<div>
 				<?= (new o\InputElement('Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 1024, 'required' => true]))->buildElement() ?>
 				<?= (new o\InputElement('Alternate Name', o\InputTypes::text, ['name' => 'altName', 'maxlength' => 2048]))->buildElement() ?>
-				<?= (new o\InputElement('Description', o\InputTypes::textarea, ['name' => 'description', 'maxlength' => 9999]))->buildElement() ?>
-				<?= (new o\InputElement('Length', o\InputTypes::text, ['name' => 'length', 'placeholder' => 'hh:mm:ss', 'pattern' => '[0-9]{1,}:[0-9]{1,2}:[0-9]{1,2}']))->buildElement() ?>
-				</div>
+			</div>
 			<div>
 				<?= (new o\InputElement('Upload Date', o\InputTypes::date, ['name' => 'date', 'required' => true]))->buildElement() ?>
 				<?= (new o\InputElement('Rip URL', o\InputTypes::url, ['name' => 'url']))->buildElement() ?>
 				<?= (new o\DropdownElement('Rip Channel', $channels, ['name' => 'channel', 'required' => true]))->buildElement() ?>
-				<?= (new o\DropdownElement('Game', $games, ['name' => 'game', 'required' => true]))->buildElement() ?>
 			</div>
+		</fieldset>
+		<fieldset>
+			<legend>Rip Metadata</legend>
+			<?= (new o\InputElement('Description', o\InputTypes::textarea, ['name' => 'description', 'maxlength' => 9999]))->buildElement() ?>
+			<?= (new o\InputElement('Length', o\InputTypes::text, ['name' => 'length', 'placeholder' => 'hh:mm:ss', 'required' => true]))->buildElement() ?>
+			<?= (new o\DropdownElement('Game', $games, ['name' => 'game', 'required' => true]))->buildElement() ?>
+			<?php $genreList = new o\DropdownElement('Genre', $genres, ['name' => 'genres[]', 'required' => true]); ?>
+			<?= (new o\InputTable('Genres', [$genreList]))->buildElement() ?>
 		</fieldset>
 		<fieldset>
 			<legend>Rippers</legend>
@@ -38,8 +43,8 @@ include_once('private_core/objects/InputTable.php');
 			<p>Enter each joke that is featured in this rip below. If the same joke appears multiple times, at different timestamps, please add it for each occurrence.</p>
 			<?php
 			$jokeList = new o\DropdownElement('Joke', $jokes, ['name' => 'jokes[]', 'required' => true]);
-			$start = new o\InputElement('Start', o\InputTypes::text);
-			$end = new o\InputElement('End', o\InputTypes::text);
+			$start = new o\InputElement('Start', o\InputTypes::text, ['name' => 'jokeStart[]']);
+			$end = new o\InputElement('End', o\InputTypes::text, ['name' => 'jokeEnd[]']);
 			// $timestamps = new o\InputTable('Timestamps', [$start, $end])
 			?>
 			<?= (new o\InputTable('Jokes', [$jokeList, $start, $end]))->buildElement() ?>

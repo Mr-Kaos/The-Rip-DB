@@ -56,10 +56,10 @@ $files = [
 	'MetaJokes',
 	'JokeMetas',
 	'JokeTags',
-	'RipTypes',
+	'Genres',
 	'Rips',
 	'RipJokes',
-	'RipsTypes',
+	'RipGenres',
 	'RipRippers'
 ];
 deployFiles($pdo, 'Tables', $files);
@@ -80,6 +80,7 @@ deployFiles($pdo, 'Views', $files);
 $files = [
 	'usp_InsertJoke',
 	'usp_InsertMetaJoke',
+	'usp_InsertRip_Sample',
 	'usp_InsertRip'
 ];
 deployFiles($pdo, 'Procedures', $files);

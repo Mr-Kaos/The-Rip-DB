@@ -1,45 +1,50 @@
--- Stored procedure for inserting Rips and their related data into the database easily.
--- This procedure is primarily for testing as it does not provide the means to insert detailed data about a rip's jokes or ripper aliases.
+-- This Stored procedure inserts a rip and all related data.
 
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertRip;
 
 CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN RipName varchar(1024),
 	IN AlternateName varchar(2048),
+	IN Description text,
 	IN UploadDate datetime,
 	IN RipLength time,
+	IN URL varchar(2048),
 	IN Game int,
-	IN RipURL varchar(2048),
 	IN Channel int,
-	IN RipTypes json,
-	IN Rippers json,
-	IN Jokes json)
+	IN Genres json,
+	IN Jokes json,
+	IN Rippers json)
 BEGIN
 	DECLARE new_RipID int;
-	DECLARE Id INT;
-	DECLARE i INT DEFAULT 0;
+	DECLARE Id int;
+	DECLARE extractedValA, extractedValB varchar(256);
+	DECLARE i int DEFAULT 0;
 
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	BEGIN
 		ROLLBACK;
 		RESIGNAL;
 	END;
+
+	START TRANSACTION;
  
 	INSERT INTO Rips
-		(RipName, RipDate, RipAlternateName, RipLength, RipGame, RipURL, RipChannel)
+		(RipName, RipDate, RipAlternateName, RipDescription, RipLength, RipGame, RipURL, RipChannel)
 	VALUES
-		(RipName, UploadDate, AlternateName, RipLength, Game, RipURL, Channel);
+		(RipName, UploadDate, AlternateName, Description, RipLength, Game, URL, Channel);
 
 	SET new_RipID = LAST_INSERT_ID();
 	
 	-- Create ripper associations
 	WHILE i < JSON_LENGTH(Rippers) DO
-		SELECT JSON_UNQUOTE(JSON_EXTRACT(Rippers, CONCAT('$[', i ,']'))) INTO Id;
+		SELECT JSON_UNQUOTE(JSON_EXTRACT(
+			(SELECT JSON_KEYS(Rippers) a), CONCAT('$[', i ,']'))) INTO Id;
+		SELECT JSON_UNQUOTE(JSON_EXTRACT(Rippers, CONCAT('$."', id ,'"'))) INTO extractedValA;
 		
 		INSERT INTO RipRippers
-			(RipID, RipperId)
+			(RipID, RipperId, Alias)
 		VALUES
-			(new_RipID, Id);
+			(new_RipID, Id, extractedValA);
 		
 		SET i = i + 1;
 	END WHILE;
@@ -47,30 +52,32 @@ BEGIN
 	SET i = 0;
 	-- Create joke associations
 	WHILE i < JSON_LENGTH(Jokes) DO
-		SELECT JSON_UNQUOTE(JSON_EXTRACT(Jokes, CONCAT('$[', i ,']'))) INTO Id;
-		
+		SELECT JSON_UNQUOTE(JSON_EXTRACT(
+				(SELECT JSON_KEYS(Jokes) a), CONCAT('$[', i ,']'))) INTO Id;
+		SELECT JSON_UNQUOTE(JSON_EXTRACT(Jokes, CONCAT('$."', id ,'".timestamps'))) INTO extractedValA;
+		SELECT JSON_UNQUOTE(JSON_EXTRACT(Jokes, CONCAT('$."', id ,'".comment'))) INTO extractedValB;
+		SET extractedValB = (SELECT NULLIF(extractedValB, 'null')); 
+	
 		INSERT INTO RipJokes
-			(RipID, JokeId)
+			(RipID, JokeId, JokeTimestamps, JokeComment)
 		VALUES
-			(new_RipID, Id);
+			(new_RipID, Id, extractedValA, extractedValB);
 		
 		SET i = i + 1;
 	END WHILE;
 
 	SET i = 0;
-	-- Create Rip Type assocaitions
-	WHILE i < JSON_LENGTH(RipTypes) DO
-		SELECT JSON_UNQUOTE(JSON_EXTRACT(RipTypes, CONCAT('$[', i ,']'))) INTO Id;
+	-- Create Rip Genre assocaitions
+	WHILE i < JSON_LENGTH(Genres) DO
+		SELECT JSON_UNQUOTE(JSON_EXTRACT(Genres, CONCAT('$[', i ,']'))) INTO Id;
 		
-		INSERT INTO RipsTypes
-			(RipID, RipTypeId)
+		INSERT INTO RipGenres
+			(RipID, GenreID)
 		VALUES
 			(new_RipID, Id);
 		
 		SET i = i + 1;
 	END WHILE;
-
-	COMMIT;
 
 	COMMIT;
 END

@@ -85,6 +85,16 @@ class RipModel extends Model
 		}
 	}
 
+	public function getGenres(bool $idOnly = false) {
+		$values = $this->db->table('Genres');
+		if ($idOnly) {
+			$values = $this->setSubArrayValueToKey($values->columns('GenreID')->findAll(), 'GenreID');
+			return array_keys($values);
+		} else {
+			return $values->columns('GenreID', 'GenreName')->findAll();
+		}
+	}
+
 	/**
 	 * Finds all jokes that are contained in the given resultset of rips.
 	 * @return A 2D array where each key is the ID of the joke and the values are the columns from the Jokes Table, along with its tags.

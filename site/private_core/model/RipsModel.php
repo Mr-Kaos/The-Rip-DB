@@ -22,7 +22,8 @@ class RipsModel extends Model
 	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], bool $useAltName = false)
 	{
 		$qry = $this->db->table(self::VIEW)
-			->columns(...self::COLUMNS);
+			->columns(...self::COLUMNS)
+			->asc('RipID');
 
 		// Apply name search if name is given.
 		if (!empty($name)) {

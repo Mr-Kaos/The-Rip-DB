@@ -86,8 +86,30 @@ abstract class Model
 
 	/**
 	 * Executes a stored procedure with the given data from the array.
+	 * @return string|true True if the procedure is executed without error. If an error occurs, a string with the error message(s) will be returned.
 	 */
-	protected function submitFormData(array $data, string $storedProcedure) {
+	public function submitFormData(array $data, string $storedProcedure): Error|true
+	{
 		// loop through each data item and check that none are of type Error. If they are, get the message and exit.
+		$result = true;
+		$params = '';
+		foreach ($data as $param) {
+			if ($param instanceof Error) {
+				$result .= $param->getMessage();
+			} else {
+				$params .= '?,';
+			}
+		}
+
+		// If no errors, execute procedure.
+		if ($result === true) {
+			// Remove trailing comma from parameterized query.
+			$params = substr($params, 0, strlen($params) - 1);
+
+			$dbResult = $this->db->execute("CALL $storedProcedure($params)", array_values($data));
+
+		}
+
+		return $result;
 	}
 }
