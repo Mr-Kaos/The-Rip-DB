@@ -22,6 +22,7 @@ If you want to set this database up locally (with or without sample data), follo
 Ensure you have the following dependencies too:
 
 - PHP 8.1 or newer (Tested with PHP 8.3.2)
+- Composer for PHP
 - MySQL 8.0.41 or newer (Tested with 8.0.41)
 
 To install and run locally:
@@ -33,7 +34,8 @@ To install and run locally:
    > **Optional:** When running this command, after the database is deployed, it will prompt to ask if you want to deploy sample data. Type `y` and press enter to insert some sample data.
 4. Open the file `site/private_core/config/db.php` and edit its database constants to suit your database setup.  
    > *The password is left blank in this file too!*
-5. Finally, in the terminal, move into the `site` directory and use `php -S localhost:8080` to run the site locally.
+5. In the terminal, move into the `site` directory and run `composer install` to download the two PHP dependencies.
+6. Finally, in the same directory in the terminal, use `php -S localhost:8080` to run the site locally.
 
 A more detailed (and automated) guide will be produced as the project progresses.
 

@@ -132,7 +132,7 @@ class InputElement extends PageObject
 					$field = '<button id="' . $id . '" type="button"' . "$attributes>$this->label</button>";
 					break;
 				case InputTypes::textarea:
-					$field = '<textarea id="' . $id . '" ' . $attributes . '>$value</textarea>';
+					$field = '<textarea id="' . $id . '" ' . $attributes . '>' . $value . '</textarea>';
 					break;
 				case InputTypes::checkbox:
 					// If an alt value is specified, create the hidden checkbox.

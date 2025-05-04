@@ -1,9 +1,28 @@
 /**
  * Custom HTML elements
+ * Author: Mr Kaos
+ * 
+ * Provides objects and handlers for custom page objects.
  */
 
-class MultiSelect {
+// Globals for accessing inputs from outside
+let multiSelects = [];
+let inputTables = [];
+
+class CustomElement {
 	#element;
+
+	constructor(element) {
+		this.#element = element;
+
+	}
+
+	getElement() {
+		return this.#element;
+	}
+}
+
+class MultiSelect extends CustomElement {
 	#open = false;
 	#optionsDiv;
 
@@ -12,10 +31,9 @@ class MultiSelect {
 	 * @param {HTMLElement} element The element that defines the multi select dropdown.
 	 */
 	constructor(element) {
-		this.#element = element;
-		this.#optionsDiv = this.#element.querySelector('.options');
-
-		this.#optionsDiv.style.left = `${this.#element.offsetLeft}px`
+		super(element);
+		this.#optionsDiv = this.getElement().querySelector('.options');
+		this.#optionsDiv.style.left = `${this.getElement().offsetLeft}px`
 
 		element.firstElementChild.onclick = e => this.toggleDisplay();
 	}
@@ -42,14 +60,9 @@ class MultiSelect {
 	isOpen() {
 		return this.#open;
 	}
-
-	getElement() {
-		return this.#element;
-	}
 }
 
-class InputTable {
-	#element;
+class InputTable extends CustomElement {
 	#rowCount = 0;
 
 	/**
@@ -57,12 +70,11 @@ class InputTable {
 	 * @param {HTMLTableElement} element The Table element that defines the multi select dropdown.
 	 */
 	constructor(element) {
-		this.#element = element;
-
+		super(element);
 		// Add an empty row to the table to initialise it.
 		this.addRow();
 
-		let addButton = element.querySelector('tfoot button');
+		let addButton = element.querySelector(`#add_${element.id}`);
 		addButton.onclick = e => this.addRow();
 	}
 
@@ -70,9 +82,9 @@ class InputTable {
 	 * Adds a row to the InputTable element
 	 */
 	addRow() {
-		let template = this.#element.querySelector('thead>tr');
-		let body = this.#element.querySelector('tbody');
-		let removeButtons = this.#element.querySelectorAll('tbody button[btnRemove');
+		let template = this.getElement().querySelector(`thead#temp_${this.getElement().id}>tr`);
+		let body = this.getElement().querySelector(`tbody#body_${this.getElement().id}`);
+		let removeButtons = this.getElement().querySelectorAll(`tbody#body_${this.getElement().id} button[btnRemove]`);
 
 		let clone = template.cloneNode(true);
 		clone.style = null;
@@ -87,12 +99,25 @@ class InputTable {
 		for (let i = 0; i < removeButtons.length; i++) {
 			removeButtons[i].disabled = !(this.#rowCount > 0);
 		}
-		let removeButton = clone.querySelector('button[btnRemove')
+		let removeButton = clone.querySelector('button[btnRemove]');
 		removeButton.disabled = !(this.#rowCount > 0);
 		removeButton.onclick = e => this.removeRow(clone);
 
 		body.append(clone);
 		this.#rowCount++;
+	}
+
+	/**
+	 * Finds the InputTable with the given id and adds a row to it.
+	 * @param {Element} id 
+	 */
+	static addRow(id) {
+		for (let i = 0; i < inputTables.length; i++) {
+			if (inputTables[i].getElement().id == id) {
+				inputTables[i].addRow();
+				break;
+			}
+		}
 	}
 
 	/**
@@ -105,9 +130,19 @@ class InputTable {
 
 		// Ensure that the remove buttons are disabled if there is exactly one row. (There should always be one row when #rowCount is 1.)
 		if (this.#rowCount == 1) {
-			this.#element.querySelector('tbody button[btnRemove').disabled = true;
+			getElement().querySelector('tbody button[btnRemove]').disabled = true;
 		}
 	}
+
+	/**
+	 * Code obtained from https://stackoverflow.com/questions/4872380/uniqid-in-javascript-jquery
+	 * Generates a unique id. used to ensure that a nested InputTable has a unique id if its parent table creates a new row.
+	 */
+	uniqid(prefix = "", random = false) {
+		const sec = Date.now() * 1000 + Math.random() * 1000;
+		const id = sec.toString(16).replace(/\./g, "").padEnd(14, "0");
+		return `${prefix}${id}${random ? `.${Math.trunc(Math.random() * 100000000)}`:""}`;
+	};
 }
 
 /**
@@ -149,8 +184,6 @@ function findParentElement(child, attributes, depth = 32) {
 function setupCustomInputs() {
 	let multiSelectElements = document.querySelectorAll('span.multi-select');
 	let inputTableElements = document.querySelectorAll('table[InputTable]');
-	let multiSelects = [];
-	let inputTables = [];
 
 	if (multiSelectElements.length > 0) {
 		prepareMultiSelects(multiSelectElements);
@@ -191,8 +224,10 @@ function setupCustomInputs() {
 	 * @param {NodeListOf<Element>} elements 
 	 */
 	function prepareInputTables(elements) {
+		// Reverse list so the deepest nodes get configured first.
+		elements = [...elements];
+		elements.reverse();
 		for (let i = 0; i < elements.length; i++) {
-			console.log(elements[i]);
 			inputTables.push(new InputTable(elements[i]));
 		}
 	}

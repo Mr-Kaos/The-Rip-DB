@@ -5,7 +5,6 @@ namespace RipDB\Objects;
 require_once('InputElement.php');
 
 use Exception;
-use WarRoom\PageBuilder as pb;
 
 /**
  * InputTable class
@@ -26,6 +25,9 @@ class InputTable extends InputElement
 	function __construct(?string $title, array $columnTemplates, ?array $attributes = [])
 	{
 		$attributes['InputTable'] = '';
+		if (!array_key_exists('id', $attributes)) {
+			$attributes['id'] = uniqid('InputTable_');
+		}
 		$this->columnTemplates = $columnTemplates;
 		parent::__construct($title, InputTypes::custom, $attributes);
 	}
@@ -39,13 +41,16 @@ class InputTable extends InputElement
 	{
 		$attributes = $this->buildAttributes($this->attributes);
 
-		$html = '<table' . $attributes . '><thead style="display:none"><tr>';
+		$html = '<table' . $attributes . '><caption>' . $this->label . '</caption><thead id="temp_' . $this->attributes['id'] . '" style="display:none"><tr>';
 
 		$row = '';
 		foreach ($this->columnTemplates as $col) {
 			$row .= '<td>';
-			// Check to ensure the column entry is an InputElement
-			if ($col instanceof InputElement) {
+			// Check to ensure the column entry is an InputElement and not an InputTable
+			if ($col instanceof InputTable) {
+				throw (new Exception('You cannot nest an InputTable in another InputTable!'));
+			}
+			elseif ($col instanceof InputElement) {
 				$col->setAttribute('form', '');
 				$row .= $col->buildElement();
 			} else {
@@ -55,8 +60,11 @@ class InputTable extends InputElement
 		}
 		$row .= '<td>' . (new InputElement('Remove', InputTypes::button, ['disabled' => true, 'btnRemove' => '']))->buildElement() . '</td>';
 
-		$html .= $row . '</tr></thead><tbody></tbody><tfoot><tr><td colspan="' . count($this->columnTemplates) + 1 . '">';
-		$html .= (new InputElement('+', InputTypes::button))->buildElement();
+		$html .= $row . '</tr></thead><tbody id="body_' . $this->attributes['id'] . '"></tbody><tfoot><tr><td colspan="' . count($this->columnTemplates) + 1 . '">';
+		// Commented code below is for if support for nested InputTables is added. The issue with that at the moment is that the ID of the nested tables gets cloned when a new
+		// row is added as well as any attached event listeners being removed from the clone, making it difficult to implement easily. Left this in for now in case I decide to work on this again.
+		// $html .= (new InputElement('+', InputTypes::button, ['id' => 'add_' . $this->attributes['id'], 'onclick' => 'InputTable.addRow(\'' . $this->attributes['id'] . '\')']))->buildElement();
+		$html .= (new InputElement('+', InputTypes::button, ['id' => 'add_' . $this->attributes['id']]))->buildElement();
 		$html .= '</td></tr></tfoot></table>';
 
 		return $html;
