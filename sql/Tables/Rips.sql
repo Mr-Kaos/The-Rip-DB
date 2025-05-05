@@ -5,11 +5,12 @@ CREATE TABLE Rips (
 	RipAlternateName varchar(2048) DEFAULT NULL COMMENT 'Alternative (album) name for rip',
 	RipLength time NOT NULL DEFAULT 0,
 	RipGame int NOT NULL,
-	RipURL varchar(512) DEFAULT NULL COMMENT 'The URL of the rip, accessible online',
+	RipURL varchar(512) NOT NULL COMMENT 'The URL of the rip, accessible online',
 	RipDescription text DEFAULT NULL,
 	RipChannel int DEFAULT NULL COMMENT 'The YouTube channel that uploaded the rip',
 	CONSTRAINT Channels_RipChannel_FK FOREIGN KEY (RipChannel) REFERENCES Channels(ChannelID),
 	CONSTRAINT Games_RipGame_FK FOREIGN KEY (RipGame) REFERENCES Games(GameID),
+	CONSTRAINT UQ_RipURL UNIQUE KEY (RipURL),
 	PRIMARY KEY (`RipID`)
 )
 ENGINE=InnoDB
