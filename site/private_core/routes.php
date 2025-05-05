@@ -13,7 +13,7 @@ $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
 
 // Home Page
 Flight::route('/', function () {
-	displayPage('home');
+	displayPage('home', 'HomeController');
 });
 
 // Rips Page (search)

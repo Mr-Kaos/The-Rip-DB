@@ -2,4 +2,9 @@
 	--bg-color: #fff;
 	--text-color: #000;
 	--element-color: #444;
+
+	--accent-1: #65e49e;
+
+	--tbl-row-odd: #cce2f5;
+	--tbl-row-even: #a5c1d8;
 }

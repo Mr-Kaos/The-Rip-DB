@@ -78,5 +78,6 @@ class RipsController extends Controller
 		$this->setData('RecordEnd', $recordEnd);
 		$this->setData('Page', $page);
 		$this->setData('Count', $recordCount);
+		$this->setData('RipCount', $ripCount);
 	}
 }

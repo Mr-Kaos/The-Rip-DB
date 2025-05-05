@@ -4,11 +4,43 @@ body {
 	color: var(--text-color);
 }
 
+main {
+	margin: auto;
+	width: 90%;
+}
+
+nav>a {
+	margin: 0px 10px;
+}
+
+nav>a:hover {
+	opacity: 70%;
+	transition: 0.3s;
+}
+
 table,
 td,
 th {
 	border: thin solid var(--element-color);
 	border-collapse: collapse;
+}
+
+a {
+	text-decoration: none;
+}
+
+thead {
+	background-color: var(--accent-1);
+}
+
+tbody>tr:nth-child(even) {
+	background: var(--tbl-row-even);
+
+}
+
+tbody>tr:nth-child(odd) {
+	background: var(--tbl-row-odd);
+
 }
 
 .multi-select {
@@ -23,4 +55,9 @@ th {
 	display: none;
 	flex-direction: column;
 	position: absolute;
+}
+
+.table-search {
+	width: 100%;
+	margin: auto;
 }

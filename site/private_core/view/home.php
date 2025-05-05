@@ -11,6 +11,8 @@ use RipDB\Objects as o;
 		<form action="/rips">
 			<?= (new o\InputElement('Search', o\InputTypes::search, ['id' => 'search']))->buildElement() ?>
 		</form>
+		<a href="/rip/<?= rand(1, $RipCount) ?>"><button>I'm feeling lucky!</button></a>
+		<p>We currently have <?= $RipCount ?> rips!</p>
 	</section>
 </main>
 

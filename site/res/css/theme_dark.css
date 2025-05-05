@@ -1,5 +1,17 @@
 :root {
 	--bg-color: #111;
 	--text-color: #fff;
-	--element-color: #ddd;
+	--element-color: #777;
+
+	--accent-1: #397755;
+
+	--tbl-row-odd: #39404b;
+	--tbl-row-even: #1c293a;
+}
+
+a {
+	color:#00a030;
+}
+a:visited {
+	color:#79f19d;
 }
