@@ -34,6 +34,14 @@ Flight::route('/new-rip', function () {
 	displayPage('new-rip', 'RipController');
 });
 
+// Settings Requests
+Flight::route('/settings/theme', function () {
+	$theme = ($_COOKIE['theme'] ?? 'light') == 'light' ? 'dark' : 'light';
+	setcookie('theme', $theme, 0, '/');
+	header('location:' . $_SERVER['HTTP_REFERER']);
+	die();
+});
+
 /**
  * Displays the page with a header and footer.
  */
