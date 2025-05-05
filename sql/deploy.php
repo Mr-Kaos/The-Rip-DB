@@ -37,7 +37,7 @@ function deployFiles($pdo, string $folder, array $fileNames)
 {
 	foreach ($fileNames as $file) {
 		$sql = file_get_contents("$folder/$file.sql");
-		echo "$folder/$file.sql\n";
+		echo "Deploying: $folder/$file.sql\n";
 		$pdo->exec($sql);
 		// $mysqli->query($sql);
 	}
@@ -81,7 +81,8 @@ $files = [
 	'usp_InsertJoke',
 	'usp_InsertMetaJoke',
 	'usp_InsertRip_Sample',
-	'usp_InsertRip'
+	'usp_InsertRip',
+	'usp_DeleteRip'
 ];
 deployFiles($pdo, 'Procedures', $files);
 

@@ -154,8 +154,9 @@ trait DataValidator
 
 	/**
 	 * Validates the given string to ensure it is a valid timestamp
+	 * If the given string is empty, null is returned.
 	 */
-	protected function validateTimestamp(string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.'): Error|string
+	protected function validateTimestamp(string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.'): Error|string|null
 	{
 		$validated = new Error($errorMessage);
 		error_log("REMINDER: ADD NUMERIC VALIDATION TO TIMES!!!");
@@ -182,6 +183,8 @@ trait DataValidator
 					$validated = '0' . $validated;
 				}
 			}
+		} elseif (empty($time)) {
+			$validated = null;
 		}
 
 		return $validated;

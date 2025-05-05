@@ -22,7 +22,7 @@ class RipModel extends Model
 		// Get jokes and rips from the resultset of rips.
 		$ripJokes = $this->getRipJokes($qry);
 		$rippers = $this->getRipRippers($qry);
-
+		$genres = $this->getRipGenres($qry);
 		$rip = $qry->findOne();
 
 		// Apply jokes to rips
@@ -41,6 +41,15 @@ class RipModel extends Model
 			}
 
 			$rip['Rippers'][$ripper['RipperID']] = $ripper;
+		}
+
+		// Apply genres to rips
+		foreach ($genres as $genre) {
+			if (!isset($rip['Genres'])) {
+				$rip['Genres'] = [];
+			}
+
+			$rip['Genres'][$genre['GenreID']] = $genre;
 		}
 		return $rip;
 	}
@@ -136,6 +145,16 @@ class RipModel extends Model
 			->columns('r.RipID, RipRippers.RipperID', 'RipperName')
 			->join('RipRippers', 'RipperID', 'RipperID')
 			->joinSubquery($ripQuery, 'r', 'RipID', 'RipID', 'RipRippers');
+
+		return $qry->findAll();
+	}
+
+	private function getRipGenres($ripQuery)
+	{
+		$qry = $this->db->table('Genres')
+			->columns('g.RipID, RipGenres.GenreID', 'GenreName')
+			->join('RipGenres', 'GenreID', 'GenreID')
+			->joinSubquery($ripQuery, 'g', 'RipID', 'RipID', 'RipGenres');
 
 		return $qry->findAll();
 	}

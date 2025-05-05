@@ -57,16 +57,19 @@ class RipController extends Controller
 		 * @param string $timestamp The timestamp string to insert colons into.
 		 * @return string The formatted timestamp.
 		 */
-		function formatTimestamp(string $timestamp): string
+		function formatTimestamp(?string $timestamp): string
 		{
-			$formatted = $timestamp;
-			$formatted = substr_replace($formatted, ':', strlen($formatted) - 2, 0);
+			if (!empty($timestamp)) {
+				$formatted = $timestamp;
+				$formatted = substr_replace($formatted, ':', strlen($formatted) - 2, 0);
 
-			// If the timestamp represents a time longer than an hour:
-			if (strlen($timestamp) > 4) {
-				$formatted = substr_replace($formatted, ':',  strlen($formatted) - 5, 0);
+				// If the timestamp represents a time longer than an hour:
+				if (strlen($timestamp) > 4) {
+					$formatted = substr_replace($formatted, ':',  strlen($formatted) - 5, 0);
+				}
+			} else {
+				$formatted = '';
 			}
-
 			return $formatted;
 		}
 
@@ -105,7 +108,7 @@ class RipController extends Controller
 			$validated['Description'] = $this->validateString($_POST['description'], 'The given description is invalid.');
 			$validated['UploadDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
 			$validated['RipLength'] = $this->validateTimestamp($_POST['length']);
-			$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)');
+			$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 			$validated['Game'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
 			$validated['Channel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
 			$validated['Genres'] = $this->validateArray($_POST['genres'], 'validateFromList', [$this->model->getGenres(true)], 'One or more of the give genres do not exist in the database.');

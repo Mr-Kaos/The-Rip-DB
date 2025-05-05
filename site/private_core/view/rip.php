@@ -56,6 +56,14 @@
 							<th>Game</th>
 							<td><?= $rip['GameName'] ?></td>
 						</tr>
+						<tr>
+							<th>Genres</th>
+							<td>
+								<?php foreach ($rip['Genres'] as $genre): ?>
+									<?= $genre['GenreName'] ?>
+								<?php endforeach; ?>
+							</td>
+						</tr>
 					</tbody>
 				</table>
 			</section>
