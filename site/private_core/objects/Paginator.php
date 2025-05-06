@@ -64,6 +64,9 @@ trait Paginator
 		if ($max >= $pages) {
 			$min -= ($max - $pages);
 			$max = $pages;
+			if ($min < 1) {
+				$min = 1;
+			}
 		}
 
 		for ($min; $min <= $max; $min++) {
