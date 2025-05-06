@@ -57,6 +57,6 @@ class RipsController extends Controller
 		$this->setData('Page', $page);
 		$this->setData('Count', $rowCount);
 		$this->setData('RipCount', $ripCount);
-		$this->setData('pagination', $this->buildPagination($ripCount, '/rips/'));
+		$this->setData('pagination', $this->buildPagination($ripCount, '/rips'));
 	}
 }

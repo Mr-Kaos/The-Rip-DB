@@ -29,7 +29,7 @@ class JokeController extends Controller
 
 		// Get records of rips
 		$rips = [];
-		$offset = $this->getOffset($recordCount, '/rips');
+		$offset = $this->getOffset($recordCount, '/jokes');
 		$jokes = $this->model->searchJokes(
 			$rowCount,
 			$offset,
