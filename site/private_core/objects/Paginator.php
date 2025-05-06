@@ -36,7 +36,7 @@ trait Paginator
 			}
 
 			Flight::redirect("$redirect?" . http_build_query($request));
-		} elseif ($request['p'] <= 0) {
+		} elseif (($request['p'] ?? null) <= 0) {
 			$request['p'] = 1;
 			Flight::redirect("$redirect?" . http_build_query($request));
 		}

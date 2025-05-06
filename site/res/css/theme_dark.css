@@ -7,11 +7,15 @@
 
 	--tbl-row-odd: #39404b;
 	--tbl-row-even: #1c293a;
+
+	--link: #00a030;
+	--link-visited: #79f19d;
 }
 
 a {
-	color:#00a030;
+	color: var(--link);
 }
+
 a:visited {
-	color:#79f19d;
+	color: var(--link-visited);
 }
