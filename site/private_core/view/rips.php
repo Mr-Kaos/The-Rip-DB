@@ -47,10 +47,11 @@ use RipDB\Objects as o;
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="6" style="text-align:center">
+					<td colspan="6" style="text-align:center" class="pagination">
 						<span style="float:left">
 							<?= (new o\InputElement('Rips per page:', o\InputTypes::number, ['id' => 'c', 'min' => 1, 'max' => 100, 'form' => 'rip_search', 'value' => $Count]))->buildElement() ?>
 						</span>
+						<?= $pagination ?>
 						<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'rip_search', 'value' => $Page]))->buildElement() ?>
 						<button type="submit" form="rip_search">Go</button>
 						<span style="float:right">Showing <b><?= $RecordStart ?> to <?= $RecordEnd ?></b> of <?= $RipCount ?> rips</span>

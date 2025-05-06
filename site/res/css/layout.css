@@ -43,6 +43,15 @@ tbody>tr:nth-child(odd) {
 
 }
 
+.pagination>a {
+	margin: 0px 2px;
+	padding: 0px 2px;
+}
+
+.pagination>#p {
+	width: 50px;
+}
+
 .multi-select {
 	/* display: none; */
 	user-select: none;

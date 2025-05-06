@@ -23,13 +23,13 @@ class JokeController extends Controller
 	 */
 	public function performRequest(array $data = []): void
 	{
-		$ripCount = $this->model->getJokeCount();
+		$recordCount = $this->model->getJokeCount();
 		$rowCount = $this->getRowCount();
 		$page = $this->getPageNumber();
 
 		// Get records of rips
 		$rips = [];
-		$offset = $this->getOffset($ripCount, '/rips');
+		$offset = $this->getOffset($recordCount, '/rips');
 		$jokes = $this->model->searchJokes(
 			$rowCount,
 			$offset,
@@ -44,14 +44,15 @@ class JokeController extends Controller
 		$recordStart = (($page - 1) * $rowCount) + 1;
 		$recordEnd = $page * $rowCount;
 
-		if ($recordEnd > $ripCount) {
-			$recordEnd = $ripCount;
+		if ($recordEnd > $recordCount) {
+			$recordEnd = $recordCount;
 		}
 
 		$this->setData('RecordStart', $recordStart);
 		$this->setData('RecordEnd', $recordEnd);
 		$this->setData('Page', $page);
 		$this->setData('Count', $rowCount);
-		$this->setData('RipCount', $ripCount);
+		$this->setData('JokeCount', $recordCount);
+		$this->setData('pagination', $this->buildPagination($recordCount, '/jokes'));
 	}
 }
