@@ -3,16 +3,18 @@
 namespace RipDB;
 
 require_once('Controller.php');
-require_once('private_core/model/RipsModel.php');
+require_once('private_core/model/JokeModel.php');
 require_once('private_core/objects/Paginator.php');
 
-class RipsController extends Controller
+class JokeController extends Controller
 {
 	use \Paginator;
 
+	const RIPS_PER_PAGE = 25;
+
 	public function __construct(string $page)
 	{
-		parent::__construct($page, new RipsModel());
+		parent::__construct($page, new JokeModel());
 	}
 
 	/**
@@ -21,28 +23,22 @@ class RipsController extends Controller
 	 */
 	public function performRequest(array $data = []): void
 	{
-		$useAltName = ($_GET['use_secondary'] ?? 0) == 1;
-		$ripCount = $this->model->getRipCount($useAltName);
+		$ripCount = $this->model->getJokeCount();
 		$rowCount = $this->getRowCount();
 		$page = $this->getPageNumber();
 
 		// Get records of rips
 		$rips = [];
 		$offset = $this->getOffset($ripCount, '/rips');
-		$rips = $this->model->searchRips(
+		$jokes = $this->model->searchJokes(
 			$rowCount,
 			$offset,
 			$_GET['search'] ?? null,
 			$_GET['tags'] ?? [],
-			$_GET['jokes'] ?? [],
-			$useAltName
+			$_GET['metas'] ?? [],
 		);
 
-		$this->setData('results', $rips);
-
-		// Get search filters
-		$this->setData('tags', $this->model->getTags());
-		$this->setData('jokes', $this->model->getJokes());
+		$this->setData('results', $jokes);
 
 		// Pagination values
 		$recordStart = (($page - 1) * $rowCount) + 1;

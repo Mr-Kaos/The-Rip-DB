@@ -69,7 +69,8 @@ deployFiles($pdo, 'Tables', $files);
 // ------
 
 $files = [
-	'vw_RipsDetailed'
+	'vw_RipsDetailed',
+	'vw_JokesDetailed'
 ];
 deployFiles($pdo, 'Views', $files);
 

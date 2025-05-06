@@ -27,11 +27,20 @@ Flight::route('/rip/@id', function ($id) {
 });
 
 // New Rip Page
-Flight::route('POST /new-rip', function () {
-	submitForm('new-rip', 'RipController');
+Flight::group('/new-rip', function () {
+	Flight::route('POST /', function () {
+		submitForm('new-rip', 'RipController');
+	});
+	Flight::route('/', function () {
+		displayPage('new-rip', 'RipController');
+	});
 });
-Flight::route('/new-rip', function () {
-	displayPage('new-rip', 'RipController');
+
+// Jokes Pages
+Flight::group('/jokes', function() {
+	Flight::route('/', function() {
+		displayPage('jokes', 'JokeController');
+	});
 });
 
 // Settings Requests
@@ -89,8 +98,7 @@ function submitForm(string $page, string $controllerName)
 			echo $result->getMessage();
 			echo '<a href="' . $_SERVER['HTTP_REFERER'] . '">Go Back (this page temporary)</a>';
 		} else {
-			header('location:' . $result);
-			die();
+			Flight::redirect($result);
 		}
 	}
 }

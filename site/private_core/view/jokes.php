@@ -3,45 +3,38 @@
 use RipDB\Objects as o;
 ?>
 <main>
-	<h1>Rips</h1>
+	<h1>Jokes</h1>
+	<p>This page just shows what jokes exist in the database.</p>
 	<form id="rip_search" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
-		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
-		<details>
-			<summary>More Filters</summary>
-			<?= (new o\MultiSelectDropdownElement('Tags', $tags, ['name' => 'tags']))->buildElement() ?>
-			<?= (new o\MultiSelectDropdownElement('Jokes', $jokes, ['name' => 'jokes']))->buildElement() ?>
-		</details>
 	</form>
 	<?php if (!empty($results)): ?>
 		<table id="results" class="table-search">
 			<thead>
 				<tr>
-					<th>Rip Name</th>
-					<th>Alternative Name</th>
-					<th>Length</th>
-					<th>Ripper</th>
-					<th>Jokes</th>
-					<th>Upload Date</th>
+					<th>Joke Name</th>
+					<th>Description</th>
+					<th>Tags</th>
+					<th>Rips With This Joke</th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php foreach ($results as $record): ?>
 					<tr>
-						<td><a href="/rip/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
-						<td><?= $record['RipAlternateName'] ?></td>
-						<td><?= $record['RipLength'] ?></td>
+						<td><?= $record['JokeName'] ?></td>
+						<td><?= $record['JokeDescription'] ?></td>
 						<td>
-							<?php foreach ($record['Rippers'] as $ripper): ?>
-								<button type="button"><?= $ripper['RipperName'] ?></button>
-							<?php endforeach; ?>
+							<?php
+							foreach ($record['Tags'] as $tag):
+								if ($tag['IsPrimary']) {
+									echo '<button type="button"><b>' . $tag['TagName'] . '</b></button>';
+								} else {
+									echo '<button type="button">' . $tag['TagName'] . '</button>';
+								}
+							endforeach;
+							?>
 						</td>
-						<td>
-							<?php foreach ($record['Jokes'] as $joke): ?>
-								<button type="button"><?= $joke['JokeName'] ?></button>
-							<?php endforeach; ?>
-						</td>
-						<td><?= $record['RipDate'] ?></td>
+						<td><a href="rips?jokes[]=<?= $record['JokeID'] ?>"><?= $record['RipCount'] ?></a></td>
 					</tr>
 				<?php endforeach; ?>
 			</tbody>
