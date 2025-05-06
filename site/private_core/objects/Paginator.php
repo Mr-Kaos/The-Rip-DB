@@ -11,7 +11,8 @@ trait Paginator
 
 	protected function getPageNumber()
 	{
-		return empty($_GET['p'] ?? null) ? 1 : (int)$_GET['p'];
+		$page =  empty($_GET['p'] ?? null) ? 1 : (int)$_GET['p'];
+		return $page > 0 ? $page : 1;
 	}
 
 	/**
@@ -25,15 +26,18 @@ trait Paginator
 		$recordStart = (($page - 1) * $rowCount) + 1;
 
 		// If the page number exceeds the number of rips, go to the highest page
+		$request = $_GET;
 		if ($recordStart > $recordCount) {
 			$page = ceil($recordCount / $rowCount);
-			$request = $_GET;
 			if (!array_key_exists('p', $request)) {
 				$request['p'] = 1;
 			} else {
 				$request['p'] = $page;
 			}
 
+			Flight::redirect("$redirect?" . http_build_query($request));
+		} elseif ($request['p'] <= 0) {
+			$request['p'] = 1;
 			Flight::redirect("$redirect?" . http_build_query($request));
 		}
 		return $rowCount * ($page - 1);
