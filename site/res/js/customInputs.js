@@ -90,9 +90,14 @@ class InputTable extends CustomElement {
 		clone.style = null;
 
 		// Remove the null form attribute from the template to add the cloned inputs to the form.
+		// Also create a unique ID for each input so the labels are associated correctly.
 		let inputs = clone.querySelectorAll('input,select,textarea');
 		for (let i = 0; i < inputs.length; i++) {
+			let label = inputs[i].parentElement.querySelector(`label[for="${inputs[i].id}"]`);
+			let newId = `${inputs[i].id}_${this.uniqid()}`;
 			inputs[i].removeAttribute('form');
+			inputs[i].id = newId;
+			label.setAttribute('for', newId);
 		}
 
 		// Ensure that the remove buttons are not disabled if there is more than one row.
@@ -141,7 +146,7 @@ class InputTable extends CustomElement {
 	uniqid(prefix = "", random = false) {
 		const sec = Date.now() * 1000 + Math.random() * 1000;
 		const id = sec.toString(16).replace(/\./g, "").padEnd(14, "0");
-		return `${prefix}${id}${random ? `.${Math.trunc(Math.random() * 100000000)}`:""}`;
+		return `${prefix}${id}${random ? `.${Math.trunc(Math.random() * 100000000)}` : ""}`;
 	};
 }
 

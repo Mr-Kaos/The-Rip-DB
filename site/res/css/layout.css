@@ -2,6 +2,7 @@ body {
 	background-color: var(--bg-color);
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	color: var(--text-color);
+	margin: 0;
 }
 
 main {
@@ -9,8 +10,15 @@ main {
 	width: 90%;
 }
 
+nav {
+	background: var(--accent-1);
+	padding: 5px 0px;
+	padding-left: 5%;
+	padding-right: 5%;
+}
+
 nav>a {
-	margin: 0px 10px;
+	margin-right: 15px;
 }
 
 nav>a:hover {
@@ -30,7 +38,7 @@ a {
 }
 
 thead {
-	background-color: var(--accent-1);
+	background-color: var(--accent-2);
 }
 
 tbody>tr:nth-child(even) {
