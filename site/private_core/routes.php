@@ -16,29 +16,31 @@ Flight::route('/', function () {
 	displayPage('home', 'HomeController');
 });
 
-// Rips Page (search)
-Flight::route('/rips', function () {
-	displayPage('rips', 'RipsController');
-});
+// Rips Pages
+Flight::group('/rips', function () {
+	Flight::route('/', function () {
+		displayPage('rips', 'RipsController');
+	});
 
-// Rip page
-Flight::route('/rip/@id', function ($id) {
-	displayPage('rip', 'RipController', ['id' => $id]);
-});
-
-// New Rip Page
-Flight::group('/new-rip', function () {
-	Flight::route('POST /', function () {
+	Flight::route('POST /new', function () {
 		submitForm('new-rip', 'RipController');
 	});
-	Flight::route('/', function () {
+
+	Flight::route('/new', function () {
 		displayPage('new-rip', 'RipController');
+	});
+
+	Flight::route('/@id', function ($id) {
+		displayPage('rip', 'RipController', ['id' => $id]);
 	});
 });
 
 // Jokes Pages
-Flight::group('/jokes', function() {
-	Flight::route('/', function() {
+Flight::group('/jokes', function () {
+	Flight::route('/new', function () {
+		displayPage('new-joke', 'JokeController');
+	});
+	Flight::route('/', function () {
 		displayPage('jokes', 'JokeController');
 	});
 });

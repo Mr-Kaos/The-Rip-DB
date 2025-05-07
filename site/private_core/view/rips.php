@@ -28,7 +28,7 @@ use RipDB\Objects as o;
 			<tbody>
 				<?php foreach ($results as $record): ?>
 					<tr>
-						<td><a href="/rip/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
+						<td><a href="/rips/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
 						<td><?= $record['RipAlternateName'] ?></td>
 						<td><?= $record['RipLength'] ?></td>
 						<td>
