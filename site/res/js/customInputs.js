@@ -8,6 +8,7 @@
 // Globals for accessing inputs from outside
 let multiSelects = [];
 let inputTables = [];
+let searchElements = [];
 
 class CustomElement {
 	#element;
@@ -48,7 +49,6 @@ class MultiSelect extends CustomElement {
 		} else {
 			this.#open = open;
 		}
-		// console.log(this.#open, this);
 
 		if (this.#open) {
 			this.#optionsDiv.style.display = 'flex';
@@ -59,6 +59,10 @@ class MultiSelect extends CustomElement {
 
 	isOpen() {
 		return this.#open;
+	}
+
+	getOptionsDiv() {
+		return this.#optionsDiv;
 	}
 }
 
@@ -91,13 +95,18 @@ class InputTable extends CustomElement {
 
 		// Remove the null form attribute from the template to add the cloned inputs to the form.
 		// Also create a unique ID for each input so the labels are associated correctly.
-		let inputs = clone.querySelectorAll('input,select,textarea');
+		let inputs = clone.querySelectorAll('input,select,textarea,span.search-element');
 		for (let i = 0; i < inputs.length; i++) {
-			let label = inputs[i].parentElement.querySelector(`label[for="${inputs[i].id}"]`);
-			let newId = `${inputs[i].id}_${this.uniqid()}`;
-			inputs[i].removeAttribute('form');
-			inputs[i].id = newId;
-			label.setAttribute('for', newId);
+			// If a search input, construct an instance of it
+			if (inputs[i].className == 'search-element') {
+				searchElements.push(new SearchElement(inputs[i]));
+			} else {
+				let label = inputs[i].parentElement.querySelector(`label[for="${inputs[i].id}"]`);
+				let newId = `${inputs[i].id}_${this.uniqid()}`;
+				inputs[i].removeAttribute('form');
+				inputs[i].id = newId;
+				label.setAttribute('for', newId);
+			}
 		}
 
 		// Ensure that the remove buttons are not disabled if there is more than one row.
@@ -151,14 +160,124 @@ class InputTable extends CustomElement {
 }
 
 /**
+ * JavaScript wrapper for Searchable input elements.
+ * @property {Boolean} #init
+ * @property {Boolean} multi Determines if this search element allows for multiple selections or just one.
+ * @property {String|Array} value Stores the value sof the selected option(s). Also used to hide certain options from re-appearing in the search.
+ */
+class SearchElement extends MultiSelect {
+	#init = false;
+	#multi = false;
+	#value = null;
+	$url;
+
+	constructor(element) {
+		super(element);
+
+		let search = element.querySelector('input[type="search"]');
+		search.oninput = e => this.search(e.target.value, search.getAttribute('search-url'));
+		if (element.getAttribute('type') == 'multi') {
+			this.#multi = true;
+			this.#value = [];
+		}
+
+		// If the list has not been touched yet, make an empty search to load some results
+		search.onclick = function () {
+			if (!this.#init) {
+				this.search('', search.getAttribute('search-url'));
+				this.#init = true;
+			} else {
+				this.toggleDisplay();
+			}
+		}.bind(this);
+	}
+
+	async search(input, url) {
+		let response = await fetch(`${url}?q=${input}`);
+
+		if (response.ok) {
+			let result = response.json().then(data => {
+				let options = this.getOptionsDiv();
+				options.innerHTML = '';
+
+				if (data.length > 0) {
+					let noAdd = true;
+					for (let i = 0; i < data.length; i++) {
+						if (this.#multi) {
+							noAdd = this.#value.includes(data[i].ID);
+						} else {
+							noAdd = (data[i].ID == this.#value);
+						}
+						if (!noAdd) {
+							let option = document.createElement('span');
+							option.innerText = data[i].NAME;
+							option.setAttribute('value', data[i].ID);
+							option.onclick = e => this.#selectOption(e.target);
+							options.append(option);
+						}
+
+					}
+				} else {
+					options.innerHTML = '<i>No results found</i>';
+				}
+				if (!this.isOpen()) {
+					this.toggleDisplay(true);
+				}
+			});
+		}
+	}
+
+	/**
+	 * Sets the value of the SearchElement to the value the user selected.
+	 * If the input allows multiple selections, they are added to a separate container.
+	 * @param {HTMLSpanElement} option The option the user selected
+	 */
+	#selectOption(option) {
+		if (this.#multi) {
+			let selectionDiv = this.getElement().querySelector('.selected');
+			let clone = option.cloneNode(true);
+			let input = document.createElement('input');
+				input.hidden = true;
+				input.value = option.getAttribute('value');
+				input.name = this.getElement().getAttribute('name');
+			let btnRemove = document.createElement('button');
+				btnRemove.innerHTML = '&times;';
+				btnRemove.type = 'button';
+				btnRemove.onclick = e => this.#unsetOption(clone);
+			clone.appendChild(input);
+			clone.appendChild(btnRemove);
+			selectionDiv.appendChild(clone);
+			this.#value.push(parseInt(option.getAttribute('value')));
+		} else {
+			this.#value = parseInt(option.getAttribute('value'));
+		}
+		option.remove();
+	}
+
+	/**
+	 * Removes the specified option from the element's value(s).
+	 * @param {HTMLSpanElement} option The option to remove from the element's selection.
+	 */
+	#unsetOption(option) {
+		if (this.#multi) {
+			let optionVal = parseInt(option.getAttribute('value'));
+			this.#value.splice(this.#value.indexOf(optionVal), 1);
+			option.remove();
+		} else {
+			this.#value = null;
+		}
+	}
+}
+
+/**
  * Finds a parent element from the given child based on a specific attribute.
  * @param {Element} child The source element to search for its parent.
- * @param {Object} attributes A list of attributes the required parent element has. The keys must be a valid HTML attribute and the value must correspond to it.
- * @param {Number} depth The maximum number of loops to perform before the loop terminates. Absolute maximum is 128. 
+ * @param {Object} attributes A list of attributes the required parent element has. The keys must be a valid HTML attribute and the value must correspond to it. An array of values may also be specified if searching for one of multiple potential values.
+ * @param {Number} depth The maximum number of loops to perform before the loop terminates. Absolute maximum is 64. 
  */
 function findParentElement(child, attributes, depth = 32) {
 	let loops = 0;
-	let maxLoops = (depth > 128) ? 128 : (depth < 0 ? 1 : depth);
+	let maxLoops = (depth > 64) ? 64 : (depth < 0 ? 1 : depth);
 	let parent = null;
 	let thisParent = child.parentElement;
 
@@ -166,11 +285,24 @@ function findParentElement(child, attributes, depth = 32) {
 		// Check each attribute against the current parent
 		let matches = 0;
 		for (let attr in attributes) {
-			if (attributes[attr] === null && thisParent.hasAttribute(attr)) {
-				matches++;
-			}
-			else if (thisParent.hasAttribute(attr) && thisParent.getAttribute(attr) == attributes[attr]) {
-				matches++;
+			if (Array.isArray(attributes[attr])) {
+				for (let i = 0; i < attributes[attr].length; i++) {
+					if (attributes[attr][i] === null && thisParent.hasAttribute(attr)) {
+						matches++;
+						break;
+					}
+					else if (thisParent.hasAttribute(attr) && thisParent.getAttribute(attr) == attributes[attr][i]) {
+						matches++;
+						break;
+					}
+				}
+			} else {
+				if (attributes[attr] === null && thisParent.hasAttribute(attr)) {
+					matches++;
+				}
+				else if (thisParent.hasAttribute(attr) && thisParent.getAttribute(attr) == attributes[attr]) {
+					matches++;
+				}
 			}
 		}
 
@@ -189,6 +321,7 @@ function findParentElement(child, attributes, depth = 32) {
 function setupCustomInputs() {
 	let multiSelectElements = document.querySelectorAll('span.multi-select');
 	let inputTableElements = document.querySelectorAll('table[InputTable]');
+	let searchInputElements = document.querySelectorAll('span.search-element');
 
 	if (multiSelectElements.length > 0) {
 		prepareMultiSelects(multiSelectElements);
@@ -196,6 +329,10 @@ function setupCustomInputs() {
 
 	if (inputTableElements.length > 0) {
 		prepareInputTables(inputTableElements);
+	}
+
+	if (searchInputElements.length > 0) {
+		prepareSearchElements(searchInputElements);
 	}
 
 	/**
@@ -206,22 +343,6 @@ function setupCustomInputs() {
 		for (let i = 0; i < elements.length; i++) {
 			multiSelects.push(new MultiSelect(elements[i]));
 		}
-
-		// Close any multi-select elements if they are clicked out of.
-		window.addEventListener('click', function (e) {
-			for (let i = 0; i < multiSelects.length; i++) {
-				let el = findParentElement(e.target, { class: 'multi-select' });
-				if (el !== null) {
-					if (multiSelects[i].isOpen() && el.className != 'multi-select') {
-						multiSelects[i].toggleDisplay(false);
-					} else if (multiSelects[i].getElement() != el) {
-						multiSelects[i].toggleDisplay(false);
-					}
-				} else {
-					multiSelects[i].toggleDisplay(false);
-				}
-			}
-		});
 	}
 
 	/**
@@ -236,6 +357,29 @@ function setupCustomInputs() {
 			inputTables.push(new InputTable(elements[i]));
 		}
 	}
+
+	function prepareSearchElements(elements) {
+		for (let i = 0; i < elements.length; i++) {
+			searchElements.push(new SearchElement(elements[i]));
+		}
+	}
+
+	// Close any multi-select elements if they are clicked out of.
+	window.addEventListener('click', function (e) {
+		let inputs = multiSelects.concat(searchElements);
+		for (let i = 0; i < inputs.length; i++) {
+			let el = findParentElement(e.target, { class: ['multi-select', 'search-element'] });
+			if (el !== null) {
+				if (inputs[i].isOpen() && (el.className != 'multi-select' && el.className != 'search-element')) {
+					inputs[i].toggleDisplay(false);
+				} else if (inputs[i].getElement() != el) {
+					inputs[i].toggleDisplay(false);
+				}
+			} else {
+				inputs[i].toggleDisplay(false);
+			}
+		}
+	});
 }
 
 window.onload = setupCustomInputs;

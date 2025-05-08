@@ -53,6 +53,19 @@ Flight::route('/settings/theme', function () {
 	die();
 });
 
+// Dropdown search requests
+Flight::group('/search', function() {
+
+	Flight::route('GET /tags', function() {
+		performAPIRequest('tags');
+	});
+
+	Flight::route('GET /jokes', function() {
+		performAPIRequest('jokes');
+	});
+
+});
+
 /**
  * Displays the page with a header and footer.
  */
@@ -62,6 +75,7 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	include_once('private_core/objects/InputElement.php');
 	include_once('private_core/objects/DropdownElement.php');
 	include_once('private_core/objects/MultiSelectDropdownElement.php');
+	include_once('private_core/objects/SearchElement.php');
 
 	// Create controller if one exists
 	$pageData = null;
@@ -83,6 +97,14 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	Flight::render($page, $pageData);
 	require('templates/footer.php');
 	echo "</body></html>";
+}
+
+function performAPIRequest(string $page) {
+	require_once("private_core/controller/APIController.php");
+	$controller = new \RipDB\APIController($page);
+	$controller->performRequest();
+
+	Flight::json($controller->getPreparedData()['Result']);
 }
 
 /**

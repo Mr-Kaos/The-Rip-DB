@@ -37,12 +37,11 @@ class RipsController extends Controller
 			$_GET['jokes'] ?? [],
 			$useAltName
 		);
-
 		$this->setData('results', $rips);
 
 		// Get search filters
-		$this->setData('tags', $this->model->getTags());
-		$this->setData('jokes', $this->model->getJokes());
+		$this->setData('tags', $this->model->getTags($_GET['tags'] ?? []));
+		$this->setData('jokes', $this->model->getJokes($_GET['jokes'] ?? []));
 
 		// Pagination values
 		$recordStart = (($page - 1) * $rowCount) + 1;

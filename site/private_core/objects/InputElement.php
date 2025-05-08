@@ -55,13 +55,24 @@ class InputElement extends PageObject
 	 */
 	public function __construct(?string $label, InputTypes $type, ?array $attributes = [], ?array $labelAttributes = [])
 	{
-		// Ensure that an ID or name is set.
+		$ignoreId = false;
+		$ignoreName = false;
+
+		// Ensure that an ID or name is set. However, if the value is explicity null, do not set it.
+		if (array_key_exists('name', $attributes) && ($attributes['name'] ?? null) === null) {
+			unset($attributes['name']);
+			$ignoreName = true;
+		}
+		if (array_key_exists('id', $attributes) && ($attributes['id'] ?? null) == null) {
+			unset($attributes['id']);
+			$ignoreId = true;
+		}
+
 		$id = $attributes['id'] ?? null;
 		$name = $attributes['name'] ?? $id;
-		if (empty($id) && !empty($name)) {
+		if (empty($id) && !empty($name) && !$ignoreId) {
 			$attributes['id'] = $name;
-		}
-		if (!empty($name)) {
+		} else if (!empty($name) && !$ignoreName) {
 			$attributes['name'] = $name;
 		}
 

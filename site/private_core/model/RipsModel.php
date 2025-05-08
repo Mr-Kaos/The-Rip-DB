@@ -88,11 +88,6 @@ class RipsModel extends Model
 		}
 	}
 
-	public function getTags()
-	{
-		return $this->db->table('Tags')->findAll();
-	}
-
 	/**
 	 * Finds all jokes that are contained in the given resultset of rips.
 	 * @return A 2D array where each key is the ID of the joke and the values are the columns from the Jokes Table, along with its tags.
@@ -128,7 +123,8 @@ class RipsModel extends Model
 			->findAll();
 	}
 
-	private function getRipRippers($ripQuery) {
+	private function getRipRippers($ripQuery)
+	{
 		$qry = $this->db->table('Rippers')
 			->columns('r.RipID, RipRippers.RipperID', 'RipperName')
 			->join('RipRippers', 'RipperID', 'RipperID')
@@ -137,9 +133,25 @@ class RipsModel extends Model
 		return $qry->findAll();
 	}
 
-	public function getJokes()
+	public function getTags(array $ids): array
 	{
-		return $this->db->table('Jokes')->columns('JokeID', 'JokeName')->findAll();
+		$result = [];
+		if (!empty($ids)) {
+			$result = $this->db->table('Tags')->in('TagID', $ids)->findAll();
+			$result = $this->resultsetToKeyPair($result, 'TagID', 'TagName');
+		}
+
+		return $result;
+	}
+
+	public function getJokes(array $ids)
+	{
+		$result = [];
+		if (!empty($ids)) {
+			$result = $this->db->table('Jokes')->in('JokeID', $ids)->findAll();
+			$result = $this->resultsetToKeyPair($result, 'JokeID', 'JokeName');
+		}
+		return $result;
 	}
 
 	public function getRippers()

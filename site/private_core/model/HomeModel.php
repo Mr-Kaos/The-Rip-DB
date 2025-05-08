@@ -9,7 +9,7 @@ class HomeModel extends Model
 	const TABLE = 'Rips';
 
 	/**
-	 * Gets data about a specific rip.
+	 * Gets the number of rips that exist.
 	 */
 	public function getRipCount()
 	{

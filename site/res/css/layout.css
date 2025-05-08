@@ -73,12 +73,18 @@ tbody>tr:nth-child(odd) {
 	border: thin solid #777;
 }
 
-.multi-select>div.options {
+.multi-select>div.options,
+.search-element>div.options {
 	background: var(--bg-color);
 	border: solid thin #777;
 	display: none;
 	flex-direction: column;
 	position: absolute;
+}
+.multi-select>div.options>span:hover,
+.search-element>div.options>span:hover {
+	background-color: var(--element-color);
+	cursor: pointer;
 }
 
 .table-search {
