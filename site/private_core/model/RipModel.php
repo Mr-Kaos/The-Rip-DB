@@ -77,8 +77,7 @@ class RipModel extends Model
 	public function getGames(bool $idOnly = false) {
 		$values = $this->db->table('Games');
 		if ($idOnly) {
-			$values = $this->setSubArrayValueToKey($values->columns('GameID')->findAll(), 'GameID');
-			return array_keys($values);
+			return $values->findAllByColumn('GameID');
 		} else {
 			return $values->columns('GameID', 'GameName')->findAll();
 		}
@@ -87,8 +86,7 @@ class RipModel extends Model
 	public function getJokes(bool $idOnly = false) {
 		$values = $this->db->table('Jokes');
 		if ($idOnly) {
-			$values = $this->setSubArrayValueToKey($values->columns('JokeID')->findAll(), 'JokeID');
-			return array_keys($values);
+			return $values->findAllByColumn('JokeID');
 		} else {
 			return $values->columns('JokeID', 'JokeName')->findAll();
 		}
@@ -97,8 +95,7 @@ class RipModel extends Model
 	public function getGenres(bool $idOnly = false) {
 		$values = $this->db->table('Genres');
 		if ($idOnly) {
-			$values = $this->setSubArrayValueToKey($values->columns('GenreID')->findAll(), 'GenreID');
-			return array_keys($values);
+			return $values->findAllByColumn('GenreID');
 		} else {
 			return $values->columns('GenreID', 'GenreName')->findAll();
 		}

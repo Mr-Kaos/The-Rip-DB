@@ -51,7 +51,7 @@ trait DataValidator
 		if (!empty($input)) {
 			// Set validation to false if the input is less than the minimum length
 			if (!is_null($minLength) && strlen($input) < $minLength) {
-				$validated = new Error($errorMessage . ' The length of the string is too short.');
+				$validated = new Error($errorMessage . ' The length of the string must be longer than ' . $minLength . ' characters.');
 			} elseif (!$validated instanceof Error) {
 				if (!is_null($maxLength) && strlen($input) > $maxLength) {
 					$validated = substr($input, 0, $maxLength);
@@ -78,6 +78,8 @@ trait DataValidator
 					$validated = htmlspecialchars($validated);
 				}
 			}
+		} elseif ($minLength > 0) {
+			$validated = new Error($errorMessage . ' A value must be given and be longer than ' . $minLength . ' characters.');
 		} else {
 			$validated = null;
 		}

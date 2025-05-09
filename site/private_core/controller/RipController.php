@@ -99,7 +99,7 @@ class RipController extends Controller
 	 * Handles the submission of the new rip form.
 	 * @return Error|string Returns an Error if an error occurred, or a string of a URI to redirect to upon completion.
 	 */
-	public function submitRequest(): Error|string
+	public function submitRequest(): array|string
 	{
 		$result = null;
 		// Only submit the form if the form is submitted from the new-rip page.

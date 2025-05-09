@@ -23,25 +23,25 @@ CALL usp_InsertMetaJoke('Live Live!', 'Anime series', 'Anime');
 CALL usp_InsertMetaJoke('Green Day', 'Music artist', 'Artist (Music)');
 
 -- Jokes
-CALL usp_InsertJoke('Grand Dad', 'Funny bootleg Flintstones game popularised by into a meme by Vargskelethor Joel.', 'Meme', '["Video Game"]', '[1,2]');
-CALL usp_InsertJoke('Meet the Flintstones', 'Main theme of the cartoon series "The Flintstones"', 'Theme Song', NULL, '[1]');
-CALL usp_InsertJoke('Gangam Style', 'Hit K-Pop song from 2012 by Psy', 'Song', NULL, '[5,7]');
-CALL usp_InsertJoke('Once Upon a Time', 'Song from Undertale.', 'Song', '["VGM"]', '[4]');
-CALL usp_InsertJoke('The Final Countdown', 'Song by Europe.', 'Song', NULL, '[6]'); -- 5
-CALL usp_InsertJoke('Megalovania', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]');
-CALL usp_InsertJoke('Blue balls', 'What you expect is about to happen doesn''t happen... for an extended time.', 'Meme', NULL, NULL);
-CALL usp_InsertJoke('Maroon 5', 'Pop artist', 'Artist (Music)', NULL, NULL);
-CALL usp_InsertJoke('Inspector Gadget', 'Main protagonist of the TV show "Inspector Gadget".', 'Character', '["Cartoon", "TV Show"]', '[9]');
-CALL usp_InsertJoke('Star Wars (Main Title)', 'Main title theme of Star Wars by John Williams.', 'Song', '["Series"]', '[8]'); -- 10
-CALL usp_InsertJoke('All Star', 'Song by music artist "Smash Mouth".', 'Song', '["Series"]', '[10]');
-CALL usp_InsertJoke('Bonetrousle', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]');
-CALL usp_InsertJoke('On The Floor', 'Song by IceJJFish.', 'Song', NULL, NULL);
-CALL usp_InsertJoke('Donald Duck', 'Disney character', 'Character', NULL, '[11]');
-CALL usp_InsertJoke('Temmie Village', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]'); -- 15
-CALL usp_InsertJoke('Snow halation', 'Song from the Love Live! franchise.', 'Song', '["Anime"]', '[12, 13]');
-CALL usp_InsertJoke('YTP4LIFE CRYING', '', 'Meme', NULL, NULL);
-CALL usp_InsertJoke('Title Theme & Ending', 'The NES rendition of "Meet the Flintstones" that plays during the title screen and ending of The Flintstones: The Rescue of Dino & Hoppy. The name is unofficial.', 'Song', '["VGM"]', NULL);
-CALL usp_InsertJoke('Wake Me Up When September Ends', 'Song by Green Day', 'Song', NULL, '[14]');
+CALL usp_InsertJoke_TESTING('Grand Dad', 'Funny bootleg Flintstones game popularised by into a meme by Vargskelethor Joel.', 'Meme', '["Video Game"]', '[1,2]');
+CALL usp_InsertJoke_TESTING('Meet the Flintstones', 'Main theme of the cartoon series "The Flintstones"', 'Theme Song', NULL, '[1]');
+CALL usp_InsertJoke_TESTING('Gangam Style', 'Hit K-Pop song from 2012 by Psy', 'Song', NULL, '[5,7]');
+CALL usp_InsertJoke_TESTING('Once Upon a Time', 'Song from Undertale.', 'Song', '["VGM"]', '[4]');
+CALL usp_InsertJoke_TESTING('The Final Countdown', 'Song by Europe.', 'Song', NULL, '[6]'); -- 5
+CALL usp_InsertJoke_TESTING('Megalovania', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]');
+CALL usp_InsertJoke_TESTING('Blue balls', 'What you expect is about to happen doesn''t happen... for an extended time.', 'Meme', NULL, NULL);
+CALL usp_InsertJoke_TESTING('Maroon 5', 'Pop artist', 'Artist (Music)', NULL, NULL);
+CALL usp_InsertJoke_TESTING('Inspector Gadget', 'Main protagonist of the TV show "Inspector Gadget".', 'Character', '["Cartoon", "TV Show"]', '[9]');
+CALL usp_InsertJoke_TESTING('Star Wars (Main Title)', 'Main title theme of Star Wars by John Williams.', 'Song', '["Series"]', '[8]'); -- 10
+CALL usp_InsertJoke_TESTING('All Star', 'Song by music artist "Smash Mouth".', 'Song', '["Series"]', '[10]');
+CALL usp_InsertJoke_TESTING('Bonetrousle', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]');
+CALL usp_InsertJoke_TESTING('On The Floor', 'Song by IceJJFish.', 'Song', NULL, NULL);
+CALL usp_InsertJoke_TESTING('Donald Duck', 'Disney character', 'Character', NULL, '[11]');
+CALL usp_InsertJoke_TESTING('Temmie Village', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]'); -- 15
+CALL usp_InsertJoke_TESTING('Snow halation', 'Song from the Love Live! franchise.', 'Song', '["Anime"]', '[12, 13]');
+CALL usp_InsertJoke_TESTING('YTP4LIFE CRYING', '', 'Meme', NULL, NULL);
+CALL usp_InsertJoke_TESTING('Title Theme & Ending', 'The NES rendition of "Meet the Flintstones" that plays during the title screen and ending of The Flintstones: The Rescue of Dino & Hoppy. The name is unofficial.', 'Song', '["VGM"]', NULL);
+CALL usp_InsertJoke_TESTING('Wake Me Up When September Ends', 'Song by Green Day', 'Song', NULL, '[14]');
 
 -- Ripped "Games"
 INSERT INTO Games

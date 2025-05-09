@@ -80,8 +80,8 @@ deployFiles($pdo, 'Views', $files);
 
 $files = [
 	'usp_InsertJoke',
+	'usp_InsertJoke_TESTING',
 	'usp_InsertMetaJoke',
-	'usp_InsertRip_Sample',
 	'usp_InsertRip',
 	'usp_DeleteRip'
 ];

@@ -5,9 +5,10 @@ use RipDB\Objects as o;
 <main>
 	<h1>Jokes</h1>
 	<p>This page just shows what jokes exist in the database.</p>
-	<form id="rip_search" method="GET">
+	<form id="rip_search" style="display:inline" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 	</form>
+	<a href="jokes/new" style="display:inline;float:right">Add Joke</a>
 	<?php if (!empty($results)): ?>
 		<table id="results" class="table-search">
 			<thead>

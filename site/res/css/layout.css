@@ -68,7 +68,6 @@ tbody>tr:nth-child(odd) {
 }
 
 .multi-select {
-	/* display: none; */
 	user-select: none;
 	border: thin solid #777;
 }
@@ -81,6 +80,7 @@ tbody>tr:nth-child(odd) {
 	flex-direction: column;
 	position: absolute;
 }
+
 .multi-select>div.options>span:hover,
 .search-element>div.options>span:hover {
 	background-color: var(--element-color);
@@ -90,4 +90,21 @@ tbody>tr:nth-child(odd) {
 .table-search {
 	width: 100%;
 	margin: auto;
+}
+
+.pill {
+	background: aliceblue;
+	padding: 3px;
+	padding-right: 0px;
+	border-radius: 7px;
+	margin: 4px;
+}
+
+.pill>button {
+	border: none;
+	background: none;
+}
+
+.pill>button:hover {
+	cursor: pointer;
 }

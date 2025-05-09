@@ -105,11 +105,11 @@ class InputElement extends PageObject
 		if ($this->type !== InputTypes::hidden) {
 			$for = array_key_exists('id', $this->attributes) ? ' for="' . $this->attributes['id'] . '" ' : ' ';
 			$attributes = $this->buildAttributes($this->labelAttributes);
-			$label = '<label' . $for . $attributes . '>' . $this->label;
+			$label = '<label' . $for . $attributes . '>';
 			if ($required) {
-				$label .= ' *';
+				$label .= '*';
 			}
-			$label .= '</label>';
+			$label .= $this->label . '</label>';
 		}
 		return $label;
 	}

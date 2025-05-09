@@ -63,6 +63,10 @@ class JokeModel extends Model
 		return $this->db->table(self::TABLE)->count();
 	}
 
+	public function getTags() {
+		return $this->db->table('Tags')->findAllByColumn('TagID');
+	}
+
 	private function getJokeTags($qry)
 	{
 		$tags = $this->db->table('Tags')

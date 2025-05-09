@@ -1,11 +1,11 @@
 -- Stored procedure for inserting jokes into the database easily.
 
-DROP PROCEDURE IF EXISTS RipDB.usp_InsertJoke;
+DROP PROCEDURE IF EXISTS RipDB.usp_InsertJoke_TESTING;
 
-CREATE PROCEDURE RipDB.usp_InsertJoke(
+CREATE PROCEDURE RipDB.usp_InsertJoke_TESTING(
 	IN JokeName varchar(128),
 	IN JokeDescription text,
-	IN PrimaryTag int,
+	IN PrimaryTag varchar(128),
 	IN TagsJSON json,
 	IN MetasJSON json)
 BEGIN
@@ -28,19 +28,41 @@ BEGIN
 
 	SET new_JokeId = LAST_INSERT_ID();
 
+	INSERT INTO Tags
+		(TagName)
+	VALUES
+		(PrimaryTag)
+	ON DUPLICATE KEY UPDATE TagName = TagName, TagID = LAST_INSERT_ID(TagID);
+
+	SET new_TagId = LAST_INSERT_ID();
+
 	INSERT INTO JokeTags
 		(JokeID, TagID, IsPrimary)
 	VALUES
-		(new_JokeId, PrimaryTag, 1);
+		(new_JokeId, new_TagId, 1);
 
 	IF TagsJSON IS NOT NULL THEN
+		-- Insert Sub Tags into Tags table (if not already existing) and associate them to joke.
 		WHILE i < JSON_LENGTH(TagsJSON) DO
 			SELECT JSON_UNQUOTE(JSON_EXTRACT(TagsJSON, CONCAT('$[', i ,']'))) INTO Tag;
+
+			SET new_TagId = (SELECT TagID FROM Tags WHERE TagName = Tag);
+			IF new_TagId IS NULL THEN
+				INSERT INTO Tags
+					(TagName)
+				VALUES
+					(Tag)
+				ON DUPLICATE KEY UPDATE TagName = TagName, TagID = LAST_INSERT_ID(TagID);
+
+				SET new_TagId = LAST_INSERT_ID();
+			END IF;
 
 			INSERT INTO JokeTags
 				(JokeID, TagID, IsPrimary)
 			VALUES
-				(new_JokeId, Tag, 0);
+				(new_JokeId, new_TagId, 0);
+
+			SET new_TagId = NULL;
 
 			SET i = i + 1;
 		END WHILE;

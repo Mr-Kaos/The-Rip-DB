@@ -169,22 +169,25 @@ class SearchElement extends MultiSelect {
 	#init = false;
 	#multi = false;
 	#value = null;
+	#searchElement = null;
 	$url;
+	#required = false;
 
 	constructor(element) {
 		super(element);
 
-		let search = element.querySelector('input[type="search"]');
-		search.oninput = e => this.search(e.target.value, search.getAttribute('search-url'));
+		this.#searchElement = element.querySelector('input[type="search"]');
+		this.#required = this.#searchElement.required;
+		this.#searchElement.oninput = e => this.search(e.target.value, this.#searchElement.getAttribute('search-url'));
 		if (element.getAttribute('type') == 'multi') {
 			this.#multi = true;
 			this.#value = [];
 		}
 
 		// If the list has not been touched yet, make an empty search to load some results
-		search.onclick = function () {
+		this.#searchElement.onclick = function () {
 			if (!this.#init) {
-				this.search('', search.getAttribute('search-url'));
+				this.search('', this.#searchElement.getAttribute('search-url'));
 				this.#init = true;
 			} else {
 				this.toggleDisplay();
@@ -233,25 +236,32 @@ class SearchElement extends MultiSelect {
 	 * @param {HTMLSpanElement} option The option the user selected
 	 */
 	#selectOption(option) {
+		let clone = option.cloneNode(true);
+		let input = document.createElement('input');
+		input.hidden = true;
+		input.value = option.getAttribute('value');
+		input.name = this.getElement().getAttribute('name');
+		let btnRemove = document.createElement('button');
+		btnRemove.innerHTML = '&times;';
+		btnRemove.type = 'button';
+		btnRemove.onclick = e => this.#unsetOption(clone);
+		clone.className = 'pill';
+		clone.appendChild(input);
+		clone.appendChild(btnRemove);
+
 		if (this.#multi) {
 			let selectionDiv = this.getElement().querySelector('.selected');
-			let clone = option.cloneNode(true);
-			let input = document.createElement('input');
-				input.hidden = true;
-				input.value = option.getAttribute('value');
-				input.name = this.getElement().getAttribute('name');
-			let btnRemove = document.createElement('button');
-				btnRemove.innerHTML = '&times;';
-				btnRemove.type = 'button';
-				btnRemove.onclick = e => this.#unsetOption(clone);
-			clone.appendChild(input);
-			clone.appendChild(btnRemove);
 			selectionDiv.appendChild(clone);
 			this.#value.push(parseInt(option.getAttribute('value')));
 		} else {
+			this.#searchElement.style.display = 'none';
+			this.getElement().append(clone);
 			this.#value = parseInt(option.getAttribute('value'));
 		}
+		// Remove the required attribute (if it was set) so the form can be submitted.
+		this.#searchElement.required = false;
 		option.remove();
+		console.log(this.#value);
 	}
 
 	/**
@@ -259,12 +269,21 @@ class SearchElement extends MultiSelect {
 	 * @param {HTMLSpanElement} option The option to remove from the element's selection.
 	 */
 	#unsetOption(option) {
+		let optionVal = parseInt(option.getAttribute('value'));
+		option.remove();
+
 		if (this.#multi) {
-			let optionVal = parseInt(option.getAttribute('value'));
 			this.#value.splice(this.#value.indexOf(optionVal), 1);
-			option.remove();
+			// If all values are removed and the input is required, set the required attribute back.
+			if (this.#value.length <= 0 && this.#required) {
+				this.#searchElement.required = true;
+			}
 		} else {
 			this.#value = null;
+			this.#searchElement.removeAttribute('style');
+			if (this.#required) {
+				this.#searchElement.required = true;
+			}
 		}
 	}
 }
