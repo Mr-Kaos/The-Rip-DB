@@ -1,6 +1,8 @@
 <?php
 
-namespace RipDB;
+namespace RipDB\Controller;
+
+use RipDB\Model as m;
 
 require_once('Controller.php');
 require_once('private_core/model/JokeModel.php');
@@ -14,7 +16,7 @@ class JokeController extends Controller
 
 	public function __construct(string $page)
 	{
-		parent::__construct($page, new JokeModel());
+		parent::__construct($page, new m\JokeModel());
 	}
 
 	/**
@@ -23,36 +25,42 @@ class JokeController extends Controller
 	 */
 	public function performRequest(array $data = []): void
 	{
-		$recordCount = $this->model->getJokeCount();
-		$rowCount = $this->getRowCount();
-		$page = $this->getPageNumber();
+		switch ($this->getPage()) {
+			case 'jokes':
+				$recordCount = $this->model->getJokeCount();
+				$rowCount = $this->getRowCount();
+				$page = $this->getPageNumber();
 
-		// Get records of rips
-		$rips = [];
-		$offset = $this->getOffset($recordCount, '/jokes');
-		$jokes = $this->model->searchJokes(
-			$rowCount,
-			$offset,
-			$_GET['search'] ?? null,
-			$_GET['tags'] ?? [],
-			$_GET['metas'] ?? [],
-		);
+				// Get records of rips
+				$rips = [];
+				$offset = $this->getOffset($recordCount, '/jokes');
+				$jokes = $this->model->searchJokes(
+					$rowCount,
+					$offset,
+					$_GET['search'] ?? null,
+					$_GET['tags'] ?? [],
+					$_GET['metas'] ?? [],
+				);
 
-		$this->setData('results', $jokes);
+				$this->setData('results', $jokes);
 
-		// Pagination values
-		$recordStart = (($page - 1) * $rowCount) + 1;
-		$recordEnd = $page * $rowCount;
+				// Pagination values
+				$recordStart = (($page - 1) * $rowCount) + 1;
+				$recordEnd = $page * $rowCount;
 
-		if ($recordEnd > $recordCount) {
-			$recordEnd = $recordCount;
+				if ($recordEnd > $recordCount) {
+					$recordEnd = $recordCount;
+				}
+
+				$this->setData('RecordStart', $recordStart);
+				$this->setData('RecordEnd', $recordEnd);
+				$this->setData('Page', $page);
+				$this->setData('Count', $rowCount);
+				$this->setData('JokeCount', $recordCount);
+				$this->setData('pagination', $this->buildPagination($recordCount, '/jokes'));
+				break;
 		}
+	}
 
-		$this->setData('RecordStart', $recordStart);
-		$this->setData('RecordEnd', $recordEnd);
-		$this->setData('Page', $page);
-		$this->setData('Count', $rowCount);
-		$this->setData('JokeCount', $recordCount);
-		$this->setData('pagination', $this->buildPagination($recordCount, '/jokes'));
 	}
 }

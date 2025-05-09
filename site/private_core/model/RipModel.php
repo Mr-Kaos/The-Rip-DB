@@ -1,6 +1,6 @@
 <?php
 
-namespace RipDB;
+namespace RipDB\Model;
 
 require_once('Model.php');
 

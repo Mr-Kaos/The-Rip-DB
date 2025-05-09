@@ -1,6 +1,8 @@
 <?php
 
-namespace RipDB;
+namespace RipDB\Controller;
+
+use RipDB\Model as m;
 
 require_once('Controller.php');
 require_once('private_core/model/APIModel.php');
@@ -9,7 +11,7 @@ class APIController extends Controller
 {
 	public function __construct(string $page)
 	{
-		parent::__construct($page, new APIModel());
+		parent::__construct($page, new m\APIModel());
 	}
 
 	/**
@@ -23,10 +25,13 @@ class APIController extends Controller
 
 		switch ($this->getPage()) {
 			case 'tags':
-				$result = $this->model->getTags($search);
+				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search);
 				break;
 			case 'jokes':
-				$result = $this->model->getJokes($search);
+				$result = $this->model->getRecords('Jokes', 'JokeID', 'JokeName', $search);
+				break;
+			case 'metas':
+				$result = $this->model->getRecords('MetaJokes', 'MetaJokeID', 'MetaJokeName', $search);
 				break;
 		}
 

@@ -1,6 +1,7 @@
 <?php
 
-namespace RipDB;
+namespace RipDB\Controller;
+use RipDB\Model as m;
 
 require_once('Controller.php');
 require_once('private_core/model/HomeModel.php');
@@ -9,7 +10,7 @@ class HomeController extends Controller
 {
 	public function __construct(string $page)
 	{
-		parent::__construct($page, new HomeModel());
+		parent::__construct($page, new m\HomeModel());
 	}
 
 	/**

@@ -1,34 +1,21 @@
 <?php
 
-namespace RipDB;
+namespace RipDB\Model;
 
 require_once('Model.php');
 
 class APIModel extends Model
 {
-	public function getTags(?string $query) {
-		$tags = $this->db->table('Tags')
-			->columns('TagID AS ID', 'TagName AS NAME')
+	public function getRecords(string $table, string $idColumn, string $nameColumn, ?string $query) {
+		$records = $this->db->table($table)
+			->columns("$idColumn AS ID", "$nameColumn AS NAME")
 			->limit(50)
-			->asc('TagName');
+			->asc($nameColumn);
 
 		if(!empty($query)) {
-			$tags->ilike('TagName', "%$query%");
+			$records->ilike($nameColumn, "%$query%");
 		}
 
-		return $tags->findAll();
-	}
-
-	public function getJokes(?string $query) {
-		$tags = $this->db->table('Jokes')
-			->columns('JokeID AS ID', 'JokeName AS NAME')
-			->limit(50)
-			->asc('JokeName');
-
-		if(!empty($query)) {
-			$tags->ilike('JokeName', "%$query%");
-		}
-
-		return $tags->findAll();
+		return $records->findAll();
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace RipDB;
+namespace RipDB\Model;
 
 require("private_core/config/db.php");
 
@@ -95,16 +95,19 @@ abstract class Model
 
 	/**
 	 * Executes a stored procedure with the given data from the array.
-	 * @return string|true True if the procedure is executed without error. If an error occurs, a string with the error message(s) will be returned.
+	 * @return \RipDB\Error[]|true True if the procedure is executed without error. If an error occurs, an array of all errors encountered will be returned.
 	 */
-	public function submitFormData(array $data, string $storedProcedure): Error|true
+	public function submitFormData(array $data, string $storedProcedure): array|true
 	{
 		// loop through each data item and check that none are of type Error. If they are, get the message and exit.
 		$result = true;
 		$params = '';
 		foreach ($data as $param) {
-			if ($param instanceof Error) {
-				$result .= $param->getMessage();
+			if ($param instanceof \RipDB\Error) {
+				if (!is_array($result)) {
+					$result = array();
+				}
+				array_push($result, $param);
 			} else {
 				$params .= '?,';
 			}
@@ -116,7 +119,6 @@ abstract class Model
 			$params = substr($params, 0, strlen($params) - 1);
 
 			$dbResult = $this->db->execute("CALL $storedProcedure($params)", array_values($data));
-
 		}
 
 		return $result;

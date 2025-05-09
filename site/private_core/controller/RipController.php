@@ -1,6 +1,9 @@
 <?php
 
-namespace RipDB;
+namespace RipDB\Controller;
+
+use RipDB\Model as m;
+use RipDB\Error;
 
 require_once('Controller.php');
 require_once('private_core/model/RipModel.php');
@@ -8,10 +11,10 @@ require_once('private_core/objects/DataValidators.php');
 
 class RipController extends Controller
 {
-	use DataValidator;
+	use \RipDB\DataValidator;
 	public function __construct(string $page)
 	{
-		parent::__construct($page, new RipModel());
+		parent::__construct($page, new m\RipModel());
 	}
 
 	/**
@@ -111,7 +114,7 @@ class RipController extends Controller
 			$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 			$validated['Game'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
 			$validated['Channel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
-			$validated['Genres'] = $this->validateArray($_POST['genres'], 'validateFromList', [$this->model->getGenres(true)], 'One or more of the give genres do not exist in the database.');
+			$validated['Genres'] = $this->validateArray($_POST['genres'], 'validateFromList', [$this->model->getGenres(true)], 'One or more of the given genres do not exist in the database.');
 
 			$jokes = $this->validateArray($_POST['jokes'], 'validateFromList', [$this->model->getJokes(true)], 'One or more of the given jokes do not exist in the database.', false);
 			$starts = $this->validateArray($_POST['jokeStart'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);

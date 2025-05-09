@@ -54,16 +54,18 @@ Flight::route('/settings/theme', function () {
 });
 
 // Dropdown search requests
-Flight::group('/search', function() {
+Flight::group('/search', function () {
 
-	Flight::route('GET /tags', function() {
+	Flight::route('GET /tags', function () {
 		performAPIRequest('tags');
 	});
 
-	Flight::route('GET /jokes', function() {
+	Flight::route('GET /jokes', function () {
 		performAPIRequest('jokes');
 	});
-
+	Flight::route('GET /metas', function () {
+		performAPIRequest('metas');
+	});
 });
 
 /**
@@ -81,7 +83,7 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	$pageData = null;
 	if (!is_null($controllerName)) {
 		require_once("private_core/controller/$controllerName.php");
-		$controllerName = "\RipDB\\$controllerName";
+		$controllerName = "\RipDB\\Controller\\$controllerName";
 		$controller = new $controllerName($page);
 		$controller->performRequest($data);
 
@@ -99,9 +101,10 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	echo "</body></html>";
 }
 
-function performAPIRequest(string $page) {
+function performAPIRequest(string $page)
+{
 	require_once("private_core/controller/APIController.php");
-	$controller = new \RipDB\APIController($page);
+	$controller = new \RipDB\Controller\APIController($page);
 	$controller->performRequest();
 
 	Flight::json($controller->getPreparedData()['Result']);
@@ -114,13 +117,16 @@ function submitForm(string $page, string $controllerName)
 {
 	if (!is_null($controllerName)) {
 		require_once("private_core/controller/$controllerName.php");
-		$controllerName = "\RipDB\\$controllerName";
+		$controllerName = "\RipDB\\Controller\\$controllerName";
 		$controller = new $controllerName($page);
 		$result = $controller->submitRequest();
 
-		if ($result instanceof Error) {
-			echo $result->getMessage();
+		if (is_array($result)) {
+			foreach ($result as $error) {
+				echo $error->getMessage();
+			}
 			echo '<a href="' . $_SERVER['HTTP_REFERER'] . '">Go Back (this page temporary)</a>';
+			die();
 		} else {
 			Flight::redirect($result);
 		}
