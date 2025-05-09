@@ -23,7 +23,7 @@ class APIModel extends Model
 		$tags = $this->db->table('Jokes')
 			->columns('JokeID AS ID', 'JokeName AS NAME')
 			->limit(50)
-			->asc('TagName');
+			->asc('JokeName');
 
 		if(!empty($query)) {
 			$tags->ilike('JokeName', "%$query%");

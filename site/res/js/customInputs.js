@@ -144,7 +144,7 @@ class InputTable extends CustomElement {
 
 		// Ensure that the remove buttons are disabled if there is exactly one row. (There should always be one row when #rowCount is 1.)
 		if (this.#rowCount == 1) {
-			getElement().querySelector('tbody button[btnRemove]').disabled = true;
+			this.getElement().querySelector('tbody button[btnRemove]').disabled = true;
 		}
 	}
 

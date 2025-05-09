@@ -72,7 +72,8 @@ class InputElement extends PageObject
 		$name = $attributes['name'] ?? $id;
 		if (empty($id) && !empty($name) && !$ignoreId) {
 			$attributes['id'] = $name;
-		} else if (!empty($name) && !$ignoreName) {
+		} 
+		if (empty($name) && !empty($id) && !$ignoreName) {
 			$attributes['name'] = $name;
 		}
 

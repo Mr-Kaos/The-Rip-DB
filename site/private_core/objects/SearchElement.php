@@ -11,7 +11,7 @@ class SearchElement extends InputElement
 {
 	private ?string $url;
 	private bool $multiSelect;
-	private string|array $values;
+	private string|array|null $values;
 
 	/**
 	 * Sets up a searchable input element object.
@@ -20,7 +20,7 @@ class SearchElement extends InputElement
 	 * @param bool $allowMultiSelect If true, allows multiple searches to be performed and have them as "selected" options, similar to the MultiSelectDropdownElement. Default is false - i.e. single value.
 	 * @param ?array $attributes An associative array of html attributes to add to the element.
 	 */
-	public function __construct(string $label, string $url, bool $allowMultiSelect, string|array $value, ?array $attributes = [])
+	public function __construct(string $label, string $url, bool $allowMultiSelect, string|array|null $value, ?array $attributes = [])
 	{
 		$this->url = $url;
 		$this->multiSelect = $allowMultiSelect;
@@ -46,6 +46,7 @@ class SearchElement extends InputElement
 		$attributes = $this->attributes;
 		$attributes['name'] = null;
 		$attributes['search-url'] = $this->url;
+		$attributes['required'] = false;
 		$element .= (new InputElement(null, InputTypes::search, $attributes))->buildElement();
 		if ($this->multiSelect) {
 			$element .= '<div class="selected">';

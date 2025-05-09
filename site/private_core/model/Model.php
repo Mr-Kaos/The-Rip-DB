@@ -84,6 +84,15 @@ abstract class Model
 		return $result;
 	}
 
+	protected function resultsetToKeyPair(array $resultset, string $keyColumn, string $valueColumn): array
+	{
+		$output = [];
+		foreach ($resultset as $val) {
+			$output[$val[$keyColumn]] = $val[$valueColumn];
+		}
+		return $output;
+	}
+
 	/**
 	 * Executes a stored procedure with the given data from the array.
 	 * @return string|true True if the procedure is executed without error. If an error occurs, a string with the error message(s) will be returned.
