@@ -47,17 +47,20 @@ class RipsController extends Controller
 			$_GET['tags'] ?? [],
 			$_GET['jokes'] ?? [],
 			$_GET['games'] ?? [],
+			$_GET['rippers'] ?? [],
 			$useAltName
 		);
 		$this->setData('results', $rips);
+		// echo "<pre>" . print_r($rips, true) . "</pre>";
 
 		// Get search filters
 		$this->setData('tags', $this->model->getTags($_GET['tags'] ?? []));
 		$this->setData('jokes', $this->model->getJokes($_GET['jokes'] ?? []));
 		$this->setData('games',  $this->model->getGames($_GET['games'] ?? []));
+		$this->setData('rippers',  $this->model->getRippers($_GET['rippers'] ?? []));
 
-		// If any filter is given, make sure the details element is open
-		if (!empty($_GET['tags'] ?? null) || !empty($_GET['jokes'] ?? null) || !empty($_GET['games'] ?? null)) {
+		// If any filter is given, make sure the details element is open by setting its "open" attribute
+		if (!empty($_GET['tags'] ?? null) || !empty($_GET['jokes'] ?? null) || !empty($_GET['games'] ?? null) || !empty($_GET['rippers'] ?? null)) {
 			$this->setData('open', 'open');
 		} else {
 			$this->setData('open', '');

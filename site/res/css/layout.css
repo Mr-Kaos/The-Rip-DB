@@ -51,6 +51,18 @@ tbody>tr:nth-child(odd) {
 
 }
 
+table button[data-id] {
+	background-color: var(--accent-2);
+	border: none;
+	border-radius: 3px;
+	color: var(--text-color);
+}
+
+table button[data-id]:hover {
+	filter: brightness(120%);
+	cursor: pointer;
+}
+
 details {
 	margin: 2px 0px;
 }
@@ -66,6 +78,7 @@ input {
 	padding: 3px;
 	border-radius: 3px;
 	background-color: var(--element-color);
+	color: var(--text-color);
 }
 
 .pagination>a {
@@ -107,6 +120,7 @@ input {
 .search-element {
 	display: inline-block;
 }
+
 .search-element>div.selected {
 	padding: 3px;
 	border: thin solid var(--element-color);
@@ -140,4 +154,32 @@ input {
 
 .pill>button:hover {
 	cursor: pointer;
+}
+
+.callout {
+	background: var(--element-color);
+	position: absolute;
+	padding: 10px;
+	border-radius: 10px;
+	box-shadow: 5px 5px 5px #333;
+}
+
+.callout::after {
+	content: "";
+	border: 20px solid transparent;
+	position: absolute;
+}
+
+.callout.down::after {
+	border-top-color: var(--element-color);
+	border-bottom: 0;
+}
+
+.callout::after {
+	position: absolute;
+}
+
+.callout.down::after {
+	bottom: -15px;
+	left: calc(50% - 15px);
 }

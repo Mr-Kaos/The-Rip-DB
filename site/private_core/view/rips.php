@@ -12,6 +12,7 @@ use RipDB\Objects as o;
 			<?= (new o\SearchElement('Tags', '/search/tags', true, $tags, ['name' => 'tags']))->buildElement() ?>
 			<?= (new o\SearchElement('Jokes', '/search/jokes', true, $jokes, ['name' => 'jokes']))->buildElement() ?>
 			<?= (new o\SearchElement('Games', '/search/games', true, $games, ['name' => 'games']))->buildElement() ?>
+			<?= (new o\SearchElement('Rippers', '/search/rippers', true, $rippers, ['name' => 'rippers']))->buildElement() ?>
 		</details>
 	</form>
 	<table id="results" class="table-search">
@@ -34,19 +35,21 @@ use RipDB\Objects as o;
 						<td><?= $record['RipLength'] ?></td>
 						<td>
 							<?php foreach ($record['Rippers'] as $ripper): ?>
-								<button type="button"><?= $ripper['RipperName'] ?></button>
+								<button type="button" onclick="openRowBubble(this)" data-type="rippers" data-id="<?= $ripper['RipperID'] ?>"><?= $ripper['RipperName'] ?></button>
 							<?php endforeach; ?>
 						</td>
 						<td>
 							<?php foreach ($record['Jokes'] as $joke): ?>
-								<button type="button"><?= $joke['JokeName'] ?></button>
+								<button type="button" onclick="openRowBubble(this)" data-type="jokes" data-id="<?= $joke['JokeID'] ?>" data-extra="<?= htmlspecialchars(json_encode($joke['Tags'])) ?>"><?= $joke['JokeName'] ?></button>
 							<?php endforeach; ?>
 						</td>
 						<td><?= $record['RipDate'] ?></td>
 					</tr>
 				<?php endforeach; ?>
 			<?php else: ?>
-				<tr><td colspan="6" style="text-align: center;padding:10px 0px;";>No rips were found with the given criteria.</td></tr>
+				<tr>
+					<td colspan="6" style="text-align: center;padding:10px 0px;" ;>No rips were found with the given criteria.</td>
+				</tr>
 			<?php endif; ?>
 		</tbody>
 		<tfoot>
@@ -64,3 +67,4 @@ use RipDB\Objects as o;
 		</tfoot>
 	</table>
 </main>
+<script src="/res/js/results.js" defer></script>

@@ -40,6 +40,9 @@ class APIController extends Controller
 			case 'games':
 				$result = $this->model->getRecords('Games', 'GameID', 'GameName', $search);
 				break;
+			case 'rippers':
+				$result = $this->model->getRecords('Rippers', 'RipperID', 'RipperName', $search);
+				break;
 		}
 
 		$this->setData('Result', $result);

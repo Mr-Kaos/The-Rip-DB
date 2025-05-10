@@ -19,9 +19,9 @@ class RipsModel extends Model
 	 * @param bool $useAltName If true and $name is given, it will find rips based on their alternate name. Defaults to the RipName column.
 	 * @return array An array of rips found by the given search criteria.
 	 */
-	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], bool $useAltName = false)
+	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers, bool $useAltName = false)
 	{
-		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $useAltName);
+		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $rippers, $useAltName);
 		$qry->groupBy('RipID')
 			->limit($count)
 			->offset($offset);
@@ -59,13 +59,13 @@ class RipsModel extends Model
 
 	public function getRipCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], bool $useAltName = false)
 	{
-		return $this->generateRipQuery(self::TABLE, $name, $tags, $jokes, $games, $useAltName)->count();
+		return $this->generateRipQuery(self::TABLE, $name, [], [], [], [], $useAltName)->count();
 	}
 
 	/**
 	 * 
 	 */
-	private function generateRipQuery(string $table, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], bool $useAltName = false)
+	private function generateRipQuery(string $table, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers, bool $useAltName = false)
 	{
 		$qry = $this->db->table($table)
 			->columns(...self::COLUMNS)
@@ -97,6 +97,13 @@ class RipsModel extends Model
 				$qry->eq('RipGame', $game);
 			}
 			$qry->closeOr();
+		}
+
+		// Apply game search if rippers are given.
+		if (!empty($rippers)) {
+			foreach ($rippers as $ripper) {
+				$qry->eq('RipperID', $ripper);
+			}
 		}
 
 		return $qry;
@@ -178,8 +185,13 @@ class RipsModel extends Model
 		return $result;
 	}
 
-	public function getRippers()
+	public function getRippers(array $ids)
 	{
-		return $this->db->table('Rippers')->columns('RipperID', 'RipperName')->findAll();
+		$result = [];
+		if (!empty($ids)) {
+			$result = $this->db->table('Rippers')->in('RipperID', $ids)->findAll();
+			$result = $this->resultsetToKeyPair($result, 'RipperID', 'RipperName');
+		}
+		return $result;
 	}
 }
