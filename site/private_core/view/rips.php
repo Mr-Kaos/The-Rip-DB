@@ -14,19 +14,19 @@ use RipDB\Objects as o;
 			<?= (new o\SearchElement('Games', '/search/games', true, $games, ['name' => 'games']))->buildElement() ?>
 		</details>
 	</form>
-	<?php if (!empty($results)): ?>
-		<table id="results" class="table-search">
-			<thead>
-				<tr>
-					<th>Rip Name</th>
-					<th>Alternative Name</th>
-					<th>Length</th>
-					<th>Ripper</th>
-					<th>Jokes</th>
-					<th>Upload Date</th>
-				</tr>
-			</thead>
-			<tbody>
+	<table id="results" class="table-search">
+		<thead>
+			<tr>
+				<th>Rip Name</th>
+				<th>Alternative Name</th>
+				<th>Length</th>
+				<th>Ripper</th>
+				<th>Jokes</th>
+				<th>Upload Date</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php if (!empty($results)): ?>
 				<?php foreach ($results as $record): ?>
 					<tr>
 						<td><a href="/rips/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
@@ -45,20 +45,22 @@ use RipDB\Objects as o;
 						<td><?= $record['RipDate'] ?></td>
 					</tr>
 				<?php endforeach; ?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="6" style="text-align:center" class="pagination">
-						<span style="float:left">
-							<?= (new o\InputElement('Rips per page:', o\InputTypes::number, ['id' => 'c', 'min' => 1, 'max' => 100, 'form' => 'rip_search', 'value' => $Count]))->buildElement() ?>
-						</span>
-						<?= $pagination ?>
-						<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'rip_search', 'value' => $Page, 'onchange' => 'this.form.submit()']))->buildElement() ?>
-						<button type="submit" form="rip_search">Go</button>
-						<span style="float:right">Showing <b><?= $RecordStart ?> to <?= $RecordEnd ?></b> of <?= $RipCount ?> rips</span>
-					</td>
-				</tr>
-			</tfoot>
-		</table>
-	<?php endif; ?>
+			<?php else: ?>
+				<tr><td colspan="6" style="text-align: center;padding:10px 0px;";>No rips were found with the given criteria.</td></tr>
+			<?php endif; ?>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="6" style="text-align:center" class="pagination">
+					<span style="float:left">
+						<?= (new o\InputElement('Rips per page:', o\InputTypes::number, ['id' => 'c', 'min' => 1, 'max' => 100, 'form' => 'rip_search', 'value' => $Count]))->buildElement() ?>
+					</span>
+					<?= $pagination ?>
+					<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'rip_search', 'value' => $Page, 'onchange' => 'this.form.submit()']))->buildElement() ?>
+					<button type="submit" form="rip_search">Go</button>
+					<span style="float:right">Showing <b><?= $RecordStart ?> to <?= $RecordEnd ?></b> of <?= $RipCount ?> rips</span>
+				</td>
+			</tr>
+		</tfoot>
+	</table>
 </main>
