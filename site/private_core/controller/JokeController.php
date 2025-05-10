@@ -9,6 +9,9 @@ require_once('private_core/model/JokeModel.php');
 require_once('private_core/objects/Paginator.php');
 require_once('private_core/objects/DataValidators.php');
 
+/**
+ * @property \RipDB\Model\JokeModel $model
+ */
 class JokeController extends Controller
 {
 	use \RipDB\DataValidator;

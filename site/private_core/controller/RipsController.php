@@ -8,6 +8,9 @@ require_once('Controller.php');
 require_once('private_core/model/RipsModel.php');
 require_once('private_core/objects/Paginator.php');
 
+/**
+ * @property \RipDB\Model\RipsModel $model
+ */
 class RipsController extends Controller
 {
 	use \Paginator;
@@ -24,7 +27,13 @@ class RipsController extends Controller
 	public function performRequest(array $data = []): void
 	{
 		$useAltName = ($_GET['use_secondary'] ?? 0) == 1;
-		$ripCount = $this->model->getRipCount($useAltName);
+		$ripCount = $this->model->getRipCount(
+			$_GET['search'] ?? null,
+			$_GET['tags'] ?? [],
+			$_GET['jokes'] ?? [],
+			$_GET['games'] ?? [],
+			$useAltName
+		);
 		$rowCount = $this->getRowCount();
 		$page = $this->getPageNumber();
 

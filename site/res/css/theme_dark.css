@@ -1,7 +1,7 @@
 :root {
 	--bg-color: #111;
 	--text-color: #fff;
-	--element-color: #777;
+	--element-color: #444;
 
 	--accent-1: #486656;
 	--accent-2: #1a7741;
@@ -19,4 +19,8 @@ a {
 
 a:visited {
 	color: var(--link-visited);
+}
+
+input {
+	color: var(--text-color);
 }

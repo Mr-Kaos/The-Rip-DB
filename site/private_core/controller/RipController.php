@@ -9,6 +9,9 @@ require_once('Controller.php');
 require_once('private_core/model/RipModel.php');
 require_once('private_core/objects/DataValidators.php');
 
+/**
+ * @property \RipDB\Model\RipModel $model
+ */
 class RipController extends Controller
 {
 	use \RipDB\DataValidator;

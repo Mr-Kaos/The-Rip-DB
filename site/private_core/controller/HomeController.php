@@ -6,6 +6,9 @@ use RipDB\Model as m;
 require_once('Controller.php');
 require_once('private_core/model/HomeModel.php');
 
+/**
+ * @property \RipDB\Model\HomeModel $model
+ */
 class HomeController extends Controller
 {
 	public function __construct(string $page)

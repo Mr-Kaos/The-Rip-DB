@@ -60,6 +60,14 @@ summary {
 	cursor: pointer;
 }
 
+input {
+	border: none;
+	margin: 2px;
+	padding: 3px;
+	border-radius: 3px;
+	background-color: var(--element-color);
+}
+
 .pagination>a {
 	margin: 0px 2px;
 	padding: 0px 2px;

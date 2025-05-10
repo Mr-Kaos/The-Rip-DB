@@ -7,6 +7,9 @@ use RipDB\Model as m;
 require_once('Controller.php');
 require_once('private_core/model/APIModel.php');
 
+/**
+ * @property \RipDB\Model\APIModel $model
+ */
 class APIController extends Controller
 {
 	public function __construct(string $page)

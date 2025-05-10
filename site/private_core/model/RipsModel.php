@@ -21,38 +21,7 @@ class RipsModel extends Model
 	 */
 	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], bool $useAltName = false)
 	{
-		$qry = $this->db->table(self::VIEW)
-			->columns(...self::COLUMNS)
-			->asc('RipID');
-
-		// Apply name search if name is given.
-		if (!empty($name)) {
-			$qry->ilike($useAltName ? 'RipAlternateName' : 'RipName', "%$name%");
-		}
-
-		// Apply tag search if tags are given.
-		if (!empty($tags)) {
-			foreach ($tags as $tag) {
-				$qry->eq('TagID', $tag);
-			}
-		}
-
-		// Apply joke search if jokes are given.
-		if (!empty($jokes)) {
-			foreach ($jokes as $joke) {
-				$qry->eq('JokeID', $joke);
-			}
-		}
-
-		// Apply game search if games are given.
-		if (!empty($games)) {
-			$qry->beginOr();
-			foreach ($games as $game) {
-				$qry->eq('RipGame', $game);
-			}
-			$qry->closeOr();
-		}
-
+		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $useAltName);
 		$qry->groupBy('RipID')
 			->limit($count)
 			->offset($offset);
@@ -88,13 +57,49 @@ class RipsModel extends Model
 		return $rips;
 	}
 
-	public function getRipCount(bool $useAltName = false)
+	public function getRipCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], bool $useAltName = false)
 	{
-		if ($useAltName) {
-			return $this->db->table(self::TABLE)->notNull('RipAlternateName')->count();
-		} else {
-			return $this->db->table(self::TABLE)->count();
+		return $this->generateRipQuery(self::TABLE, $name, $tags, $jokes, $games, $useAltName)->count();
+	}
+
+	/**
+	 * 
+	 */
+	private function generateRipQuery(string $table, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], bool $useAltName = false)
+	{
+		$qry = $this->db->table($table)
+			->columns(...self::COLUMNS)
+			->asc('RipID');
+
+		// Apply name search if name is given.
+		if (!empty($name)) {
+			$qry->ilike($useAltName ? 'RipAlternateName' : 'RipName', "%$name%");
 		}
+
+		// Apply tag search if tags are given.
+		if (!empty($tags)) {
+			foreach ($tags as $tag) {
+				$qry->eq('TagID', $tag);
+			}
+		}
+
+		// Apply joke search if jokes are given.
+		if (!empty($jokes)) {
+			foreach ($jokes as $joke) {
+				$qry->eq('JokeID', $joke);
+			}
+		}
+
+		// Apply game search if games are given.
+		if (!empty($games)) {
+			$qry->beginOr();
+			foreach ($games as $game) {
+				$qry->eq('RipGame', $game);
+			}
+			$qry->closeOr();
+		}
+
+		return $qry;
 	}
 
 	/**
