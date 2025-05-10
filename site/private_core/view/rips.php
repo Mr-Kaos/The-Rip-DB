@@ -7,10 +7,11 @@ use RipDB\Objects as o;
 	<form id="rip_search" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
-		<details>
+		<details <?= $open ?>>
 			<summary>More Filters</summary>
 			<?= (new o\SearchElement('Tags', '/search/tags', true, $tags, ['name' => 'tags']))->buildElement() ?>
 			<?= (new o\SearchElement('Jokes', '/search/jokes', true, $jokes, ['name' => 'jokes']))->buildElement() ?>
+			<?= (new o\SearchElement('Games', '/search/games', true, $games, ['name' => 'games']))->buildElement() ?>
 		</details>
 	</form>
 	<?php if (!empty($results)): ?>

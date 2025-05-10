@@ -47,16 +47,16 @@ class SearchElement extends InputElement
 		$attributes['name'] = null;
 		$attributes['search-url'] = $this->url;
 		$element .= (new InputElement(null, InputTypes::search, $attributes))->buildElement();
+		$element .= '<div class="options"></div>';
 		if ($this->multiSelect) {
 			$element .= '<div class="selected">';
 			if (!empty($this->values)) {
 				foreach ($this->values as $id => $val) {
-					$element .= '<span value="' . $id . '">' . $val . '<input hidden="" name="' . $this->attributes['name'] . '"><button type="button">×</button></span>';
+					$element .= '<span class="pill">' . $val . '<input hidden="" name="' . $this->attributes['name'] . '" value="' . $id . '"><button type="button">×</button></span>';
 				}
 			}
 			$element .= '</div>';
 		}
-		$element .= '<div class="options"></div>';
 		$element .= '</span>';
 
 		return $element;

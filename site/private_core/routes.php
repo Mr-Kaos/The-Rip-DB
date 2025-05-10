@@ -69,6 +69,9 @@ Flight::group('/search', function () {
 	Flight::route('GET /metas', function () {
 		performAPIRequest('metas');
 	});
+	Flight::route('GET /games', function () {
+		performAPIRequest('games');
+	});
 });
 
 /**

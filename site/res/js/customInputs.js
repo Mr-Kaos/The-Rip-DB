@@ -183,6 +183,7 @@ class SearchElement extends MultiSelect {
 			this.#multi = true;
 			this.#value = [];
 		}
+		this.#initValues(element.querySelectorAll('div.selected>span.pill'));
 
 		// If the list has not been touched yet, make an empty search to load some results
 		this.#searchElement.onclick = function () {
@@ -193,6 +194,19 @@ class SearchElement extends MultiSelect {
 				this.toggleDisplay();
 			}
 		}.bind(this);
+	}
+
+	/**
+	 * If any pre-existing values exist, initialise their event listeners.
+	 * @param {NodeList} elements
+	 */
+	#initValues(elements) {
+		for (let i = 0; i < elements.length; i++) {
+			let input = elements[i].querySelector('input');
+			let btnRemove = elements[i].querySelector('button');
+			this.#value.push(input.value);
+			btnRemove.onclick = e => this.#unsetOption(elements[i]);
+		}
 	}
 
 	async search(input, url) {

@@ -23,6 +23,7 @@ class APIController extends Controller
 		$search = $_GET['q'] ?? null;
 		$result = null;
 
+		// Might refactor this at some point.
 		switch ($this->getPage()) {
 			case 'tags':
 				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search);
@@ -32,6 +33,9 @@ class APIController extends Controller
 				break;
 			case 'metas':
 				$result = $this->model->getRecords('MetaJokes', 'MetaJokeID', 'MetaJokeName', $search);
+				break;
+			case 'games':
+				$result = $this->model->getRecords('Games', 'GameID', 'GameName', $search);
 				break;
 		}
 

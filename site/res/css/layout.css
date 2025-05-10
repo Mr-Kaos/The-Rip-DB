@@ -51,6 +51,15 @@ tbody>tr:nth-child(odd) {
 
 }
 
+details {
+	margin: 2px 0px;
+}
+
+summary {
+	width: fit-content;
+	cursor: pointer;
+}
+
 .pagination>a {
 	margin: 0px 2px;
 	padding: 0px 2px;
@@ -87,17 +96,33 @@ tbody>tr:nth-child(odd) {
 	cursor: pointer;
 }
 
+.search-element {
+	display: inline-block;
+}
+.search-element>div.selected {
+	padding: 3px;
+	border: thin solid var(--element-color);
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	display: flex;
+	flex-direction: column;
+	min-height: 5px;
+	max-height: 50px;
+	overflow-y: scroll;
+}
+
 .table-search {
 	width: 100%;
 	margin: auto;
 }
 
 .pill {
-	background: aliceblue;
+	background: var(--accent-1);
 	padding: 3px;
 	padding-right: 0px;
 	border-radius: 7px;
-	margin: 4px;
+	margin: 1px;
+	width: fit-content;
 }
 
 .pill>button {

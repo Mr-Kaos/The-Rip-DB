@@ -37,6 +37,7 @@ class RipsController extends Controller
 			$_GET['search'] ?? null,
 			$_GET['tags'] ?? [],
 			$_GET['jokes'] ?? [],
+			$_GET['games'] ?? [],
 			$useAltName
 		);
 		$this->setData('results', $rips);
@@ -44,6 +45,14 @@ class RipsController extends Controller
 		// Get search filters
 		$this->setData('tags', $this->model->getTags($_GET['tags'] ?? []));
 		$this->setData('jokes', $this->model->getJokes($_GET['jokes'] ?? []));
+		$this->setData('games',  $this->model->getGames($_GET['games'] ?? []));
+
+		// If any filter is given, make sure the details element is open
+		if (!empty($_GET['tags'] ?? null) || !empty($_GET['jokes'] ?? null) || !empty($_GET['games'] ?? null)) {
+			$this->setData('open', 'open');
+		} else {
+			$this->setData('open', '');
+		}
 
 		// Pagination values
 		$recordStart = (($page - 1) * $rowCount) + 1;

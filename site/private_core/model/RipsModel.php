@@ -19,7 +19,7 @@ class RipsModel extends Model
 	 * @param bool $useAltName If true and $name is given, it will find rips based on their alternate name. Defaults to the RipName column.
 	 * @return array An array of rips found by the given search criteria.
 	 */
-	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], bool $useAltName = false)
+	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], bool $useAltName = false)
 	{
 		$qry = $this->db->table(self::VIEW)
 			->columns(...self::COLUMNS)
@@ -42,6 +42,15 @@ class RipsModel extends Model
 			foreach ($jokes as $joke) {
 				$qry->eq('JokeID', $joke);
 			}
+		}
+
+		// Apply game search if games are given.
+		if (!empty($games)) {
+			$qry->beginOr();
+			foreach ($games as $game) {
+				$qry->eq('RipGame', $game);
+			}
+			$qry->closeOr();
 		}
 
 		$qry->groupBy('RipID')
@@ -150,6 +159,16 @@ class RipsModel extends Model
 		if (!empty($ids)) {
 			$result = $this->db->table('Jokes')->in('JokeID', $ids)->findAll();
 			$result = $this->resultsetToKeyPair($result, 'JokeID', 'JokeName');
+		}
+		return $result;
+	}
+
+	public function getGames(array $ids)
+	{
+		$result = [];
+		if (!empty($ids)) {
+			$result = $this->db->table('Games')->in('GameID', $ids)->findAll();
+			$result = $this->resultsetToKeyPair($result, 'GameID', 'GameName');
 		}
 		return $result;
 	}
