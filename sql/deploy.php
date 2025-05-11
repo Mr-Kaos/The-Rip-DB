@@ -28,7 +28,7 @@ if (!$pdo) {
 	echo "Database connection failed! Please check the connection details in this file (deploy.php).";
 	exit();
 } else {
-	$pdo->exec('DROP DATABASE ' . DB_NAME . ';');
+	$pdo->exec('DROP DATABASE IF EXISTS ' . DB_NAME . ';');
 	$pdo->exec('CREATE DATABASE ' . DB_NAME . ' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;');
 	$pdo = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=UTF8', DB_USER, DB_PASS);
 }

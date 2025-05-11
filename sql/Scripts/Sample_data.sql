@@ -38,7 +38,7 @@ CALL usp_InsertJoke_TESTING('The Final Countdown', 'Song by Europe.', 'Song', NU
 CALL usp_InsertJoke_TESTING('Megalovania', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]');
 CALL usp_InsertJoke_TESTING('Blue balls', 'What you expect is about to happen doesn''t happen... for an extended time.', 'Meme', NULL, NULL);
 CALL usp_InsertJoke_TESTING('Maroon 5', 'Pop artist', 'Artist (Music)', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Inspector Gadget', 'Themse song of the TV show "Inspector Gadget".', 'Theme Song', '["Cartoon", "TV Show"]', '[9]');
+CALL usp_InsertJoke_TESTING('Inspector Gadget', 'Theme song of the TV show "Inspector Gadget".', 'Theme Song', '["Cartoon", "TV Show"]', '[9]');
 CALL usp_InsertJoke_TESTING('Star Wars (Main Title)', 'Main title theme of Star Wars by John Williams.', 'Song', '["Series"]', '[8]'); -- 10
 CALL usp_InsertJoke_TESTING('All Star', 'Song by music artist "Smash Mouth".', 'Song', '["Series"]', '[10]');
 CALL usp_InsertJoke_TESTING('Bonetrousle', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]');

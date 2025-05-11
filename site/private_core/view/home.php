@@ -15,5 +15,3 @@ use RipDB\Objects as o;
 		<p>We currently have <?= $RipCount ?> rips!</p>
 	</section>
 </main>
-
-<script defer src="res/js/test.js"></script>
