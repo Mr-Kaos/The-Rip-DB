@@ -75,4 +75,18 @@ use RipDB\Objects as o;
 		</tfoot>
 	</table>
 </main>
+<section id="templates" style="display:none">
+	<div id="callout-rippers" class="callout down">
+		<a href="#">Find Rips by this ripper</a>
+	</div>
+	<div id="callout-genres" class="callout down">
+		<a href="#">Find rips with this genre</a>
+	</div>
+	<div id="callout-jokes" class="callout down">
+		<a href="#">Find rips with this joke</a>
+		<div class="extras">
+			<p>Or search by its tags:</p>
+		</div>
+	</div>
+</section>
 <script src="/res/js/results.js" defer></script>

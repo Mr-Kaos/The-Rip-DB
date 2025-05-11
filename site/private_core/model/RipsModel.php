@@ -141,12 +141,17 @@ class RipsModel extends Model
 		$tags = $this->getJokeTags($qry);
 		$jokes = $qry->findAll();
 
+		// Group tags by JokeID
 		$tags = $this->setSubArrayValueToKey2D($tags, 'JokeID');
 
+		// Merge tags with jokes array
 		foreach ($jokes as &$joke) {
 			$joke['Tags'] = [];
 			foreach ($tags[$joke['JokeID']] as $tag) {
-				$joke['Tags'][$tag['TagID']] = $tag['TagName'];
+				// Tag ID is unset so less data is stored in each row.
+				$id = $tag['TagID'];
+				unset($tag['TagID']);
+				$joke['Tags'][$id] = $tag;
 			}
 		}
 
@@ -156,7 +161,7 @@ class RipsModel extends Model
 	private function getJokeTags($qry)
 	{
 		return $this->db->table('Tags')
-			->columns('j.JokeID', 'JokeTags.TagID', 'TagName')
+			->columns('j.JokeID', 'JokeTags.TagID', 'TagName', 'IsPrimary')
 			->join('JokeTags', 'TagID', 'TagID')
 			->joinSubquery($qry, 'j', 'JokeID', 'JokeID', 'JokeTags')
 			->findAll();

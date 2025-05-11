@@ -26,16 +26,16 @@ use RipDB\Objects as o;
 						<td><?= $record['JokeDescription'] ?></td>
 						<td>
 							<?php
-							foreach ($record['Tags'] as $tag):
+							foreach ($record['Tags'] as $tagId => $tag):
 								if ($tag['IsPrimary']) {
-									echo '<button type="button"><b>' . $tag['TagName'] . '</b></button>';
+									echo '<button type="button" onclick="openRowBubble(this)" data-type="tags" data-id="' . $tagId . '" style="font-weight:bold">' . $tag['TagName'] . '</button>';
 								} else {
-									echo '<button type="button">' . $tag['TagName'] . '</button>';
+									echo '<button type="button" onclick="openRowBubble(this)" data-type="tags" data-id="' . $tagId . '">' . $tag['TagName'] . '</button>';
 								}
 							endforeach;
 							?>
 						</td>
-						<td><a href="rips?jokes[]=<?= $record['JokeID'] ?>"><?= $record['RipCount'] ?></a></td>
+						<td style="text-align:center"><a href="rips?jokes[]=<?= $record['JokeID'] ?>"><?= $record['RipCount'] ?></a></td>
 					</tr>
 				<?php endforeach; ?>
 			</tbody>
@@ -55,3 +55,9 @@ use RipDB\Objects as o;
 		</table>
 	<?php endif; ?>
 </main>
+<section id="templates" style="display:none">
+	<div id="callout-tags" class="callout down">
+		<a href="#">Find Rips that have this tag in its joke</a>
+	</div>
+</section>
+<script src="/res/js/results.js" defer></script>

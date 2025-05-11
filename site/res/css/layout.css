@@ -128,7 +128,7 @@ input {
 	border-bottom-right-radius: 5px;
 	display: flex;
 	flex-direction: column;
-	min-height: 5px;
+	min-height: 0px;
 	max-height: 50px;
 	overflow-y: scroll;
 }
