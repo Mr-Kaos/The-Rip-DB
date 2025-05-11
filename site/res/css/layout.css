@@ -109,6 +109,8 @@ input {
 	display: none;
 	flex-direction: column;
 	position: absolute;
+	max-height: 250px;
+	overflow-y: scroll;
 }
 
 .multi-select>div.options>span:hover,

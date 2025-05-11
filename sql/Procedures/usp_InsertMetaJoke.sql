@@ -17,9 +17,9 @@ BEGIN
 	START TRANSACTION;
 
 	INSERT INTO Tags
-		(TagName)
+		(TagName, MetaOnly)
 	VALUES
-		(MetaTag)
+		(MetaTag, 1)
 	ON DUPLICATE KEY UPDATE TagName = TagName, TagID = LAST_INSERT_ID(TagID);
 
 	SET new_TagId = LAST_INSERT_ID();
