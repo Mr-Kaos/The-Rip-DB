@@ -37,17 +37,17 @@ use RipDB\Objects as o;
 						<td><?= $record['RipAlternateName'] ?></td>
 						<td><?= $record['RipLength'] ?></td>
 						<td>
-							<?php foreach ($record['Rippers'] as $ripper): ?>
+							<?php foreach ($record['Rippers'] ?? [] as $ripper): ?>
 								<button type="button" onclick="openRowBubble(this)" data-type="rippers" data-id="<?= $ripper['RipperID'] ?>"><?= $ripper['RipperName'] ?></button>
 							<?php endforeach; ?>
 						</td>
 						<td>
-							<?php foreach ($record['Jokes'] as $joke): ?>
+							<?php foreach ($record['Jokes'] ?? [] as $joke): ?>
 								<button type="button" onclick="openRowBubble(this)" data-type="jokes" data-id="<?= $joke['JokeID'] ?>" data-extra="<?= htmlspecialchars(json_encode($joke['Tags'])) ?>"><?= $joke['JokeName'] ?></button>
 							<?php endforeach; ?>
 						</td>
 						<td>
-							<?php foreach ($record['Genres'] as $genre): ?>
+							<?php foreach ($record['Genres'] ?? [] as $genre): ?>
 								<button type="button" onclick="openRowBubble(this)" data-type="genres" data-id="<?= $genre['GenreID'] ?>"><?= $genre['GenreName'] ?></button>
 							<?php endforeach; ?>
 						</td>
