@@ -43,6 +43,9 @@ class APIController extends Controller
 			case 'rippers':
 				$result = $this->model->getRecords('Rippers', 'RipperID', 'RipperName', $search);
 				break;
+			case 'genres':
+				$result = $this->model->getRecords('Genres', 'GenreID', 'GenreName', $search);
+				break;
 		}
 
 		$this->setData('Result', $result);

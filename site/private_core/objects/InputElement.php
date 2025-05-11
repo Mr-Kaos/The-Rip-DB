@@ -25,7 +25,6 @@ enum InputTypes: string
 	case range = "range";
 	case reset = "reset";
 	case search = "search";
-	case submit = "submit";
 	case tel = "tel";
 	case text = "text";
 	case time = "time";
@@ -141,7 +140,11 @@ class InputElement extends PageObject
 		if (!$error) {
 			switch ($this->type) {
 				case InputTypes::button:
-					$field = '<button id="' . $id . '" type="button"' . "$attributes>$this->label</button>";
+					$type = '';
+					if (!array_key_exists('type', $this->attributes)) {
+						$type = 'type="submit"';
+					}
+					$field = '<button id="' . $id . '" ' . $type . "$attributes>$this->label</button>";
 					break;
 				case InputTypes::textarea:
 					$field = '<textarea id="' . $id . '" ' . $attributes . '>' . $value . '</textarea>';

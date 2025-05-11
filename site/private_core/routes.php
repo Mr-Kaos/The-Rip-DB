@@ -75,6 +75,9 @@ Flight::group('/search', function () {
 	Flight::route('GET /rippers', function () {
 		performAPIRequest('rippers');
 	});
+	Flight::route('GET /genres', function () {
+		performAPIRequest('genres');
+	});
 });
 
 /**
