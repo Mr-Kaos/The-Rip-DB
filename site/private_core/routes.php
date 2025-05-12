@@ -19,7 +19,7 @@ Flight::route('/', function () {
 // Rips Pages
 Flight::group('/rips', function () {
 	Flight::route('/', function () {
-		displayPage('rips', 'RipsController');
+		displayPage('rips', 'RipController');
 	});
 
 	Flight::route('POST /new', function () {

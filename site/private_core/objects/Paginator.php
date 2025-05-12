@@ -27,7 +27,7 @@ trait Paginator
 
 		// If the page number exceeds the number of rips, go to the highest page
 		$request = $_GET;
-		if ($recordStart > $recordCount) {
+		if ($recordStart > $recordCount && $recordCount != 0) {
 			$page = ceil($recordCount / $rowCount);
 			if (!array_key_exists('p', $request)) {
 				$request['p'] = 1;
@@ -36,9 +36,6 @@ trait Paginator
 			}
 
 			Flight::redirect("$redirect?" . http_build_query($request));
-		// } elseif (($request['p'] ?? null) <= 0) {
-		// 	$request['p'] = 1;
-			// Flight::redirect("$redirect?" . http_build_query($request));
 		}
 		return $rowCount * ($page - 1);
 	}

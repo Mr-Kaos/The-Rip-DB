@@ -8,6 +8,7 @@ use RipDB\Error;
 require_once('Controller.php');
 require_once('private_core/model/RipModel.php');
 require_once('private_core/objects/DataValidators.php');
+require_once('private_core/objects/Paginator.php');
 
 /**
  * @property \RipDB\Model\RipModel $model
@@ -15,6 +16,8 @@ require_once('private_core/objects/DataValidators.php');
 class RipController extends Controller
 {
 	use \RipDB\DataValidator;
+	use \Paginator;
+
 	public function __construct(string $page)
 	{
 		parent::__construct($page, new m\RipModel());
@@ -27,6 +30,63 @@ class RipController extends Controller
 	public function performRequest(array $data = []): void
 	{
 		switch ($this->getPage()) {
+			case 'rips':
+				$useAltName = ($_GET['use_secondary'] ?? 0) == 1;
+				$ripCount = $this->model->getRipCount(
+					$_GET['search'] ?? null,
+					$_GET['tags'] ?? [],
+					$_GET['jokes'] ?? [],
+					$_GET['games'] ?? [],
+					$useAltName
+				);
+				$rowCount = $this->getRowCount();
+				$page = $this->getPageNumber();
+
+				// Get records of rips
+				$rips = [];
+				$offset = $this->getOffset($ripCount, '/rips');
+				$rips = $this->model->searchRips(
+					$rowCount,
+					$offset,
+					$_GET['search'] ?? null,
+					$_GET['tags'] ?? [],
+					$_GET['jokes'] ?? [],
+					$_GET['games'] ?? [],
+					$_GET['rippers'] ?? [],
+					$_GET['genres'] ?? [],
+					$useAltName
+				);
+				$this->setData('results', $rips);
+
+				// Get search filters
+				$this->setData('tags', $this->model->getFilterResults('Tag', $_GET['tags'] ?? []));
+				$this->setData('jokes', $this->model->getFilterResults('Joke', $_GET['jokes'] ?? []));
+				$this->setData('games', $this->model->getFilterResults('Game', $_GET['games'] ?? []));
+				$this->setData('rippers', $this->model->getFilterResults('Ripper', $_GET['rippers'] ?? []));
+				$this->setData('genres', $this->model->getFilterResults('Genre', $_GET['genres'] ?? []));
+
+				// If any filter is given, make sure the details element is open by setting its "open" attribute
+				if (!empty($_GET['tags'] ?? null) || !empty($_GET['jokes'] ?? null) || !empty($_GET['games'] ?? null) || !empty($_GET['rippers'] ?? null)) {
+					$this->setData('open', 'open');
+				} else {
+					$this->setData('open', '');
+				}
+
+				// Pagination values
+				$recordStart = (($page - 1) * $rowCount) + 1;
+				$recordEnd = $page * $rowCount;
+
+				if ($recordEnd > $ripCount) {
+					$recordEnd = $ripCount;
+				}
+
+				$this->setData('RecordStart', $recordStart);
+				$this->setData('RecordEnd', $recordEnd);
+				$this->setData('Page', $page);
+				$this->setData('Count', $rowCount);
+				$this->setData('RipCount', $ripCount);
+				$this->setData('pagination', $this->buildPagination($ripCount, '/rips'));
+				break;
 			case 'rip':
 				$rip = null;
 				if (is_numeric($data['id'])) {
