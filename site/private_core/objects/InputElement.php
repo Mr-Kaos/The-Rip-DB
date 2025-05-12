@@ -176,6 +176,7 @@ class InputElement extends PageObject
 		// Some elements require the label to be placed after the input
 		switch ($this->type) {
 			case InputTypes::checkbox:
+			case InputTypes::radio:
 				$field = $field . $label;
 				break;
 			case InputTypes::button:

@@ -48,6 +48,13 @@ Flight::group('/jokes', function () {
 		});
 });
 
+// Tag Pages
+Flight::group('/tags', function () {
+	Flight::route('/', function () {
+		displayPage('tags', 'TagController');
+	});
+});
+
 // Settings Requests
 Flight::route('/settings/theme', function () {
 	$theme = ($_COOKIE['theme'] ?? 'light') == 'light' ? 'dark' : 'light';
