@@ -2,6 +2,12 @@
 
 This project aims to provide an easy way to catalog and find "[rips](#what-are-rips)" uploaded by all "ripping" channels on YouTube.
 
+## Table of Contents:
+
+- [Aim of the Project](#aim-of-the-project)
+- [Local Setup/Install](#local-setupinstall)
+- [Project Features and Plans](#project-features-and-plans)
+
 ## Aim of the Project
 
 The goal of this project is to provide a complete and detailed database of all rips that exist publicly on the internet. Each rip will be given appropriate tags and attributes, to help fid rips by their contents, such as the songs used, jokes and references within the rip or other meta information related to the rip.
@@ -37,7 +43,57 @@ To install and run locally:
 5. In the terminal, move into the `site` directory and run `composer install` to download the two PHP dependencies.
 6. Finally, in the same directory in the terminal, use `php -S localhost:8080` to run the site locally.
 
+**IMPORTANT**
+
+The current version of [picodb](https://github.com/elvanto/picodb) has a bug that prevents `GROUP BY`s in subqueries from functioning. To temporarily fix this until a patch is released for this, you will need to modify the `escape` function in `vendor/elvanto/picodb/lib/PicDb/Driver/Mysql.php` to the following:  
+```php
+public function escape($identifier)
+{
+   if ((mb_substr($identifier, 0, 1) == '`' && mb_substr($identifier, strlen($identifier) - 1, 1) == '`')) {
+      return $identifier;
+   }
+   return '`' . $identifier . '`';
+}
+```
+
+This is not a perfect fix, but it fixes this issue for the time being.
+
 A more detailed (and automated) guide will be produced as the project progresses.
+
+## Project Features and Plans
+
+The primary goal of this project is to provide a complete and detailed database that allows users to search for a rip based on its contents, i.e. tags. This will also be crowd sourced, meaning anyone can contribute to fill in any gaps of information that this database is missing.
+
+### Main Features (Current Progress)
+
+This project currently has the following features complete:
+
+- [ ] Rips
+  - [X] Search page
+    - [X] Search filters
+  - [X] Add Rip page
+  - [ ] Edit Rip page
+- [ ] Jokes
+  - [X] Search page
+  - [X] Add Joke page
+  - [ ] Edit Joke page
+- [ ] Tags
+  - [ ] Search page
+  - [ ] Add Tag page
+  - [ ] Edit Tag page
+- [X] UI/UX (done, but could do with much nicer design)
+
+### Potential Features
+
+Some other features that this project aims to include in the future are:
+
+- [ ] Statistical features:
+  - [ ] Statistics that show how common particular jokes are used in rips
+  - [ ] Graphs that show how different rips relate to each other
+- [ ] Ability to make quick YouTube playlists based on a search result
+- [ ] Moderation/Anti-Spam tools. Potentially a way to prevent spam or bots from submitting bogus content.
+
+If you have any cool or useful ideas for features, please feel free to suggest them!
 
 ## What are "Rips"?
 
