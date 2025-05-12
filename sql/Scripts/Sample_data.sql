@@ -53,7 +53,7 @@ CALL usp_InsertJoke_TESTING('Pledge of Demon', 'Song from Yakuza 0', 'Song', '["
 CALL usp_InsertJoke_TESTING('Rock My Emotions', '', 'Song', NULL, NULL);
 CALL usp_InsertJoke_TESTING('Futatsuiwa from Sado', '', 'Song', NULL, '[16]');
 CALL usp_InsertJoke_TESTING('Bad Apple!! feat.nomico', '', 'Song', NULL, '[16]');
-CALL usp_InsertJoke_TESTING('Bad Apple', 'Song', '', '["VGM"]', '[16]');
+CALL usp_InsertJoke_TESTING('Bad Apple', '', 'Song', '["VGM"]', '[16]');
 CALL usp_InsertJoke_TESTING('U.N. Owen Was Her?', '', 'Song', NULL, '[16]'); -- 25
 CALL usp_InsertJoke_TESTING('Running in the 90s', '', 'Song', NULL, '[17]');
 CALL usp_InsertJoke_TESTING('Tetris - Type A', '', 'Song', NULL, NULL);
