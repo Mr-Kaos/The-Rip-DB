@@ -1,6 +1,6 @@
 {
     "require": {
-        "elvanto/picodb": "^5.0",
+        "elvanto/picodb": "^6.0.1",
         "flightphp/core": "^3.15"
     }
 }

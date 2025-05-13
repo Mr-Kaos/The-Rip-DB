@@ -112,7 +112,7 @@ class RipModel extends Model
 		$qry = $this->db->table('Jokes')
 			->columns('r.RipID, RipJokes.JokeID', 'JokeName', 'JokeTimestamps', 'JokeComment')
 			->join('RipJokes', 'JokeID', 'JokeID')
-			->joinSubquery($ripQuery, 'r', 'RipID', 'RipID', 'RipJokes');
+			->innerJoinSubquery($ripQuery, 'r', 'RipID', 'RipID', 'RipJokes');
 
 		$tags = $this->getJokeTags($qry);
 		$jokes = $qry->findAll();
@@ -136,7 +136,7 @@ class RipModel extends Model
 		return $this->db->table('Tags')
 			->columns('j.JokeID', 'JokeTags.TagID', 'TagName', 'IsPrimary')
 			->join('JokeTags', 'TagID', 'TagID')
-			->joinSubquery($qry, 'j', 'JokeID', 'JokeID', 'JokeTags')
+			->innerJoinSubquery($qry, 'j', 'JokeID', 'JokeID', 'JokeTags')
 			->findAll();
 	}
 
@@ -145,7 +145,7 @@ class RipModel extends Model
 		return $this->db->table('Rippers')
 			->columns('r.RipID, RipRippers.RipperID', 'RipperName')
 			->join('RipRippers', 'RipperID', 'RipperID')
-			->joinSubquery($ripQuery, 'r', 'RipID', 'RipID', 'RipRippers')
+			->innerJoinSubquery($ripQuery, 'r', 'RipID', 'RipID', 'RipRippers')
 			->findAll();
 	}
 
@@ -154,7 +154,7 @@ class RipModel extends Model
 		return $this->db->table('Genres')
 			->columns('g.RipID, RipGenres.GenreID', 'GenreName')
 			->join('RipGenres', 'GenreID', 'GenreID')
-			->joinSubquery($ripQuery, 'g', 'RipID', 'RipID', 'RipGenres')
+			->innerJoinSubquery($ripQuery, 'g', 'RipID', 'RipID', 'RipGenres')
 			->findAll();
 	}
 

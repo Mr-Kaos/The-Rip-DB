@@ -30,6 +30,8 @@ Ensure you have the following dependencies too:
 
 - PHP 8.1 or newer (Tested with PHP 8.3.2)
 - Composer for PHP
+  - FlightPHP
+  - PicoDB (>= 6.0.1)
 - MySQL 8.0.41 or newer (Tested with 8.0.41)
 
 To install and run locally:
@@ -43,19 +45,6 @@ To install and run locally:
    > *The password is left blank in this file too!*
 5. In the terminal, move into the `site` directory and run `composer update` to download the two PHP dependencies.
 6. Finally, in the same directory in the terminal, use `php -S localhost:8080` to run the site locally.
-
-**IMPORTANT**
-
-The current version of [picodb](https://github.com/elvanto/picodb) has a bug that prevents `GROUP BY`s in subqueries from functioning. To temporarily fix this until a patch is released for this, you will need to modify the `escape` function in `vendor/elvanto/picodb/lib/PicDb/Driver/Mysql.php` to the following:  
-```php
-public function escape($identifier)
-{
-   if ((mb_substr($identifier, 0, 1) == '`' && mb_substr($identifier, strlen($identifier) - 1, 1) == '`')) {
-      return $identifier;
-   }
-   return '`' . $identifier . '`';
-}
-```
 
 This is not a perfect fix, but it fixes this issue for the time being.
 
