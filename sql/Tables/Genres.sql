@@ -1,7 +1,7 @@
 CREATE TABLE Genres (
 	GenreID INT auto_increment NOT NULL,
-	GenreName varchar(128) NOT NULL,
-	GenreDescription varchar(1024) DEFAULT NULL,
+	GenreName nvarchar(128) NOT NULL,
+	GenreDescription nvarchar(1024) DEFAULT NULL,
 	CONSTRAINT PK_Types PRIMARY KEY (GenreID),
 	CONSTRAINT UQ_GenreName UNIQUE KEY (GenreName)
 )

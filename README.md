@@ -7,6 +7,7 @@ This project aims to provide an easy way to catalog and find "[rips](#what-are-r
 - [Aim of the Project](#aim-of-the-project)
 - [Local Setup/Install](#local-setupinstall)
 - [Project Features and Plans](#project-features-and-plans)
+- [System Design]
 
 ## Aim of the Project
 
@@ -40,7 +41,7 @@ To install and run locally:
    > **Optional:** When running this command, after the database is deployed, it will prompt to ask if you want to deploy sample data. Type `y` and press enter to insert some sample data.
 4. Open the file `site/private_core/config/db.php` and edit its database constants to suit your database setup.  
    > *The password is left blank in this file too!*
-5. In the terminal, move into the `site` directory and run `composer install` to download the two PHP dependencies.
+5. In the terminal, move into the `site` directory and run `composer update` to download the two PHP dependencies.
 6. Finally, in the same directory in the terminal, use `php -S localhost:8080` to run the site locally.
 
 **IMPORTANT**
@@ -94,6 +95,14 @@ Some other features that this project aims to include in the future are:
 - [ ] Moderation/Anti-Spam tools. Potentially a way to prevent spam or bots from submitting bogus content.
 
 If you have any cool or useful ideas for features, please feel free to suggest them!
+
+## System Design
+
+This system is based around rips and their data. All rips are stored in a central table, with the data to help identify rips stored in their own tables (jokes and tags tables).
+
+The ER diagram below outlines the system's design and how each component communicates with each other.
+
+![ER diagram of the database](RipDB_Diagram.png)
 
 ## What are "Rips"?
 

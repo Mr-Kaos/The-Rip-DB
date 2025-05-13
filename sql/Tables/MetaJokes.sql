@@ -2,8 +2,8 @@
 
 CREATE TABLE MetaJokes (
 	MetaJokeID int NOT NULL AUTO_INCREMENT,
-	MetaJokeName varchar(128) NOT NULL,
-	MetaJokeDescription text NOT NULL,
+	MetaJokeName nvarchar(128) NOT NULL,
+	MetaJokeDescription text,
 	MetaTag int NOT NULL,
 	PRIMARY KEY (MetaJokeID),
 	CONSTRAINT MetaJokes_Tag_FK FOREIGN KEY (MetaTag) REFERENCES Tags(TagID),

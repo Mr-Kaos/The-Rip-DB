@@ -3,9 +3,9 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertMetaJoke;
 
 CREATE PROCEDURE RipDB.usp_InsertMetaJoke(
-	IN MetaName varchar(128),
+	IN MetaName nvarchar(128),
 	IN MetaDescription text,
-	IN MetaTag varchar(128))
+	IN MetaTag nvarchar(128))
 BEGIN
 	DECLARE new_TagId int;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION

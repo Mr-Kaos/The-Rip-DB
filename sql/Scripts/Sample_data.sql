@@ -93,21 +93,20 @@ VALUES
 
 -- Rippers
 INSERT INTO Rippers
-	(RipperName, Aliases)
+	(RipperName)
 VALUES
-	('Chaze the Chat', NULL),
-	('MtH', NULL),
-	('dante', NULL),
-	('toonlink', '["Chief Keef 2"]'),
-	('Albert Softie', NULL), -- 5
-	('Sir Spacebar', NULL),
-	('Cryptrik', NULL),
-	('eg_9371', NULL),
-	('l4ureleye', NULL),
-	('Jp', NULL), -- 10
-	('Krizis', NULL),
-	('Spicy236', NULL)
-	;
+	('Chaze the Chat'),
+	('MtH'),
+	('dante'),
+	('toonlink'),
+	('Albert Softie'), -- 5
+	('Sir Spacebar'),
+	('Cryptrik'),
+	('eg_9371'),
+	('l4ureleye'),
+	('Jp'), -- 10
+	('Krizis'),
+	('Spicy236');
 
 INSERT INTO Genres
 	(GenreName, GenreDescription)
@@ -138,8 +137,8 @@ CALL usp_InsertRip('Lost Woods - The Legend of Zelda: Ocarina of Time', NULL, NU
 CALL usp_InsertRip('A Secret Course - Super Mario Sunshine', NULL, NULL, '2016-01-14', '0131', 'https://www.youtube.com/watch?v=ZTga1rjryhE', 3, 1, '[1]', '{"11": {"timestamps":[{"start":"0007","end":"0131"}],"comment":null}}', '{"1":null}');
 CALL usp_InsertRip('Secret Course - Super Mario Sunshine', 'Super Mario Shrekshine: All Secret Course', NULL, '2016-01-15', '0130', 'https://www.youtube.com/watch?v=ryZvC68xE_s', 4, 1, '[1]', '{"11": {"timestamps":[{"start":"0006","end":"0130"}],"comment":null}}', '{"1":null}');
 CALL usp_InsertRip('Luigi''s Mansion - Mario Kart DS', NULL, NULL, '2016-01-17', '0131', 'https://www.youtube.com/watch?v=p7RsftFX9ak', 5, 1, '[1]', '{"12": {"timestamps":[{"start":"0000","end":"0131"}],"comment":null}}', '{"2":null}');
-CALL usp_InsertRip('Uncontrollable - Xenoblade Chronicles X', NULL, NULL, '2016-01-18', '0349', 'https://www.youtube.com/watch?v=pTeXKobmqWk', 6, 1, '[1]', '{"3": {"timestamps":[{"start":"0028","end":"0349"}],"comment":null}}', '{"3":null}');
-CALL usp_InsertRip('Map (Day) - Tomodachi Life', 'On the Island', NULL, '2016-01-18', '0053', 'https://www.youtube.com/watch?v=XhG9rWtjcGQ', 7, 1, '[1]', '{"13": {"timestamps":[{"start":"0000","end":"0053"}],"comment":null}}', '{"4":null}');
+CALL usp_InsertRip('Uncontrollable - Xenoblade Chronicles X', NULL, NULL, '2016-01-18', '0349', 'https://www.youtube.com/watch?v=pTeXKobmqWk', 6, 1, '[1]', '{"3": {"timestamps":[{"start":"0028","end":"0349"}],"comment":null}}', '{"3":"null"}');
+CALL usp_InsertRip('Map (Day) - Tomodachi Life', 'On the Island', NULL, '2016-01-18', '0053', 'https://www.youtube.com/watch?v=XhG9rWtjcGQ', 7, 1, '[1]', '{"13": {"timestamps":[{"start":"0000","end":"0053"}],"comment":null}}', '{"4":"Chief Keef 2"}');
 CALL usp_InsertRip('Uncontrollable (Alternate Mix) - Xenoblade Chronicles X', NULL, NULL, '2016-01-19', '0345', 'https://www.youtube.com/watch?v=6nRC_dlsJ1I', 6, 1, '[1]', '{"14": {"timestamps":[{"start":"0000","end":"0345"}],"comment":null}}', '{"5":null}');
 CALL usp_InsertRip('Overworld Theme (Original Mix) - New Super Mario Bros.', NULL, NULL, '2016-01-19', '0128', 'https://www.youtube.com/watch?v=Ct3Z7LEoOPM', 8, 1, '[1]', '{"15": {"timestamps":[{"start":"0012","end":"0128"}],"comment":null}}', '{"2":null}');
 CALL usp_InsertRip('Hopes and Dreams - Undertale', NULL, NULL, '2016-01-20', '0301', 'https://www.youtube.com/watch?v=Bhs3Q7-kLHs', 3, 1, '[1]', '{"16": {"timestamps":[{"start":"0011","end":"0301"}],"comment":null}}', '{"6":null}');
