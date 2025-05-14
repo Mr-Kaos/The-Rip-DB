@@ -8,8 +8,8 @@ use RipDB\Objects as o;
 	<form id="rip_search" style="display:inline" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
 		<?= (new o\InputElement('Search', o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
+		<a href="jokes/new" style="display:inline;float:right">Add Joke</a>
 	</form>
-	<a href="jokes/new" style="display:inline;float:right">Add Joke</a>
 	<table id="results" class="table-search">
 		<thead>
 			<tr>

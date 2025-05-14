@@ -9,7 +9,7 @@ include_once('private_core/objects/InputTable.php');
 	<p>Fill in this form to add a new joke to the database.</p>
 	<p>It's best not to do it here, and instead do it while <a href="/rips/new">adding a new rip</a>.</p>
 
-	<form id="new-rip" method="POST">
+	<form id="new-joke" method="POST">
 		<fieldset>
 			<legend>Joke Information</legend>
 			<?= (new o\InputElement('Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 1024, 'required' => true]))->buildElement() ?>
@@ -28,6 +28,6 @@ include_once('private_core/objects/InputTable.php');
 			?>
 			<?= (new o\InputTable('Meta Tags', [$tagList]))->buildElement() ?>
 		</fieldset>
-		<button type="submit">Submit Rip</button>
+		<button type="submit">Submit Joke</button>
 	</form>
 </main>
