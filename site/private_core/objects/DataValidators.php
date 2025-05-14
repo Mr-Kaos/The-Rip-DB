@@ -231,65 +231,29 @@ trait DataValidator
 	 * Validates the given value is in the list of given options.
 	 * @param string|array $value The value to search for in the list. If an array, all values in the array must exist in the $options.
 	 * @param array $list The list containing items, where $value should be one of them.
+	 * @param string $errorMessage The error message to output if the validation fails.
+	 * @param bool $validIfNotExists If set to true, the function will return a valid result if the input DOES NOT exist in the array. Else, only validates if it does (default).
 	 * @param bool $looseCheck If true, as long as the value is partially contained in the list, it is valid. 
 	 * 	E.g. if searching for the word "plan" in a list of words, if the list contains "plant" or "airplane", the keyword is considered found.
 	 * @return string|array|false If the value exists in the list, it returns it. If it does not, false is returned. Note that the value from the list is returned, and not the given $value.
 	 */
-	protected function validateFromList(string|array|null $value, array $list, string $errorMessage = 'The given value does not exist in the list.', bool $looseCheck = false): string|array|Error
+	protected function validateFromList(string|array|null $value, array $list, string $errorMessage = 'The given value does not exist in the list.', bool $validIfNotExists = false): string|array|Error
 	{
 		$validated = new Error($errorMessage);
-		if (is_array($value)) {
-			$allMatch = true;
-			$matches = [];
-			foreach ($value as $val) {
-				if ($looseCheck) {
-					// Loop through the given list until all values in the given array are found.
-					foreach ($list as $option) {
-						if (strpos((string)$option, (string)$val) !== false) {
-							array_push($matches, $option);
-							break;
-						}
-					}
-				} elseif (in_array($val, $list)) {
-					$validated = $list[array_search($val, $list)];
-					break;
-				}
+		// Disabled for now as it is not used anywhere. Will remove later if not used at all.
+		// if (is_array($value)) {
+		// 	foreach ($value as $val) {
+		// 		if (in_array($val, $list) !== $validIfNotExists) {
+		// 			$validated = !$validIfNotExists ? $list[array_search($value, $list)] : $value;
+		// 			break;
+		// 		}
+		// 	}
+		// } else {
+			if (in_array($value, $list) !== $validIfNotExists) {
+				$validated = !$validIfNotExists ? $list[array_search($value, $list)] : $value;
 			}
-
-			if ($looseCheck) {
-				if (count($matches) == count($value)) {
-					$validated = $matches;
-				}
-			} else {
-				$validated = $allMatch ? $value : $validated;
-			}
-		} else {
-			if ($looseCheck) {
-				// Loop through the given list until a match is found.
-				foreach ($list as $option) {
-					if (strpos((string)$option, (string)$value) !== false) {
-						$validated = $option;
-						break;
-					}
-				}
-			} elseif (in_array($value, $list)) {
-				$validated = $list[array_search($value, $list)];
-			}
-		}
+		// }
 
 		return $validated;
-	}
-
-	protected function checkForErrors(array $input)
-	{
-		$safe = true;
-		foreach ($input as $value) {
-			if ($value instanceof Error) {
-				$safe = false;
-				break;
-			}
-		}
-
-		return $dafe;
 	}
 }

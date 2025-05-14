@@ -5,16 +5,19 @@ use RipDB\Objects as o;
 <main>
 	<h1>Tags</h1>
 	<p>This page just shows what tags exist in the database.</p>
-	<form id="rip_search" method="GET">
-		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
-		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
-		<details>
-			<summary>More Filters</summary>
-			<?= (new o\InputElement('All Tags', o\InputTypes::radio, ['id' => 'meta_all', 'name' => 'mode', 'value' => 'any', 'checked' => !in_array(($_GET['mode'] ?? null), ['standard', 'meta'])]))->buildElement() ?><br>
-			<?= (new o\InputElement('Standard Tags only', o\InputTypes::radio, ['id' => 'meta_std', 'name' => 'mode', 'value' => 'standard', 'checked' => ($_GET['mode'] ?? null) == 'standard']))->buildElement() ?><br>
-			<?= (new o\InputElement('Meta Tags only', o\InputTypes::radio, ['id' => 'meta_meta', 'name' => 'mode', 'value' => 'meta', 'checked' => ($_GET['mode'] ?? null) == 'meta']))->buildElement() ?>
-		</details>
-	</form>
+	<div>
+		<form id="rip_search" method="GET">
+			<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
+			<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
+			<a href="tags/new" style="display:inline;float:right">Add Tag</a>
+			<details>
+				<summary>Search Settings</summary>
+				<?= (new o\InputElement('All Tags', o\InputTypes::radio, ['id' => 'meta_all', 'name' => 'mode', 'value' => 'any', 'checked' => !in_array(($_GET['mode'] ?? null), ['standard', 'meta'])]))->buildElement() ?><br>
+				<?= (new o\InputElement('Standard Tags only', o\InputTypes::radio, ['id' => 'meta_std', 'name' => 'mode', 'value' => 'standard', 'checked' => ($_GET['mode'] ?? null) == 'standard']))->buildElement() ?><br>
+				<?= (new o\InputElement('Meta Tags only', o\InputTypes::radio, ['id' => 'meta_meta', 'name' => 'mode', 'value' => 'meta', 'checked' => ($_GET['mode'] ?? null) == 'meta']))->buildElement() ?>
+			</details>
+		</form>
+	</div>
 	<table id="results" class="table-search">
 		<thead>
 			<tr>

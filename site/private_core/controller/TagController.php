@@ -76,9 +76,17 @@ class TagController extends Controller
 	{
 		$result = [];
 		if ($this->getPage() == 'new-tag') {
-			
+			$validated['TagName'] = $this->validateFromList($_POST['name'], $this->model->getAllTagNames(), 'The given value is already taken', true);
+			$validated['IsMeta'] = $this->validateBool($_POST['meta'] ?? 0, 'The tag must be marked as Meta Only or not.');
 		} else {
 			$result = [new \RipDB\Error('Invalid form submission.')];
+		}
+
+		$submission = $this->model->submitFormData($validated, 'usp_InsertTag');
+		if ($submission == true) {
+			$result = '/tags';
+		} else {
+			$result = $submission;
 		}
 		return $result;
 	}

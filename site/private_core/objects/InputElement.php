@@ -152,12 +152,13 @@ class InputElement extends PageObject
 				case InputTypes::checkbox:
 					// If an alt value is specified, create the hidden checkbox.
 					if ($valueAlt !== null) {
-						if (empty($this->name)) {
+						if (empty($this->attributes['name'])) {
 							throw (new Exception('Checkboxes with an alternate (hidden) value must have a name attribute specified.'));
 						}
-						$field = '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="' . $valueAlt . '">';
+						unset($this->attributes['value']);
+						$field = '<input id="hidden-' . $id . '" type="hidden"' . $this->buildAttributes($this->attributes) . ' value="' . $valueAlt . '">';
 					}
-					$field = '<input id="' . $id . '" type="' . $this->type->name . '" ' . $value . "$attributes>";
+					$field .= '<input id="' . $id . '" type="' . $this->type->name . '" ' . $value . "$attributes>";
 					break;
 				case InputTypes::list:
 					$field = '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="0">' . '<input id="' . $id . '" type="' . $this->type->name . '"' . "$attributes>";

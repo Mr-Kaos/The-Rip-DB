@@ -32,7 +32,7 @@ class TagModel extends Model
 		$tags = $this->setSubArrayValueToKey($tags, 'TagID', false);
 
 
-		
+
 		$jokeCount = $this->getTagJokeCount($qry);
 		$ripCount = $this->getTagRipCount($qry);
 		foreach ($tags as &$tag) {
@@ -48,7 +48,13 @@ class TagModel extends Model
 		return $this->db->table(self::TABLE)->count();
 	}
 
-	private function getTagJokeCount($qry) {
+	public function getAllTagNames(): array
+	{
+		return $this->db->table('Tags')->findAllByColumn('TagName');
+	}
+
+	private function getTagJokeCount($qry)
+	{
 		$counts = $this->db->table('Tags')
 			->select('t.TagID, COUNT(JokeID) AS TagCount')
 			->join('JokeTags', 'TagID', 'TagID')
@@ -59,7 +65,8 @@ class TagModel extends Model
 		return $this->setSubArrayValueToKey($counts, 'TagID');
 	}
 
-	private function getTagRipCount($qry) {
+	private function getTagRipCount($qry)
+	{
 		$counts = $this->db->table('Tags')
 			->select('t.TagID, COUNT(RipID) AS RipCount')
 			->join('JokeTags', 'TagID', 'TagID')

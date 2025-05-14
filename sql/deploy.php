@@ -88,7 +88,8 @@ if ($in == 'Y') {
 		'usp_InsertJoke_TESTING',
 		'usp_InsertMetaJoke',
 		'usp_InsertRip',
-		'usp_DeleteRip'
+		'usp_DeleteRip',
+		'usp_InsertTag'
 	];
 	deployFiles($pdo, 'Procedures', $files);
 

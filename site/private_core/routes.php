@@ -37,21 +37,27 @@ Flight::group('/rips', function () {
 
 // Jokes Pages
 Flight::group('/jokes', function () {
-		Flight::route('POST /new', function () {
-			submitForm('new-joke', 'JokeController');
-		});
-		Flight::route('/new', function () {
-			displayPage('new-joke', 'JokeController');
-		});
-		Flight::route('/', function () {
-			displayPage('jokes', 'JokeController');
-		});
+	Flight::route('POST /new', function () {
+		submitForm('new-joke', 'JokeController');
+	});
+	Flight::route('/new', function () {
+		displayPage('new-joke', 'JokeController');
+	});
+	Flight::route('/', function () {
+		displayPage('jokes', 'JokeController');
+	});
 });
 
 // Tag Pages
 Flight::group('/tags', function () {
 	Flight::route('/', function () {
 		displayPage('tags', 'TagController');
+	});
+	Flight::route('POST /new', function () {
+		submitForm('new-tag', 'TagController');
+	});
+	Flight::route('/new', function () {
+		displayPage('new-tag', 'TagController');
 	});
 });
 
