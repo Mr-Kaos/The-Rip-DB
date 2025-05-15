@@ -61,6 +61,11 @@ Flight::group('/tags', function () {
 	});
 });
 
+// Help Page
+Flight::route('/help', function () {
+	displayPage('help', null);
+});
+
 // Settings Requests
 Flight::route('/settings/theme', function () {
 	$theme = ($_COOKIE['theme'] ?? 'light') == 'light' ? 'dark' : 'light';

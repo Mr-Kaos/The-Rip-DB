@@ -185,3 +185,24 @@ input {
 	bottom: -15px;
 	left: calc(50% - 15px);
 }
+
+.example {
+	border-left: 10px solid var(--accent-2);
+	background-color: var(--element-color);
+	margin: 8px 0px;
+	transition: 0.5s;
+}
+
+.example>summary {
+	background: var(--accent-1);
+	margin: 0;
+	padding: 5px 0px;
+	width: 100%;
+	user-select: none;
+}
+
+.example p,
+.example b {
+	margin: 0px;
+	padding: 5px;
+}
