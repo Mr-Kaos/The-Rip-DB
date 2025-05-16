@@ -80,9 +80,11 @@ Flight::group('/search', function () {
 	Flight::route('GET /tags', function () {
 		performAPIRequest('tags');
 	});
-
 	Flight::route('GET /jokes', function () {
 		performAPIRequest('jokes');
+	});
+	Flight::route('GET /meta-jokes', function () {
+		performAPIRequest('meta-jokes');
 	});
 	Flight::route('GET /metas', function () {
 		performAPIRequest('metas');

@@ -41,15 +41,20 @@ class JokeModel extends Model
 		$jokes = $qry->findAll();
 		$jokes = $this->setSubArrayValueToKey($jokes, 'JokeID', false);
 
-
 		// Get tags and metas from the resultset of rips.
 		$tags = $this->getJokeTags($qry);
-		// $metas = $this->getJokeMetas($qry);
+		$metas = $this->getJokeMetas($qry);
 		$counts = $this->getJokeRipCount($qry);
+
 		foreach ($jokes as &$joke) {
 			$joke['Tags'] = [];
+			$joke['MetaJokes'] = [];
 			foreach ($tags[$joke['JokeID']] as $tag) {
 				$joke['Tags'][$tag['TagID']] = ['TagName' => $tag['TagName'], 'IsPrimary' => $tag['IsPrimary']];
+			}
+
+			foreach ($metas[$joke['JokeID']] ?? [] as $metaJoke) {
+				$joke['MetaJokes'][$metaJoke['MetaJokeID']] = ['MetaJokeName' => $metaJoke['MetaJokeName']];
 			}
 
 			$joke['RipCount'] = $counts[$joke['JokeID']]['RipCount'];
@@ -63,7 +68,8 @@ class JokeModel extends Model
 		return $this->db->table(self::TABLE)->count();
 	}
 
-	public function getTags() {
+	public function getTags()
+	{
 		return $this->db->table('Tags')->findAllByColumn('TagID');
 	}
 
@@ -79,7 +85,19 @@ class JokeModel extends Model
 		return $this->setSubArrayValueToKey2D($tags, 'JokeID');
 	}
 
-	private function getJokeRipCount($qry) {
+	private function getJokeMetas($qry)
+	{
+		$metas = $this->db->table('MetaJokes')
+			->columns('j.JokeID', 'JokeMetas.MetaJokeID', 'MetaJokeName')
+			->join('JokeMetas', 'MetaJokeID', 'MetaJokeID')
+			->innerJoinSubquery($qry, 'j', 'JokeID', 'JokeID', 'JokeMetas')
+			->findAll();
+
+		return $this->setSubArrayValueToKey2D($metas, 'JokeID');
+	}
+
+	private function getJokeRipCount($qry)
+	{
 		$counts = $this->db->table('Jokes')
 			->select('r.JokeID, COUNT(RipID) AS RipCount')
 			->join('RipJokes', 'JokeID', 'JokeID')

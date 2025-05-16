@@ -22,11 +22,12 @@ include_once('private_core/objects/InputTable.php');
 			<?= (new o\InputTable('Tags', [$tagList]))->buildElement() ?>
 		</fieldset>
 		<fieldset>
-			<legend>Joke Meta</legend>
+			<legend>Meta Jokes</legend>
+			<p>Select what Meta Jokes this joke is classified under.</p>
 			<?php
-			$tagList = new o\SearchElement('Meta Tag', '/search/metas', false, null, ['name' => 'metas[]', 'required' => true]);
+			$tagList = new o\SearchElement('Meta', '/search/meta-jokes', false, null, ['name' => 'metas[]', 'required' => true]);
 			?>
-			<?= (new o\InputTable('Meta Tags', [$tagList]))->buildElement() ?>
+			<?= (new o\InputTable('Meta Jokes', [$tagList]))->buildElement() ?>
 		</fieldset>
 		<button type="submit">Submit Joke</button>
 	</form>

@@ -29,15 +29,15 @@ class APIController extends Controller
 		// Might refactor this at some point.
 		switch ($this->getPage()) {
 			case 'tags':
-				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search, 'MetaOnly', 0);
+				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search);
 				break;
-			case 'meta-tags':
-				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search, 'MetaOnly', 1);
+			case 'metas':
+				$result = $this->model->getRecords('Metas', 'MetaID', 'MetaName', $search);
 				break;
 			case 'jokes':
 				$result = $this->model->getRecords('Jokes', 'JokeID', 'JokeName', $search);
 				break;
-			case 'metas':
+			case 'meta-jokes':
 				$result = $this->model->getRecords('MetaJokes', 'MetaJokeID', 'MetaJokeName', $search);
 				break;
 			case 'games':
