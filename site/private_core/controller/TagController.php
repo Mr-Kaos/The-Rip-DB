@@ -38,16 +38,10 @@ class TagController extends Controller
 
 				// Get records of rips
 				$offset = $this->getOffset($recordCount, '/tags');
-				$meta = match ($_GET['mode'] ?? null) {
-					'standard' => false,
-					'meta' => true,
-					default => null
-				};
 				$tags = $this->model->searchTags(
 					$rowCount,
 					$offset,
 					$_GET['search'] ?? null,
-					$meta,
 				);
 
 				$this->setData('results', $tags);
@@ -77,7 +71,7 @@ class TagController extends Controller
 		$result = [];
 		if ($this->getPage() == 'new-tag') {
 			$validated['TagName'] = $this->validateFromList($_POST['name'], $this->model->getAllTagNames(), 'The given value is already taken', true);
-			$validated['IsMeta'] = $this->validateBool($_POST['meta'] ?? 0, 'The tag must be marked as Meta Only or not.');
+			$validated['IsMeta'] = $this->validateBool($_POST['meta'] ?? 0, 'The tag must be marked as Meta Only or not.', true);
 		} else {
 			$result = [new \RipDB\Error('Invalid form submission.')];
 		}

@@ -13,7 +13,6 @@ include_once('private_core/objects/InputTable.php');
 		<fieldset>
 			<legend>Tag Information</legend>
 			<?= (new o\InputElement('Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 128, 'required' => true]))->buildElement() ?>
-			<?= (new o\InputElement('Meta Only', o\InputTypes::checkbox, ['name' => 'meta', 'value' => 1, 'value-alt' => 0, ]))->buildElement() ?>
 		</fieldset>
 		<button type="submit">Submit Tag</button>
 	</form>

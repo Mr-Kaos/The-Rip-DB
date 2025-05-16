@@ -7,10 +7,9 @@ require('Model.php');
 class TagModel extends Model
 {
 	const TABLE = 'Tags';
-	// const VIEW = 'vw_JokesDetailed';
-	const COLUMNS = ['TagID', 'TagName', 'MetaOnly'];
+	const COLUMNS = ['TagID', 'TagName'];
 
-	public function searchTags(int $count, int $offset, ?string $name = null, ?bool $metaOnly = null, array $metas = [])
+	public function searchTags(int $count, int $offset, ?string $name = null)
 	{
 		$qry = $this->db->table(self::TABLE)
 			->columns(...self::COLUMNS)
@@ -19,11 +18,6 @@ class TagModel extends Model
 		// Apply name search if name is given.
 		if (!empty($name)) {
 			$qry->ilike('TagName', "%$name%");
-		}
-
-		// Filter to meta only if specified
-		if (is_bool($metaOnly)) {
-			$qry->eq('MetaOnly', $metaOnly);
 		}
 
 		$qry->limit($count)
