@@ -7,7 +7,7 @@ This project aims to provide an easy way to catalog and find "[rips](#what-are-r
 - [Aim of the Project](#aim-of-the-project)
 - [Local Setup/Install](#local-setupinstall)
 - [Project Features and Plans](#project-features-and-plans)
-- [System Design]
+- [System Design](#system-design)
 
 ## Aim of the Project
 
@@ -67,9 +67,15 @@ This project currently has the following features complete:
   - [X] Search page
   - [X] Add Joke page
   - [ ] Edit Joke page
-- [ ] Tags
+- [ ] Metas
   - [ ] Search page
-  - [ ] Add Tag page
+  - [ ] Add Meta Joke page
+  - [ ] Edit Meta Joke page
+  - [ ] Add Meta page
+  - [ ] Edit Meta page
+- [ ] Tags
+  - [X] Search page
+  - [X] Add Tag page
   - [ ] Edit Tag page
 - [X] UI/UX (done, but could do with much nicer design)
 
@@ -91,7 +97,25 @@ This system is based around rips and their data. All rips are stored in a centra
 
 The ER diagram below outlines the system's design and how each component communicates with each other.
 
-![ER diagram of the database](RipDB_Diagram.png)
+![ER diagram of the database](RipDB_Diagram.svg)
+
+### Relations Between Rips, Jokes, Metas and Tags
+
+Rips and their jokes are the primary focus of this database. To make it easy for different rips to share the same jokes and attributes, a hierarchy of attributes is used to organise rips and their jokes. The hierarchy is as follows, from most broad to most specific:
+
+1. Meta
+2. Meta Joke
+3. Joke
+4. Tag
+
+**Metas** are used to organise **Meta Jokes**.  
+**Meta Jokes** are used to categorise **Jokes**.  
+**Jokes** are used to categorise rips.
+**Tags** are used to provide specific, but general information about a joke. e.g. if the joke is a song, the tag of "Theme Song" can be given to specify that the joke is a theme song.
+
+The diagram below illustrates how some potential metas, meta jokes, jokes and tags are related to each other.
+
+![Diagram showing how jokes, tags, meta jokes and metas are linked](site/res/img/Object_Relations_Diagram.svg)
 
 ## What are "Rips"?
 

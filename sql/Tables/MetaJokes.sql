@@ -4,9 +4,9 @@ CREATE TABLE MetaJokes (
 	MetaJokeID int NOT NULL AUTO_INCREMENT,
 	MetaJokeName nvarchar(128) NOT NULL,
 	MetaJokeDescription text,
-	MetaTag int NOT NULL,
+	MetaID int NOT NULL,
 	PRIMARY KEY (MetaJokeID),
-	CONSTRAINT MetaJokes_Tag_FK FOREIGN KEY (MetaTag) REFERENCES Tags(TagID),
+	CONSTRAINT MetaJokes_Tag_FK FOREIGN KEY (MetaID) REFERENCES Metas(MetaID),
 	UNIQUE KEY UQ_MetaJokeName (MetaJokeName)
 )
 ENGINE=InnoDB

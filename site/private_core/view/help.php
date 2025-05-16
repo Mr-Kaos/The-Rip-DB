@@ -26,13 +26,10 @@
 			</ul>
 			<b>Joke Metas</b>
 			<ul>
-				<li>The Flintstones<br>Meta Tag:</li>
-				<ul>
-					<li>Animated Series</li>
-				</ul>
+				<li>The Flintstones<br><i>Animated Series Meta</i></li>
 			</ul>
 			<p>The primary tag of <b>Theme Song</b> is used as this joke in itself is a theme song. The other tags of <b>Song</b> and <b>Cartoon</b> are given as this joke is a song, and is from a cartoon - namely The Flintstones.</p>
-			<p>The meta tag of <b>The Flintstones</b> is given as the joke is from the animated series "The Flintstones", hence the meta joke's tag "Animated Series".</p>
+			<p>The Meta Joke of <b>The Flintstones</b> is given as the joke is from the animated series "The Flintstones", hence the meta joke's falling under the "Animated Series" meta.</p>
 		</details>
 		<details class="example">
 			<summary>Example Joke - &OpenCurlyDoubleQuote;Megalovania</a>&CloseCurlyDoubleQuote;</summary>
@@ -44,13 +41,11 @@
 			</ul>
 			<b>Joke Metas</b>
 			<ul>
-				<li>Undertale<br>Meta Tag:</li>
-				<ul>
-					<li>Video Game</li>
-				</ul>
+				<li>Undertale<br><i>Video Game Meta</i></li>
+				<li>VGM<br><i>Music Meta</i></li>
 			</ul>
 			<p>The primary tag of <b>VGM</b> is used as this joke in itself is music from a video game. The other tag of <b>Song</b> is given as a more general tag.</p>
-			<p>The meta tag of <b>Undertale</b> is given as the joke is from the video game "Undertale", hence the meta joke's tag "Video Game".</p>
+			<p>The Meta Joke of <b>Undertale</b> is given as the joke is from the video game "Undertale", hence the meta joke's falling under the "Video Game" meta.</p>
 		</details>
 		<details class="example">
 			<summary>Example Joke - &OpenCurlyDoubleQuote;Deez Nuts</a>&CloseCurlyDoubleQuote;</summary>
@@ -62,13 +57,10 @@
 			</ul>
 			<b>Joke Metas</b>
 			<ul>
-				<li>Vine<br>Meta Tag:</li>
-				<ul>
-					<li>Viral Video</li>
-				</ul>
+				<li>Vine<br><i>Viral Video Meta</i></li>
 			</ul>
 			<p>The primary tag of <b>Meme</b> is used as this joke in itself is sourced from an internet meme. The other tag of <b>Video</b> is given as the meme originated from a video.</p>
-			<p>The meta tag of <b>Vine</b> is given as the joke originated from the social media platform Vine. Since Vine was known for hosting many viral videos, its meta tag is "Viral Video".</p>
+			<p>The Meta Joke of <b>Vine</b> is given as the joke originated from the social media platform Vine. Since Vine was known for hosting many viral videos, its Meta is "Viral Video".</p>
 		</details>
 	</section>
 	<section>
@@ -76,8 +68,9 @@
 		<p>Since many jokes share common elements, such as their source material, style/genre or medium, meta jokes (and their tags) are used to organise jokes into broader, yet specific groups.<br>
 			The purpose of this is to provide the ability to find rips using broader search filters.</p>
 		<p>For example, suppose someone wanted to find all rips that feature a song by the music artist Daft Punk. A meta joke of Daft Punk can be defined, which will contain more specific jokes and references to them, such as their songs or persona.</p>
-		<p id="relation-diagram">The diagram below illustrates how jokes and meta jokes are related, and subsequently rips.</p>
+		<p id="relation-diagram">The diagram below illustrates how jokes and meta jokes are related.</p>
 		<img src="res/img/Object_Relations_Diagram.svg" width="1000px" style="overflow-x:scroll;max-width:90vw">
-		<p>Notice how some jokes share multiple meta jokes. This allows for one joke to be found through multiple related categories.</p>
+		<p>Notice how some jokes share multiple meta jokes. This allows for one joke to be found through multiple metas.</p>
+		<p>For example, the joke "Gangnam Style" is categorised under the "Psy" and "K-POP" meta jokes, which fall under the "Music Artists" and "Music" metas respectively.</p>
 	</section>
 </main>

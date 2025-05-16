@@ -24,10 +24,10 @@ $pdo = new PDO('mysql:host=' . DB_HOST . ';charset=UTF8', DB_USER, DB_PASS);
 const DB_NAME = 'RipDB';
 
 
-$in = readline("Deploying to " . DB_HOST . '. Is this OK?');
+$in = readline("Deploying to " . DB_HOST . '. Is this OK? [Y or Enter to continue]');
 
 $in = strtoupper($in);
-if ($in == 'Y') {
+if ($in == 'Y' || $in == '') {
 	// if ($mysqli->connect_errno) {
 	if (!$pdo) {
 		echo "Database connection failed! Please check the connection details in this file (deploy.php).";
@@ -53,6 +53,7 @@ if ($in == 'Y') {
 	// ------
 
 	$files = [
+		'Metas',
 		'Tags',
 		'Channels',
 		'Jokes',
@@ -85,13 +86,20 @@ if ($in == 'Y') {
 
 	$files = [
 		'usp_InsertJoke',
-		'usp_InsertJoke_TESTING',
+		'usp_InsertJoke_SAMPLE',
+		'usp_InsertMetaJoke_SAMPLE',
 		'usp_InsertMetaJoke',
 		'usp_InsertRip',
 		'usp_DeleteRip',
 		'usp_InsertTag'
 	];
 	deployFiles($pdo, 'Procedures', $files);
+
+	// ------
+	// Base Data
+	// ------
+
+	deployFiles($pdo, 'Scripts', ['BaseData']);
 
 	// ----------------------
 	// Sample Data (optional)

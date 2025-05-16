@@ -1,8 +1,8 @@
 -- Stored procedure for inserting jokes into the database easily.
 
-DROP PROCEDURE IF EXISTS RipDB.usp_InsertJoke_TESTING;
+DROP PROCEDURE IF EXISTS RipDB.usp_InsertJoke_SAMPLE;
 
-CREATE PROCEDURE RipDB.usp_InsertJoke_TESTING(
+CREATE PROCEDURE RipDB.usp_InsertJoke_SAMPLE(
 	IN JokeName nvarchar(128),
 	IN JokeDescription text,
 	IN PrimaryTag nvarchar(128),

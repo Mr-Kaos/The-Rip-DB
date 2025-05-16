@@ -1,13 +1,11 @@
--- Stored procedure for inserting meta into the database easily.
-
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertMetaJoke;
 
 CREATE PROCEDURE RipDB.usp_InsertMetaJoke(
-	IN MetaName nvarchar(128),
+	IN MetaJokeName nvarchar(128),
 	IN MetaDescription text,
-	IN MetaTag nvarchar(128))
+	IN MetaID INT)
 BEGIN
-	DECLARE new_TagId int;
+	DECLARE new_MetaId int;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	BEGIN
 		ROLLBACK;
@@ -16,18 +14,10 @@ BEGIN
 
 	START TRANSACTION;
 
-	INSERT INTO Tags
-		(TagName, MetaOnly)
-	VALUES
-		(MetaTag, 1)
-	ON DUPLICATE KEY UPDATE TagName = TagName, TagID = LAST_INSERT_ID(TagID);
-
-	SET new_TagId = LAST_INSERT_ID();
-
 	INSERT INTO MetaJokes
-		(MetaJokeName, MetaJokeDescription, MetaTag)
+		(MetaJokeName, MetaJokeDescription, MetaID)
 	VALUES
-		(MetaName, MetaDescription, new_TagId);
+		(MetaName, MetaDescription, MetaID);
 
 	COMMIT;
 END

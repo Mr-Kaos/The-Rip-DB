@@ -1,0 +1,11 @@
+CREATE TABLE Metas (
+	MetaID INT auto_increment NOT NULL,
+	MetaName nvarchar(128) NOT NULL,
+	MetaDescription nvarchar(1024) DEFAULT NULL,
+	CONSTRAINT PK_Metas PRIMARY KEY (MetaID),
+	CONSTRAINT UQ_MetaName UNIQUE KEY (MetaName)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci
+AUTO_INCREMENT=1;

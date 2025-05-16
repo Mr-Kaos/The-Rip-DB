@@ -1,7 +1,6 @@
 CREATE TABLE Tags (
 	TagID INT auto_increment NOT NULL,
 	TagName nvarchar(128) NOT NULL,
-	MetaOnly BIT DEFAULT 0,
 	CONSTRAINT PK_Tags PRIMARY KEY (TagID),
 	CONSTRAINT UQ_TagName UNIQUE KEY (TagName)
 )

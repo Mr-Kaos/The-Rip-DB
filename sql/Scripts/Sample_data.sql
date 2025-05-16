@@ -7,67 +7,65 @@ VALUES
 	('TimmyTurnersGrandDad', 'Earth-shatteringly awesome music and free awesomesauce... What more does one need?', 'https://www.youtube.com/@TimmyTurnersGrandDad');
 
 -- Meta Jokes
-CALL usp_InsertMetaJoke('The Flintstones', 'An animated sitcom produced by Hanna-Barbera Productions in the 60s.', 'Animated Series');
-CALL usp_InsertMetaJoke('Bootlegs (Video Games)', 'Unofficial black-market video games that often use licensed intellectual property in their games.', 'Video Game');
-CALL usp_InsertMetaJoke('Pokémon', 'Japanese media franchise about creatures with special powers that co-exist with humans.', 'Franchise');
-CALL usp_InsertMetaJoke('Undertale', 'RPG video game by Toby Fox.', 'Video Game');
-CALL usp_InsertMetaJoke('K-Pop', 'Genre of music where music in this genre originates from South Korea.', 'Music'); -- 5
-CALL usp_InsertMetaJoke('80s', 'Genre of music where music in this genre was released in the 1980s and is often produced for Western audiences.', 'Music');
-CALL usp_InsertMetaJoke('Psy', 'K-Pop artist most well known for his song "Gangnam Style".', 'Artist (Music)');
-CALL usp_InsertMetaJoke('Star Wars', 'A sci-fi media franchise created by George Lucas.', 'Franchise');
-CALL usp_InsertMetaJoke('Inspector Gadget', '80s kids cartoon television series.', 'Animated Series');
-CALL usp_InsertMetaJoke('Smash Mouth', 'Music artist.', 'Artist (Music)'); -- 10
-CALL usp_InsertMetaJoke('Disney', 'American multimedia company.', 'Company');
-CALL usp_InsertMetaJoke('Anime', 'Animation that originates from Japan.', 'Animation');
-CALL usp_InsertMetaJoke('Live Live!', 'Anime series', 'Anime');
-CALL usp_InsertMetaJoke('Green Day', 'Music artist', 'Artist (Music)');
-CALL usp_InsertMetaJoke('Yakuza', 'Video game franchise', 'Video Game'); -- 15
-CALL usp_InsertMetaJoke('Touhou', 'Bullet hell video game series', 'Video Game');
-CALL usp_InsertMetaJoke('Eurobeat', 'Genre of music', 'Music');
-CALL usp_InsertMetaJoke('Super Mario', 'Video game franchise', 'Video Game');
-CALL usp_InsertMetaJoke('Classical', 'Musical genre', 'Music');
-CALL usp_InsertMetaJoke('Beatles', 'Music band', 'Artist (Music)'); -- 20
-CALL usp_InsertMetaJoke('Backstreet Boys', 'Music band', 'Artist (Music)');
+CALL usp_InsertMetaJoke_SAMPLE('The Flintstones', 'An animated sitcom produced by Hanna-Barbera Productions in the 60s.', 'Animated Series'); -- 11
+CALL usp_InsertMetaJoke_SAMPLE('Bootlegs', 'Unofficial black-market video games that often use licensed intellectual property in their games.', 'Video Game');
+CALL usp_InsertMetaJoke_SAMPLE('Pokémon', 'Japanese media franchise about creatures with special powers that co-exist with humans.', 'Franchise');
+CALL usp_InsertMetaJoke_SAMPLE('Undertale', 'RPG video game by Toby Fox.', 'Video Game');
+CALL usp_InsertMetaJoke_SAMPLE('K-Pop', 'Genre of music where music in this genre originates from South Korea.', 'Music'); -- 15
+CALL usp_InsertMetaJoke_SAMPLE('Psy', 'K-Pop artist most well known for his song "Gangnam Style".', 'Artist (Music)');
+CALL usp_InsertMetaJoke_SAMPLE('Star Wars', 'A sci-fi media franchise created by George Lucas.', 'Franchise');
+CALL usp_InsertMetaJoke_SAMPLE('Inspector Gadget', '80s kids cartoon television series.', 'Animated Series');
+CALL usp_InsertMetaJoke_SAMPLE('Smash Mouth', 'Music artist.', 'Artist (Music)');
+CALL usp_InsertMetaJoke_SAMPLE('Disney', 'American multimedia company.', 'Company'); -- 20
+CALL usp_InsertMetaJoke_SAMPLE('Love Live!', 'Anime series', 'Anime');
+CALL usp_InsertMetaJoke_SAMPLE('Green Day', 'Music artist', 'Artist (Music)');
+CALL usp_InsertMetaJoke_SAMPLE('Yakuza', 'Video game franchise', 'Video Game');
+CALL usp_InsertMetaJoke_SAMPLE('Touhou', 'Bullet hell video game series', 'Video Game');
+CALL usp_InsertMetaJoke_SAMPLE('Eurobeat', 'Genre of music', 'Music'); -- 25
+CALL usp_InsertMetaJoke_SAMPLE('Super Mario', 'Video game franchise', 'Video Game');
+CALL usp_InsertMetaJoke_SAMPLE('Classical', 'Musical genre', 'Music');
+CALL usp_InsertMetaJoke_SAMPLE('Beatles', 'Music band', 'Artist (Music)');
+CALL usp_InsertMetaJoke_SAMPLE('Backstreet Boys', 'Music band', 'Artist (Music)');
 
 -- Jokes
-CALL usp_InsertJoke_TESTING('Grand Dad', 'Funny bootleg Flintstones game popularised by into a meme by Vargskelethor Joel.', 'Meme', '["Video Game"]', '[1,2]');
-CALL usp_InsertJoke_TESTING('Meet the Flintstones', 'Main theme of the cartoon series "The Flintstones"', 'Theme Song', NULL, '[1]');
-CALL usp_InsertJoke_TESTING('Gangam Style', 'Hit K-Pop song from 2012 by Psy', 'Song', NULL, '[5,7]');
-CALL usp_InsertJoke_TESTING('Once Upon a Time', 'Song from Undertale.', 'Song', '["VGM"]', '[4]');
-CALL usp_InsertJoke_TESTING('The Final Countdown', 'Song by Europe.', 'Song', NULL, '[6]'); -- 5
-CALL usp_InsertJoke_TESTING('Megalovania', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]');
-CALL usp_InsertJoke_TESTING('Blue balls', 'What you expect is about to happen doesn''t happen... for an extended time.', 'Meme', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Maroon 5', 'Pop artist', 'Artist (Music)', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Inspector Gadget', 'Theme song of the TV show "Inspector Gadget".', 'Theme Song', '["Cartoon", "TV Show"]', '[9]');
-CALL usp_InsertJoke_TESTING('Star Wars (Main Title)', 'Main title theme of Star Wars by John Williams.', 'Song', '["Series"]', '[8]'); -- 10
-CALL usp_InsertJoke_TESTING('All Star', 'Song by music artist "Smash Mouth".', 'Song', '["Series"]', '[10]');
-CALL usp_InsertJoke_TESTING('Bonetrousle', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]');
-CALL usp_InsertJoke_TESTING('On The Floor', 'Song by IceJJFish.', 'Song', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Donald Duck', 'Disney character', 'Character', NULL, '[11]');
-CALL usp_InsertJoke_TESTING('Temmie Village', 'Song from the game Undertale.', 'Song', '["VGM"]', '[4]'); -- 15
-CALL usp_InsertJoke_TESTING('Snow halation', 'Song from the Love Live! franchise.', 'Song', '["Anime"]', '[12, 13]');
-CALL usp_InsertJoke_TESTING('YTP4LIFE CRYING', '', 'Meme', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Title Theme & Ending', 'The NES rendition of "Meet the Flintstones" that plays during the title screen and ending of The Flintstones: The Rescue of Dino & Hoppy. The name is unofficial.', 'Song', '["VGM"]', NULL);
-CALL usp_InsertJoke_TESTING('Wake Me Up When September Ends', 'Song by Green Day', 'Song', NULL, '[14]');
-CALL usp_InsertJoke_TESTING('Pledge of Demon', 'Song from Yakuza 0', 'Song', '["VGM"]', '[15]'); -- 20
-CALL usp_InsertJoke_TESTING('Rock My Emotions', '', 'Song', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Futatsuiwa from Sado', '', 'Song', NULL, '[16]');
-CALL usp_InsertJoke_TESTING('Bad Apple!! feat.nomico', '', 'Song', NULL, '[16]');
-CALL usp_InsertJoke_TESTING('Bad Apple', '', 'Song', '["VGM"]', '[16]');
-CALL usp_InsertJoke_TESTING('U.N. Owen Was Her?', '', 'Song', NULL, '[16]'); -- 25
-CALL usp_InsertJoke_TESTING('Running in the 90s', '', 'Song', NULL, '[17]');
-CALL usp_InsertJoke_TESTING('Tetris - Type A', '', 'Song', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Beware the Forest''s Mushrooms', '', 'Song', '["VGM"]', '[18]');
-CALL usp_InsertJoke_TESTING('In the Hall of the Mountain King', '', 'Song', NULL, '[19]');
-CALL usp_InsertJoke_TESTING('OMNI FIX YOUR PASSWORD', '', 'Video', NULL, NULL); -- 30
-CALL usp_InsertJoke_TESTING('Temporary Secretary', '', 'Song', NULL, '[20]');
-CALL usp_InsertJoke_TESTING('We are Leo', '', 'Band', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Deez Nuts!', '', 'Meme', NULL, NULL);
-CALL usp_InsertJoke_TESTING('Deez Nuts! [Trap Remix]', '', 'Song', '["Meme"]', NULL);
-CALL usp_InsertJoke_TESTING('Bonfire', '', 'Song', NULL, NULL); -- 35
-CALL usp_InsertJoke_TESTING('Harlem Shake', '', 'Song', '["Meme"]', NULL);
-CALL usp_InsertJoke_TESTING('Ore Ida Pizza Bagel Bites', '', 'Commercial', '["YTP"]', NULL);
-CALL usp_InsertJoke_TESTING('I Want It That Way', '', 'Song', NULL, '[21]');
+CALL usp_InsertJoke_SAMPLE('Grand Dad', 'Funny bootleg Flintstones game popularised by into a meme by Vargskelethor Joel.', 'Meme', '["Video Game"]', '[11,12]');
+CALL usp_InsertJoke_SAMPLE('Meet the Flintstones', 'Main theme of the cartoon series "The Flintstones"', 'Theme Song', NULL, '[11]');
+CALL usp_InsertJoke_SAMPLE('Gangam Style', 'Hit K-Pop song from 2012 by Psy', 'Song', NULL, '[15,16]');
+CALL usp_InsertJoke_SAMPLE('Once Upon a Time', 'Song from Undertale.', 'Song', NULL, '[14,10]');
+CALL usp_InsertJoke_SAMPLE('The Final Countdown', 'Song by Europe.', 'Song', NULL, '[1]'); -- 5
+CALL usp_InsertJoke_SAMPLE('Megalovania', 'Song from the game Undertale.', 'Song', NULL, '[14,10]');
+CALL usp_InsertJoke_SAMPLE('Blue balls', 'What you expect is about to happen doesn''t happen... for an extended time.', 'Meme', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Maroon 5', 'Pop artist', 'Artist (Music)', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Inspector Gadget', 'Theme song of the TV show "Inspector Gadget".', 'Theme Song', '["Cartoon", "TV Show"]', '[18]');
+CALL usp_InsertJoke_SAMPLE('Star Wars (Main Title)', 'Main title theme of Star Wars by John Williams.', 'Song', '["Series"]', '[17]'); -- 10
+CALL usp_InsertJoke_SAMPLE('All Star', 'Song by music artist "Smash Mouth".', 'Song', '["Series"]', '[19]');
+CALL usp_InsertJoke_SAMPLE('Bonetrousle', 'Song from the game Undertale.', 'Song', NULL, '[14]');
+CALL usp_InsertJoke_SAMPLE('On The Floor', 'Song by IceJJFish.', 'Song', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Donald Duck', 'Disney character', 'Character', NULL, '[20]');
+CALL usp_InsertJoke_SAMPLE('Temmie Village', 'Song from the game Undertale.', 'Song', NULL, '[14]'); -- 15
+CALL usp_InsertJoke_SAMPLE('Snow halation', 'Song from the Love Live! franchise.', 'Song', '["Anime"]', '[21]');
+CALL usp_InsertJoke_SAMPLE('YTP4LIFE CRYING', '', 'Meme', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Title Theme & Ending', 'The NES rendition of "Meet the Flintstones" that plays during the title screen and ending of The Flintstones: The Rescue of Dino & Hoppy. The name is unofficial.', 'Song', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Wake Me Up When September Ends', 'Song by Green Day', 'Song', NULL, '[22]');
+CALL usp_InsertJoke_SAMPLE('Pledge of Demon', 'Song from Yakuza 0', 'Song', NULL, '[23]'); -- 20
+CALL usp_InsertJoke_SAMPLE('Rock My Emotions', '', 'Song', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Futatsuiwa from Sado', '', 'Song', NULL, '[24]');
+CALL usp_InsertJoke_SAMPLE('Bad Apple!! feat.nomico', '', 'Song', NULL, '[24]');
+CALL usp_InsertJoke_SAMPLE('Bad Apple', '', 'Song', NULL, '[24]');
+CALL usp_InsertJoke_SAMPLE('U.N. Owen Was Her?', '', 'Song', NULL, '[24]'); -- 25
+CALL usp_InsertJoke_SAMPLE('Running in the 90s', '', 'Song', NULL, '[25]');
+CALL usp_InsertJoke_SAMPLE('Tetris - Type A', '', 'Song', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Beware the Forest''s Mushrooms', '', 'Song', NULL, '[26]');
+CALL usp_InsertJoke_SAMPLE('In the Hall of the Mountain King', '', 'Song', NULL, '[27]');
+CALL usp_InsertJoke_SAMPLE('OMNI FIX YOUR PASSWORD', '', 'Video', NULL, NULL); -- 30
+CALL usp_InsertJoke_SAMPLE('Temporary Secretary', '', 'Song', NULL, '[28]');
+CALL usp_InsertJoke_SAMPLE('We are Leo', '', 'Band', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Deez Nuts!', '', 'Meme', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Deez Nuts! [Trap Remix]', '', 'Song', '["Meme"]', NULL);
+CALL usp_InsertJoke_SAMPLE('Bonfire', '', 'Song', NULL, NULL); -- 35
+CALL usp_InsertJoke_SAMPLE('Harlem Shake', '', 'Song', '["Meme"]', NULL);
+CALL usp_InsertJoke_SAMPLE('Ore Ida Pizza Bagel Bites', '', 'Commercial', '["YTP"]', NULL);
+CALL usp_InsertJoke_SAMPLE('I Want It That Way', '', 'Song', NULL, '[29]');
 
 -- Ripped "Games"
 INSERT INTO Games

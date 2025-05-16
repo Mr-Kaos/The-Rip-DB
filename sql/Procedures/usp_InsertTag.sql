@@ -3,12 +3,11 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertTag;
 
 CREATE PROCEDURE RipDB.usp_InsertTag(
-	IN TagName nvarchar(128),
-	IN IsMeta bit)
+	IN TagName nvarchar(128))
 BEGIN
 	INSERT INTO Tags
-		(TagName, MetaOnly)
+		(TagName)
 	VALUES
-		(TagName, IsMeta);
+		(TagName);
 	COMMIT;
 END
