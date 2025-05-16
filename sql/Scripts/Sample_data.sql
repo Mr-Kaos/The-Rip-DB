@@ -28,22 +28,22 @@ CALL usp_InsertMetaJoke_SAMPLE('Beatles', 'Music band', 'Artist (Music)');
 CALL usp_InsertMetaJoke_SAMPLE('Backstreet Boys', 'Music band', 'Artist (Music)');
 
 -- Jokes
-CALL usp_InsertJoke_SAMPLE('Grand Dad', 'Funny bootleg Flintstones game popularised by into a meme by Vargskelethor Joel.', 'Meme', '["Video Game"]', '[11,12]');
+CALL usp_InsertJoke_SAMPLE('Grand Dad', 'Funny bootleg Flintstones game popularised by into a meme by Vargskelethor Joel.', 'Meme', '["Voice line"]', '[11,12]');
 CALL usp_InsertJoke_SAMPLE('Meet the Flintstones', 'Main theme of the cartoon series "The Flintstones"', 'Theme Song', NULL, '[11]');
 CALL usp_InsertJoke_SAMPLE('Gangam Style', 'Hit K-Pop song from 2012 by Psy', 'Song', NULL, '[15,16]');
 CALL usp_InsertJoke_SAMPLE('Once Upon a Time', 'Song from Undertale.', 'Song', NULL, '[14,10]');
 CALL usp_InsertJoke_SAMPLE('The Final Countdown', 'Song by Europe.', 'Song', NULL, '[1]'); -- 5
 CALL usp_InsertJoke_SAMPLE('Megalovania', 'Song from the game Undertale.', 'Song', NULL, '[14,10]');
 CALL usp_InsertJoke_SAMPLE('Blue balls', 'What you expect is about to happen doesn''t happen... for an extended time.', 'Meme', NULL, NULL);
-CALL usp_InsertJoke_SAMPLE('Maroon 5', 'Pop artist', 'Artist (Music)', NULL, NULL);
+CALL usp_InsertJoke_SAMPLE('Maroon 5', 'Pop artist', 'Artist', NULL, NULL);
 CALL usp_InsertJoke_SAMPLE('Inspector Gadget', 'Theme song of the TV show "Inspector Gadget".', 'Theme Song', '["Cartoon", "TV Show"]', '[18]');
-CALL usp_InsertJoke_SAMPLE('Star Wars (Main Title)', 'Main title theme of Star Wars by John Williams.', 'Song', '["Series"]', '[17]'); -- 10
-CALL usp_InsertJoke_SAMPLE('All Star', 'Song by music artist "Smash Mouth".', 'Song', '["Series"]', '[19]');
+CALL usp_InsertJoke_SAMPLE('Star Wars (Main Title)', 'Main title theme of Star Wars by John Williams.', 'Song', null, '[17,8]'); -- 10
+CALL usp_InsertJoke_SAMPLE('All Star', 'Song by music artist "Smash Mouth".', 'Song', null, '[19]');
 CALL usp_InsertJoke_SAMPLE('Bonetrousle', 'Song from the game Undertale.', 'Song', NULL, '[14]');
 CALL usp_InsertJoke_SAMPLE('On The Floor', 'Song by IceJJFish.', 'Song', NULL, NULL);
 CALL usp_InsertJoke_SAMPLE('Donald Duck', 'Disney character', 'Character', NULL, '[20]');
 CALL usp_InsertJoke_SAMPLE('Temmie Village', 'Song from the game Undertale.', 'Song', NULL, '[14]'); -- 15
-CALL usp_InsertJoke_SAMPLE('Snow halation', 'Song from the Love Live! franchise.', 'Song', '["Anime"]', '[21]');
+CALL usp_InsertJoke_SAMPLE('Snow halation', 'Song from the Love Live! franchise.', 'Song', null, '[21]');
 CALL usp_InsertJoke_SAMPLE('YTP4LIFE CRYING', '', 'Meme', NULL, NULL);
 CALL usp_InsertJoke_SAMPLE('Title Theme & Ending', 'The NES rendition of "Meet the Flintstones" that plays during the title screen and ending of The Flintstones: The Rescue of Dino & Hoppy. The name is unofficial.', 'Song', NULL, NULL);
 CALL usp_InsertJoke_SAMPLE('Wake Me Up When September Ends', 'Song by Green Day', 'Song', NULL, '[22]');
