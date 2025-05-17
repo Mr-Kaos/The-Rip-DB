@@ -90,6 +90,7 @@ if ($in == 'Y' || $in == '') {
 		'usp_InsertMetaJoke_SAMPLE',
 		'usp_InsertMetaJoke',
 		'usp_InsertRip',
+		'usp_UpdateRip',
 		'usp_DeleteRip',
 		'usp_InsertTag'
 	];
