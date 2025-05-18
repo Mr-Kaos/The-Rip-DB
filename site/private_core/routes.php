@@ -30,6 +30,13 @@ Flight::group('/rips', function () {
 		displayPage('new-rip', 'RipController');
 	});
 
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('edit-rip', 'RipController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('edit-rip', 'RipController', ['id' => $id]);
+	});
+
 	Flight::route('/@id', function ($id) {
 		displayPage('rip', 'RipController', ['id' => $id]);
 	});
@@ -145,13 +152,13 @@ function performAPIRequest(string $page)
 /**
  * Submits a form from a POST request.
  */
-function submitForm(string $page, string $controllerName)
+function submitForm(string $page, string $controllerName, ?array $data = null)
 {
 	if (!is_null($controllerName)) {
 		require_once("private_core/controller/$controllerName.php");
 		$controllerName = "\RipDB\\Controller\\$controllerName";
 		$controller = new $controllerName($page);
-		$result = $controller->submitRequest();
+		$result = $controller->submitRequest($data);
 
 		if (is_array($result)) {
 			foreach ($result as $error) {

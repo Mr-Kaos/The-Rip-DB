@@ -70,7 +70,7 @@ class JokeController extends Controller
 		}
 	}
 
-	public function submitRequest(): array|string
+	public function submitRequest(?array $extraData = null): array|string
 	{
 		$result = null;
 		if ($this->getPage() == 'new-joke') {
@@ -81,10 +81,21 @@ class JokeController extends Controller
 			$existingTags = $this->model->getTags();
 			$validated['PrimaryTag'] = $this->validateFromList($_POST['primary'], $existingTags, 'The selected primary tag does not exist in the database.');
 			$tags = $this->validateFromList($_POST['tags'], $existingTags, 'One or more of the given tags do not exist in the database.');
-			$validated['TagsJSON'] = json_encode($tags, JSON_NUMERIC_CHECK);
+			if ($tags instanceof \RipDB\Error) {
+				$validated['TagsJSON'] = $tags;
+			} else {
+				$validated['TagsJSON'] = json_encode($tags, JSON_NUMERIC_CHECK);
+			}
 			$metas = $this->validateFromList($_POST['metas'], $existingTags, 'One or more of the given meta tags do not exist in the database.');
-			$validated['MetasJSON'] = json_encode($metas, JSON_NUMERIC_CHECK);
+			if ($metas instanceof \RipDB\Error) {
+				$validated['MetasJSON'] = $metas;
+			} else {
+				$validated['MetasJSON'] = json_encode($metas, JSON_NUMERIC_CHECK);
+			}
 
+			echo "<pre>" . print_r($_POST, true) . "</pre>";
+			echo "<pre>" . print_r($validated, true) . "</pre>";
+			die();
 			$submission = $this->model->submitFormData($validated, 'usp_InsertJoke');
 			if ($submission === true) {
 				$result = '/jokes';

@@ -16,7 +16,7 @@ class RipModel extends Model
 	public function getRip(int $id)
 	{
 		$qry = $this->db->table(self::TABLE)
-			->columns('RipID', 'RipName', 'RipDate', 'RipAlternateName', 'RipLength', 'RipURL', 'RipDescription', 'GameID', 'GameName', 'ChannelName', 'ChannelURL')
+			->columns('RipID', 'RipName', 'RipDate', 'RipAlternateName', 'RipLength', 'RipURL', 'RipDescription', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL')
 			->eq('RipID', $id)
 			->join('Games', 'GameID', 'RipGame')
 			->join('Channels', 'ChannelID', 'RipChannel');
@@ -143,7 +143,7 @@ class RipModel extends Model
 	private function getRipRippers($ripQuery)
 	{
 		return $this->db->table('Rippers')
-			->columns('r.RipID, RipRippers.RipperID', 'RipperName')
+			->columns('r.RipID, RipRippers.RipperID', 'RipperName', 'Alias')
 			->join('RipRippers', 'RipperID', 'RipperID')
 			->innerJoinSubquery($ripQuery, 'r', 'RipID', 'RipID', 'RipRippers')
 			->findAll();
@@ -274,37 +274,6 @@ class RipModel extends Model
 
 		return $qry;
 	}
-
-	/**
-	 * Finds all jokes that are contained in the given resultset of rips.
-	 * @return A 2D array where each key is the ID of the joke and the values are the columns from the Jokes Table, along with its tags.
-	 */
-	// private function getRipJokes($ripQuery)
-	// {
-	// 	$qry = $this->db->table('Jokes')
-	// 		->columns('r.RipID, RipJokes.JokeID', 'JokeName')
-	// 		->join('RipJokes', 'JokeID', 'JokeID')
-	// 		->joinSubquery($ripQuery, 'r', 'RipID', 'RipID', 'RipJokes');
-
-	// 	$tags = $this->getJokeTags($qry);
-	// 	$jokes = $qry->findAll();
-
-	// 	// Group tags by JokeID
-	// 	$tags = $this->setSubArrayValueToKey2D($tags, 'JokeID');
-
-	// 	// Merge tags with jokes array
-	// 	foreach ($jokes as &$joke) {
-	// 		$joke['Tags'] = [];
-	// 		foreach ($tags[$joke['JokeID']] as $tag) {
-	// 			// Tag ID is unset so less data is stored in each row.
-	// 			$id = $tag['TagID'];
-	// 			unset($tag['TagID']);
-	// 			$joke['Tags'][$id] = $tag;
-	// 		}
-	// 	}
-
-	// 	return $jokes;
-	// }
 
 	/**
 	 * Gets a resultset of the specified records from the specified table.

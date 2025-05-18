@@ -50,7 +50,7 @@ abstract class Controller
 	 * @return RipDB\Error[]|string Returns a URL to redirect to upon a successful submission. Else, if an error occurred, an array of each error encountered will be returned.
 	 * 	This array is retrieved from the model.
 	 */
-	public function submitRequest(): array|string
+	public function submitRequest(?array $extraData = null): array|string
 	{
 		throw (new \Exception("This controller's submitRequest function has not been initialised!"));
 		return '';

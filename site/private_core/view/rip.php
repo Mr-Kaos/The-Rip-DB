@@ -5,6 +5,7 @@
 		<section id="summary">
 			<h1><?= $rip['RipName'] ?></h1>
 			<p><?= $rip['RipDescription'] ?></p>
+			<a href="/rips/edit/<?= $rip['RipID']; ?>">Edit Rip</a>
 		</section>
 		<div style="float:left">
 			<section id="jokes">

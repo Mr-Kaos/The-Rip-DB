@@ -66,7 +66,7 @@ class TagController extends Controller
 		}
 	}
 
-	public function submitRequest(): array|string
+	public function submitRequest(?array $extraData = null): array|string
 	{
 		$result = [];
 		if ($this->getPage() == 'new-tag') {
