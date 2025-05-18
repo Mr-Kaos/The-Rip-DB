@@ -18,9 +18,10 @@ class SearchElement extends InputElement
 	 * @param ?string $label The label of the input element.
 	 * @param string $url The URL to query with the users input.
 	 * @param bool $allowMultiSelect If true, allows multiple searches to be performed and have them as "selected" options, similar to the MultiSelectDropdownElement. Default is false - i.e. single value.
+	 * @param ?array $value An associative array containing the IDs and text-value of the input. If $allowMultiSelect is true, then the value should be an array of key-pair values for each input.
 	 * @param ?array $attributes An associative array of html attributes to add to the element.
 	 */
-	public function __construct(string $label, string $url, bool $allowMultiSelect, string|array|null $value, ?array $attributes = [])
+	public function __construct(string $label, string $url, bool $allowMultiSelect, ?array $value, ?array $attributes = [])
 	{
 		$this->url = $url;
 		$this->multiSelect = $allowMultiSelect;
@@ -33,6 +34,15 @@ class SearchElement extends InputElement
 		}
 		$this->values = $value;
 		parent::__construct($label, InputTypes::custom, $attributes);
+	}
+
+	/**
+	 * Sets the prefill value(s) for the input.
+	 * @param ?array $value The value to prefill the element with.
+	 */
+	public function setValue(?array $value): void
+	{
+		$this->values = $value;
 	}
 
 	/**
@@ -56,6 +66,13 @@ class SearchElement extends InputElement
 				}
 			}
 			$element .= '</div>';
+		} elseif (is_array($this->values)) {
+			// if a value is given, make sure it is exactly one element in length.
+			if (count($this->values) == 1) {
+				$element .= '<span value="' . array_keys($this->values)[0] . '" class="pill">' . $this->values[array_keys($this->values)[0]] . '<input hidden="" name="' . $this->attributes['name'] . '"><button type="button">×</button></span>';
+			} else {
+				throw (new \Exception('The value for a single-option SearchElement must be associative array with exactly one key-pair value!'));
+			}
 		}
 		$element .= '</span>';
 

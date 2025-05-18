@@ -75,8 +75,15 @@ class InputTable extends CustomElement {
 	 */
 	constructor(element) {
 		super(element);
-		// Add an empty row to the table to initialise it.
-		this.addRow();
+
+		// If values are prefilled, do not add an empty row.
+		if (element.getAttribute('data-value')) {
+			this.#rowCount = element.querySelectorAll('tbody>tr').length;
+		}
+		// Else, add an empty row to the table to initialise it.
+		else {
+			this.addRow();
+		}
 
 		let addButton = element.querySelector(`#add_${element.id}`);
 		addButton.onclick = e => this.addRow();
@@ -182,8 +189,10 @@ class SearchElement extends MultiSelect {
 		if (element.getAttribute('type') == 'multi') {
 			this.#multi = true;
 			this.#value = [];
+			this.#initValues(element.querySelectorAll('div.selected>span.pill'));
+		} else {
+			this.#initValues(element.querySelector('span.pill'));
 		}
-		this.#initValues(element.querySelectorAll('div.selected>span.pill'));
 
 		// If the list has not been touched yet, make an empty search to load some results
 		this.#searchElement.onclick = function () {
@@ -201,11 +210,16 @@ class SearchElement extends MultiSelect {
 	 * @param {NodeList} elements
 	 */
 	#initValues(elements) {
-		for (let i = 0; i < elements.length; i++) {
-			let input = elements[i].querySelector('input');
-			let btnRemove = elements[i].querySelector('button');
-			this.#value.push(input.value);
-			btnRemove.onclick = e => this.#unsetOption(elements[i]);
+		if (this.#multi) {
+			for (let i = 0; i < elements.length; i++) {
+				let input = elements[i].querySelector('input');
+				let btnRemove = elements[i].querySelector('button');
+				this.#value.push(input.value);
+				btnRemove.onclick = e => this.#unsetOption(elements[i]);
+			}
+		} else if (elements != null) {
+			let input = this.getElement().querySelector('input[type=search]');
+			input.style.display = 'none';
 		}
 	}
 

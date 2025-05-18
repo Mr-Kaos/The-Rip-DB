@@ -44,7 +44,7 @@ abstract class PageObject
 	 * @param string $name The name of the attribute to add to the input.
 	 * @param string|int $value The value to be assigned to the attribute.
 	 */
-	public function setAttribute(string $name, string | int $value): void
+	public function setAttribute(string $name, string|int|null $value): void
 	{
 		$this->attributes[$name] = $value;
 	}
