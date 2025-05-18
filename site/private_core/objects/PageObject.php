@@ -41,12 +41,17 @@ abstract class PageObject
 
 	/**
 	 * Adds the specified attribute to the element.
+	 * If the value given is null, the attribute is removed.
 	 * @param string $name The name of the attribute to add to the input.
 	 * @param string|int $value The value to be assigned to the attribute.
 	 */
 	public function setAttribute(string $name, string|int|null $value): void
 	{
-		$this->attributes[$name] = $value;
+		if ($value === null) {
+			unset($this->attributes[$name]);
+		} else {
+			$this->attributes[$name] = $value;
+		}
 	}
 
 	/**

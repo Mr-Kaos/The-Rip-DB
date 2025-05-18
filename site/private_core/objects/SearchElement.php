@@ -56,6 +56,7 @@ class SearchElement extends InputElement
 		$attributes = $this->attributes;
 		$attributes['name'] = null;
 		$attributes['search-url'] = $this->url;
+		$attributes['required'] = !is_array($this->values);
 		$element .= (new InputElement(null, InputTypes::search, $attributes))->buildElement();
 		$element .= '<div class="options"></div>';
 		if ($this->multiSelect) {
@@ -69,7 +70,7 @@ class SearchElement extends InputElement
 		} elseif (is_array($this->values)) {
 			// if a value is given, make sure it is exactly one element in length.
 			if (count($this->values) == 1) {
-				$element .= '<span value="' . array_keys($this->values)[0] . '" class="pill">' . $this->values[array_keys($this->values)[0]] . '<input hidden="" name="' . $this->attributes['name'] . '"><button type="button">×</button></span>';
+				$element .= '<span class="pill">' . $this->values[array_keys($this->values)[0]] . '<input hidden="" name="' . $this->attributes['name'] . '" value="' . array_keys($this->values)[0] . '" ><button type="button">×</button></span>';
 			} else {
 				throw (new \Exception('The value for a single-option SearchElement must be associative array with exactly one key-pair value!'));
 			}

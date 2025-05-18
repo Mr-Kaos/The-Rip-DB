@@ -67,7 +67,8 @@ class InputTable extends InputElement
 				foreach ($value as $rowVals) {
 					for ($i = 0; $i < count($this->columnTemplates); $i++) {
 						$col = $this->columnTemplates[$i];
-						$col->setAttribute('form', '');
+						$col->setAttribute('form', null);
+						$col->setAttribute('id', uniqid($col->getAttribute('name') . '_'));
 
 						switch (true) {
 							case ($col instanceof DropdownElement):
@@ -85,7 +86,7 @@ class InputTable extends InputElement
 						$row .= $col->buildElement();
 						$row .= '</td>';
 					}
-					$row .= '<td>' . (new InputElement('Remove', InputTypes::button, ['disabled' => true, 'btnRemove' => '']))->buildElement() . '</td></tr>';
+					$row .= '<td>' . (new InputElement('Remove', InputTypes::button, ['disabled' => count($value) <= 1, 'btnRemove' => '']))->buildElement() . '</td></tr>';
 				}
 				$html .= $row;
 			}

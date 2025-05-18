@@ -142,7 +142,7 @@ class InputElement extends PageObject
 				case InputTypes::button:
 					$type = '';
 					if (!array_key_exists('type', $this->attributes)) {
-						$type = 'type="submit"';
+						$type = 'type="button"';
 					}
 					$field = '<button id="' . $id . '" ' . $type . "$attributes>$this->label</button>";
 					break;
