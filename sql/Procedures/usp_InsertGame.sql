@@ -4,7 +4,8 @@ DROP PROCEDURE IF EXISTS RipDB.usp_InsertGame;
 
 CREATE PROCEDURE RipDB.usp_InsertGame(
 	IN NewGame nvarchar(128),
-	IN GameDescription text)
+	IN GameDescription text,
+	OUT GameIDOut int)
 BEGIN
 	IF (SELECT GameID FROM Games WHERE GameName = NewGame) IS NULL THEN
 		INSERT INTO Games
@@ -12,9 +13,9 @@ BEGIN
 		VALUES
 			(NewGame, GameDescription);
 
-		SELECT LAST_INSERT_ID();
+		SET GameIDOut = LAST_INSERT_ID();
 	ELSE
-		SELECT GameID FROM Games WHERE GameName = NewGame;
+		SELECT GameID INTO GameIDOut FROM Games WHERE GameName = NewGame;
 	END IF;
 	COMMIT;
 END
