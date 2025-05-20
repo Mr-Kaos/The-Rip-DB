@@ -91,7 +91,7 @@ class RipController extends Controller
 				$rip = null;
 				if (is_numeric($data['id'])) {
 					$rip = $this->model->getRip($data['id']);
-					$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes']));
+					$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
 				}
 
 				$this->setData('rip', $rip);
@@ -100,7 +100,7 @@ class RipController extends Controller
 				$rip = null;
 				if (is_numeric($data['id'])) {
 					$rip = $this->model->getRip($data['id']);
-					$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes']));
+					$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
 				}
 
 				// Modify rippers, genres and jokes to only contain necessary data to prefill the input table elements
@@ -111,13 +111,13 @@ class RipController extends Controller
 				$rip['Genres'] = $temp;
 
 				$temp = [];
-				foreach ($rip['Rippers'] as $ripper) {
+				foreach ($rip['Rippers'] ?? [] as $ripper) {
 					array_push($temp, ['Ripper' => [$ripper['RipperID'] => $ripper['RipperName']], 'Alias' => $ripper['Alias']]);
 				}
 				$rip['Rippers'] = $temp;
 
 				$temp = [];
-				foreach ($rip['Jokes'] as $joke) {
+				foreach ($rip['Jokes'] ?? [] as $joke) {
 					$timestamps = json_decode($joke['JokeTimestamps'], true);
 					foreach ($timestamps as $timestamp) {
 						array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => $this->formatTimestamp($timestamp['start']), 'End' => $this->formatTimestamp($timestamp['end'])]);

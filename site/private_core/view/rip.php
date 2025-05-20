@@ -9,28 +9,34 @@
 		</section>
 		<div style="float:left">
 			<section id="jokes">
-				<table>
-					<caption>Jokes In This Rip:</caption>
-					<thead>
-						<tr>
-							<th>Timestamp</th>
-							<th>Joke</th>
-							<th>Comment</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ($jokes as $joke): ?>
+				<?php if (!empty($jokes)): ?>
+					<table>
+						<caption>Jokes In This Rip:</caption>
+						<thead>
 							<tr>
-								<td><?php if (isset($joke['start'])) : ?>
-										<?= $joke['start'] . ' -> ' . $joke['end'] ?>
-									<?php endif; ?>
-								</td>
-								<td><?= $rip['Jokes'][$joke['JokeID']]['JokeName'] ?></td>
-								<td><?= $rip['Jokes'][$joke['JokeID']]['JokeComment'] ?></td>
+								<th>Timestamp</th>
+								<th>Joke</th>
+								<th>Comment</th>
 							</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							<?php foreach ($jokes as $joke): ?>
+								<tr>
+									<td><?php if (isset($joke['start'])) : ?>
+											<?= $joke['start'] . ' -> ' . $joke['end'] ?>
+										<?php endif; ?>
+									</td>
+									<td><?= $rip['Jokes'][$joke['JokeID']]['JokeName'] ?></td>
+									<td><?= $rip['Jokes'][$joke['JokeID']]['JokeComment'] ?></td>
+								</tr>
+							<?php endforeach; ?>
+
+						</tbody>
+					</table>
+				<?php else: ?>
+					<p>This rip has no jokes documented yet.</p>
+					<p>Why not be the first to <a href="/rips/edit/<?= $rip['RipID']; ?>">add them</a>?</p>
+				<?php endif; ?>
 			</section>
 		</div>
 		<div style="float:right">
