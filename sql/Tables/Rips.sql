@@ -6,6 +6,7 @@ CREATE TABLE Rips (
 	RipLength time NOT NULL DEFAULT 0,
 	RipGame int NOT NULL,
 	RipURL nvarchar(512) NOT NULL COMMENT 'The URL of the rip, accessible online',
+	RipAlternateURL nvarchar(512) DEFAULT NULL COMMENT 'An alternate URL of the rip, typically for the alternate release',
 	RipDescription text DEFAULT NULL,
 	RipChannel int DEFAULT NULL COMMENT 'The YouTube channel that uploaded the rip',
 	CONSTRAINT Channels_RipChannel_FK FOREIGN KEY (RipChannel) REFERENCES Channels(ChannelID),

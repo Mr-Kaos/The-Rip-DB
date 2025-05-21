@@ -8,7 +8,7 @@ class RipModel extends Model
 {
 	const TABLE = 'Rips';
 	const VIEW = 'vw_RipsDetailed';
-	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipLength'];
+	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipLength'];
 
 	/**
 	 * Gets data about a specific rip.

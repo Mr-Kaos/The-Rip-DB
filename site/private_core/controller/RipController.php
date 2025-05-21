@@ -209,6 +209,7 @@ class RipController extends Controller
 				$validated['UploadDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
 				$validated['RipLength'] = $this->validateTimestamp($_POST['length']);
 				$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
+				$validated['AltURL'] = $this->validateString(null);
 				$validated['Game'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
 				$validated['Channel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
 				$validated['Genres'] = $this->validateArray($_POST['genres'], 'validateFromList', [$this->model->getGenres(true)], 'One or more of the given genres do not exist in the database.');

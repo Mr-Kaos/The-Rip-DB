@@ -3,7 +3,7 @@ DROP VIEW IF EXISTS vw_RipsDetailed;
 CREATE VIEW vw_RipsDetailed AS
 SELECT r.RipID, r.RipName, r.RipDate, 
 r.RipAlternateName, r.RipLength,
-r.RipGame, g.GameName, r.RipURL, r.RipDescription, r.RipChannel,
+r.RipGame, g.GameName, r.RipURL, r.RipAlternateURL, r.RipDescription, r.RipChannel,
 j.JokeID, j.JokeName, ri.RipperID, ri.RipperName, t.TagID, t.TagName,
 ge.GenreID, ge.GenreName
 FROM Rips r

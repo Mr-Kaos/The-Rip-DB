@@ -94,7 +94,8 @@ if ($in == 'Y' || $in == '') {
 		'usp_DeleteRip',
 		'usp_InsertTag',
 		'usp_InsertChannel',
-		'usp_InsertGame'
+		'usp_InsertGame',
+		'usp_InsertRipper'
 	];
 	deployFiles($pdo, 'Procedures', $files);
 

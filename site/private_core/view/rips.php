@@ -8,8 +8,8 @@ use RipDB\Objects as o;
 		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
 		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
-			<a href="rips/new" style="display:inline;float:right">Add Rip</a>
-			<details <?= $open ?>>
+		<a href="rips/new" style="display:inline;float:right">Add Rip</a>
+		<details <?= $open ?>>
 			<summary>More Filters</summary>
 			<?= (new o\SearchElement('Tags', '/search/tags', true, $tags, ['name' => 'tags']))->buildElement() ?>
 			<?= (new o\SearchElement('Jokes', '/search/jokes', true, $jokes, ['name' => 'jokes']))->buildElement() ?>
@@ -35,7 +35,13 @@ use RipDB\Objects as o;
 				<?php foreach ($results as $record): ?>
 					<tr>
 						<td><a href="/rips/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
-						<td><?= $record['RipAlternateName'] ?></td>
+						<td>
+							<?php if (!empty($record['RipAlternateURL'])): ?>
+								<a href="<?= $record['RipAlternateURL']; ?>" target="_blank"><?= $record['RipAlternateName'] ?></a>
+							<?php else: ?>
+								<?= $record['RipAlternateName'] ?>
+							<?php endif; ?>
+						</td>
 						<td><?= $record['RipLength'] ?></td>
 						<td>
 							<?php foreach ($record['Rippers'] ?? [] as $ripper): ?>
