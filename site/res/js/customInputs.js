@@ -26,6 +26,7 @@ class CustomElement {
 class MultiSelect extends CustomElement {
 	#open = false;
 	#optionsDiv;
+	#inputElement;
 
 	/**
 	 * 
@@ -33,6 +34,7 @@ class MultiSelect extends CustomElement {
 	 */
 	constructor(element) {
 		super(element);
+		this.#inputElement = element.querySelector(`input[type=search]`)
 		this.#optionsDiv = this.getElement().querySelector('.options');
 		this.#optionsDiv.style.left = `${this.getElement().offsetLeft}px`
 
@@ -44,6 +46,9 @@ class MultiSelect extends CustomElement {
 	 * @param {Boolean} open Determines if the multi select is to be displayed or not. If null, it toggles to the opposite of its current state.
 	 */
 	toggleDisplay(open = null) {
+		this.#optionsDiv.style.left = `${this.#inputElement.offsetLeft}px`;
+		this.#inputElement.clientWidth;
+		this.#optionsDiv.style.minWidth = `${this.#inputElement.clientWidth}px`;
 		if (open == null) {
 			this.#open = !this.#open;
 		} else {
