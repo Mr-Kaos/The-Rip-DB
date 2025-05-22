@@ -4,6 +4,7 @@
  * 
  * Provides objects and handlers for custom page objects.
  */
+"use strict";
 
 // Globals for accessing inputs from outside
 let multiSelects = [];

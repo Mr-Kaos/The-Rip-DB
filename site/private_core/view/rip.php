@@ -22,9 +22,13 @@
 						<tbody>
 							<?php foreach ($jokes as $joke): ?>
 								<tr>
-									<td><?php if (isset($joke['start'])) : ?>
-											<?= $joke['start'] . ' -> ' . $joke['end'] ?>
-										<?php endif; ?>
+									<td><?php if (isset($joke['start'])) {
+										if (!empty($rip['RipYouTubeID'])) {
+											echo '<a href="#" onclick="setYouTubeTimestamp(\'' . $joke['start'] . '\')">' . $joke['start'] . ' -> ' . $joke['end'] . '</a>';
+										} else {
+											echo $joke['start'] . ' -> ' . $joke['end'];
+										}
+									 } ?>
 									</td>
 									<td><?= $rip['Jokes'][$joke['JokeID']]['JokeName'] ?></td>
 									<td><?= $rip['Jokes'][$joke['JokeID']]['JokeComment'] ?></td>
@@ -44,12 +48,18 @@
 				<table>
 					<tbody>
 						<tr>
-							<th>Video</th>
-							<td><a href="<?= $rip['RipURL'] ?>" target="_blank">YouTube</a></td>
+							<th>Video/Link</th>
+							<td>
+								<a href="<?= $rip['RipURL'] ?>" target="_blank">YouTube</a>
+								<?php if (!empty($rip['RipYouTubeID'])): ?>
+									<br>
+									<iframe id="yt-embed" width="384" height="216" src="https://www.youtube-nocookie.com/embed/<?= $rip['RipYouTubeID']; ?>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+								<?php endif; ?>
+							</td>
 						</tr>
 						<tr>
 							<th>Upload Date</th>
-							<td><?= $rip['RipDate'] ?></td>
+							<td><?= date_format(new DateTime($rip['RipDate']), 'M d, Y') ?></td>
 						</tr>
 						<tr>
 							<th>Rip Channel</th>
@@ -77,3 +87,4 @@
 		</div>
 	<?php endif; ?>
 </main>
+<script src="/res/js/rip.js"></script>

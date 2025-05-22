@@ -11,4 +11,4 @@ if ($theme !== 'light' && $theme !== 'dark') {
 	<link rel="stylesheet" href="/res/css/theme_<?= $theme ?>.css">
 	<link rel="stylesheet" href="/res/css/layout.css">
 </head>
-<script src="res/js/main.js"></script>
+<script src="/res/js/main.js"></script>

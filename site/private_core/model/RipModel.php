@@ -8,7 +8,7 @@ class RipModel extends Model
 {
 	const TABLE = 'Rips';
 	const VIEW = 'vw_RipsDetailed';
-	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipLength'];
+	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipYouTubeID', 'RipLength', 'RipGame', 'GameName', 'ChannelName', 'ChannelURL'];
 
 	/**
 	 * Gets data about a specific rip.
@@ -16,7 +16,7 @@ class RipModel extends Model
 	public function getRip(int $id)
 	{
 		$qry = $this->db->table(self::TABLE)
-			->columns('RipID', 'RipName', 'RipDate', 'RipAlternateName', 'RipLength', 'RipURL', 'RipDescription', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL')
+			->columns(...self::COLUMNS)
 			->eq('RipID', $id)
 			->join('Games', 'GameID', 'RipGame')
 			->join('Channels', 'ChannelID', 'RipChannel');

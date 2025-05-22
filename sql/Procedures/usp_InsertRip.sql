@@ -9,6 +9,7 @@ CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN UploadDate datetime,
 	IN RipLength time,
 	IN URL nvarchar(2048),
+	IN YTID nvarchar(64),
 	IN AltURL nvarchar(2048),
 	IN Game int,
 	IN Channel int,
@@ -30,9 +31,9 @@ BEGIN
 	START TRANSACTION;
  
 	INSERT INTO Rips
-		(RipName, RipDate, RipAlternateName, RipDescription, RipLength, RipGame, RipURL, RipAlternateURL, RipChannel)
+		(RipName, RipDate, RipAlternateName, RipDescription, RipLength, RipGame, RipURL, RipYouTubeID, RipAlternateURL, RipChannel)
 	VALUES
-		(RipName, UploadDate, AlternateName, Description, RipLength, Game, URL, AltURL, Channel);
+		(RipName, UploadDate, AlternateName, Description, RipLength, Game, URL, YTID, AltURL, Channel);
 
 	SET new_RipID = LAST_INSERT_ID();
 	
