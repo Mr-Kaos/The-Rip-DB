@@ -9,6 +9,11 @@ use RipDB\Objects as o;
 		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
 		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<a href="jokes/new" style="display:inline;float:right">Add Joke</a>
+		<details <?= $open ?>>
+			<summary>More Filters</summary>
+			<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, $metaJokes, ['name' => 'metajokes']))->buildElement() ?>
+			<?= (new o\SearchElement('Metas', '/search/metas', true, $metas, ['name' => 'metas']))->buildElement() ?>
+		</details>
 	</form>
 	<table id="results" class="table-search">
 		<thead>
@@ -38,11 +43,9 @@ use RipDB\Objects as o;
 							?>
 						</td>
 						<td>
-							<?php
-							foreach ($record['MetaJokes'] as $metaJokeId => $metaJoke):
-								echo '<button type="button" onclick="openRowBubble(this)" data-type="meta-joke" data-id="' . $metaJokeId . '">' . $metaJoke['MetaJokeName'] . '</button>';
-							endforeach;
-							?>
+							<?php foreach ($record['MetaJokes'] as $metaJokeId => $metaJoke): ?>
+								<button type="button" onclick="openRowBubble(this)" data-type="meta-jokes" data-id="<?= $metaJokeId ?>" data-extra="<?= htmlspecialchars(json_encode($metaJoke['Metas'])) ?>"><?= $metaJoke['MetaJokeName'] ?></button>
+							<?php endforeach; ?>
 						</td>
 						<td style="text-align:center"><a href="rips?jokes[]=<?= $record['JokeID'] ?>"><?= $record['RipCount'] ?></a></td>
 					</tr>
@@ -72,8 +75,11 @@ use RipDB\Objects as o;
 	<div id="callout-tags" class="callout down">
 		<a href="#">Find Rips that have this tag in its joke</a>
 	</div>
-	<div id="callout-meta-joke" class="callout down">
+	<div id="callout-meta-jokes" class="callout down">
 		<a href="#">Find Rips with this meta joke</a>
+		<div class="extras">
+			<p>Or search by its meta:</p>
+		</div>
 	</div>
 </section>
 <script src="/res/js/results.js" defer></script>

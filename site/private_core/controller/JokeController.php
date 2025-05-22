@@ -36,8 +36,8 @@ class JokeController extends Controller
 				$rowCount = $this->getRowCount();
 				$page = $this->getPageNumber();
 
-				// Get records of rips
-				$rips = [];
+				// Get records of jokes
+				$jokes = [];
 				$offset = $this->getOffset($recordCount, '/jokes');
 				$jokes = $this->model->searchJokes(
 					$rowCount,
@@ -45,6 +45,7 @@ class JokeController extends Controller
 					$_GET['search'] ?? null,
 					$_GET['tags'] ?? [],
 					$_GET['metas'] ?? [],
+					$_GET['metajokes'] ?? [],
 				);
 
 				$this->setData('results', $jokes);
@@ -63,6 +64,16 @@ class JokeController extends Controller
 				$this->setData('Count', $rowCount);
 				$this->setData('JokeCount', $recordCount);
 				$this->setData('pagination', $this->buildPagination($recordCount, '/jokes'));
+
+				$this->setData('metas', $this->model->getFilterResults('Meta', $_GET['metas'] ?? []));
+				$this->setData('metaJokes', $this->model->getFilterResults('MetaJoke', $_GET['metajokes'] ?? []));
+				// If any filter is given, make sure the details element is open by setting its "open" attribute
+				if (!empty($_GET['metas'] ?? null)) {
+					$this->setData('open', 'open');
+				} else {
+					$this->setData('open', '');
+				}
+
 				break;
 			case 'new-joke':
 				$this->setData('tags', $this->model->getTags());

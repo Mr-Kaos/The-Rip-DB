@@ -129,4 +129,19 @@ abstract class Model
 
 		return $result;
 	}
+
+	/**
+	 * Gets a resultset of the specified records from the specified table.
+	 * @param string $source The name of the table to retrieve records from. Be sure to omit the "s".
+	 */
+	public function getFilterResults(string $source, array $ids)
+	{
+		$table = $source . 's';
+		$result = [];
+		if (!empty($ids)) {
+			$result = $this->db->table($table)->in($source . 'ID', $ids)->findAll();
+			$result = $this->resultsetToKeyPair($result, $source . 'ID', $source . 'Name');
+		}
+		return $result;
+	}
 }

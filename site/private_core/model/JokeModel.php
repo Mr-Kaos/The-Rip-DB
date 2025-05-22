@@ -10,7 +10,7 @@ class JokeModel extends Model
 	const VIEW = 'vw_JokesDetailed';
 	const COLUMNS = ['JokeID', 'JokeName', 'JokeDescription'];
 
-	public function searchJokes(int $count, int $offset, ?string $name = null, array $tags = [], array $metas = [])
+	public function searchJokes(int $count, int $offset, ?string $name = null, array $tags = [], array $metas = [], array $metaJokes = [])
 	{
 		$qry = $this->db->table(self::VIEW)
 			->columns(...self::COLUMNS)
@@ -28,9 +28,16 @@ class JokeModel extends Model
 			}
 		}
 
-		// Apply tag search if tags are given.
+		// Apply meta search if metas are given.
 		if (!empty($metas)) {
 			foreach ($metas as $meta) {
+				$qry->eq('MetaID', $meta);
+			}
+		}
+
+		// Apply meta joke search if meta jokes are given.
+		if (!empty($metaJokes)) {
+			foreach ($metaJokes as $meta) {
 				$qry->eq('MetaJokeID', $meta);
 			}
 		}
@@ -45,7 +52,6 @@ class JokeModel extends Model
 		$tags = $this->getJokeTags($qry);
 		$metas = $this->getJokeMetas($qry);
 		$counts = $this->getJokeRipCount($qry);
-
 		foreach ($jokes as &$joke) {
 			$joke['Tags'] = [];
 			$joke['MetaJokes'] = [];
@@ -54,7 +60,11 @@ class JokeModel extends Model
 			}
 
 			foreach ($metas[$joke['JokeID']] ?? [] as $metaJoke) {
-				$joke['MetaJokes'][$metaJoke['MetaJokeID']] = ['MetaJokeName' => $metaJoke['MetaJokeName']];
+				$joke['MetaJokes'][$metaJoke['MetaJokeID']] = [
+					'MetaJokeName' => $metaJoke['MetaJokeName'],
+					// There can only be one meta per meta joke, but in case this gets changed in the future, it will be stored in an associative array.
+					'Metas' => [$metaJoke['MetaID'] => ['MetaName' => $metaJoke['MetaName']]]
+				];
 			}
 
 			$joke['RipCount'] = $counts[$joke['JokeID']]['RipCount'];
@@ -88,8 +98,9 @@ class JokeModel extends Model
 	private function getJokeMetas($qry)
 	{
 		$metas = $this->db->table('MetaJokes')
-			->columns('j.JokeID', 'JokeMetas.MetaJokeID', 'MetaJokeName')
+			->columns('j.JokeID', 'JokeMetas.MetaJokeID', 'MetaJokeName', 'Metas.MetaID', 'MetaName')
 			->join('JokeMetas', 'MetaJokeID', 'MetaJokeID')
+			->join('Metas', 'MetaID', 'MetaID', 'MetaJokes')
 			->innerJoinSubquery($qry, 'j', 'JokeID', 'JokeID', 'JokeMetas')
 			->findAll();
 

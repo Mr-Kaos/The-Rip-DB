@@ -20,7 +20,7 @@ BEGIN
 		INSERT INTO Metas
 			(MetaName)
 		VALUES
-			(MetaName)
+			(NewMetaName)
 		ON DUPLICATE KEY UPDATE MetaName = MetaName, MetaID = LAST_INSERT_ID(MetaID);
 
 		SET new_MetaId = LAST_INSERT_ID();

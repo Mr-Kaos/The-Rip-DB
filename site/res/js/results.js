@@ -5,6 +5,7 @@
  * 
  * This script provides useful interaction tools on the search page (/rips).
  */
+"use strict"
 
 let callouts = []; // Store any open callouts here so they can be closed later.
 
@@ -14,7 +15,22 @@ let callouts = []; // Store any open callouts here so they can be closed later.
  */
 function openRowBubble(button) {
 	let rect = button.getBoundingClientRect();
-	let callout = buildCallout(button.getAttribute('data-type'), button.getAttribute('data-id'), button.getAttribute('data-extra'));
+	let nameKey = '';
+	let filterName = '';
+	let url = 'rips';
+	switch (button.getAttribute('data-type')) {
+		case 'jokes':
+			nameKey = 'TagName';
+			filterName = 'tags';
+			break;
+		case 'meta-jokes':
+			nameKey = 'MetaName';
+			filterName = 'metas';
+			url = 'jokes';
+			break;
+	}
+
+	let callout = buildCallout(button.getAttribute('data-type'), button.getAttribute('data-id'), button.getAttribute('data-extra'), nameKey, url, filterName);
 
 	// Add the callout to the page.
 	document.body.append(callout);
@@ -27,12 +43,13 @@ function openRowBubble(button) {
 
 	/**
 	 * Creates the callout element.
-	 * @param {String} type 
-	 * @param Number} id 
+	 * @param {String} type This should be a valid filter name for the rips page
+	 * @param {Number} id 
 	 * @param {JSON} extraData 
+	 * @param {String} nameKey The name of the key that stores the name of the button.
 	 * @returns 
 	 */
-	function buildCallout(type, id, extraData) {
+	function buildCallout(type, id, extraData, nameKey, targetUrl, filterName) {
 		let callout = document.querySelector(`#templates>#callout-${type}`).cloneNode(true);
 		let mainLink = callout.querySelector('a');
 		callout.removeAttribute('id');
@@ -41,15 +58,14 @@ function openRowBubble(button) {
 		if (extraData != null) {
 			let dataContainer = callout.querySelector('div.extras');
 			extraData = JSON.parse(extraData);
-			console.log(extraData);
-			for (key in extraData) {
+			for (let key in extraData) {
 				let extraTag = document.createElement('button');
-				extraTag.innerText = extraData[key].TagName;
+				extraTag.innerText = extraData[key][nameKey];
 				extraTag.value = key;
 				if (extraData[key].IsPrimary) {
 					extraTag.style.fontWeight = 'bold';
 				}
-				let url = 'rips?tags[]=' + key;
+				let url = `${targetUrl}?${filterName}[]=${key}`;
 				extraTag.onclick = function () {
 					window.location = url;
 				}
