@@ -3,14 +3,14 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertJoke_SAMPLE;
 
 CREATE PROCEDURE RipDB.usp_InsertJoke_SAMPLE(
-	IN JokeName nvarchar(128),
+	IN JokeName varchar(128),
 	IN JokeDescription text,
-	IN PrimaryTag nvarchar(128),
+	IN PrimaryTag varchar(128),
 	IN TagsJSON json,
 	IN MetasJSON json)
 BEGIN
 	DECLARE new_JokeId, new_TagId, MetaId int;
-	DECLARE Tag nvarchar(128);
+	DECLARE Tag varchar(128);
 	DECLARE i INT DEFAULT 0;
 	
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION

@@ -4,12 +4,12 @@ DROP PROCEDURE IF EXISTS RipDB.usp_UpdateRip;
 
 CREATE PROCEDURE RipDB.usp_UpdateRip(
 	IN RipIDTarget int,
-	IN Name nvarchar(1024),
-	IN AlternateName nvarchar(2048),
+	IN Name varchar(1024),
+	IN AlternateName varchar(2048),
 	IN Description text,
 	IN UploadDate datetime,
 	IN Length time,
-	IN URL nvarchar(2048),
+	IN URL varchar(2048),
 	IN Game int,
 	IN Channel int,
 	IN Genres json,

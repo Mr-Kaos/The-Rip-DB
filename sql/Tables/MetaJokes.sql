@@ -2,7 +2,7 @@
 
 CREATE TABLE MetaJokes (
 	MetaJokeID int NOT NULL AUTO_INCREMENT,
-	MetaJokeName nvarchar(128) NOT NULL,
+	MetaJokeName varchar(128) CHARACTER SET utf8mb4 NOT NULL,
 	MetaJokeDescription text,
 	MetaID int NOT NULL,
 	PRIMARY KEY (MetaJokeID),

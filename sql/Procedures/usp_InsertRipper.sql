@@ -3,7 +3,7 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertRipper;
 
 CREATE PROCEDURE RipDB.usp_InsertRipper(
-	IN NewRipperName nvarchar(256),
+	IN NewRipperName varchar(256),
 	OUT RipperIDOut INT)
 BEGIN
 	IF (SELECT RipperID FROM Rippers WHERE RipperName = NewRipperName) IS NULL THEN

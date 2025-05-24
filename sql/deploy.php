@@ -19,7 +19,7 @@ const DB_PASS = '';
 // DEPLOYMENT COMMENCE
 // -------------------
 
-$pdo = new PDO('mysql:host=' . DB_HOST . ';charset=UTF8', DB_USER, DB_PASS);
+$pdo = new PDO('mysql:host=' . DB_HOST . ';charset=UTF8mb4', DB_USER, DB_PASS);
 
 const DB_NAME = 'RipDB';
 
@@ -85,9 +85,10 @@ if ($in == 'Y' || $in == '') {
 	// ------
 
 	$files = [
-		'usp_InsertJoke',
 		'usp_InsertJoke_SAMPLE',
 		'usp_InsertMetaJoke_SAMPLE',
+		'usp_InsertMeta',
+		'usp_InsertJoke',
 		'usp_InsertMetaJoke',
 		'usp_InsertRip',
 		'usp_UpdateRip',

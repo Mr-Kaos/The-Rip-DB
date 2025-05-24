@@ -3,14 +3,14 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertRip;
 
 CREATE PROCEDURE RipDB.usp_InsertRip(
-	IN RipName nvarchar(1024),
-	IN AlternateName nvarchar(2048),
+	IN RipName varchar(1024),
+	IN AlternateName varchar(2048),
 	IN Description text,
 	IN UploadDate datetime,
 	IN RipLength time,
-	IN URL nvarchar(2048),
-	IN YTID nvarchar(64),
-	IN AltURL nvarchar(2048),
+	IN URL varchar(2048),
+	IN YTID varchar(64),
+	IN AltURL varchar(2048),
 	IN Game int,
 	IN Channel int,
 	IN Genres json,
@@ -19,7 +19,7 @@ CREATE PROCEDURE RipDB.usp_InsertRip(
 BEGIN
 	DECLARE new_RipID int;
 	DECLARE Id int;
-	DECLARE extractedValA, extractedValB nvarchar(256);
+	DECLARE extractedValA, extractedValB varchar(256);
 	DECLARE i int DEFAULT 0;
 
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION

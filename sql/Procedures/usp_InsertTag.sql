@@ -3,7 +3,7 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertTag;
 
 CREATE PROCEDURE RipDB.usp_InsertTag(
-	IN NewTagName nvarchar(128),
+	IN NewTagName varchar(128),
 	OUT TagIDOut INT)
 BEGIN
 	IF (SELECT TagID FROM Tags WHERE TagName = NewTagName) IS NULL THEN

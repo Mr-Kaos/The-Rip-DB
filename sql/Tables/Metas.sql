@@ -1,7 +1,7 @@
 CREATE TABLE Metas (
 	MetaID INT auto_increment NOT NULL,
-	MetaName nvarchar(128) NOT NULL,
-	MetaDescription nvarchar(1024) DEFAULT NULL,
+	MetaName varchar(128) CHARACTER SET utf8mb4 NOT NULL,
+	MetaDescription varchar(1024) CHARACTER SET utf8mb4 DEFAULT NULL,
 	CONSTRAINT PK_Metas PRIMARY KEY (MetaID),
 	CONSTRAINT UQ_MetaName UNIQUE KEY (MetaName)
 )

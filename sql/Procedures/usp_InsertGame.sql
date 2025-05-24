@@ -3,7 +3,7 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertGame;
 
 CREATE PROCEDURE RipDB.usp_InsertGame(
-	IN NewGame nvarchar(128),
+	IN NewGame varchar(128),
 	IN GameDescription text,
 	OUT GameIDOut int)
 BEGIN
