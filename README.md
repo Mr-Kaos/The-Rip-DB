@@ -58,13 +58,14 @@ The primary goal of this project is to provide a complete and detailed database 
 
 This project currently has the following features complete:
 
-- [ ] Rips
+- [X] Rips
   - [X] Search page
     - [X] Search filters
   - [X] Add Rip page
-  - [ ] Edit Rip page
+  - [X] Edit Rip page
 - [ ] Jokes
   - [X] Search page
+    - [X] Search filters
   - [X] Add Joke page
   - [ ] Edit Joke page
 - [ ] Metas
@@ -77,7 +78,15 @@ This project currently has the following features complete:
   - [X] Search page
   - [X] Add Tag page
   - [ ] Edit Tag page
-- [X] UI/UX (done, but could do with much nicer design)
+- [ ] UI/UX
+  - [X] Basic interface and layout
+  - [ ] Actually nice looking layout
+- [ ] Core System
+  - [X] Page routing
+  - [X] Custom input elements
+  - [ ] Moderation/Anti-spam system
+  - [ ] Page alerts (e.g. Form submission success)
+  - [ ] API for data export
 
 ### Potential Features
 
