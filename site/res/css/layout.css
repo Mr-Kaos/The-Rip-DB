@@ -3,10 +3,17 @@ body {
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	color: var(--text-color);
 	margin: 0;
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
 }
 
 main {
-	margin: auto;
+	/* margin: auto; */
+	margin-left: 5%;
+	margin-right: 5%;
+	margin-bottom: auto;
+	height: 100%;
 	width: 90%;
 }
 
@@ -24,6 +31,18 @@ nav>a {
 nav>a:hover {
 	opacity: 70%;
 	transition: 0.3s;
+}
+
+footer {
+	display: flex;
+	text-align: center;
+	background-color: var(--accent-1);
+	padding: 10px 5px
+}
+
+footer div {
+	flex: 1;
+	margin: auto auto;
 }
 
 table,
