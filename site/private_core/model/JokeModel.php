@@ -55,19 +55,27 @@ class JokeModel extends Model
 		foreach ($jokes as &$joke) {
 			$joke['Tags'] = [];
 			$joke['MetaJokes'] = [];
-			foreach ($tags[$joke['JokeID']] as $tag) {
-				$joke['Tags'][$tag['TagID']] = ['TagName' => $tag['TagName'], 'IsPrimary' => $tag['IsPrimary']];
+			if (is_array($tags[$joke['JokeID']] ?? null)) {
+				foreach ($tags[$joke['JokeID']] as $tag) {
+					$joke['Tags'][$tag['TagID']] = ['TagName' => $tag['TagName'], 'IsPrimary' => $tag['IsPrimary']];
+				}
 			}
 
-			foreach ($metas[$joke['JokeID']] ?? [] as $metaJoke) {
-				$joke['MetaJokes'][$metaJoke['MetaJokeID']] = [
-					'MetaJokeName' => $metaJoke['MetaJokeName'],
-					// There can only be one meta per meta joke, but in case this gets changed in the future, it will be stored in an associative array.
-					'Metas' => [$metaJoke['MetaID'] => ['MetaName' => $metaJoke['MetaName']]]
-				];
+			if (is_array($metas[$joke['JokeID']] ?? null)) {
+				foreach ($metas[$joke['JokeID']] ?? [] as $metaJoke) {
+					$joke['MetaJokes'][$metaJoke['MetaJokeID']] = [
+						'MetaJokeName' => $metaJoke['MetaJokeName'],
+						// There can only be one meta per meta joke, but in case this gets changed in the future, it will be stored in an associative array.
+						'Metas' => [$metaJoke['MetaID'] => ['MetaName' => $metaJoke['MetaName']]]
+					];
+				}
 			}
 
-			$joke['RipCount'] = $counts[$joke['JokeID']]['RipCount'];
+			if (!empty($counts[$joke['JokeID']] ?? null)) {
+				$joke['RipCount'] = $counts[$joke['JokeID']]['RipCount'];
+			} else {
+				$joke['RipCount'] = 0;
+			}
 		}
 
 		return $jokes;

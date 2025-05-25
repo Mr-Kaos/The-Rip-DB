@@ -112,7 +112,7 @@ class RipController extends Controller
 
 				$temp = [];
 				foreach ($rip['Rippers'] ?? [] as $ripper) {
-					array_push($temp, ['Ripper' => [$ripper['RipperID'] => $ripper['RipperName']], 'Alias' => $ripper['Alias']]);
+					array_push($temp, ['Ripper' => [$ripper['RipperID'] => $ripper['RipperName']], 'Alias' => $ripper['Alias'] ?? null]);
 				}
 				$rip['Rippers'] = $temp;
 
@@ -120,7 +120,7 @@ class RipController extends Controller
 				foreach ($rip['Jokes'] ?? [] as $joke) {
 					$timestamps = json_decode($joke['JokeTimestamps'], true);
 					foreach ($timestamps as $timestamp) {
-						array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => $this->formatTimestamp($timestamp['start']), 'End' => $this->formatTimestamp($timestamp['end'])]);
+						array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => $this->formatTimestamp($timestamp['start'] ?? null), 'End' => $this->formatTimestamp($timestamp['end'] ?? null)]);
 					}
 				}
 				$rip['Jokes'] = $temp;
@@ -151,7 +151,7 @@ class RipController extends Controller
 			if (!empty($timestamps)) {
 				foreach ($timestamps as $time) {
 					array_push($sortedTimes, $time['start']);
-					array_push($sortedJokes, ['JokeID' => $joke['JokeID'], 'start' => $this->formatTimestamp($time['start']), 'end' => $this->formatTimestamp($time['end'])]);
+					array_push($sortedJokes, ['JokeID' => $joke['JokeID'], 'start' => $this->formatTimestamp($time['start'] ?? null), 'end' => $this->formatTimestamp($time['end'] ?? null)]);
 				}
 			} else {
 				array_push($sortedTimes, null);
