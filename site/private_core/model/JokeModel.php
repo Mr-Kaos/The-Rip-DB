@@ -91,6 +91,11 @@ class JokeModel extends Model
 		return $this->db->table('Tags')->findAllByColumn('TagID');
 	}
 
+	public function getMetaJokes()
+	{
+		return $this->db->table('MetaJokes')->findAllByColumn('MetaJokeID');
+	}
+
 	private function getJokeTags($qry)
 	{
 		$tags = $this->db->table('Tags')

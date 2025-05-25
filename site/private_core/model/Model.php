@@ -101,19 +101,29 @@ abstract class Model
 
 	/**
 	 * Executes a stored procedure with the given data from the array.
+	 * @param array $data The data to send to the stored procedure
+	 * @param string $storedProcedure The stored procedure to execute in the database
+	 * @param mixed &$output The output value of the parameter, if needed
 	 * @return \RipDB\Error[]|true True if the procedure is executed without error. If an error occurs, an array of all errors encountered will be returned.
 	 */
-	public function submitFormData(array $data, string $storedProcedure): array|true
+	public function submitFormData(array $data, string $storedProcedure, mixed &$output = null): array|true
 	{
+		// If an output parameter is given, include it
+		if ($output !== null) {
+			$data['@output'] = '@output';
+		}
 		// loop through each data item and check that none are of type Error. If they are, get the message and exit.
 		$result = true;
 		$params = '';
-		foreach ($data as $param) {
+		foreach ($data as $key => $param) {
 			if ($param instanceof \RipDB\Error) {
 				if (!is_array($result)) {
 					$result = array();
 				}
 				array_push($result, $param);
+			} elseif ($key == '@output') {
+				$params .= '@output,';
+				unset($data[$key]);
 			} else {
 				$params .= '?,';
 			}

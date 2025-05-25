@@ -7,9 +7,10 @@ CREATE PROCEDURE RipDB.usp_InsertJoke(
 	IN JokeDescription text,
 	IN PrimaryTag int,
 	IN TagsJSON json,
-	IN MetasJSON json)
+	IN MetasJSON json,
+	OUT JokeIDOut INT)
 BEGIN
-	DECLARE new_JokeId, new_TagId, MetaId int;
+	DECLARE new_TagId, MetaId int;
 	DECLARE Tag varchar(128);
 	DECLARE i INT DEFAULT 0;
 	
@@ -27,13 +28,13 @@ BEGIN
 		VALUES
 			(NewJokeName, JokeDescription);
 
-		SET new_JokeId = LAST_INSERT_ID();
+		SET JokeIDOut = LAST_INSERT_ID();
 
 		IF PrimaryTag IS NOT NULL THEN
 			INSERT INTO JokeTags
 				(JokeID, TagID, IsPrimary)
 			VALUES
-				(new_JokeId, PrimaryTag, 1);
+				(JokeIDOut, PrimaryTag, 1);
 		END IF;
 
 		IF TagsJSON IS NOT NULL THEN
@@ -43,7 +44,7 @@ BEGIN
 				INSERT INTO JokeTags
 					(JokeID, TagID, IsPrimary)
 				VALUES
-					(new_JokeId, Tag, 0);
+					(JokeIDOut, Tag, 0);
 
 				SET i = i + 1;
 			END WHILE;
@@ -58,11 +59,13 @@ BEGIN
 				INSERT INTO JokeMetas
 					(JokeID, MetaJokeID)
 				VALUES
-					(new_JokeId, MetaId);
+					(JokeIDOut, MetaId);
 
 				SET i = i + 1;
 			END WHILE;
 		END IF;
+	ELSE
+		SELECT JokeID INTO JokeIDOut FROM Jokes WHERE JokeName = NewJokeName;
 	END IF;
 
 	COMMIT;

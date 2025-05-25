@@ -87,16 +87,18 @@ class JokeController extends Controller
 		if ($this->getPage() == 'new-joke') {
 			// Validate data in order of stored procedure parameters.
 			$validated = [];
-			$validated['JokeName'] = $this->validateString($_POST['name'], 'The given joke name is invalid.', 128);
+			$validated['NewJokeName'] = $this->validateString($_POST['name'], 'The given joke name is invalid.', 128);
 			$validated['JokeDescription'] = $this->validateString($_POST['description'], 'The given description is invalid.', null, 1);
 			$existingTags = $this->model->getTags();
-			$validated['PrimaryTag'] = $this->validateFromList($_POST['primary'], $existingTags, 'The selected primary tag does not exist in the database.');
+			$validated['PrimaryTag'] = $this->validateFromList(intval( $_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
 			$tags = $this->validateFromList($_POST['tags'], $existingTags, 'One or more of the given tags do not exist in the database.');
 			if ($tags instanceof \RipDB\Error) {
 				$validated['TagsJSON'] = $tags;
 			} else {
 				$validated['TagsJSON'] = json_encode($tags, JSON_NUMERIC_CHECK);
 			}
+			$existingTags = $this->model->getMetaJokes();
+
 			$metas = $this->validateFromList($_POST['metas'], $existingTags, 'One or more of the given meta tags do not exist in the database.');
 			if ($metas instanceof \RipDB\Error) {
 				$validated['MetasJSON'] = $metas;
@@ -104,10 +106,8 @@ class JokeController extends Controller
 				$validated['MetasJSON'] = json_encode($metas, JSON_NUMERIC_CHECK);
 			}
 
-			echo "<pre>" . print_r($_POST, true) . "</pre>";
-			echo "<pre>" . print_r($validated, true) . "</pre>";
-			die();
-			$submission = $this->model->submitFormData($validated, 'usp_InsertJoke');
+			$newId = 0;
+			$submission = $this->model->submitFormData($validated, 'usp_InsertJoke', $newId);
 			if ($submission === true) {
 				$result = '/jokes';
 			} else {

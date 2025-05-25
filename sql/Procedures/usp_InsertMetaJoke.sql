@@ -22,7 +22,7 @@ BEGIN
 
 		SET MetaJokeIDOut = LAST_INSERT_ID();
 	ELSE
-		SELECT MetaID INTO MetaJokeIDOut FROM MetaJokes WHERE MetaJokeName = NewMetaJokeName;
+		SELECT MetaJokeID INTO MetaJokeIDOut FROM MetaJokes WHERE MetaJokeName = NewMetaJokeName;
 	END IF;
 	COMMIT;
 END

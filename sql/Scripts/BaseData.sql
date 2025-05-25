@@ -5,7 +5,7 @@ INSERT INTO Metas
 VALUES
 	('Music', 'Anything that is a genre or era of music.'),
 	('Video Game', 'Any joke that is from a video game.'),
-	('Music Artists', 'Any individual or group who produces and is credited for creating music.'),
+	('Artist (Music)', 'Any individual or group who produces and is credited for creating music.'),
 	('Film', null),
 	('Animation', null),
 	('Anime', null),

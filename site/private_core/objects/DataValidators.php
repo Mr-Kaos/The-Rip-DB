@@ -240,19 +240,19 @@ trait DataValidator
 	protected function validateFromList(string|array|null $value, array $list, string $errorMessage = 'The given value does not exist in the list.', bool $validIfNotExists = false): string|array|Error
 	{
 		$validated = new Error($errorMessage);
-		// Disabled for now as it is not used anywhere. Will remove later if not used at all.
-		// if (is_array($value)) {
-		// 	foreach ($value as $val) {
-		// 		if (in_array($val, $list) !== $validIfNotExists) {
-		// 			$validated = !$validIfNotExists ? $list[array_search($value, $list)] : $value;
-		// 			break;
-		// 		}
-		// 	}
-		// } else {
+
+		if (is_array($value)) {
+			foreach ($value as $val) {
+				if (in_array($val, $list) !== $validIfNotExists) {
+					$validated = !$validIfNotExists ? $list[array_search($value, $list)] : $value;
+					break;
+				}
+			}
+		} else {
 			if (in_array($value, $list) !== $validIfNotExists) {
 				$validated = !$validIfNotExists ? $list[array_search($value, $list)] : $value;
 			}
-		// }
+		}
 
 		return $validated;
 	}
