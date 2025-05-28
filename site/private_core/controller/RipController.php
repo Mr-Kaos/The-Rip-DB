@@ -37,6 +37,10 @@ class RipController extends Controller
 					$_GET['tags'] ?? [],
 					$_GET['jokes'] ?? [],
 					$_GET['games'] ?? [],
+					$_GET['rippers'] ?? [],
+					$_GET['genres'] ?? [],
+					$_GET['meta-jokes'] ?? [],
+					$_GET['metas'] ?? [],
 					$useAltName
 				);
 				$rowCount = $this->getRowCount();
@@ -54,6 +58,8 @@ class RipController extends Controller
 					$_GET['games'] ?? [],
 					$_GET['rippers'] ?? [],
 					$_GET['genres'] ?? [],
+					$_GET['meta-jokes'] ?? [],
+					$_GET['metas'] ?? [],
 					$useAltName
 				);
 				$this->setData('results', $rips);

@@ -172,13 +172,14 @@ class RipModel extends Model
 	 * @param bool $useAltName If true and $name is given, it will find rips based on their alternate name. Defaults to the RipName column.
 	 * @return array An array of rips found by the given search criteria.
 	 */
-	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers, array $genres = [], bool $useAltName = false)
+	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], bool $useAltName = false)
 	{
-		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $rippers, $genres, $useAltName);
+		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $useAltName);
 		$qry->groupBy('RipID')
 			->limit($count)
 			->offset($offset);
 		$rips = $qry->findAll();
+
 		$rips = $this->setSubArrayValueToKey($rips, 'RipID', false);
 
 		// Get jokes and rips from the resultset of rips.
@@ -221,15 +222,86 @@ class RipModel extends Model
 		return $rips;
 	}
 
-	public function getRipCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], bool $useAltName = false)
+	public function getRipCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], bool $useAltName = false)
 	{
-		return $this->generateRipQuery(self::TABLE, $name, [], [], [], [], [], $useAltName)->count();
+		$where = '';
+		$params = [];
+
+		// Apply name filter if name is given.
+		if (!empty($name)) {
+			if ($useAltName) {
+				$where .= ' AND RipAlternateName = ?';
+			} else {
+				$where .= ' AND RipName = ?';
+			}
+			array_push($params, $name);
+		}
+
+		// Apply tag filter if tags are given.
+		if (!empty($tags)) {
+			$temp = array_fill(0, count($tags), '?');
+			$where .= ' AND (`TagID` = ' . implode(' AND `TagID` = ', $temp) . ')';
+			array_push($params, ...$tags);
+		}
+
+		// Apply joke filter if jokes are given.
+		if (!empty($jokes)) {
+			$temp = array_fill(0, count($jokes), '?');
+			$where .= ' AND (`JokeID` = ' . implode(' AND `JokeID` = ', $temp) . ')';
+			array_push($params, ...$jokes);
+		}
+
+		// Apply game filter if games are given.
+		if (!empty($games)) {
+			$temp = array_fill(0, count($games), '?');
+			$where .= ' AND (`RipGame` = ' . implode(' OR `RipGame` = ', $temp) . ')';
+			array_push($params, ...$games);
+		}
+
+		// Apply game filter if rippers are given.
+		if (!empty($rippers)) {
+			$temp = array_fill(0, count($rippers), '?');
+			$where .= ' AND (`RipperID` = ' . implode(' OR `RipperID` = ', $temp) . ')';
+			array_push($params, ...$rippers);
+		}
+
+		// Apply genre filter if genres are given.
+		if (!empty($genres)) {
+			$temp = array_fill(0, count($genres), '?');
+			$where .= ' AND (`GenreID` = ' . implode(' OR `GenreID` = ', $temp) . ')';
+			array_push($params, ...$genres);
+		}
+
+		// Apply meta joke filter if genres are given.
+		if (!empty($metaJokes)) {
+			$temp = array_fill(0, count($metaJokes), '?');
+			$where .= ' AND (`MetaJokeID` = ' . implode(' OR `MetaJokeID` = ', $temp) . ')';
+			array_push($params, ...$metaJokes);
+		}
+
+		// Apply meta filter if genres are given.
+		if (!empty($metas)) {
+			$temp = array_fill(0, count($metas), '?');
+			$where .= ' AND (`MetaID` = ' . implode(' OR `MetaID` = ', $temp) . ')';
+			array_push($params, ...$metas);
+		}
+
+		$qry = "SELECT COUNT(*) AS `count` FROM (SELECT RipID FROM `vw_RipsDetailed` ";
+		if (!empty($where)) {
+			// remove the leading AND
+			$where = substr($where, 4);
+			$qry .= "WHERE $where";
+		}
+		$qry .= ' GROUP BY RipID) a';
+
+		$result = $this->db->execute($qry, $params)->fetch();
+		return $result['count'];
 	}
 
 	/**
 	 * 
 	 */
-	private function generateRipQuery(string $table, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], bool $useAltName = false)
+	private function generateRipQuery(string $table, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], bool $useAltName = false)
 	{
 		$qry = $this->db->table($table)
 			->columns(...self::COLUMNS)
@@ -274,6 +346,20 @@ class RipModel extends Model
 		if (!empty($genres)) {
 			foreach ($genres as $genre) {
 				$qry->eq('GenreID', $genre);
+			}
+		}
+
+		// Apply meta joke search if genres are given.
+		if (!empty($metaJokes)) {
+			foreach ($metaJokes as $metaJoke) {
+				$qry->eq('MetaJokeID', $metaJoke);
+			}
+		}
+
+		// Apply meta search if genres are given.
+		if (!empty($metas)) {
+			foreach ($metas as $meta) {
+				$qry->eq('MetaID', $meta);
 			}
 		}
 
