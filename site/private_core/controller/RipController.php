@@ -70,9 +70,20 @@ class RipController extends Controller
 				$this->setData('games', $this->model->getFilterResults('Game', $_GET['games'] ?? []));
 				$this->setData('rippers', $this->model->getFilterResults('Ripper', $_GET['rippers'] ?? []));
 				$this->setData('genres', $this->model->getFilterResults('Genre', $_GET['genres'] ?? []));
+				$this->setData('metaJokes', $this->model->getFilterResults('MetaJoke', $_GET['meta-jokes'] ?? []));
+				$this->setData('metas', $this->model->getFilterResults('Meta', $_GET['metas'] ?? []));
 
 				// If any filter is given, make sure the details element is open by setting its "open" attribute
-				if (!empty($_GET['tags'] ?? null) || !empty($_GET['jokes'] ?? null) || !empty($_GET['games'] ?? null) || !empty($_GET['rippers'] ?? null)) {
+				if (
+					!empty($_GET['tags'] ?? null) ||
+					!empty($_GET['jokes'] ?? null) ||
+					!empty($_GET['games'] ?? null) ||
+					!empty($_GET['rippers'] ?? null) ||
+					!empty($_GET['genres'] ?? null) ||
+					!empty($_GET['metaJokes'] ?? null) ||
+					!empty($_GET['metas'] ?? null
+					)
+				) {
 					$this->setData('open', 'open');
 				} else {
 					$this->setData('open', '');
@@ -269,7 +280,7 @@ class RipController extends Controller
 						$result = $submission;
 					}
 				}
-				
+
 				break;
 		}
 
