@@ -1,4 +1,5 @@
 sql/.dbeaver
-.project
+*.project
 site/vendor/
 *.log
+*.code-workspace

@@ -7,6 +7,9 @@ if ($theme !== 'light' && $theme !== 'dark') {
 ?>
 
 <head>
+	<meta charset="utf-8">
+	<meta name="keywords" content="Rips, SiIVaGunner, SilvaGunner">
+	<meta name="description" content="The rip database. Find high quality rips based on their jokes, game or other sources!">
 	<title><?= constant("PAGE_TITLE") ?></title>
 	<link rel="stylesheet" href="/res/css/theme_<?= $theme ?>.css">
 	<link rel="stylesheet" href="/res/css/layout.css">
