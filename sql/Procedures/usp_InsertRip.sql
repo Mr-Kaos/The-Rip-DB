@@ -9,7 +9,7 @@ CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN UploadDate datetime,
 	IN RipLength time,
 	IN URL varchar(2048),
-	IN YTID varchar(64),
+	IN YTID varchar(12),
 	IN AltURL varchar(2048),
 	IN Game int,
 	IN Channel int,

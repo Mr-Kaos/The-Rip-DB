@@ -298,7 +298,8 @@ class RipModel extends Model
 		return $result['count'];
 	}
 
-	public function getRandomRip() {
+	public function getRandomRip()
+	{
 		return $this->db->execute("SELECT RipID FROM Rips ORDER BY RAND() LIMIT 1")->fetch()['RipID'];
 	}
 

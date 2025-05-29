@@ -65,14 +65,18 @@ trait DataValidator
 						$matches = $matches[0];
 					}
 
-					foreach ($matches as $match) {
-						$validated .= $match;
-					}
+					if (empty($matches)) {
+						$validated = new Error($errorMessage . ' The given value does not match the required pattern.');
+					} else {
+						foreach ($matches as $match) {
+							$validated .= $match;
+						}
 
-					$validated = htmlspecialchars($validated);
+						$validated = htmlspecialchars($validated);
 
-					if ($validated == "") {
-						$validated = null;
+						if ($validated == "") {
+							$validated = null;
+						}
 					}
 				} else {
 					$validated = htmlspecialchars($validated);

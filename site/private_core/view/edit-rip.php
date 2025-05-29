@@ -19,6 +19,7 @@ include_once('private_core/objects/InputTable.php');
 			<div>
 				<?= (new o\InputElement('Upload Date', o\InputTypes::date, ['name' => 'date', 'required' => true, 'value' => date_format(new DateTime($rip['RipDate']), 'Y-m-d')]))->buildElement() ?>
 				<?= (new o\InputElement('Rip URL', o\InputTypes::url, ['name' => 'url', 'required' => true, 'value' => $rip['RipURL']]))->buildElement() ?>
+				<?= (new o\InputElement('YouTube Video ID', o\InputTypes::text, ['name' => 'ytId', 'minlength' => 11, 'maxlength' => 11, 'value' => $rip['RipYouTubeID'], 'pattern' => '[A-Za-z0-9_\-]{11}']))->buildElement() ?>
 				<?= (new o\DropdownElement('Rip Channel', $channels, ['name' => 'channel', 'required' => true, 'selected' => $rip['RipChannel']]))->buildElement() ?>
 			</div>
 		</fieldset>
@@ -26,7 +27,7 @@ include_once('private_core/objects/InputTable.php');
 			<legend>Rip Metadata</legend>
 			<?= (new o\InputElement('Description', o\InputTypes::textarea, ['name' => 'description', 'maxlength' => 9999, 'value' => $rip['RipDescription']]))->buildElement() ?>
 			<?= (new o\InputElement('Length', o\InputTypes::text, ['name' => 'length', 'pattern' => '(?:[0-9]{0,2}:?)([0-9]{2}:[0-9]{2})', 'placeholder' => '--:--:--', 'required' => true, 'value' => $rip['RipLength']]))->buildElement() ?>
-			<?= (new o\DropdownElement('Game', $games, ['name' => 'game', 'required' => true, 'value' => $rip['RipGame']]))->buildElement() ?>
+			<?= (new o\SearchElement('Game', '/search/games', false, [$rip['RipGame'] => $rip['GameName']], ['name' => 'game', 'required' => true]))->buildElement() ?>
 			<?= (new o\SearchElement('Genres', '/search/genres', true, $rip['Genres'], ['name' => 'genres[]', 'required' => true]))->buildElement(); ?>
 		</fieldset>
 		<fieldset>

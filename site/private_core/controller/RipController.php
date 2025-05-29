@@ -141,8 +141,12 @@ class RipController extends Controller
 				$temp = [];
 				foreach ($rip['Jokes'] ?? [] as $joke) {
 					$timestamps = json_decode($joke['JokeTimestamps'], true);
-					foreach ($timestamps as $timestamp) {
-						array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => $this->formatTimestamp($timestamp['start'] ?? null), 'End' => $this->formatTimestamp($timestamp['end'] ?? null)]);
+					if (!empty($timestamps)) {
+						foreach ($timestamps as $timestamp) {
+							array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => $this->formatTimestamp($timestamp['start'] ?? null), 'End' => $this->formatTimestamp($timestamp['end'] ?? null)]);
+						}
+					} else {
+						array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => null, 'End' => null]);
 					}
 				}
 				$rip['Jokes'] = $temp;
@@ -231,7 +235,7 @@ class RipController extends Controller
 				$validated['UploadDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
 				$validated['RipLength'] = $this->validateTimestamp($_POST['length']);
 				$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
-				$validated['YTID'] = null;
+				$validated['YTID'] = $this->validateString($_POST['ytId'], 'The given youTube ID is invalid.', null, null, '/[A-Za-z0-9_-]{11}/');;
 				$validated['AltURL'] = $this->validateString(null);
 				$validated['Game'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
 				$validated['Channel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
@@ -270,7 +274,6 @@ class RipController extends Controller
 				}
 
 				if ($this->getPage() == 'new-rip') {
-					$newId = 0;
 					$submission = $this->model->submitFormData($validated, 'usp_InsertRip');
 					if ($submission == true) {
 						$result = '/rips';

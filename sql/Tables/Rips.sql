@@ -6,7 +6,7 @@ CREATE TABLE Rips (
 	RipLength time NOT NULL DEFAULT 0,
 	RipGame int NOT NULL,
 	RipURL varchar(512) NOT NULL COMMENT 'The URL of the rip, accessible online',
-	RipYouTubeID varchar(64) DEFAULT NULL,
+	RipYouTubeID varchar(12) DEFAULT NULL,
 	RipAlternateURL varchar(512) DEFAULT NULL COMMENT 'An alternate URL of the rip, typically for the alternate release',
 	RipDescription text DEFAULT NULL,
 	RipChannel int DEFAULT NULL COMMENT 'The YouTube channel that uploaded the rip',
