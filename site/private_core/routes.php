@@ -21,6 +21,9 @@ Flight::group('/rips', function () {
 	Flight::route('/', function () {
 		displayPage('rips', 'RipController');
 	});
+	Flight::route('/random', function () {
+		displayPage('rip', 'RipController', ['random' => true]);
+	});
 
 	Flight::route('POST /new', function () {
 		submitForm('new-rip', 'RipController');
@@ -110,7 +113,7 @@ Flight::group('/search', function () {
 /**
  * Displays the page with a header and footer.
  */
-function displayPage(string $page, ?string $controllerName = null, array $data = [], ?string $pageTitle = null,): void
+function displayPage(string $page, ?string $controllerName = null, array $data = [], ?string $pageTitle = null): void
 {
 	// Include page objects that are commonly used across pages
 	include_once('private_core/objects/InputElement.php');
@@ -130,7 +133,7 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	}
 
 	echo '<!DOCTYPE HTML><html>';
-	define('PAGE_TITLE', $pageTitle ?? "The Rip Database - $page");
+	define('PAGE_TITLE', "The Rip Database - " . ($pageTitle === null ? $page : $pageTitle));
 	require('templates/head.php');
 	echo "<body>";
 	require('templates/globalScripts.php');

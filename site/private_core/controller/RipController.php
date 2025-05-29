@@ -81,8 +81,7 @@ class RipController extends Controller
 					!empty($_GET['rippers'] ?? null) ||
 					!empty($_GET['genres'] ?? null) ||
 					!empty($_GET['metaJokes'] ?? null) ||
-					!empty($_GET['metas'] ?? null
-					)
+					!empty($_GET['metas'] ?? null)
 				) {
 					$this->setData('open', 'open');
 				} else {
@@ -105,13 +104,19 @@ class RipController extends Controller
 				$this->setData('pagination', $this->buildPagination($ripCount, '/rips'));
 				break;
 			case 'rip':
-				$rip = null;
-				if (is_numeric($data['id'])) {
-					$rip = $this->model->getRip($data['id']);
-					$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
-				}
+				if (array_key_exists('random', $data)) {
+					$ripId = $this->model->getRandomRip();
+					\Flight::redirect("/rips/$ripId");
+					die();
+				} else {
+					$rip = null;
+					if (is_numeric($data['id'])) {
+						$rip = $this->model->getRip($data['id']);
+						$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
+					}
 
-				$this->setData('rip', $rip);
+					$this->setData('rip', $rip);
+				}
 				break;
 			case 'edit-rip':
 				$rip = null;
