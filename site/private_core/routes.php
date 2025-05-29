@@ -13,13 +13,13 @@ $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
 
 // Home Page
 Flight::route('/', function () {
-	displayPage('home', 'HomeController');
+	displayPage('home', 'HomeController', [], 'Home');
 });
 
 // Rips Pages
 Flight::group('/rips', function () {
 	Flight::route('/', function () {
-		displayPage('rips', 'RipController');
+		displayPage('rips', 'RipController', [], 'Rips');
 	});
 	Flight::route('/random', function () {
 		displayPage('rip', 'RipController', ['random' => true]);
@@ -30,18 +30,18 @@ Flight::group('/rips', function () {
 	});
 
 	Flight::route('/new', function () {
-		displayPage('new-rip', 'RipController');
+		displayPage('new-rip', 'RipController', [], 'New Rip');
 	});
 
 	Flight::route('POST /edit/@id', function ($id) {
 		submitForm('edit-rip', 'RipController', ['id' => $id]);
 	});
 	Flight::route('/edit/@id', function ($id) {
-		displayPage('edit-rip', 'RipController', ['id' => $id]);
+		displayPage('edit-rip', 'RipController', ['id' => $id], 'Edit Rip');
 	});
 
 	Flight::route('/@id', function ($id) {
-		displayPage('rip', 'RipController', ['id' => $id]);
+		displayPage('rip', 'RipController', ['id' => $id], 'View Rip');
 	});
 });
 
@@ -51,29 +51,29 @@ Flight::group('/jokes', function () {
 		submitForm('new-joke', 'JokeController');
 	});
 	Flight::route('/new', function () {
-		displayPage('new-joke', 'JokeController');
+		displayPage('new-joke', 'JokeController', [], 'New Joke');
 	});
 	Flight::route('/', function () {
-		displayPage('jokes', 'JokeController');
+		displayPage('jokes', 'JokeController', [], 'Jokes');
 	});
 });
 
 // Tag Pages
 Flight::group('/tags', function () {
 	Flight::route('/', function () {
-		displayPage('tags', 'TagController');
+		displayPage('tags', 'TagController', [], 'Tags');
 	});
 	Flight::route('POST /new', function () {
 		submitForm('new-tag', 'TagController');
 	});
 	Flight::route('/new', function () {
-		displayPage('new-tag', 'TagController');
+		displayPage('new-tag', 'TagController', [], 'New Tag');
 	});
 });
 
 // Help Page
 Flight::route('/help', function () {
-	displayPage('help', null);
+	displayPage('help', null, [], 'Help / FAQ');
 });
 
 // Settings Requests
@@ -132,8 +132,12 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 		$pageData = $controller->getPreparedData();
 	}
 
+	if (!is_null($pageTitleOverride = $controller->getPageTitle())) {
+		$pageTitle = $pageTitleOverride;
+	}
+
 	echo '<!DOCTYPE HTML><html>';
-	define('PAGE_TITLE', "The Rip Database - " . ($pageTitle === null ? $page : $pageTitle));
+	define('PAGE_TITLE', "The Rip Database | " . ($pageTitle === null ? $page : $pageTitle));
 	require('templates/head.php');
 	echo "<body>";
 	require('templates/globalScripts.php');

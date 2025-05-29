@@ -116,6 +116,7 @@ class RipController extends Controller
 					}
 
 					$this->setData('rip', $rip);
+					$this->setPageTitle($rip['RipName']);
 				}
 				break;
 			case 'edit-rip':

@@ -9,6 +9,7 @@ abstract class Controller
 	private array $data = [];
 	protected ?m\Model $model;
 	private string $page;
+	private ?string $pageTitleOverride = null;
 
 	public function __construct(string $page, ?m\Model $model = null)
 	{
@@ -54,5 +55,22 @@ abstract class Controller
 	{
 		throw (new \Exception("This controller's submitRequest function has not been initialised!"));
 		return '';
+	}
+
+	/**
+	 * Sets an override for the page's title in the head tag.
+	 * @param string $title The text to use in the title.
+	 */
+	protected function setPageTitle(string $title)
+	{
+		$this->pageTitleOverride = $title;
+	}
+
+	/**
+	 * Retrieves the override for the page's title in the head tag.
+	 */
+	public function getPageTitle(): ?string
+	{
+		return $this->pageTitleOverride;
 	}
 }
