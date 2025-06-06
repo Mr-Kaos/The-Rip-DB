@@ -132,8 +132,10 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 		$pageData = $controller->getPreparedData();
 	}
 
-	if (!is_null($pageTitleOverride = $controller->getPageTitle())) {
-		$pageTitle = $pageTitleOverride;
+	if ($controller != null) {
+		if (!is_null($pageTitleOverride = $controller->getPageTitle())) {
+			$pageTitle = $pageTitleOverride;
+		}
 	}
 
 	echo '<!DOCTYPE HTML><html>';
