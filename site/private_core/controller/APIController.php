@@ -23,31 +23,37 @@ class APIController extends Controller
 	 */
 	public function performRequest(array $data = []): void
 	{
-		$search = $_GET['q'] ?? null;
+		$rand = false;
+		$search = '';
+		if (array_key_exists('q', $_GET)) {
+			$search = $_GET['q'];
+		} else {
+			$rand = true;
+		}
 		$result = null;
 
 		// Might refactor this at some point.
 		switch ($this->getPage()) {
 			case 'tags':
-				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search);
+				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search, $rand);
 				break;
 			case 'metas':
-				$result = $this->model->getRecords('Metas', 'MetaID', 'MetaName', $search);
+				$result = $this->model->getRecords('Metas', 'MetaID', 'MetaName', $search, $rand);
 				break;
 			case 'jokes':
-				$result = $this->model->getRecords('Jokes', 'JokeID', 'JokeName', $search);
+				$result = $this->model->getRecords('Jokes', 'JokeID', 'JokeName', $search, $rand);
 				break;
 			case 'meta-jokes':
-				$result = $this->model->getRecords('MetaJokes', 'MetaJokeID', 'MetaJokeName', $search);
+				$result = $this->model->getRecords('MetaJokes', 'MetaJokeID', 'MetaJokeName', $search, $rand);
 				break;
 			case 'games':
-				$result = $this->model->getRecords('Games', 'GameID', 'GameName', $search);
+				$result = $this->model->getRecords('Games', 'GameID', 'GameName', $search, $rand);
 				break;
 			case 'rippers':
-				$result = $this->model->getRecords('Rippers', 'RipperID', 'RipperName', $search);
+				$result = $this->model->getRecords('Rippers', 'RipperID', 'RipperName', $search, $rand);
 				break;
 			case 'genres':
-				$result = $this->model->getRecords('Genres', 'GenreID', 'GenreName', $search);
+				$result = $this->model->getRecords('Genres', 'GenreID', 'GenreName', $search, $rand);
 				break;
 		}
 

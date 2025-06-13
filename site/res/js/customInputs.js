@@ -230,7 +230,10 @@ class SearchElement extends MultiSelect {
 	}
 
 	async search(input, url) {
-		let response = await fetch(`${url}?q=${input}`);
+		if (this.#init) {
+			url += `?q=${input}`;
+		}
+		let response = await fetch(url);
 
 		if (response.ok) {
 			let result = response.json().then(data => {
