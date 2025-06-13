@@ -23,12 +23,10 @@ $pdo = new PDO('mysql:host=' . DB_HOST . ';charset=UTF8mb4', DB_USER, DB_PASS);
 
 const DB_NAME = 'RipDB';
 
-
 $in = readline("Deploying to " . DB_HOST . '. Is this OK? [Y or Enter to continue]');
 
 $in = strtoupper($in);
 if ($in == 'Y' || $in == '') {
-	// if ($mysqli->connect_errno) {
 	if (!$pdo) {
 		echo "Database connection failed! Please check the connection details in this file (deploy.php).";
 		exit();
@@ -44,7 +42,6 @@ if ($in == 'Y' || $in == '') {
 			$sql = file_get_contents("$folder/$file.sql");
 			echo "Deploying: $folder/$file.sql\n";
 			$pdo->exec($sql);
-			// $mysqli->query($sql);
 		}
 	}
 

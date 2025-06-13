@@ -27,14 +27,18 @@ VALUES
 INSERT INTO MetaJokes
 	(MetaJokeName, MetaJokeDescription, MetaID)
 VALUES
-	('80s Music', 'Music that was released in the 1980s', 1),
-	('90s Music', 'Music that was released in the 1990s', 1),
-	('00s Music', 'Music that was released in the 2000s', 1),
-	('10s Music', 'Music that was released in the 2010s', 1),
+	('1960s Music', 'Music that was released in the 1960s', 1),
+	('1970s Music', 'Music that was released in the 1970s', 1),
+	('1980s Music', 'Music that was released in the 1980s', 1),
+	('1990s Music', 'Music that was released in the 1990s', 1),
+	('2000s Music', 'Music that was released in the 2000s', 1),
+	('2010s Music', 'Music that was released in the 2010s', 1),
+	('2020s Music', 'Music that was released in the 2010s', 1),
 	('Pop Music', 'Music that is classified as "Pop"', 1),
 	('Rock Music', 'Music that is classified as "Rock"', 1),
 	('Electronic Music', 'Music that is classified as "Electronic"', 1),
 	('Classical Music', 'Music that is classified as "Classical"', 1),
+	('Jazz Music', 'Music that is classified as "Jazz"', 1),
 	('Disco Music', 'Music that is classified as "Disco"', 1),
 	('Video Game Music', 'Music that originated from a video game', 1);
 
