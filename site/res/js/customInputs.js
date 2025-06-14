@@ -251,6 +251,7 @@ class SearchElement extends MultiSelect {
 								options[unset].classList.remove('dropdown-hover');
 							}
 							options[this.#highlighted].classList.add('dropdown-hover');
+							options[this.#highlighted].scrollIntoView();
 						}
 					}
 				}
