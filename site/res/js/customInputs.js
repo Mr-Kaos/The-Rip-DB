@@ -226,6 +226,8 @@ class SearchElement extends MultiSelect {
 		} else if (elements != null) {
 			let input = this.getElement().querySelector('input[type=search]');
 			input.style.display = 'none';
+			let btnRemove = elements.querySelector('button');
+			btnRemove.onclick = e => this.#unsetOption(elements);
 		}
 	}
 
@@ -297,8 +299,8 @@ class SearchElement extends MultiSelect {
 		}
 		// Remove the required attribute (if it was set) so the form can be submitted.
 		this.#searchElement.required = false;
-		option.remove();
-		console.log(this.#value);
+		option.style.display = "none";
+		this.toggleDisplay();
 	}
 
 	/**
@@ -321,6 +323,13 @@ class SearchElement extends MultiSelect {
 			if (this.#required) {
 				this.#searchElement.required = true;
 			}
+		}
+
+		// Re-display the option in the list
+		let options = this.getOptionsDiv();
+		let opt = options.querySelector(`span[value="${optionVal}"]`);
+		if (opt != undefined) {
+			opt.style.display = 'unset';
 		}
 	}
 }
