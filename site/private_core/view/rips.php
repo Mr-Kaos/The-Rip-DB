@@ -11,14 +11,14 @@ use RipDB\Objects as o;
 		<a href="rips/new" style="display:inline;float:right">Add Rip</a>
 		<details <?= $open ?>>
 			<summary>More Filters</summary>
-			<?= (new o\SearchElement('Tags', '/search/tags', true, $tags, ['name' => 'tags']))->buildElement() ?>
-			<?= (new o\SearchElement('Jokes', '/search/jokes', true, $jokes, ['name' => 'jokes']))->buildElement() ?>
-			<?= (new o\SearchElement('Games', '/search/games', true, $games, ['name' => 'games']))->buildElement() ?>
-			<?= (new o\SearchElement('Rippers', '/search/rippers', true, $rippers, ['name' => 'rippers']))->buildElement() ?>
-			<?= (new o\SearchElement('RipGenres', '/search/genres', true, $genres, ['name' => 'genres']))->buildElement() ?>
-			<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, $metaJokes, ['name' => 'meta-jokes']))->buildElement() ?>
-			<?= (new o\SearchElement('Metas', '/search/metas', true, $metas, ['name' => 'metas']))->buildElement() ?>
-			<?= (new o\SearchElement('Channel', '/search/channels', false, $channel, ['name' => 'channel']))->buildElement() ?>
+			<?= (new o\SearchElement('Tags', '/search/tags', true, $tags, ['name' => 'tags', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('Jokes', '/search/jokes', true, $jokes, ['name' => 'jokes', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('Games', '/search/games', true, $games, ['name' => 'games', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('Rippers', '/search/rippers', true, $rippers, ['name' => 'rippers', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('RipGenres', '/search/genres', true, $genres, ['name' => 'genres', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, $metaJokes, ['name' => 'meta-jokes', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('Metas', '/search/metas', true, $metas, ['name' => 'metas', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('Channel', '/search/channels', false, $channel, ['name' => 'channel', 'autocomplete' => 'off']))->buildElement() ?>
 		</details>
 	</form>
 	<table id="results" class="table-search">

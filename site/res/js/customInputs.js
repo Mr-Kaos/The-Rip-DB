@@ -16,7 +16,6 @@ class CustomElement {
 
 	constructor(element) {
 		this.#element = element;
-
 	}
 
 	getElement() {
@@ -185,6 +184,7 @@ class SearchElement extends MultiSelect {
 	#searchElement = null;
 	$url;
 	#required = false;
+	#highlighted = -1;
 
 	constructor(element) {
 		super(element);
@@ -209,6 +209,53 @@ class SearchElement extends MultiSelect {
 				this.toggleDisplay();
 			}
 		}.bind(this);
+
+		/**
+		 * Allows moving the selected option with the keyboard
+		 * @param {KeyboardEvent} event 
+		 */
+		window.addEventListener('keydown', function (event) {
+			if (this.isOpen()) {
+				let unset = this.#highlighted;
+				let validKey = true;
+
+				switch (event.key) {
+					case 'ArrowUp':
+						event.preventDefault();
+						this.#highlighted--;
+						break;
+					case 'ArrowDown':
+						event.preventDefault();
+						this.#highlighted++;
+						break;
+					case 'Enter':
+						event.preventDefault();
+						break;
+					default:
+						validKey = false;
+				}
+
+				if (validKey) {
+					let options = this.getOptionsDiv().querySelectorAll('span');
+					if (options.length > 0) {
+						if (event.key == "Enter") {
+							this.#selectOption(options[this.#highlighted]);
+						} else {
+							if (this.#highlighted < 0) {
+								this.#highlighted = 0;
+							} else if (this.#highlighted >= options.length) {
+								this.#highlighted = options.length - 1;
+							}
+
+							if (options[unset] != undefined) {
+								options[unset].classList.remove('dropdown-hover');
+							}
+							options[this.#highlighted].classList.add('dropdown-hover');
+						}
+					}
+				}
+			}
+		}.bind(this));
 	}
 
 	/**
@@ -266,6 +313,7 @@ class SearchElement extends MultiSelect {
 					this.toggleDisplay(true);
 				}
 			});
+			this.#resetHighlight();
 		}
 	}
 
@@ -328,9 +376,14 @@ class SearchElement extends MultiSelect {
 		// Re-display the option in the list
 		let options = this.getOptionsDiv();
 		let opt = options.querySelector(`span[value="${optionVal}"]`);
-		if (opt != undefined) {
+		if (opt != null) {
 			opt.style.display = 'unset';
 		}
+	}
+
+
+	#resetHighlight() {
+		this.#highlighted = -1;
 	}
 }
 

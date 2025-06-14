@@ -8,7 +8,7 @@ use RipDB\Objects as o;
 	<div>
 		<form id="rip_search" method="GET">
 			<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
-			<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
+			<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null, 'autocomplete' => 'off']))->buildElement() ?>
 			<a href="tags/new" style="display:inline;float:right">Add Tag</a>
 		</form>
 	</div>

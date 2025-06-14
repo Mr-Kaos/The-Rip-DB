@@ -11,8 +11,8 @@ use RipDB\Objects as o;
 		<a href="jokes/new" style="display:inline;float:right">Add Joke</a>
 		<details <?= $open ?>>
 			<summary>More Filters</summary>
-			<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, $metaJokes, ['name' => 'metajokes']))->buildElement() ?>
-			<?= (new o\SearchElement('Metas', '/search/metas', true, $metas, ['name' => 'metas']))->buildElement() ?>
+			<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, $metaJokes, ['name' => 'metajokes', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('Metas', '/search/metas', true, $metas, ['name' => 'metas', 'autocomplete' => 'off']))->buildElement() ?>
 		</details>
 	</form>
 	<table id="results" class="table-search">

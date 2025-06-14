@@ -132,7 +132,8 @@ input {
 }
 
 .multi-select>div.options>span:hover,
-.search-element>div.options>span:hover {
+.search-element>div.options>span:hover,
+.dropdown-hover {
 	background-color: var(--element-color);
 	cursor: pointer;
 }
