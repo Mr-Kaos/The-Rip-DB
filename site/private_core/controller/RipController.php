@@ -41,6 +41,7 @@ class RipController extends Controller
 					$_GET['genres'] ?? [],
 					$_GET['meta-jokes'] ?? [],
 					$_GET['metas'] ?? [],
+					$_GET['channel'] ?? null,
 					$useAltName
 				);
 				$rowCount = $this->getRowCount();
@@ -60,6 +61,7 @@ class RipController extends Controller
 					$_GET['genres'] ?? [],
 					$_GET['meta-jokes'] ?? [],
 					$_GET['metas'] ?? [],
+					$_GET['channel'] ?? null,
 					$useAltName
 				);
 				$this->setData('results', $rips);
@@ -72,6 +74,7 @@ class RipController extends Controller
 				$this->setData('genres', $this->model->getFilterResults('Genre', $_GET['genres'] ?? []));
 				$this->setData('metaJokes', $this->model->getFilterResults('MetaJoke', $_GET['meta-jokes'] ?? []));
 				$this->setData('metas', $this->model->getFilterResults('Meta', $_GET['metas'] ?? []));
+				$this->setData('channel', $this->model->getFilterResults('Channel', $_GET['channel'] ?? null));
 
 				// If any filter is given, make sure the details element is open by setting its "open" attribute
 				if (
@@ -80,8 +83,9 @@ class RipController extends Controller
 					!empty($_GET['games'] ?? null) ||
 					!empty($_GET['rippers'] ?? null) ||
 					!empty($_GET['genres'] ?? null) ||
-					!empty($_GET['metaJokes'] ?? null) ||
-					!empty($_GET['metas'] ?? null)
+					!empty($_GET['meta-jokes'] ?? null) ||
+					!empty($_GET['metas'] ?? null) ||
+					!empty($_GET['channel'] ?? null)
 				) {
 					$this->setData('open', 'open');
 				} else {

@@ -55,6 +55,9 @@ class APIController extends Controller
 			case 'genres':
 				$result = $this->model->getRecords('Genres', 'GenreID', 'GenreName', $search, $rand);
 				break;
+			case 'channels':
+				$result = $this->model->getRecords('Channels', 'ChannelID', 'ChannelName', $search, $rand);
+				break;
 		}
 
 		$this->setData('Result', $result);

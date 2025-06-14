@@ -108,6 +108,9 @@ Flight::group('/search', function () {
 	Flight::route('GET /genres', function () {
 		performAPIRequest('genres');
 	});
+	Flight::route('GET /channels', function () {
+		performAPIRequest('channels');
+	});
 });
 
 /**

@@ -18,6 +18,7 @@ use RipDB\Objects as o;
 			<?= (new o\SearchElement('RipGenres', '/search/genres', true, $genres, ['name' => 'genres']))->buildElement() ?>
 			<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, $metaJokes, ['name' => 'meta-jokes']))->buildElement() ?>
 			<?= (new o\SearchElement('Metas', '/search/metas', true, $metas, ['name' => 'metas']))->buildElement() ?>
+			<?= (new o\SearchElement('Channel', '/search/channels', false, $channel, ['name' => 'channel']))->buildElement() ?>
 		</details>
 	</form>
 	<table id="results" class="table-search">

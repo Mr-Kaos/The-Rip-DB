@@ -143,15 +143,23 @@ abstract class Model
 	/**
 	 * Gets a resultset of the specified records from the specified table.
 	 * @param string $source The name of the table to retrieve records from. Be sure to omit the "s".
+	 * @param null|string|array $ids The IDs to retrieve the values for. If a single Id is needed (e.g. for a single-select searchable dropdown, a string can lso be used.)
+	 * @return ?array An array of key-pair values of the records corresponding to the given ids, or null if the given list of IDs is also null.
 	 */
-	public function getFilterResults(string $source, array $ids)
+	public function getFilterResults(string $source, null|string|array $ids): ?array
 	{
 		$table = $source . 's';
 		$result = [];
-		if (!empty($ids)) {
+		if (is_array($ids)) {
 			$result = $this->db->table($table)->in($source . 'ID', $ids)->findAll();
 			$result = $this->resultsetToKeyPair($result, $source . 'ID', $source . 'Name');
+		} elseif (is_string($ids)) {
+			$result = $this->db->table($table)->eq($source . 'ID', $ids)->findAll();
+			$result = $this->resultsetToKeyPair($result, $source . 'ID', $source . 'Name');
+		} else {
+			$result = null;
 		}
+
 		return $result;
 	}
 }

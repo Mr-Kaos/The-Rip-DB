@@ -172,9 +172,9 @@ class RipModel extends Model
 	 * @param bool $useAltName If true and $name is given, it will find rips based on their alternate name. Defaults to the RipName column.
 	 * @return array An array of rips found by the given search criteria.
 	 */
-	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], bool $useAltName = false)
+	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false)
 	{
-		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $useAltName);
+		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $channel, $useAltName);
 		$qry->groupBy('RipID')
 			->limit($count)
 			->offset($offset);
@@ -222,7 +222,7 @@ class RipModel extends Model
 		return $rips;
 	}
 
-	public function getRipCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], bool $useAltName = false)
+	public function getRipCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false)
 	{
 		$where = '';
 		$params = [];
@@ -286,6 +286,12 @@ class RipModel extends Model
 			array_push($params, ...$metas);
 		}
 
+		// Apply channel filter if a channel is given.
+		if (!empty($channel)) {
+			$where .= ' AND (`RipChannel` = ?)';
+			array_push($params, $channel);
+		}
+
 		$qry = "SELECT COUNT(*) AS `count` FROM (SELECT RipID FROM `vw_RipsDetailed` ";
 		if (!empty($where)) {
 			// remove the leading AND
@@ -306,7 +312,7 @@ class RipModel extends Model
 	/**
 	 * 
 	 */
-	private function generateRipQuery(string $table, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], bool $useAltName = false)
+	private function generateRipQuery(string $table, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false)
 	{
 		$qry = $this->db->table($table)
 			->columns(...self::COLUMNS)
@@ -366,6 +372,11 @@ class RipModel extends Model
 			foreach ($metas as $meta) {
 				$qry->eq('MetaID', $meta);
 			}
+		}
+
+		// Apply channel filter if a channel is given.
+		if (!empty($channel)) {
+			$qry->eq('RipChannel', $channel);
 		}
 
 		return $qry;
