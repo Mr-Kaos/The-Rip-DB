@@ -1,5 +1,7 @@
 <?php
 
+use RipDB\Objects\IAsyncHandler;
+
 /**
  * Routes file.
  * 
@@ -10,6 +12,16 @@ const PAGE_EXTENSIONS = ['html', 'php']; // All allowed webpage extensions. If f
 const RESOURCE_EXTENSIONS = ['css', 'js', 'ico', 'jpg', 'jpeg', 'png']; // All allowed file resource extensions. Any requests to other extensions result in a 404.
 
 $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
+
+/**
+ * All valid HTTP methods available in this system.
+ */
+enum HttpMethod
+{
+	case GET;
+	case POST;
+	case PUT;
+}
 
 // Home Page
 Flight::route('/', function () {
@@ -88,28 +100,32 @@ Flight::route('/settings/theme', function () {
 Flight::group('/search', function () {
 
 	Flight::route('GET /tags', function () {
-		performAPIRequest('tags');
+		performAPIRequest('search', 'tags', HttpMethod::GET);
 	});
 	Flight::route('GET /jokes', function () {
-		performAPIRequest('jokes');
+		performAPIRequest('search', 'jokes', HttpMethod::GET);
 	});
 	Flight::route('GET /meta-jokes', function () {
-		performAPIRequest('meta-jokes');
+		performAPIRequest('search', 'meta-jokes', HttpMethod::GET);
 	});
 	Flight::route('GET /metas', function () {
-		performAPIRequest('metas');
+		performAPIRequest('search', 'metas', HttpMethod::GET);
 	});
 	Flight::route('GET /games', function () {
-		performAPIRequest('games');
+		performAPIRequest('search', 'games', HttpMethod::GET);
 	});
 	Flight::route('GET /rippers', function () {
-		performAPIRequest('rippers');
+		performAPIRequest('search', 'rippers', HttpMethod::GET);
 	});
 	Flight::route('GET /genres', function () {
-		performAPIRequest('genres');
+		performAPIRequest('search', 'genres', HttpMethod::GET);
 	});
 	Flight::route('GET /channels', function () {
-		performAPIRequest('channels');
+		performAPIRequest('search', 'channels', HttpMethod::GET);
+	});
+	Flight::route('GET /@other', function ($other) {
+		http_response_code(404);
+		die();
 	});
 });
 
@@ -152,15 +168,146 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	echo "</body></html>";
 }
 
-function performAPIRequest(string $page)
+/**
+ * Performs an API request.
+ * @param ?string $functionGroup The group in which an API function belongs to. If none, can be null.
+ * @param string $function The name of the API function to execute.
+ * @param HttpMethod $method The HTTP method the request is to use.
+ * @param string $controllerName The name of the Controller the API request will use. Defaults to "APIController.
+ * @param array $data Any extra data for the request. This is in addition to the body data being sent.
+ */
+function performAPIRequest(?string $functionGroup, string $function, HttpMethod $method, string $controllerName = 'APIController', array $data = [])
 {
-	require_once("private_core/controller/APIController.php");
-	$controller = new \RipDB\Controller\APIController($page);
-	$controller->performRequest();
+	require_once("private_core/controller/$controllerName.php");
+	$controllerName = "\RipDB\\Controller\\$controllerName";
+	$controller = new $controllerName($function);
 
-	Flight::json($controller->getPreparedData()['Result']);
+	if ($controller instanceof RipDB\Objects\IAsyncHandler) {
+		$response = [];
+
+		switch ($method) {
+			case HttpMethod::GET:
+				$response = $controller->get($function, $functionGroup);
+				break;
+			case HttpMethod::POST:
+				$response = $controller->post($function, $functionGroup);
+				break;
+			case HttpMethod::PUT:
+				$response = $controller->put($function, $functionGroup);
+				break;
+		}
+		Flight::json($response);
+	} else {
+		http_response_code(501);
+	}
 }
 
+function parsePut(): ?array
+{
+	$input = file_get_contents('php://input', 'r');
+	$put = [];
+
+	/**
+	 * This code has been adapted from code provided here https://gist.github.com/cwhsu1984/3419584ad31ce12d2ad5fed6155702e2.
+	 * Adjustments have been made to improve efficiency and cleanliness.
+	 * 
+	 * Parse raw HTTP request data
+	 *
+	 * Pass in $a_data as an array. This is done by reference to avoid copying
+	 * the data around too much.
+	 *
+	 * Any files found in the request will be added by their field name to the
+	 * $data['files'] array.
+	 *
+	 * @param string $input The input from php://input.
+	 * @return array Associative array of request data
+	 */
+	function parse_raw_http_request(string $input): array
+	{
+		$a_data = [];
+		// read incoming data
+
+		// grab multipart boundary from content type header
+		preg_match('/boundary=(.*)$/', $_SERVER['CONTENT_TYPE'], $matches);
+
+		$boundary = null;
+		// content type is probably regular form-encoded
+		if (!count($matches)) {
+			// Check the input to be certain there is no boundary - DISABlED AS THE PUT seems to work for now.
+			// Note: This might work IF the submitted form type was Form-Data and not x-www-form-urlencoded. Will need to be tested one day.
+			// $boundary = trim(substr($input, 0, strpos($input, "\n")));
+			// if (!str_starts_with($boundary, '----')) {
+			// we expect regular puts to contain a query string containing data
+			parse_str(urldecode($input), $a_data);
+			return $a_data;
+			// }
+		} else {
+			$boundary = $matches[1];
+		}
+
+		// split content by boundary and get rid of last -- element
+		$a_blocks = explode('--' . $boundary, $input);
+		array_pop($a_blocks);
+
+		// loop data blocks
+		foreach ($a_blocks as $block) {
+			if (empty($block)) {
+				continue;
+			}
+			$separator = "\n\r";
+
+			// Check if the block is a file. if it is, set a flag so  we know to grab the filename instead.
+			$isFile = strpos($block, 'filename') !== FALSE;
+			$line = strtok($block, $separator);
+
+			// First line should always contain the name and content disposition.
+			if ($isFile) {
+				preg_match('/filename=\"([^\"]*)\"/m', $line, $matches);
+			} else {
+				preg_match('/name=\"([^\"]*)\"/m', $line, $matches);
+			}
+			$name = $matches[1];
+			$val = '';
+
+			// Check all other lines to check for the data and the content-type
+			while ($line !== false) {
+				// Ignore the content type if given.
+				if (strpos($line, 'Content-Type') == false) {
+					$val = $line;
+				}
+				$line = strtok($separator);
+			}
+
+			if ($isFile) {
+				array_push($a_data['_FILES'], [
+					'name' => [$name],
+					'file' => $val
+				]);
+			} elseif (str_ends_with($name, '[]')) {
+				$name = substr($name, 0, strlen($name) - 2);
+				if (!is_array($a_data[$name] ?? null)) {
+					$a_data[$name] = [];
+				}
+				array_push($a_data[$name], $val);
+			} else {
+				$a_data[$name] = $val;
+			}
+		}
+		return $a_data;
+	}
+
+	// Check if the content type is multipart/form-data or x-www-form-urlencoded
+	// If form-data, parse the php input file for each submitted FormData component
+	if (str_contains($_SERVER["CONTENT_TYPE"], 'form-data')) {
+		$put = parse_raw_http_request($input);
+	}
+	// If x-www-form-urlencoded, the values should only be delimited by ampersands like a URL.
+	else {
+		parse_str($input, $put);
+	}
+
+	return $put;
+}
 /**
  * Submits a form from a POST request.
  */

@@ -6,11 +6,12 @@ use RipDB\Model as m;
 
 require_once('Controller.php');
 require_once('private_core/model/APIModel.php');
+require_once('private_core/objects/IAsyncHandler.php');
 
 /**
  * @property \RipDB\Model\APIModel $model
  */
-class APIController extends Controller
+class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 {
 	public function __construct(string $page)
 	{
@@ -21,7 +22,35 @@ class APIController extends Controller
 	 * Performs the GET or POST request by the user.
 	 * Generally a search request.
 	 */
-	public function performRequest(array $data = []): void
+	public function performRequest(array $data = []): void {}
+
+	public function get(string $method, ?string $methodGroup = null): mixed
+	{
+		$result = null;
+
+		switch ($methodGroup) {
+			case 'search':
+				$result = $this->dropdownSearch($method);
+				break;
+			default:
+				break;
+		}
+
+		return $result;
+	}
+	public function post(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
+	}
+	public function put(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
+	}
+
+	/**
+	 * 
+	 */
+	private function dropdownSearch($method): array
 	{
 		$rand = false;
 		$search = '';
@@ -30,10 +59,8 @@ class APIController extends Controller
 		} else {
 			$rand = true;
 		}
-		$result = null;
-
-		// Might refactor this at some point.
-		switch ($this->getPage()) {
+		$result = [];
+		switch ($method) {
 			case 'tags':
 				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search, $rand);
 				break;
@@ -59,7 +86,6 @@ class APIController extends Controller
 				$result = $this->model->getRecords('Channels', 'ChannelID', 'ChannelName', $search, $rand);
 				break;
 		}
-
-		$this->setData('Result', $result);
+		return $result;
 	}
 }
