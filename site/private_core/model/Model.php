@@ -134,7 +134,11 @@ abstract class Model
 			// Remove trailing comma from parameterized query.
 			$params = substr($params, 0, strlen($params) - 1);
 
-			$dbResult = $this->db->execute("CALL $storedProcedure($params)", array_values($data));
+			try {
+				$this->db->execute("CALL $storedProcedure($params)", array_values($data));
+			} catch (\PicoDb\SQLException $error) {
+				$result = [new \RipDB\Error("An error occurred when sending the data to the database.")];
+			}
 		}
 
 		return $result;

@@ -197,20 +197,23 @@ class RipController extends Controller
 
 	/**
 	 * Formats the given string timestamp by inserting colons between every second pair of numbers.
-	 * e.g. 0132 --> 01:32 (1 min, 32 seconds)
-	 * e.g. 10232 -> 1:02:49 (1 hr, 2 min, 49 seconds)
+	 * e.g. 00:02:32 --> 02:32 (2 min, 32 seconds)
+	 * e.g. 00:00:34 -> 00:34 (34 seconds)
+	 * e.g. 01:15:08 ->  01:15:08 (stays the same)
 	 * @param string $timestamp The timestamp string to insert colons into.
 	 * @return string The formatted timestamp.
 	 */
 	private function formatTimestamp(?string $timestamp): string
 	{
+		$formatted = $timestamp;
 		if (!empty($timestamp)) {
-			$formatted = $timestamp;
-			$formatted = substr_replace($formatted, ':', strlen($formatted) - 2, 0);
+			$split = explode(':', $timestamp);
 
-			// If the timestamp represents a time longer than an hour:
-			if (strlen($timestamp) > 4) {
-				$formatted = substr_replace($formatted, ':',  strlen($formatted) - 5, 0);
+			// If the split contains three segments (hours, mins, secs), check if the hours is not "00". If it is, remove it.
+			if (count($split) == 3) {
+				if ($split[0] == "00") {
+					$formatted = substr($timestamp, 3);
+				}
 			}
 		} else {
 			$formatted = '';
@@ -280,6 +283,7 @@ class RipController extends Controller
 
 				if ($this->getPage() == 'new-rip') {
 					$submission = $this->model->submitFormData($validated, 'usp_InsertRip');
+					var_dump($submission);
 					if ($submission == true) {
 						$result = '/rips';
 					} else {

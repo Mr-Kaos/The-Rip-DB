@@ -69,7 +69,7 @@ BEGIN
 	END WHILE;
 
 	SET i = 0;
-	-- Create Rip Genre assocaitions
+	-- Create Rip Genre associations
 	WHILE i < JSON_LENGTH(Genres) DO
 		SELECT JSON_UNQUOTE(JSON_EXTRACT(Genres, CONCAT('$[', i ,']'))) INTO Id;
 		

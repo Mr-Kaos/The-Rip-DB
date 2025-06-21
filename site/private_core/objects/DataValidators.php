@@ -159,37 +159,82 @@ trait DataValidator
 	}
 
 	/**
-	 * Validates the given string to ensure it is a valid timestamp
-	 * If the given string is empty, null is returned.
+	 * Validates the given string to ensure it is a valid timestamp for usage in MySQL.  
+	 * Examples:  
+	 * 	`05:23` => `00:05:23` (valid)  
+	 * 	`01:12:03` => `01:12:03` (valid)  
+	 * 	`03` => `00:00:03` (valid)  
+	 * 	`21:2` => `00:21:02` (cleansed, valid)  
+	 * 	`2:7` => `00:02:07` (cleansed, valid) - This example is to show that the cleansed value always prepends a zero to segments with one value, i.e. "`7`" doesn't change to "`70`", which would exceed 59 seconds/minutes.  
+	 * 	`1:4:5` => `01:04:05` (cleansed, valid)  
+	 * 	`12:234` => ERROR (invalid)  
+	 * 	`05:0.24` => ERROR (invalid) - Decimals are not allowed.  
+	 * @param string $time The timestamp to validate.
+	 * @param string $errorMessage The error message to display should validation fail.
+	 * @param ?string $maxTimestamp A timestamp dictating the maximum allowed length. (e.g. 01:15:30 for 1hr, 15 mins and 30 seconds.) This is recursively validated in case you accidentally enter an invalid timestamp here.
+	 * @param ?string $minTimestamp A timestamp dictating the minimum allowed length. (e.g. 00:20 for 20 seconds.)
+	 * @return Error|string|null If valid, the timestamp without colons is returned.
 	 */
-	protected function validateTimestamp(string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.'): Error|string|null
+	function validateTimestamp(string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.', ?string $maxTimestamp = null, ?string $minTimestamp = null): Error|string|null
 	{
 		$validated = new Error($errorMessage);
-		error_log("REMINDER: ADD NUMERIC VALIDATION TO TIMES!!!");
 
-		// Ensure that colons are placed in the correct positions
-		if (strlen($time) > 2) {
-			if ($time[strlen($time) - 3] == ':') {
-				// If the string is longer than 5 characters, i.e. specifies hours, check that the hours colon is correctly placed.
-				if (strlen($time) > 5) {
-					if ($time[strlen($time) - 6] == ':') {
-						$validated = str_replace(':', '', $time);
+		if ($time != "") {
+			if ($maxTimestamp !== null) {
+				$maxTimestamp = validateTimestamp($maxTimestamp, 'max validate invalid');
+			}
+			if ($minTimestamp !== null) {
+				$minTimestamp = validateTimestamp($minTimestamp, 'min validate invalid');
+			}
 
-						// If the hours are just zeros, remove them.
-						if (str_starts_with($validated, '00')) {
-							$validated = substr($validated, 2);
-						}
-					}
-				} else {
-					$validated = str_replace(':', '', $time);
+			// Validate each segment of the timestamp
+			$segments = explode(':', $time);
+			$error = false;
+			for ($i = 0; $i < count($segments); $i++) {
+				// If the segment contains a non-numeric character (including a decimal point), fail.
+				if (!is_numeric($segments[$i]) || str_contains($segments[$i], '.')) {
+					$error = true;
+					break;
 				}
-
-				// If the validated timestamp is odd, add a leading 0.
-				if (strlen($validated) % 2 == 1) {
-					$validated = '0' . $validated;
+				// Each segment must be no more than two characters
+				elseif (strlen($segments[$i]) > 2) {
+					$error = true;
+					break;
+				}
+				// If a segment is one character, prepend a zero
+				elseif (strlen($segments[$i]) < 2) {
+					$segments[$i] = '0' . $segments[$i];
 				}
 			}
-		} elseif (empty($time)) {
+
+			// If no errors were encountered, check for max and min length and prepare string timestamp
+			if (!$error) {
+				$time = implode(':', $segments);
+				if (count($segments) < 3) {
+					for ($i = 0; $i < 3 - count($segments); $i++) {
+						$time = '00:' . $time;
+					}
+				}
+
+				if ($maxTimestamp != null) {
+					if ($time > $maxTimestamp) {
+						$validated->setMessage('The timestamp exceeds the maximum allowed length (' . $maxTimestamp . ').');
+						$error = true;
+					}
+				}
+				if ($minTimestamp != null) {
+					if ($time < $minTimestamp) {
+						$validated->setMessage('The timestamp is less than the minimum allowed length (' . $minTimestamp . ').');
+						$error = true;
+					}
+				}
+
+				// Finally, if the timestamp falls within the min and max lengths, return it.
+				if (!$error) {
+					$validated = $time;
+				}
+			}
+		} else {
 			$validated = null;
 		}
 
