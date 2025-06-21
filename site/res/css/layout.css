@@ -99,6 +99,18 @@ input {
 	color: var(--text-color);
 }
 
+input::after {
+	display: block;
+}
+
+input[type=range] {
+	vertical-align: middle;
+}
+
+input[type=range]+span {
+	margin-left: 5px;
+}
+
 .pagination>a {
 	margin: 0px 2px;
 	padding: 0px 2px;
@@ -224,4 +236,18 @@ input {
 .example b {
 	margin: 0px;
 	padding: 5px;
+}
+
+.notification-container {
+	position: absolute;
+	width: 100%;
+	top: 50px;
+	display: flex;
+}
+
+.notif {
+	margin: auto;
+	border: solid;
+	border-radius: 5px;
+	padding: 3px;
 }

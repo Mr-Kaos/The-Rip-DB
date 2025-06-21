@@ -27,3 +27,62 @@ function getCookie(name) {
 	}
 	return cookie;
 }
+
+const NotificationPriority = {
+	Default: "default", // neutral (theme) coloured
+	Success: 'success', // green coloured
+	Warning: "warning", // yellow coloured
+	Alert: "alert", // dark orange coloured
+	Error: "error" // red coloured
+}
+
+/**
+ * Returns the Notification container on the page. If it does not already exist, it is created.
+ * @returns {HTMLDivElement}
+ */
+function getNotificationContainer() {
+	let notifContainer = document.getElementById('Container_Notification');
+
+	if (notifContainer == undefined) {
+		notifContainer = document.createElement('div');
+		notifContainer.className = 'notification-container';
+
+		document.body.append(notifContainer);
+	}
+	return notifContainer;
+}
+
+/**
+ * Displays a basic pop-up notification message.
+ * @param {String} message 
+ * @param {NotificationPriority} priority 
+ */
+function displayNotification(message, priority) {
+	let notification = document.createElement("div");
+	notification.innerText = message;
+	notification.className = 'notif';
+
+	// Apply colour to the notification
+	switch (priority) {
+		default:
+			notification.style.background = 'var(--bg-accent)'
+			notification.style.borderColor = 'var(--accent-1)';
+			break;
+		case NotificationPriority.Success:
+
+			break;
+		case NotificationPriority.Warning:
+
+			break;
+		case NotificationPriority.Alert:
+
+			break;
+		case NotificationPriority.Error:
+			notification.style.background = '#ee6666'
+			notification.style.borderColor = '#dd0030';
+			notification.style.color = '#fff';
+			break;
+	}
+
+	getNotificationContainer().append(notification);
+}

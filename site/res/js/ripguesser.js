@@ -1,0 +1,276 @@
+/**
+ * Rip Guesser Game
+ * 
+ * Author: Mr Kaos
+ * Created: 20/06/2025
+ * Description: This file contains the main code for the Rip Guesser game.
+ */
+
+"use strict";
+
+const settingsDiv = document.getElementById('settings');
+const gamDiv = document.getElementById('game');
+
+/**
+ * Game object. Handles user interaction with the game.
+ */
+class Game {
+	#gameID;
+	#difficulty;
+
+	constructor() {
+		this.#gameID = getCookie('PHPSESSID');
+		console.log(this.#gameID);
+	}
+
+	/**
+	 * Sends the game's settings to the server.
+	 */
+	async setSettings(e) {
+		e.preventDefault();
+		let data = new FormData(e.target);
+		let ready = false;
+
+		let request = await fetch('/ripguessr/game/start', {
+			method: 'POST',
+			body: data
+		});
+
+		// If the server responds with true, then the game can start
+		if (request.ok) {
+			ready = await request.json();
+			if (!ready) {
+				displayNotification("Game failed to initialise!", NotificationPriority.Error);
+			}
+			console.log(ready);
+		}
+	}
+
+	/**
+	 * Begins the game.
+	 * Tells the server to start the game.
+	 */
+	startGame() {
+
+	}
+
+	static openSettings() {
+		let settingsDiv = document.getElementById('settings');
+		let display = settingsDiv.style.display;
+		console.log(display);
+		if (display == 'unset' || display == '')
+			settingsDiv.style.display = "unset";
+	}
+}
+
+/**
+ * Handles asynchronous requests to the web app's API.
+ */
+class API_Request {
+	API_ADDRESS = 'api';
+	#method;
+	#url;
+	#urlEncoded;
+	#urlParams;
+
+	/**
+	 * 
+	 * @param {string} method The method of the API to call
+	 * @param {Object} urlParams An associative array containing for get parameters in the URL.
+	 */
+	constructor(method, urlParams) {
+		if (method.startsWith('/')) {
+			method = method.substring(1);
+		}
+		this.#url = method;
+		if (urlParams instanceof Object || urlParams == null) {
+			this.#urlParams = urlParams;
+		} else {
+			throw TypeError('Parameter "urlParams" must be of type "Array".');
+		}
+
+		// Check that "api" exists in the url
+		if (urlParams != null) {
+			this.#url += '?' + API_Request.encodeObject(urlParams);
+		}
+		this.#urlEncoded = encodeURI(this.#url);
+
+		this.#urlParams = urlParams;
+		this.#method = method;
+	}
+
+	/**
+	 * Make a GET request to the API 
+	 * @return {Object} The parsed JSON from the API GET request
+	 */
+	async get() {
+		let result = null;
+
+		let errorMsg;
+		let response = await fetch(this.#urlEncoded);
+
+		if (response.ok) {
+			result = await response.json().then(data => {
+				switch (response.status) {
+					case 200:
+					case 201:
+					case 202:
+						return data;
+					case 204:
+						errorMsg = 'GET(' + this.#method + '): returned no content';
+						break;
+					case 205:
+						errorMsg = 'GET(' + this.#method + '): requests page reset. Data on page may be out of date!';
+						break;
+					default:
+						errorMsg = 'GET(' + this.#method + '): Request was successful however something unanticipated has occurred';
+						break;
+				}
+			}).catch(err => {
+				console.error(`GET(${this.#method}): returned malformed content. ${err}`);
+				// addNotification('Unable to complete request properly', NotificationTypes.Error);
+			});
+		} else {
+			let errorMsg = 'GET(' + this.#method + '): ';
+			errorMsg += this.getErrorMessage(response.status, 'GET');
+			// addNotification('Unable to complete request properly', NotificationTypes.Error);
+		}
+
+		if (errorMsg != undefined) {
+			console.warn(errorMsg);
+		}
+		return result;
+	}
+
+	/**
+	 * Sends a POST request to the API request method.
+	 * @param {FormData} formData a FormData object to send in the POST request.
+	 */
+	async post(formData) {
+		// Make a POST request to send data to the API
+		let response = await fetch(this.#urlEncoded, {
+			method: 'POST',
+			body: formData
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			console.warn(this.getErrorMessage(response.status, 'POST'));
+			return errorData;
+		}
+
+		return response;
+	}
+
+	/**
+	 * Performs a PUT request to using the constructor's given data and method.
+	 * Returns a response indicating if the request was successful or not.
+	 * @param {Object} data A JavaScript Object containing the data to be submitted to the server.
+	 *       If a regular Object is sent, the content-type will be x-www-form-urlencoded. When FormData, the content-type will be form-data.
+	 *        NOTE: DO NOT USE FormData as this does not work! It does no set the boundary in the Content-Type header, which prevents the data from being parsed on the server.
+	 * @param {String} successMessage A message to display if the request was successful.
+	 * @return {Boolean} True if the request was successfully sent to the server.
+	 */
+	async put(data, successMessage = "Successfully updated data") {
+		let success = false;
+		let contentType = 'application/x-www-form-urlencoded;charset=UTF-8';
+
+		if (data instanceof FormData) {
+			contentType = 'multipart/form-data';
+		} else {
+			data = API_Request.encodeObject(data);
+		}
+		const response = await fetch(this.#urlEncoded, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': contentType
+			},
+			body: data
+		});
+
+		if (response.ok) {
+			let msg = await response.json();
+
+			if (msg.FAILURE != null) {
+				// addNotification(msg.FAILURE, NotificationTypes.Error);
+			} else if (successMessage !== null) {
+				// addNotification(successMessage);
+				success = true;
+			}
+		} else {
+			console.warn(this.getErrorMessage(response.status, 'PUT'));
+			// addNotification("Could not update data.", NotificationTypes.Warning);
+		}
+		return success;
+	}
+
+	/**
+	 * Encodes an object to be a valid for a URL.
+	 * @param {Object} data 
+	 */
+	static encodeObject(data) {
+		let body = [];
+		let key;
+		for (key in data) {
+			let encodedKey = '';
+			let encodedValue = encodeURIComponent(data[key]);
+
+			if ((Array.isArray(data[key])) && !key.endsWith('[]')) {
+				encodedKey = key + '[]';
+				for (let i = 0; i < data[key].length; i++) {
+					body.push(encodedKey + '=' + data[key][i]);
+				}
+			} else {
+				if (key.endsWith('[]')) {
+					encodedKey = key;
+				} else {
+					encodedKey = encodeURIComponent(key);
+				}
+				body.push(encodedKey + '=' + encodedValue);
+			}
+		}
+		return body.join('&');
+	}
+
+	getErrorMessage(code, method) {
+		let errorMsg;
+		switch (code) {
+			case 400:
+				errorMsg = 'Malformed request.';
+				break;
+			case 403:
+				errorMsg = 'User is unauthorised to perform this method. Maybe seek permission first before doing this.';
+				break;
+			case 404:
+				errorMsg = 'The method called does not exist! ';
+				break;
+			case 405:
+				errorMsg = 'The method used (' + method + ') is not allowed. Nuh uh uh!';
+				break;
+			case 408:
+				errorMsg = 'The request timed out. You waited and waited, but didn\'t hear anything back.';
+				break;
+			case 418:
+				errorMsg = 'The entity is in fact short and stout. Cannot brew coffee!';
+				break;
+			case 429:
+				errorMsg = 'Too many requests sent, try again later. Hold your horses!';
+				break;
+			case 451:
+				errorMsg = 'Content blocked. 1984?';
+				break;
+			case 500:
+				errorMsg = `Internal Server Error. (It's me, hi I'm the problem, it's me).`;
+				break;
+			case 503:
+				errorMsg = 'Service Unavailable!';
+				break;
+			default:
+				errorMsg = 'An unanticipated error has occurred. This shouldn\'t ever happen. Code:', code;
+				break;
+		}
+		return 'API request error: ' + errorMsg;
+	}
+}
+
+let game = new Game();

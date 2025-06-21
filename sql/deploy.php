@@ -63,7 +63,8 @@ if ($in == 'Y' || $in == '') {
 		'Rips',
 		'RipJokes',
 		'RipGenres',
-		'RipRippers'
+		'RipRippers',
+		'RipGuesserGame'
 	];
 	deployFiles($pdo, 'Tables', $files);
 

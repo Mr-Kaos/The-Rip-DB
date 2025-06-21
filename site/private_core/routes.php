@@ -88,6 +88,26 @@ Flight::route('/help', function () {
 	displayPage('help', null, [], 'Help / FAQ');
 });
 
+// Rip Guesser Page
+Flight::group('/ripguessr', function () {
+	Flight::route('/', function () {
+		displayPage('rip-guesser', 'GuesserController', [], 'Rip Guessr');
+	});
+	Flight::route('/play', function () {
+		session_start();
+		displayPage('rip-guesser-play', 'GuesserController', [], 'Rip Guessr');
+	});
+
+	// Async requests for live game interaction:
+	// Requests here should always be returned as a JSON.
+	Flight::route('POST /game/@request', function ($request) {
+		performAPIRequest('game', $request, HttpMethod::POST, 'GuesserController');
+	});
+	Flight::route('GET /game/@request', function ($request) {
+		performAPIRequest('game', $request, HttpMethod::GET, 'GuesserController');
+	});
+});
+
 // Settings Requests
 Flight::route('/settings/theme', function () {
 	$theme = ($_COOKIE['theme'] ?? 'light') == 'light' ? 'dark' : 'light';
