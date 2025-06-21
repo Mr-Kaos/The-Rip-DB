@@ -175,16 +175,16 @@ trait DataValidator
 	 * @param ?string $minTimestamp A timestamp dictating the minimum allowed length. (e.g. 00:20 for 20 seconds.)
 	 * @return Error|string|null If valid, the timestamp without colons is returned.
 	 */
-	function validateTimestamp(string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.', ?string $maxTimestamp = null, ?string $minTimestamp = null): Error|string|null
+	protected function validateTimestamp(string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.', ?string $maxTimestamp = null, ?string $minTimestamp = null): Error|string|null
 	{
 		$validated = new Error($errorMessage);
 
 		if ($time != "") {
 			if ($maxTimestamp !== null) {
-				$maxTimestamp = validateTimestamp($maxTimestamp, 'max validate invalid');
+				$maxTimestamp = $this->validateTimestamp($maxTimestamp, 'max validate invalid');
 			}
 			if ($minTimestamp !== null) {
-				$minTimestamp = validateTimestamp($minTimestamp, 'min validate invalid');
+				$minTimestamp = $this->validateTimestamp($minTimestamp, 'min validate invalid');
 			}
 
 			// Validate each segment of the timestamp
