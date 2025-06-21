@@ -56,7 +56,6 @@ class SearchElement extends InputElement
 		$attributes = $this->attributes;
 		$attributes['name'] = null;
 		$attributes['search-url'] = $this->url;
-		$attributes['required'] = !is_array($this->values);
 		$element .= (new InputElement(null, InputTypes::search, $attributes))->buildElement();
 		$element .= '<div class="options"></div>';
 		if ($this->multiSelect) {
