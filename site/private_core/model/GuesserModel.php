@@ -5,11 +5,13 @@ namespace RipDB\Model;
 use RipDB\RipGuesser as game;
 
 require_once('Model.php');
+require_once('RipModel.php');
 
 class GuesserModel extends Model
 {
 	const TABLE = 'RipGuesserGame';
 	const SESS_GAME_ID = 'GameSessionID';
+	const SESS_GAME_OBJ = 'GameInstance';
 
 	public function __construct()
 	{
@@ -21,18 +23,20 @@ class GuesserModel extends Model
 
 	/**
 	 * Initialises the game. If a game is already active in the current session, it uses it instead.
-	 * @return false|\RipDB\RipGuesser\Game If the game is successfully initialised, a RipGuesser Game object is returned. Else, false is returned.
+	 * @return bool True if the game is successfully created, otherwise false.
 	 */
-	public function initGame(game\Settings $settings): false|game\Game
+	public function initGame(game\Settings $settings): bool
 	{
 		$success = false;
 		$gameID = uniqid("", true);
 
 		try {
-			// Need to be careful that the serialised settings does not exceed 8196 bytes. Without filters, it takes roughly 320 bytes.
+			// NOTE: Need to be careful that the serialised settings does not exceed 8196 bytes. Without filters, it takes roughly 320 bytes.
 			// If A LOT of filters were given, this may be exceeded. Perhaps, a limit on filters should be set in place for the game.
 			$this->db->execute("CALL usp_NewRipGuesserGame(?, ?)", [$gameID, serialize($settings)]);
 			$_SESSION[self::SESS_GAME_ID] = $gameID;
+			$game = new game\Game($settings->roundCount, $settings);
+			$_SESSION[self::SESS_GAME_OBJ] = serialize($game);
 		} catch (\PicoDb\SQLException $error) {
 			error_log($error->getMessage());
 		}
@@ -73,5 +77,34 @@ class GuesserModel extends Model
 			$this->db->table(self::TABLE)->eq('SessionID', $gameID)->remove();
 			unset($_SESSION[self::SESS_GAME_ID]);
 		}
+	}
+
+	/**
+	 * Gets a rip based on the given settings round
+	 * @param game\Settings The settings object containing filters for rip searching.
+	 * @param array $excludedRips An array of ripIDs that have already been played in the game's round to prevent being picked again.
+	 */
+	public function getRip(game\Settings $settings, array $excludedRips): false|array
+	{
+		$rip = false;
+		$ripID = $this->db->execute("CALL usp_SelectRandomRip(?,?,?,?,?,?,?)", [
+			$settings->minJokes,
+			$settings->maxJokes,
+			$settings->minLength,
+			$settings->maxLength,
+			json_encode($settings->metaJokeFilters),
+			json_encode($settings->metaFilters),
+			json_encode($excludedRips)
+		])->fetch();
+
+		// If a rip was found, retrieve its data.
+		if ($ripID !== false) {
+			$ripID = $ripID['RipID'];
+			$ripModel = new RipModel();
+
+			$rip = $ripModel->getRip($ripID);
+		}
+
+		return $rip;
 	}
 }

@@ -74,7 +74,7 @@ VALUES
 	('Hatsune Miku: Project Mirai DX', 'Rhythm game featuring vocaloid Hatsune Miku released on the Nintendo 3DS.'),
 	('MOTHER 3', ''), -- 10
 	('Half-Life 2', ''),
-	('Drawn ro Life', ''),
+	('Drawn to Life', ''),
 	('Mega Man 7', ''),
 	('Deltarune', ''),
 	('Super Mario 64', ''), -- 15

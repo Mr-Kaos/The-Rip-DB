@@ -16,7 +16,9 @@ const gamDiv = document.getElementById('game');
  */
 class Game {
 	#gameID;
-	#difficulty;
+	#showAnserCount = true;
+	#round = 0;
+	#roundTimer;
 
 	constructor() {
 		this.#initGame();
@@ -26,7 +28,6 @@ class Game {
 		let activeGame = await this.#checkForActiveGame();
 		if (activeGame !== false) {
 			this.#gameID = activeGame;
-			console.log('An active game is already running!');
 
 			// Ask if a new game should be started
 			let modalFunctions = {
@@ -38,8 +39,8 @@ class Game {
 					colour: '#fff',
 					background: '#ff0000'
 				},
-				'Continue Current Game': {
-					function: function () { console.log('test') },
+				'Resume Current Game': {
+					function: this.nextRound.bind(this),
 					background: '#00ff00'
 				}
 			}
@@ -68,8 +69,9 @@ class Game {
 			ready = await request.json();
 			if (!ready) {
 				displayNotification("Game failed to initialise!", NotificationPriority.Error);
+			} else {
+				this.nextRound();
 			}
-			console.log(ready);
 		}
 	}
 
@@ -78,13 +80,24 @@ class Game {
 	}
 
 	/**
-	 * Begins the game.
-	 * Tells the server to start the game.
+	 * Moves the game to the next round.
 	 */
-	startGame() {
+	async nextRound() {
+		let request = await fetch('/ripguessr/game/round-next', {
+			method: 'GET'
+		});
 
+		if (request.ok) {
+			this.#initRound(await request.json());
+		} else {
+			console.error('Could not start next round!')
+			displayNotification("Failed to start next round!", NotificationPriority.Error);
+		}
 	}
 
+	/**
+	 * Displays the settings form when setting up a game.
+	 */
 	openSettings() {
 		let settingsDiv = document.getElementById('settings');
 		let display = settingsDiv.style.display;
@@ -123,6 +136,58 @@ class Game {
 		let request = await fetch('/ripguessr/game/purge', {
 			method: 'DELETE'
 		});
+	}
+
+	/**
+	 * Initialises a round by generating the 
+	 * @param {Object} roundData A JSON object containing the fields that need to be answered.
+	 */
+	#initRound(roundData) {
+		let gameContainer = document.getElementById('game');
+		let audioPlayer = gameContainer.querySelector('#audio-player');
+		let form = gameContainer.querySelector('#round-form');
+		audioPlayer.innerHTML = `<iframe width="0" height="0" src="https://www.youtube-nocookie.com/embed/${roundData['RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
+
+		console.log(roundData);
+
+		for (let key in roundData) {
+			let input = document.createElement('input');
+			let label = document.createElement('label');
+			let count = document.createElement('span');
+			switch (key) {
+				// Easy difficulty
+				case 'Jokes':
+					label.innerText = 'Jokes';
+					break;
+				// Standard Difficulty
+				case 'GameName':
+					label.innerText = 'Game Name';
+					count = null;
+					break;
+				// Hard difficulty
+				case 'AlternateName':
+					label.innerText = 'Alternative Name';
+					input.title = "The rip's name in its album release"
+					count = null;
+					break;
+				case 'Rippers':
+					label.innerText = 'Rippers';
+					break;
+				default:
+					continue;
+			}
+			input.id = label.for = input.name = key;
+
+			// Append the input to the game container.
+			form.appendChild(label);
+			form.appendChild(input);
+			if (count != null) {
+				count.innerText = `(0/${roundData[key]})`
+				form.appendChild(count);
+			}
+		}
+
+		gameContainer.style.display = 'unset';
 	}
 }
 

@@ -7,6 +7,15 @@ enum Difficulty: string
 	case Beginner = "Ideal for those unfamiliar with rips";
 	case Standard = "The normal difficulty";
 	case Hard = "Designed for those very familiar with rips";
+
+	static function enumByValue(string $value)
+	{
+		return match ($value) {
+			'Beginner' => self::Beginner,
+			'Standard' => self::Standard,
+			'Hard' => self::Hard
+		};
+	}
 }
 
 /**
@@ -17,7 +26,7 @@ enum Difficulty: string
  * @property private int $score The total score for the game.
  * @property private Settings The settings object that defines the settings to use in the game.
  */
-class Game extends \RipDB\Model\Model
+class Game
 {
 	// Maximum number of rounds you can have in a game
 	const MAX_ROUNDS = 15;
@@ -44,7 +53,6 @@ class Game extends \RipDB\Model\Model
 		}
 		$this->roundCount = $rounds;
 		$this->id = session_id();
-		parent::__construct();
 	}
 
 	/**
@@ -56,7 +64,6 @@ class Game extends \RipDB\Model\Model
 		$success = false;
 
 		if ($this->round == 0) {
-			
 		}
 
 		return $success;
@@ -66,6 +73,20 @@ class Game extends \RipDB\Model\Model
 	 * Gets the current round.
 	 */
 	public function getRound() {}
+
+	/**
+	 * Returns an array of RipIDs that have been played in the game's rounds.
+	 */
+	public function getPlayedRips(): array
+	{
+		$played = [];
+
+		foreach ($this->rounds as $round) {
+			array_push($round->ripID);
+		}
+
+		return $played;
+	}
 
 	/**
 	 * Advances the round by one.
@@ -80,9 +101,31 @@ class Game extends \RipDB\Model\Model
 	/**
 	 * Fetches a rip based on the game's settings and previous rounds.
 	 * Will attempt to search for a rip that has not already been played in a previous round and that matches the given criteria specified in the setting's filters.
+	 * If a rip is fetched, its answers are stored in this object on the server. Only the fields that need to be answered are returned.
+	 * @param GuesserModel $model The RipGuesserModel object to query the database with.
+	 * @return false|array If no rip was found, false is returned. Else, an associative array of fields to answer and their number of valid answers are returned.
 	 */
-	private function fetchRip() {
-		// $this->db->table()
+	public function fetchRip(\RipDB\Model\GuesserModel $model): false|array
+	{
+		$rip = $model->getRip($this->settings, $this->getPlayedRips());
+		$fields = false;
+
+		if (!empty($rip)) {
+			$fields = ['RipYouTubeID' => $rip['RipYouTubeID']];
+			// From the rip data, only return the fields that are to be filled and the number of answers they require.
+			switch ($this->settings->difficulty) {
+				case Difficulty::Hard:
+					$fields['AlternateName'] = 1;
+					$fields['Rippers'] = count($rip['Rippers']);
+				case Difficulty::Standard:
+					$fields['GameName'] = 1;
+				case Difficulty::Beginner:
+					$fields['Jokes'] = count($rip['Jokes']);
+					break;
+			}
+		}
+
+		return $fields;
 	}
 }
 
@@ -108,13 +151,16 @@ class Settings
 	const MIN_RIP_LENGTH = '00:01';
 
 	public readonly bool $showAnswerCount;
-	private int $roundCount = 3;
-	private int $minJokes = 1;
-	private int $maxJokes = 2;
-	private array $metaJokeFilters = [];
-	private array $metaFilters = [];
+	public readonly int $roundCount;
+	public readonly int $minJokes;
+	public readonly int $maxJokes;
+	public readonly string $minLength;
+	public readonly string $maxLength;
+	public readonly array $metaJokeFilters;
+	public readonly array $metaFilters;
+	public readonly Difficulty $difficulty;
 
-	public function __construct(bool $showAnswerCount = true, int $roundCount = 3, int $minJokes = 1, int $maxJokes = 2, ?array $metaJokeFilters = [], ?array $metaFilters = [])
+	public function __construct(bool $showAnswerCount = true, int $roundCount = 3, int $minJokes = 1, int $maxJokes = 2, string $minLength = self::MIN_RIP_LENGTH, string $maxLength = self::MAX_RIP_LENGTH, ?array $metaJokeFilters = [], ?array $metaFilters = [], Difficulty $difficulty = Difficulty::Beginner)
 	{
 		$this->showAnswerCount = $showAnswerCount;
 
@@ -140,33 +186,18 @@ class Settings
 
 		$this->minJokes = $minJokes;
 		$this->maxJokes = $maxJokes;
-		$this->metaJokeFilters = $metaJokeFilters;
-		$this->metaFilters = $metaFilters;
-	}
-
-	public function getMinJokes(): int
-	{
-		return $this->minJokes;
-	}
-
-	public function getMaxJokes(): int
-	{
-		return $this->maxJokes;
-	}
-
-	public function getMetaJokeFilters(): array {
-		return $this->metaJokeFilters;
-	}
-
-	public function getMetaFilters(): array {
-		return $this->metaFilters;
+		$this->minLength = $minLength;
+		$this->maxLength = $maxLength;
+		$this->metaJokeFilters = $metaJokeFilters ?? [];
+		$this->metaFilters = $metaFilters ?? [];
+		$this->difficulty = $difficulty;
 	}
 }
 
 class Round
 {
 	// Standard Round properties
-	private int $ripID;
+	public readonly int $ripID;
 	private int $score;
 	private bool $complete = false;
 

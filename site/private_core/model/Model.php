@@ -23,7 +23,7 @@ abstract class Model
 
 	public function __destruct()
 	{
-		// echo '<pre>QUERY DEBUG:<br>' . print_r($this->db->getLogMessages(), true) . '</pre>';
+		// error_log('<pre>QUERY DEBUG:<br>' . print_r($this->db->getLogMessages(), true) . '</pre>');
 	}
 
 	/**

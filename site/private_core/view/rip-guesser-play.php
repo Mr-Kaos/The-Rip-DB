@@ -6,7 +6,11 @@ use RipDB\RipGuesser as game;
 <main>
 	<div id="game" style="display:none">
 		<h1 id="round">Round 1</h1>
-
+		<div id="audio-player"></div>
+		<form id="round-form" action="#">
+			<h2>Listen to the rip and identify the jokes used in it!</h2>
+		</form>
+		<button type="submit" form="round-form" disabled>Submit Guess</button>
 	</div>
 	<div id="settings" style="display:none">
 		<h2>Game Settings</h2>
