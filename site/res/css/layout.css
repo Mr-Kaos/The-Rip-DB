@@ -251,3 +251,65 @@ input[type=range]+span {
 	border-radius: 5px;
 	padding: 3px;
 }
+
+/*Modal Styles*/
+.modal-bg {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 8;
+	background-color: #55555580;
+}
+
+.modal-window {
+	position: relative;
+	top: 5%;
+	background-color: var(--bg-color);
+	margin: auto;
+	/* border:  */
+	border-radius: 10px;
+	min-width: 40%;
+	width: fit-content;
+	height: fit-content;
+	z-index: 10;
+	max-height: 90vh;
+	max-width: 90vw;
+	overflow: hidden;
+}
+
+.modal-window>.content {
+	padding: 3px;
+}
+
+.modal-title-bar {
+	display: flex;
+	box-shadow: 0 4px 2px -2px gray;
+}
+
+.modal-title-bar h3 {
+	width: 100%;
+	user-select: none;
+	margin: 5px;
+}
+
+.modal-close {
+	margin-left: 5px;
+	float: right;
+	cursor: pointer;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+.modal-buttons {
+	margin: 10px 0px;
+	display: flex;
+	justify-content: space-around;
+}
+
+.modal-buttons>button {
+	cursor: pointer;
+	padding: 5px;
+	border-radius: 5px;
+}

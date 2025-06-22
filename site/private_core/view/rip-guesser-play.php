@@ -7,9 +7,8 @@ use RipDB\RipGuesser as game;
 	<div id="game" style="display:none">
 		<h1 id="round">Round 1</h1>
 
-
 	</div>
-	<div id="settings">
+	<div id="settings" style="display:none">
 		<h2>Game Settings</h2>
 		<form action="#" onsubmit="game.setSettings(event)">
 			<fieldset>

@@ -46,6 +46,10 @@ class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 	{
 		return null;
 	}
+	public function delete(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
+	}
 
 	/**
 	 * 

@@ -15,4 +15,5 @@ interface IAsyncHandler
 	function get(string $method, ?string $methodGroup = null): mixed;
 	function post(string $method, ?string $methodGroup = null): mixed;
 	function put(string $method, ?string $methodGroup = null): mixed;
+	function delete(string $method, ?string $methodGroup = null): mixed;
 }

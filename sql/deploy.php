@@ -94,7 +94,10 @@ if ($in == 'Y' || $in == '') {
 		'usp_InsertTag',
 		'usp_InsertChannel',
 		'usp_InsertGame',
-		'usp_InsertRipper'
+		'usp_InsertRipper',
+		'usp_PurgeInactiveRipGuesserGames',
+		'usp_NewRipGuesserGame',
+		'usp_PingRipGuesserGame'
 	];
 	deployFiles($pdo, 'Procedures', $files);
 

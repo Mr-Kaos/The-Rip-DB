@@ -31,10 +31,26 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 	 */
 	public function performRequest(array $data = []): void {}
 
+	/**
+	 * Handles the GET requests for the game.
+	 */
 	public function get(string $method, ?string $methodGroup = null): mixed
 	{
-		return null;
+		$response = null;
+		switch ($methodGroup) {
+			// There is only one "start" request, so any requests made here will start the round.
+			case 'game':
+				if ($method == 'check') {
+					$response = $this->model->checkSessionForGame();
+				}
+				break;
+		}
+		return $response;
 	}
+
+	/**
+	 * Handles the POST requests for the game
+	 */
 	public function post(string $method, ?string $methodGroup = null): mixed
 	{
 		$response = null;
@@ -51,9 +67,24 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		}
 		return $response;
 	}
+
 	public function put(string $method, ?string $methodGroup = null): mixed
 	{
 		return null;
+	}
+
+	public function delete(string $method, ?string $methodGroup = null): mixed
+	{
+		$response = null;
+		switch ($methodGroup) {
+			// There is only one "start" request, so any requests made here will start the round.
+			case 'game':
+				if ($method == 'purge') {
+					$response = $this->model->purgeGameSession();
+				}
+				break;
+		}
+		return $response;
 	}
 
 	/**
@@ -92,5 +123,15 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		}
 
 		return $gameStarted;
+	}
+
+	/**
+	 * Allows a player to play in a currently running game.
+	 * Retrieves the game's settings from the server with the given game ID and sets up the player's game data for this session.
+	 */
+	private function resumeGame(string $gameID): bool {
+		$joinSuccess = false;
+
+		return $joinSuccess;
 	}
 }

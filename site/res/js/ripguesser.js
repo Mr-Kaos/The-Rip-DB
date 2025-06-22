@@ -19,12 +19,39 @@ class Game {
 	#difficulty;
 
 	constructor() {
-		this.#gameID = getCookie('PHPSESSID');
-		console.log(this.#gameID);
+		this.#initGame();
+	}
+
+	async #initGame() {
+		let activeGame = await this.#checkForActiveGame();
+		if (activeGame !== false) {
+			this.#gameID = activeGame;
+			console.log('An active game is already running!');
+
+			// Ask if a new game should be started
+			let modalFunctions = {
+				'Start New Game': {
+					function: function () {
+						this.#resetGame();
+						this.openSettings();
+					}.bind(this),
+					colour: '#fff',
+					background: '#ff0000'
+				},
+				'Continue Current Game': {
+					function: function () { console.log('test') },
+					background: '#00ff00'
+				}
+			}
+			let modal = new Modal("game-reset", 'You already have a game running!', "Do you want to continue or start a new game?", null, null, false, false, modalFunctions);
+			modal.open();
+		} else {
+			this.openSettings();
+		}
 	}
 
 	/**
-	 * Sends the game's settings to the server.
+	 * Sends the game's settings to the server to start the game.
 	 */
 	async setSettings(e) {
 		e.preventDefault();
@@ -46,6 +73,10 @@ class Game {
 		}
 	}
 
+	async joinGame(sessionID) {
+		console.log("NOT AVAILABLE YET");
+	}
+
 	/**
 	 * Begins the game.
 	 * Tells the server to start the game.
@@ -54,12 +85,44 @@ class Game {
 
 	}
 
-	static openSettings() {
+	openSettings() {
 		let settingsDiv = document.getElementById('settings');
 		let display = settingsDiv.style.display;
-		console.log(display);
-		if (display == 'unset' || display == '')
+		if (display == 'none') {
 			settingsDiv.style.display = "unset";
+		} else {
+			settingsDiv.style.display = "none";
+		}
+	}
+
+	/**
+	 * Checks if there is already an active game.
+	 * If there is, its session ID is returned.
+	 * @return {Boolean|String} The games ID if a game is already active, false otherwise.
+	 */
+	async #checkForActiveGame() {
+		let activeGame = false;
+		let request = await fetch('/ripguessr/game/check', {
+			method: 'GET'
+		});
+
+		if (request.ok) {
+			let response = await request.json();
+			if (response != false) {
+				activeGame = response;
+			}
+		}
+		return activeGame;
+	}
+
+	/**
+	 * Resets the active game, if one is set in the client's session.
+	 */
+	async #resetGame() {
+		console.log("HERE");
+		let request = await fetch('/ripguessr/game/purge', {
+			method: 'DELETE'
+		});
 	}
 }
 

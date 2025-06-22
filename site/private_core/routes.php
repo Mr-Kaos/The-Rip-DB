@@ -21,6 +21,7 @@ enum HttpMethod
 	case GET;
 	case POST;
 	case PUT;
+	case DELETE;
 }
 
 // Home Page
@@ -105,6 +106,9 @@ Flight::group('/ripguessr', function () {
 	});
 	Flight::route('GET /game/@request', function ($request) {
 		performAPIRequest('game', $request, HttpMethod::GET, 'GuesserController');
+	});
+	Flight::route('DELETE /game/@request', function ($request) {
+		performAPIRequest('game', $request, HttpMethod::DELETE, 'GuesserController');
 	});
 });
 
@@ -215,6 +219,9 @@ function performAPIRequest(?string $functionGroup, string $function, HttpMethod 
 			case HttpMethod::PUT:
 				$response = $controller->put($function, $functionGroup);
 				break;
+			case HttpMethod::DELETE:
+				$response = $controller->delete($function, $functionGroup);
+			break;
 		}
 		Flight::json($response);
 	} else {
