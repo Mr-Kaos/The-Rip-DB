@@ -99,17 +99,19 @@ Flight::group('/ripguessr', function () {
 		displayPage('rip-guesser-play', 'GuesserController', [], 'Rip Guessr');
 	});
 
-	// Async requests for live game interaction:
-	// Requests here should always be returned as a JSON.
-	Flight::route('POST /game/@request', function ($request) {
-		performAPIRequest('game', $request, HttpMethod::POST, 'GuesserController');
-	});
-	Flight::route('GET /game/@request', function ($request) {
-		performAPIRequest('game', $request, HttpMethod::GET, 'GuesserController');
-	});
-	Flight::route('DELETE /game/@request', function ($request) {
-		performAPIRequest('game', $request, HttpMethod::DELETE, 'GuesserController');
-	});
+	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'ripguessr/play')) {
+		// Async requests for live game interaction:
+		// Requests here should always be returned as a JSON.
+		Flight::route('POST /game/@request', function ($request) {
+			performAPIRequest('game', $request, HttpMethod::POST, 'GuesserController');
+		});
+		Flight::route('GET /game/@request', function ($request) {
+			performAPIRequest('game', $request, HttpMethod::GET, 'GuesserController');
+		});
+		Flight::route('DELETE /game/@request', function ($request) {
+			performAPIRequest('game', $request, HttpMethod::DELETE, 'GuesserController');
+		});
+	}
 });
 
 // Settings Requests
@@ -221,7 +223,7 @@ function performAPIRequest(?string $functionGroup, string $function, HttpMethod 
 				break;
 			case HttpMethod::DELETE:
 				$response = $controller->delete($function, $functionGroup);
-			break;
+				break;
 		}
 		Flight::json($response);
 	} else {
