@@ -120,7 +120,6 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 	private function startGame(array $data): bool
 	{
 		$gameStarted = false;
-		error_log(session_status());
 
 		// These validation error messages should never be returned to the user, but in case someone tries to bypass the constraints, they're here.
 		$showAnswerCount = $this->validateBool($data['show-count'] ?? null, 'Invalid value for "Show Answer Count" field.', true);

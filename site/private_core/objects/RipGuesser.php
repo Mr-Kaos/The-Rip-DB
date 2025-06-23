@@ -102,6 +102,7 @@ class Game
 	 * Fetches a rip based on the game's settings and previous rounds.
 	 * Will attempt to search for a rip that has not already been played in a previous round and that matches the given criteria specified in the setting's filters.
 	 * If a rip is fetched, its answers are stored in this object on the server. Only the fields that need to be answered are returned.
+	 * Special values that are not to be fields are prefixed with an underscore.
 	 * @param GuesserModel $model The RipGuesserModel object to query the database with.
 	 * @return false|array If no rip was found, false is returned. Else, an associative array of fields to answer and their number of valid answers are returned.
 	 */
@@ -111,14 +112,18 @@ class Game
 		$fields = false;
 
 		if (!empty($rip)) {
-			$fields = ['RipYouTubeID' => $rip['RipYouTubeID']];
+			$fields = ['_RipYouTubeID' => $rip['RipYouTubeID']];
+			$fields['_RipName'] = $rip['RipName'];
+			$fields['_GameName'] = $rip['GameName'];
 			// From the rip data, only return the fields that are to be filled and the number of answers they require.
 			switch ($this->settings->difficulty) {
 				case Difficulty::Hard:
 					$fields['AlternateName'] = 1;
 					$fields['Rippers'] = count($rip['Rippers']);
+					unset($fields['_RipName']);
 				case Difficulty::Standard:
 					$fields['GameName'] = 1;
+					unset($fields['_GameName']);
 				case Difficulty::Beginner:
 					$fields['Jokes'] = count($rip['Jokes']);
 					break;

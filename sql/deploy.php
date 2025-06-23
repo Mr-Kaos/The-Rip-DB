@@ -97,7 +97,8 @@ if ($in == 'Y' || $in == '') {
 		'usp_InsertRipper',
 		'usp_PurgeInactiveRipGuesserGames',
 		'usp_NewRipGuesserGame',
-		'usp_PingRipGuesserGame'
+		'usp_PingRipGuesserGame',
+		'usp_SelectRandomRip'
 	];
 	deployFiles($pdo, 'Procedures', $files);
 

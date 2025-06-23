@@ -34,7 +34,7 @@ class Game {
 				'Start New Game': {
 					function: function () {
 						this.#resetGame();
-						this.openSettings();
+						this.toggleSettings();
 					}.bind(this),
 					colour: '#fff',
 					background: '#ff0000'
@@ -47,7 +47,7 @@ class Game {
 			let modal = new Modal("game-reset", 'You already have a game running!', "Do you want to continue or start a new game?", null, null, false, false, modalFunctions);
 			modal.open();
 		} else {
-			this.openSettings();
+			this.toggleSettings();
 		}
 	}
 
@@ -66,10 +66,16 @@ class Game {
 
 		// If the server responds with true, then the game can start
 		if (request.ok) {
-			ready = await request.json();
+			try {
+				ready = await request.json();
+			} catch (e) {
+				console.error(e);
+				displayNotification("ERROR: The game was successfully initialised but no response was received from the server.", NotificationPriority.Error)
+			}
 			if (!ready) {
 				displayNotification("Game failed to initialise!", NotificationPriority.Error);
 			} else {
+				this.toggleSettings();
 				this.nextRound();
 			}
 		}
@@ -98,7 +104,7 @@ class Game {
 	/**
 	 * Displays the settings form when setting up a game.
 	 */
-	openSettings() {
+	toggleSettings() {
 		let settingsDiv = document.getElementById('settings');
 		let display = settingsDiv.style.display;
 		if (display == 'none') {
@@ -120,9 +126,14 @@ class Game {
 		});
 
 		if (request.ok) {
-			let response = await request.json();
-			if (response != false) {
-				activeGame = response;
+			try {
+				let response = await request.json();
+				if (response != false) {
+					activeGame = response;
+				}
+			} catch (e) {
+				console.error(e);
+				displayNotification("ERROR: Could not check for active game session.\nSomething may be wrong on the server's end.", NotificationPriority.Error)
 			}
 		}
 		return activeGame;
@@ -146,9 +157,16 @@ class Game {
 		let gameContainer = document.getElementById('game');
 		let audioPlayer = gameContainer.querySelector('#audio-player');
 		let form = gameContainer.querySelector('#round-form');
-		audioPlayer.innerHTML = `<iframe width="0" height="0" src="https://www.youtube-nocookie.com/embed/${roundData['RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
+		audioPlayer.innerHTML = `<iframe width="400" height="200" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
 
-		console.log(roundData);
+		let title = gameContainer.querySelector('#rip-name');
+
+		if (roundData['_RipName'] != null) {
+			title.innerText = "This round's rip is: " + roundData['_RipName'];
+			if (roundData['_GameName'] != null) {
+				title.innerText += ' - ' + roundData['_GameName'];
+			}
+		}
 
 		for (let key in roundData) {
 			let input = document.createElement('input');
@@ -186,6 +204,10 @@ class Game {
 				form.appendChild(count);
 			}
 		}
+
+		// let test = setInterval(function() {
+		// 	console.log(navigator.mediaSession);
+		// }, 1000);
 
 		gameContainer.style.display = 'unset';
 	}

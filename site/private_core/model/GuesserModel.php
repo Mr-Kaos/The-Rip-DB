@@ -37,6 +37,7 @@ class GuesserModel extends Model
 			$_SESSION[self::SESS_GAME_ID] = $gameID;
 			$game = new game\Game($settings->roundCount, $settings);
 			$_SESSION[self::SESS_GAME_OBJ] = serialize($game);
+			$success = true;
 		} catch (\PicoDb\SQLException $error) {
 			error_log($error->getMessage());
 		}

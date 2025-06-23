@@ -37,7 +37,7 @@ use RipDB\Objects as o;
 			<?php if (!empty($results)): ?>
 				<?php foreach ($results as $record): ?>
 					<tr>
-						<td><a href="/rips/<?= $record['RipID'] ?>"><?= $record['RipName'] ?></a></td>
+						<td><a href="/rips/<?= $record['RipID'] ?>"><?= $record['RipName'] . ' - ' . $record['GameName'] ?></a></td>
 						<td>
 							<?php if (!empty($record['RipAlternateURL'])): ?>
 								<a href="<?= $record['RipAlternateURL']; ?>" target="_blank"><?= $record['RipAlternateName'] ?></a>
