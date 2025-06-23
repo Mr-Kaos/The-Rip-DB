@@ -49,7 +49,7 @@
 							<a href="<?= $rip['RipURL'] ?>" target="_blank">YouTube</a>
 							<?php if (!empty($rip['RipYouTubeID'])): ?>
 								<br>
-								<iframe id="yt-embed" width="320" height="180" style="width:fit-content" src="https://www.youtube-nocookie.com/embed/<?= $rip['RipYouTubeID']; ?>" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+								<iframe id="yt-embed" width="640" height="360" style="width:fit-content" src="https://www.youtube-nocookie.com/embed/<?= $rip['RipYouTubeID']; ?>?vq=240p" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 							<?php endif; ?>
 						</td>
 					</tr>

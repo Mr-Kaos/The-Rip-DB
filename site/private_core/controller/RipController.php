@@ -120,7 +120,11 @@ class RipController extends Controller
 					}
 
 					$this->setData('rip', $rip);
-					$this->setPageTitle($rip['RipName']);
+					if ($rip !== null) {
+						$this->setPageTitle($rip['RipName']);
+					} else {
+						$this->setPageTitle('Rip not found');
+					}
 				}
 				break;
 			case 'edit-rip':
