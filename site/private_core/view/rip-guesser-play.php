@@ -9,9 +9,9 @@ use RipDB\RipGuesser as game;
 		<h2 id="rip-name"></h2>
 		<p><i>Listen to the rip and identify the jokes used in it!<i></p>
 		<div id="audio-player"></div>
-		<form id="round-form" action="#">
+		<form id="round-form" action="javascript:void()">
 		</form>
-		<button type="submit" form="round-form" disabled>Submit Guess</button>
+		<button type="submit" form="round-form">Submit Guess</button>
 	</div>
 	<div id="settings" style="display:none">
 		<h2>Game Settings</h2>

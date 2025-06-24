@@ -157,6 +157,7 @@ class Game {
 		let gameContainer = document.getElementById('game');
 		let audioPlayer = gameContainer.querySelector('#audio-player');
 		let form = gameContainer.querySelector('#round-form');
+		form.onsubmit = e => this.#submitRound(e, form);
 		audioPlayer.innerHTML = `<iframe width="400" height="200" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
 
 		let title = gameContainer.querySelector('#rip-name');
@@ -211,6 +212,12 @@ class Game {
 
 		gameContainer.style.display = 'unset';
 	}
+
+	#submitRound(event, form) {
+		event.preventDefault();
+		let data = new FormData(form);
+		console.log(data);
+	}
 }
 
 /**
@@ -234,7 +241,6 @@ class GuessInput extends SearchElement {
 	constructor(label, name, multiAnswerCount = 0, url = null, id = null) {
 		let element = document.createElement('span');
 		element.id = id;
-		element.name = name + ((multiAnswerCount > 0) ? '[]' : '');
 		element.className = 'search-element';
 		element.setAttribute('type', ((multiAnswerCount > 0) ? 'multi' : 'search'));
 
@@ -244,6 +250,8 @@ class GuessInput extends SearchElement {
 				name += '[]';
 			}
 		}
+		element.setAttribute('name', name);
+
 		if (id == null) {
 			id = name;
 		}
@@ -280,6 +288,19 @@ class GuessInput extends SearchElement {
 	#updateAnswerCount(increment) {
 		this.#selected += increment;
 		this.#countElement.innerText = `(${this.#selected}/${this.#max})`;
+
+		// If there is max + 1 selected values, disable adding
+		if (this.#selected > this.#max) {
+			this.canAdd = false;
+			this.#countElement.style.color = '#ff0000';
+		} else {
+			this.canAdd = true;
+			this.#countElement.style.color = 'unset';
+		}
+
+		// reset the input
+		this.getSearchElement().value = '';
+		this.getOptionsDiv().innerHTML = '';
 	}
 }
 

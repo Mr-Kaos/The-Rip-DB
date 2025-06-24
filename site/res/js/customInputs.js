@@ -190,7 +190,7 @@ class SearchElement extends MultiSelect {
 	#required = false;
 	#highlighted = -1;
 	#hasSearched = false; // Set to true once a search has been made.
-	ev = null;
+	canAdd = true;
 
 	constructor(element) {
 		super(element);
@@ -211,7 +211,7 @@ class SearchElement extends MultiSelect {
 			if (!this.#init) {
 				this.search('', this.#searchElement.getAttribute('search-url'));
 				this.#init = true;
-			} else {
+			} else if(this.canAdd) {
 				this.toggleDisplay();
 			}
 		}.bind(this);
@@ -265,6 +265,10 @@ class SearchElement extends MultiSelect {
 		}.bind(this));
 	}
 
+	getSearchElement() {
+		return this.#searchElement;
+	}
+
 	/**
 	 * If any pre-existing values exist, initialise their event listeners.
 	 * @param {NodeList} elements
@@ -286,42 +290,44 @@ class SearchElement extends MultiSelect {
 	}
 
 	async search(input, url) {
-		if (this.#init) {
-			url += `?q=${input}`;
-		}
-		let response = await fetch(url);
+		if (this.canAdd) {
+			if (this.#init) {
+				url += `?q=${input}`;
+			}
+			let response = await fetch(url);
 
-		if (response.ok) {
-			let result = response.json().then(data => {
-				let options = this.getOptionsDiv();
-				options.innerHTML = '';
+			if (response.ok) {
+				let result = response.json().then(data => {
+					let options = this.getOptionsDiv();
+					options.innerHTML = '';
 
-				if (data.length > 0) {
-					let noAdd = true;
-					for (let i = 0; i < data.length; i++) {
-						if (this.#multi) {
-							noAdd = this.#value.includes(data[i].ID);
-						} else {
-							noAdd = (data[i].ID == this.#value);
+					if (data.length > 0) {
+						let noAdd = true;
+						for (let i = 0; i < data.length; i++) {
+							if (this.#multi) {
+								noAdd = this.#value.includes(data[i].ID);
+							} else {
+								noAdd = (data[i].ID == this.#value);
+							}
+							if (!noAdd) {
+								let option = document.createElement('span');
+								option.innerText = data[i].NAME;
+								option.setAttribute('value', data[i].ID);
+								option.onclick = e => this.#setOption(e.target);
+								options.append(option);
+							}
 						}
-						if (!noAdd) {
-							let option = document.createElement('span');
-							option.innerText = data[i].NAME;
-							option.setAttribute('value', data[i].ID);
-							option.onclick = e => this.#setOption(e.target);
-							options.append(option);
-						}
+
+						this.#hasSearched = true;
+					} else if (this.#hasSearched) {
+						options.innerHTML = '<i>No results found</i>';
 					}
-
-					this.#hasSearched = true;
-				} else if (this.#hasSearched) {
-					options.innerHTML = '<i>No results found</i>';
-				}
-				if (!this.isOpen()) {
-					this.toggleDisplay(true);
-				}
-			});
-			this.#resetHighlight();
+					if (!this.isOpen()) {
+						this.toggleDisplay(true);
+					}
+				});
+				this.#resetHighlight();
+			}
 		}
 	}
 
@@ -331,37 +337,40 @@ class SearchElement extends MultiSelect {
 	 * @param {HTMLSpanElement} option The option the user selected
 	 */
 	#setOption(option) {
-		let clone = option.cloneNode(true);
-		let input = document.createElement('input');
-		input.hidden = true;
-		input.value = option.getAttribute('value');
-		input.name = this.getElement().getAttribute('name');
-		let btnRemove = document.createElement('button');
-		btnRemove.innerHTML = '&times;';
-		btnRemove.type = 'button';
-		btnRemove.onclick = e => this.#unsetOption(clone);
-		clone.className = 'pill';
-		clone.appendChild(input);
-		clone.appendChild(btnRemove);
+		// Only add the element if adding is allowed
+		if (this.canAdd) {
+			let clone = option.cloneNode(true);
+			let input = document.createElement('input');
+			input.hidden = true;
+			input.value = option.getAttribute('value');
+			input.name = this.getElement().getAttribute('name');
+			let btnRemove = document.createElement('button');
+			btnRemove.innerHTML = '&times;';
+			btnRemove.type = 'button';
+			btnRemove.onclick = e => this.#unsetOption(clone);
+			clone.className = 'pill';
+			clone.appendChild(input);
+			clone.appendChild(btnRemove);
 
-		if (this.#multi) {
-			let selectionDiv = this.getElement().querySelector('.selected');
-			selectionDiv.appendChild(clone);
-			this.#value.push(parseInt(option.getAttribute('value')));
-		} else {
-			this.#searchElement.style.display = 'none';
-			this.getElement().append(clone);
-			this.#value = parseInt(option.getAttribute('value'));
+			if (this.#multi) {
+				let selectionDiv = this.getElement().querySelector('.selected');
+				selectionDiv.appendChild(clone);
+				this.#value.push(parseInt(option.getAttribute('value')));
+			} else {
+				this.#searchElement.style.display = 'none';
+				this.getElement().append(clone);
+				this.#value = parseInt(option.getAttribute('value'));
+			}
+			// Remove the required attribute (if it was set) so the form can be submitted.
+			this.#searchElement.required = false;
+			option.style.display = "none";
+			this.toggleDisplay();
+
+			// Add event dispatcher for setting an option.
+			option.dispatchEvent(new CustomEvent('setOption', {
+				bubbles: true
+			}));
 		}
-		// Remove the required attribute (if it was set) so the form can be submitted.
-		this.#searchElement.required = false;
-		option.style.display = "none";
-		this.toggleDisplay();
-
-		// Add event dispatcher for setting an option.
-		option.dispatchEvent(new CustomEvent('setOption', {
-			bubbles: true
-		}));
 	}
 
 	/**
@@ -370,7 +379,6 @@ class SearchElement extends MultiSelect {
 	 */
 	#unsetOption(option) {
 		let optionVal = parseInt(option.getAttribute('value'));
-		option.remove();
 
 		if (this.#multi) {
 			this.#value.splice(this.#value.indexOf(optionVal), 1);
@@ -397,6 +405,7 @@ class SearchElement extends MultiSelect {
 		option.dispatchEvent(new CustomEvent('unsetOption', {
 			bubbles: true
 		}));
+		option.remove();
 	}
 
 	#resetHighlight() {
