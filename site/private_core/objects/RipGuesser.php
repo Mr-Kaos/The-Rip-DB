@@ -119,7 +119,7 @@ class Game
 			switch ($this->settings->difficulty) {
 				case Difficulty::Hard:
 					$fields['AlternateName'] = 1;
-					$fields['Rippers'] = count($rip['Rippers']);
+					$fields['Rippers'] = count($rip['Rippers'] ?? []);
 					unset($fields['_RipName']);
 				case Difficulty::Standard:
 					$fields['GameName'] = 1;

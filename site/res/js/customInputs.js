@@ -171,11 +171,15 @@ class InputTable extends CustomElement {
 	};
 }
 
+let ev = new Event('setOption');
+
 /**
  * JavaScript wrapper for Searchable input elements.
  * @property {Boolean} #init
  * @property {Boolean} multi Determines if this search element allows for multiple selections or just one.
  * @property {String|Array} value Stores the value sof the selected option(s). Also used to hide certain options from re-appearing in the search.
+ * @event setOption This event fires when an option is selected in list of results given.
+ * @event unsetOption This event fires when an option is removed from the list of selected results.
  */
 class SearchElement extends MultiSelect {
 	#init = false;
@@ -185,6 +189,8 @@ class SearchElement extends MultiSelect {
 	$url;
 	#required = false;
 	#highlighted = -1;
+	#hasSearched = false; // Set to true once a search has been made.
+	ev = null;
 
 	constructor(element) {
 		super(element);
@@ -239,7 +245,7 @@ class SearchElement extends MultiSelect {
 					let options = this.getOptionsDiv().querySelectorAll('span');
 					if (options.length > 0) {
 						if (event.key == "Enter") {
-							this.#selectOption(options[this.#highlighted]);
+							this.#setOption(options[this.#highlighted]);
 						} else {
 							if (this.#highlighted < 0) {
 								this.#highlighted = 0;
@@ -302,12 +308,13 @@ class SearchElement extends MultiSelect {
 							let option = document.createElement('span');
 							option.innerText = data[i].NAME;
 							option.setAttribute('value', data[i].ID);
-							option.onclick = e => this.#selectOption(e.target);
+							option.onclick = e => this.#setOption(e.target);
 							options.append(option);
 						}
-
 					}
-				} else {
+
+					this.#hasSearched = true;
+				} else if (this.#hasSearched) {
 					options.innerHTML = '<i>No results found</i>';
 				}
 				if (!this.isOpen()) {
@@ -323,7 +330,7 @@ class SearchElement extends MultiSelect {
 	 * If the input allows multiple selections, they are added to a separate container.
 	 * @param {HTMLSpanElement} option The option the user selected
 	 */
-	#selectOption(option) {
+	#setOption(option) {
 		let clone = option.cloneNode(true);
 		let input = document.createElement('input');
 		input.hidden = true;
@@ -350,6 +357,11 @@ class SearchElement extends MultiSelect {
 		this.#searchElement.required = false;
 		option.style.display = "none";
 		this.toggleDisplay();
+
+		// Add event dispatcher for setting an option.
+		option.dispatchEvent(new CustomEvent('setOption', {
+			bubbles: true
+		}));
 	}
 
 	/**
@@ -380,11 +392,19 @@ class SearchElement extends MultiSelect {
 		if (opt != null) {
 			opt.style.display = 'unset';
 		}
-	}
 
+		// Add event dispatcher for unsetting an option.
+		option.dispatchEvent(new CustomEvent('unsetOption', {
+			bubbles: true
+		}));
+	}
 
 	#resetHighlight() {
 		this.#highlighted = -1;
+	}
+
+	isMulti() {
+		return this.#multi;
 	}
 }
 

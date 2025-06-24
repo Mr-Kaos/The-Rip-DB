@@ -168,40 +168,40 @@ class Game {
 			}
 		}
 
+		console.log(roundData);
 		for (let key in roundData) {
-			let input = document.createElement('input');
-			let label = document.createElement('label');
-			let count = document.createElement('span');
+			let input = null;
+			let label = null;
 			switch (key) {
 				// Easy difficulty
 				case 'Jokes':
-					label.innerText = 'Jokes';
+					input = new GuessInput('Jokes', 'jokes[]', roundData[key], '/search/jokes');
 					break;
 				// Standard Difficulty
 				case 'GameName':
-					label.innerText = 'Game Name';
-					count = null;
+					input = new GuessInput('Game Name', 'game', false, '/search/games');
 					break;
 				// Hard difficulty
 				case 'AlternateName':
+					label = document.createElement('label');
+					input = document.createElement('input');
+					input.title = "The rip's name in its album release";
 					label.innerText = 'Alternative Name';
-					input.title = "The rip's name in its album release"
-					count = null;
+					input.id = label.for = input.name = key;
 					break;
 				case 'Rippers':
-					label.innerText = 'Rippers';
+					input = new GuessInput('Rippers', 'rippers[]', roundData[key], '/search/rippers');
 					break;
 				default:
 					continue;
 			}
-			input.id = label.for = input.name = key;
 
-			// Append the input to the game container.
-			form.appendChild(label);
-			form.appendChild(input);
-			if (count != null) {
-				count.innerText = `(0/${roundData[key]})`
-				form.appendChild(count);
+			// Append the input and label to the game container.
+			if (label != null) {
+				form.appendChild(label);
+				form.appendChild(input);
+			} else {
+				form.appendChild(input.getElement());
 			}
 		}
 
@@ -214,212 +214,72 @@ class Game {
 }
 
 /**
- * Handles asynchronous requests to the web app's API.
+ * Special version of the search element input with the main difference being that it has a answer count beside it for multi-value inputs
+ * and does not have the search preview upon first interaction with the input.
  */
-class API_Request {
-	API_ADDRESS = 'api';
-	#method;
-	#url;
-	#urlEncoded;
-	#urlParams;
+class GuessInput extends SearchElement {
+	#selected = 0
+	#max = 0;
+	#countElement = null;
 
 	/**
-	 * 
-	 * @param {string} method The method of the API to call
-	 * @param {Object} urlParams An associative array containing for get parameters in the URL.
+	 * Creates a new SearchElement object.
+	 * @param {HTMLElement} appendToElement The element to append the search Element to.
+	 * @param {String} label The label for the input
+	 * @param {String} name The name attribute of the element
+	 * @param {Number} multiAnswerCount If the input allows multiple answers (e.g. jokes), a value greater than 0 should be given. Else, the number of correct values for the input should be given.
+	 * @param {String} url The url used to provide search live results
+	 * @param {String} id the ID attribute of the element.
 	 */
-	constructor(method, urlParams) {
-		if (method.startsWith('/')) {
-			method = method.substring(1);
-		}
-		this.#url = method;
-		if (urlParams instanceof Object || urlParams == null) {
-			this.#urlParams = urlParams;
-		} else {
-			throw TypeError('Parameter "urlParams" must be of type "Array".');
-		}
+	constructor(label, name, multiAnswerCount = 0, url = null, id = null) {
+		let element = document.createElement('span');
+		element.id = id;
+		element.name = name + ((multiAnswerCount > 0) ? '[]' : '');
+		element.className = 'search-element';
+		element.setAttribute('type', ((multiAnswerCount > 0) ? 'multi' : 'search'));
 
-		// Check that "api" exists in the url
-		if (urlParams != null) {
-			this.#url += '?' + API_Request.encodeObject(urlParams);
-		}
-		this.#urlEncoded = encodeURI(this.#url);
-
-		this.#urlParams = urlParams;
-		this.#method = method;
-	}
-
-	/**
-	 * Make a GET request to the API 
-	 * @return {Object} The parsed JSON from the API GET request
-	 */
-	async get() {
-		let result = null;
-
-		let errorMsg;
-		let response = await fetch(this.#urlEncoded);
-
-		if (response.ok) {
-			result = await response.json().then(data => {
-				switch (response.status) {
-					case 200:
-					case 201:
-					case 202:
-						return data;
-					case 204:
-						errorMsg = 'GET(' + this.#method + '): returned no content';
-						break;
-					case 205:
-						errorMsg = 'GET(' + this.#method + '): requests page reset. Data on page may be out of date!';
-						break;
-					default:
-						errorMsg = 'GET(' + this.#method + '): Request was successful however something unanticipated has occurred';
-						break;
-				}
-			}).catch(err => {
-				console.error(`GET(${this.#method}): returned malformed content. ${err}`);
-				// addNotification('Unable to complete request properly', NotificationTypes.Error);
-			});
-		} else {
-			let errorMsg = 'GET(' + this.#method + '): ';
-			errorMsg += this.getErrorMessage(response.status, 'GET');
-			// addNotification('Unable to complete request properly', NotificationTypes.Error);
-		}
-
-		if (errorMsg != undefined) {
-			console.warn(errorMsg);
-		}
-		return result;
-	}
-
-	/**
-	 * Sends a POST request to the API request method.
-	 * @param {FormData} formData a FormData object to send in the POST request.
-	 */
-	async post(formData) {
-		// Make a POST request to send data to the API
-		let response = await fetch(this.#urlEncoded, {
-			method: 'POST',
-			body: formData
-		});
-
-		if (!response.ok) {
-			const errorData = await response.json();
-			console.warn(this.getErrorMessage(response.status, 'POST'));
-			return errorData;
-		}
-
-		return response;
-	}
-
-	/**
-	 * Performs a PUT request to using the constructor's given data and method.
-	 * Returns a response indicating if the request was successful or not.
-	 * @param {Object} data A JavaScript Object containing the data to be submitted to the server.
-	 *       If a regular Object is sent, the content-type will be x-www-form-urlencoded. When FormData, the content-type will be form-data.
-	 *        NOTE: DO NOT USE FormData as this does not work! It does no set the boundary in the Content-Type header, which prevents the data from being parsed on the server.
-	 * @param {String} successMessage A message to display if the request was successful.
-	 * @return {Boolean} True if the request was successfully sent to the server.
-	 */
-	async put(data, successMessage = "Successfully updated data") {
-		let success = false;
-		let contentType = 'application/x-www-form-urlencoded;charset=UTF-8';
-
-		if (data instanceof FormData) {
-			contentType = 'multipart/form-data';
-		} else {
-			data = API_Request.encodeObject(data);
-		}
-		const response = await fetch(this.#urlEncoded, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': contentType
-			},
-			body: data
-		});
-
-		if (response.ok) {
-			let msg = await response.json();
-
-			if (msg.FAILURE != null) {
-				// addNotification(msg.FAILURE, NotificationTypes.Error);
-			} else if (successMessage !== null) {
-				// addNotification(successMessage);
-				success = true;
-			}
-		} else {
-			console.warn(this.getErrorMessage(response.status, 'PUT'));
-			// addNotification("Could not update data.", NotificationTypes.Warning);
-		}
-		return success;
-	}
-
-	/**
-	 * Encodes an object to be a valid for a URL.
-	 * @param {Object} data 
-	 */
-	static encodeObject(data) {
-		let body = [];
-		let key;
-		for (key in data) {
-			let encodedKey = '';
-			let encodedValue = encodeURIComponent(data[key]);
-
-			if ((Array.isArray(data[key])) && !key.endsWith('[]')) {
-				encodedKey = key + '[]';
-				for (let i = 0; i < data[key].length; i++) {
-					body.push(encodedKey + '=' + data[key][i]);
-				}
-			} else {
-				if (key.endsWith('[]')) {
-					encodedKey = key;
-				} else {
-					encodedKey = encodeURIComponent(key);
-				}
-				body.push(encodedKey + '=' + encodedValue);
+		// Make sure the name is an array if a multi input is given.
+		if (multiAnswerCount > 0) {
+			if (!name.endsWith('[]')) {
+				name += '[]';
 			}
 		}
-		return body.join('&');
+		if (id == null) {
+			id = name;
+		}
+		// let id = 
+		element.innerHTML = `<label for="${id}" >${label}</label><input id="${id}" type="search" autocomplete="off" search-url="${url}">`;
+
+		if (multiAnswerCount > 0) {
+			element.innerHTML += `<span class="count">(0/${multiAnswerCount})</span><div class="selected"></div>`;
+		}
+		element.innerHTML += '<div class="options"></div>';
+
+		super(element, false);
+		this.#max = parseInt(multiAnswerCount);
+
+		if (multiAnswerCount > 0) {
+			// Create the counter element
+			this.#countElement = element.querySelector(`span.count`);
+
+			// Listen for when elements are added and removed.
+			element.addEventListener('setOption', function () {
+				this.#updateAnswerCount(1);
+			}.bind(this));
+			element.addEventListener('unsetOption', function () {
+				this.#updateAnswerCount(-1);
+			}.bind(this));
+			this.#countElement.innerText = `(${this.#selected}/${this.#max})`;
+		}
 	}
 
-	getErrorMessage(code, method) {
-		let errorMsg;
-		switch (code) {
-			case 400:
-				errorMsg = 'Malformed request.';
-				break;
-			case 403:
-				errorMsg = 'User is unauthorised to perform this method. Maybe seek permission first before doing this.';
-				break;
-			case 404:
-				errorMsg = 'The method called does not exist! ';
-				break;
-			case 405:
-				errorMsg = 'The method used (' + method + ') is not allowed. Nuh uh uh!';
-				break;
-			case 408:
-				errorMsg = 'The request timed out. You waited and waited, but didn\'t hear anything back.';
-				break;
-			case 418:
-				errorMsg = 'The entity is in fact short and stout. Cannot brew coffee!';
-				break;
-			case 429:
-				errorMsg = 'Too many requests sent, try again later. Hold your horses!';
-				break;
-			case 451:
-				errorMsg = 'Content blocked. 1984?';
-				break;
-			case 500:
-				errorMsg = `Internal Server Error. (It's me, hi I'm the problem, it's me).`;
-				break;
-			case 503:
-				errorMsg = 'Service Unavailable!';
-				break;
-			default:
-				errorMsg = 'An unanticipated error has occurred. This shouldn\'t ever happen. Code:', code;
-				break;
-		}
-		return 'API request error: ' + errorMsg;
+	/**
+	 * Updates the answer count in of the input.
+	 * @param {Number} increment Either 1 or -1 to increment o decrement the selected options.
+	 */
+	#updateAnswerCount(increment) {
+		this.#selected += increment;
+		this.#countElement.innerText = `(${this.#selected}/${this.#max})`;
 	}
 }
 

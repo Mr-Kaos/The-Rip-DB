@@ -60,9 +60,11 @@ class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 		$search = '';
 		if (array_key_exists('q', $_GET)) {
 			$search = $_GET['q'];
-		} else {
-			$rand = true;
 		}
+		// Random is disabled for now.
+		// if ($_GET['rand']) {
+		// 	$rand = true;
+		// }
 		$result = [];
 		switch ($method) {
 			case 'tags':

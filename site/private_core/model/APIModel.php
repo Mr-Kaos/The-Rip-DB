@@ -14,7 +14,7 @@ class APIModel extends Model
 		// This is so the preview of results in the searchable dropdowns provides unique suggestions each time.
 		if ($random) {
 			$result = $this->db->execute("SELECT $idColumn AS ID, $nameColumn AS NAME FROM $table ORDER BY RAND() LIMIT 20")->fetchAll(\PDO::FETCH_ASSOC);
-		} else {
+		} elseif (!empty($like)) {
 			$records = $this->db->table($table)
 				->columns("$idColumn AS ID", "$nameColumn AS NAME")
 				->limit(50)

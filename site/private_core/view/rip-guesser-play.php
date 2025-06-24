@@ -42,4 +42,4 @@ use RipDB\RipGuesser as game;
 		</form>
 	</div>
 </main>
-<script src="/res/js/ripguesser.js"></script>
+<script src="/res/js/ripguesser.js" defer></script>
