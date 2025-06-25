@@ -213,10 +213,20 @@ class Game {
 		gameContainer.style.display = 'unset';
 	}
 
-	#submitRound(event, form) {
+	async #submitRound(event, form) {
 		event.preventDefault();
 		let data = new FormData(form);
-		console.log(data);
+
+		let request = await fetch('/ripguessr/game/submit', {
+			method: 'POST',
+			body: data
+		});
+
+		if (request.ok) {
+			let results = await request.json();
+
+			console.log(results);
+		}
 	}
 }
 

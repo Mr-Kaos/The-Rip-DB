@@ -164,11 +164,13 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		return $joinSuccess;
 	}
 
-	private function advanceRound()
+	private function advanceRound(): false|array
 	{
 		$roundData = false;
+		
 		if ($this->deserializeGame()) {
-			$roundData = $this->game->fetchRip($this->model);
+			$roundData = $this->game->nextRound($this->model);
+			$this->model->saveGame($this->game);
 		}
 
 		return $roundData;

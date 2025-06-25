@@ -36,7 +36,7 @@ class GuesserModel extends Model
 			$this->db->execute("CALL usp_NewRipGuesserGame(?, ?)", [$gameID, serialize($settings)]);
 			$_SESSION[self::SESS_GAME_ID] = $gameID;
 			$game = new game\Game($settings->roundCount, $settings);
-			$_SESSION[self::SESS_GAME_OBJ] = serialize($game);
+			$this->saveGame($game);
 			$success = true;
 		} catch (\PicoDb\SQLException $error) {
 			error_log($error->getMessage());
@@ -45,6 +45,10 @@ class GuesserModel extends Model
 	}
 
 	public function getGame(string $gameID) {}
+
+	public function saveGame(game\Game $game) {
+		$_SESSION[self::SESS_GAME_OBJ] = serialize($game);
+	}
 
 	/**
 	 * Checks the user's session to see if a game is already active.
