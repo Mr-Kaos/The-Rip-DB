@@ -109,7 +109,7 @@ class Modal {
 	 * 
 	 * @param {String} id The ID of the modal
 	 * @param {String} title The title name of the modal
-	 * @param {String} htmlContent The content to be displayed in a modal.
+	 * @param {String} text The content to be displayed in a modal.
 	 * @param {Number} width The initial width of the modal
 	 * @param {Number} height The initial height of the modal
 	 * @param {Boolean} allowResize Determines if the modal is allowed to be resized.
@@ -130,7 +130,7 @@ class Modal {
 	 * ```  
 	 * By default, all actions will close the modal when pressed. This can be overridden by setting the sub-key "close" to "false".
 	 */
-	constructor(id, title, htmlContent, width = null, height = null, allowResize = true, allowClose = true, functions = null) {
+	constructor(id, title, text, width = null, height = null, allowResize = true, allowClose = true, functions = null) {
 		this.#id = id;
 		this.#title = title;
 		this.#allowClose = allowClose;
@@ -141,14 +141,7 @@ class Modal {
 			console.warn(`The modal (ID: ${id}) has closing disabled and has no functions assigned! This modal may not be closable by the user once opened!`);
 		}
 
-		//setup modal Window 
-		if (typeof (htmlContent) == 'object') {
-			this.#content = htmlContent;
-		} else {
-			let content = document.createElement('div');
-			content.innerHTML = htmlContent;
-			this.#content = content;
-		}
+		this.#content = text;
 		this.#allowResize = allowResize;
 		//build the grey background
 		this.#bg = document.createElement("div");
@@ -170,41 +163,43 @@ class Modal {
 	 * @param {String} width a valid value for the CSS width attribute.
 	 */
 	setWidth(width) {
+		width = this.#setSize(width, 'width');
 		if (width != null) {
-			if (width.endsWith('%')) {
-				let windowWidth = window.innerWidth;
-				try {
-					let percent = "0." + width.split('%')[0];
-					width = (windowWidth * (percent)) + 'px';
-				}
-				catch {
-					console.error('Invalid CSS width given to modal. Will not set given value.');
-					width = this.#width;
-				}
-			}
 			this.#width = width;
 		}
 	}
 
 	/**
-	 * Sets the height of the modal's content. If a percentage, it is converted into pixels.
 	 * @param {String} width a valid value for the CSS height attribute.
 	 */
 	setHeight(height) {
+		height = this.#setSize(height, 'height');
 		if (height != null) {
-			if (height.endsWith('%')) {
-				let windowHeight = window.innerHeight;
-				try {
-					let percent = "0." + height.split('%')[0];
-					height = (windowHeight * (percent)) + 'px';
-				}
-				catch {
-					console.error('Invalid CSS height given to modal. Will not set given value.');
-					height = this.#height;
-				}
-			}
 			this.#height = height;
 		}
+	}
+
+	/**
+	 * Validates a height value for the modals width/height. If a percentage, it is converted into pixels.
+	 * @param {String} value The width.height value to validate.
+	 * @param {String} type The text name of the attribute ("width" or "height"). Only used to log an error in case of an error.
+	 * @return {null|String} The validated value or null if invalid.
+	 */
+	#setSize(value, type) {
+		if (value instanceof String) {
+			if (value.endsWith('%')) {
+				let windowHeight = window.innerHeight;
+				try {
+					let percent = "0." + value.split('%')[0];
+					value = (windowHeight * (percent)) + 'px';
+				}
+				catch {
+					console.error(`Invalid CSS ${type} given to modal. Will not set given value.`);
+					value = null;
+				}
+			}
+		}
+		return value;
 	}
 
 	/**
@@ -268,7 +263,7 @@ class Modal {
 	#buildContent() {
 		let contentDiv = document.createElement('div');
 		contentDiv.className = 'content';
-		contentDiv.appendChild(this.#content);
+		contentDiv.innerHTML = this.#content;
 		contentDiv.style.width = this.#width;
 		contentDiv.style.height = this.#height;
 
