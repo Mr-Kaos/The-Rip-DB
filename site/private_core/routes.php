@@ -94,9 +94,16 @@ Flight::group('/ripguessr', function () {
 	Flight::route('/', function () {
 		displayPage('rip-guesser', 'GuesserController', [], 'Rip Guessr');
 	});
+	// The play page should not have any GET tags or subpages.
 	Flight::route('/play', function () {
+		if (count($_GET) > 0) {
+			Flight::redirect('/ripguessr/play');
+		}
 		session_start();
 		displayPage('rip-guesser-play', 'GuesserController', [], 'Rip Guessr');
+	});
+	Flight::route('/play/@any', function ($any) {
+		Flight::redirect('/ripguessr/play');
 	});
 
 	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'ripguessr/play')) {
@@ -148,6 +155,12 @@ Flight::group('/search', function () {
 	});
 	Flight::route('GET /channels', function () {
 		performAPIRequest('search', 'channels', HttpMethod::GET);
+	});
+	Flight::route('GET /rip-names', function () {
+		performAPIRequest('search', 'rip-names', HttpMethod::GET);
+	});
+	Flight::route('GET /rip-alt-names', function () {
+		performAPIRequest('search', 'rip-names', HttpMethod::GET);
 	});
 	Flight::route('GET /@other', function ($other) {
 		http_response_code(404);

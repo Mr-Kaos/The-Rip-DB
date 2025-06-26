@@ -72,7 +72,7 @@ class Game
 	/**
 	 * Gets the current round.
 	 */
-	public function getCurrentRound(): ?Round
+	public function &getCurrentRound(): ?Round
 	{
 		$round = null;
 		if (count($this->rounds) > 0) {
@@ -242,7 +242,7 @@ class Round
 	private ?string $gameName; // Used to display the name of the game the rip is from in easier difficulties.
 	private ?int $gameID; // The ID of the game, should the game need to be guessed.
 	private ?string $altName; // The alternative name of the game.
-	private ?array $ripperIDs; // The rippers associated to the rip.
+	private ?array $rippers; // The rippers associated to the rip.
 
 	const PTS_CORRECT_JOKE = 75;
 	const PTS_CORRECT_RIP_NAME = 100;
@@ -276,7 +276,7 @@ class Round
 		$this->gameName = $gameName;
 		$this->ripName = $ripName;
 		$this->altName = $altName;
-		$this->ripperIDs = $rippers;
+		$this->rippers = $rippers;
 	}
 
 	public function isComplete(): bool
@@ -295,8 +295,10 @@ class Round
 				break;
 			// Hard and standard difficulty have the game and rip name hidden.
 			case Difficulty::Hard:
-				$fields['Rippers'] = count($this->ripperIDs);
-				$fields['AlternateName'] = $this->altName;
+				$fields['Rippers'] = count($this->rippers);
+				if ($this->altName !== null) {
+					$fields['AlternateName'] = $this->altName;
+				}
 			case Difficulty::Standard:
 				$fields['GameName'] = 1;
 				$fields['RipName'] = 1;
@@ -316,7 +318,7 @@ class Round
 		$score = 0;
 		$penalty = 0;
 
-		// error_log('DATA: ' . print_r($data, true));
+		error_log('DATA: ' . print_r($data, true));
 
 		// Check the submitted jokes against those that are correct.
 		$jokes = array_keys($this->jokes);
@@ -329,13 +331,40 @@ class Round
 		$score += ($correctJokes * self::PTS_CORRECT_JOKE);
 		$results['Answers']['Jokes'] = $this->jokes;
 		$results['Correct']['Jokes'] = $correctJokes;
-		
+
+		// Check the other variables of the rip
 		switch ($this->difficulty) {
 			case Difficulty::Beginner:
 				break;
 			case Difficulty::Hard:
-
+				if ($this->altName !== null) {
+					$correctName = (int)($data['altName'] == $this->altName);
+					$results['Answers']['AlternateName'] = $this->altName;
+					$results['Correct']['AlternateName'] = $correctName;
+					$score += ($correctName * self::PTS_CORRECT_ALT_NAME);
+				}
+				if (!empty($this->rippers)) {
+					$rippers = array_keys($this->rippers);
+					$correctRippers = 0;
+					foreach ($data['rippers'] ?? [] as $ripperID) {
+						if (in_array($ripperID, $rippers)) {
+							$correctRippers++;
+						}
+					}
+					$score += ($correctRippers * self::PTS_CORRECT_RIPPER);
+					$results['Answers']['Rippers'] = $this->rippers;
+					$results['Correct']['Rippers'] = $correctRippers;
+				}
 			case Difficulty::Standard:
+				$correctName = (int)($data['rip'] == $this->ripID);
+				$results['Answers']['RipName'] = $this->ripName;
+				$results['Correct']['RipName'] = $correctName;
+				$score += ($correctName * self::PTS_CORRECT_RIP_NAME);
+
+				$correctGame = (int)($data['game'] == $this->gameID);
+				$results['Answers']['GameName'] = $this->gameName;
+				$results['Correct']['GameName'] = $correctGame;
+				$score += ($correctGame * self::PTS_CORRECT_GAME);
 				break;
 		}
 
@@ -347,6 +376,9 @@ class Round
 		// }
 
 		$this->score = ($score - $penalty);
+
+		// Set the round as complete so it does not play again.
+		// $this->complete = true;
 
 		return $results;
 	}

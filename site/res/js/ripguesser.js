@@ -173,7 +173,7 @@ class Game {
 		let form = roundContainer.querySelector('#round-form');
 		form.innerHTML = '';
 		form.onsubmit = e => this.#submitRound(e, form);
-		// audioPlayer.innerHTML = `<iframe width="400" height="200" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
+		audioPlayer.innerHTML = `<iframe width="400" height="200" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
 
 		let title = roundContainer.querySelector('#rip-name');
 
@@ -197,13 +197,12 @@ class Game {
 				case 'GameName':
 					input = new GuessInput('Game Name', 'game', false, '/search/games');
 					break;
+				case 'RipName':
+					input = new GuessInput('Rip Name', 'rip', false, '/search/rip-names');
+					break;
 				// Hard difficulty
 				case 'AlternateName':
-					label = document.createElement('label');
-					input = document.createElement('input');
-					input.title = "The rip's name in its album release";
-					label.innerText = 'Alternative Name';
-					input.id = label.for = input.name = 'altName';
+					input = new GuessInput('Alternate Name', 'altName', false, '/search/rip-alt-names');
 					break;
 				case 'Rippers':
 					input = new GuessInput('Rippers', 'rippers[]', roundData[key], '/search/rippers');
@@ -282,13 +281,20 @@ class Game {
 						// Standard Difficulty
 						case 'game':
 							answerResult.innerHTML = `<b>Game Name: </b>${correct['GameName']}/${this.#roundData.GameName}`;
+							answerKey = 'GameName';
+							break;
+						case 'rip':
+							answerResult.innerHTML = `<b>Rip Name: </b>${correct['RipName']}/${this.#roundData.RipName}`;
+							answerKey = 'RipName';
 							break;
 						// Hard difficulty
 						case 'altName':
 							answerResult.innerHTML = `<b>Alternate Name: </b>`;
+							answerKey = 'AlternateName';
 							break;
 						case 'rippers[]':
-							answerResult.innerHTML = `<b>Rippers: </b>0/${this.#roundData['Rippers']}`;
+							answerResult.innerHTML = `<b>Rippers: </b>${correct['Rippers']}/${this.#roundData.Rippers}`;
+							answerKey = 'Rippers';
 							break;
 					}
 
@@ -378,12 +384,16 @@ class GuessInput extends SearchElement {
 		if (id == null) {
 			id = name;
 		}
-		// let id = 
-		element.innerHTML = `<label for="${id}" >${label}</label><input id="${id}" type="search" autocomplete="off" search-url="${url}">`;
 
+		element.innerHTML += `<label for="${id}" >${label}</label>`;
 		if (multiAnswerCount > 0) {
-			element.innerHTML += `<span class="count">(0/${multiAnswerCount})</span><div class="selected"></div>`;
+			element.innerHTML += `<span class="count">(0/${multiAnswerCount})</span>`;
 		}
+		element.innerHTML += `<input id="${id}" type="search" autocomplete="off" search-url="${url}">`;
+		if (multiAnswerCount > 0) {
+			element.innerHTML += `<div class="selected"></div>`;
+		}
+
 		element.innerHTML += '<div class="options"></div>';
 
 		super(element, false);
