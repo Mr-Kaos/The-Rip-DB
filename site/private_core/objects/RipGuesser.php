@@ -119,22 +119,19 @@ class Game
 
 			// If the rip found is empty, or somehow has no jokes, abort.
 			if ($rip !== false && !empty($rip['Jokes'])) {
-				// Use the settings' difficulty to determine what data the round needs
-
-				// From the rip data, only return the fields that are to be filled and the number of answers they require.
-				switch ($this->settings->difficulty) {
-					case Difficulty::Hard:
-						unset($rip['RipName']);
-					case Difficulty::Standard:
-						unset($rip['GameName']);
-						break;
-					case Difficulty::Beginner:
-						unset($rip['Rippers']);
-						unset($rip['RipGame']);
-						break;
+				// format jokes and rippers to be ID => name key-pair.
+				$jokes = [];
+				foreach ($rip['Jokes'] as $jokeID => $joke) {
+					$jokes[$jokeID] = $joke['JokeName'];
+				}
+				if (isset($rip['Rippers'])) {
+					$rippers = [];
+					foreach (($rip['Rippers'] ?? []) as $ripperID => $ripper) {
+						$rippers[$ripperID] = $ripper['RipperName'];
+					}
 				}
 
-				$round = new Round($rip['RipID'], $rip['RipYouTubeID'], $rip['Jokes'], $rip['RipName'] ?? null, $rip['GameName'] ?? null, $rip['RipGame'] ?? null, $rip['RipAlternateName'] ?? null, $rip['Rippers'] ?? null);
+				$round = new Round($this->settings->difficulty, $rip['RipID'], $rip['RipYouTubeID'], $jokes, $rip['RipName'] ?? null, $rip['GameName'] ?? null, $rip['RipGame'] ?? null, $rip['RipAlternateName'] ?? null, $rippers ?? null);
 				array_push($this->rounds, $round);
 			}
 		}
@@ -237,14 +234,24 @@ class Round
 	private int $score = 0;
 	private bool $complete = false;
 	private readonly string $ytID;
+	private readonly Difficulty $difficulty;
 
 	// Variables for guessable items
-	private array $jokeIDs;
+	private array $jokes;
 	private ?string $ripName; // The name of the rip. Displayed in easier difficulties, for guessing on harder ones.
 	private ?string $gameName; // Used to display the name of the game the rip is from in easier difficulties.
 	private ?int $gameID; // The ID of the game, should the game need to be guessed.
 	private ?string $altName; // The alternative name of the game.
-	private ?array $ripperIDs; // THe rippers associated to the rip.
+	private ?array $ripperIDs; // The rippers associated to the rip.
+
+	const PTS_CORRECT_JOKE = 75;
+	const PTS_CORRECT_RIP_NAME = 100;
+	const PTS_CORRECT_GAME = 125;
+	const PTS_CORRECT_RIPPER = 150;
+	const PTS_CORRECT_ALT_NAME = 200;
+
+	// If the player guessed more than the correct number of jokes and gets one incorrect, they will receive the following penalty.
+	const PTS_INCORRECT_JOKE = -100;
 
 	/**
 	 * Creates a new round for the rip guesser game.
@@ -252,18 +259,19 @@ class Round
 	 * If a rip does not have any of the data for a particular parameter (due to a difficulty setting or just not having that data), it is set to null and is not counted towards points.
 	 * @param int $ripID The ID of the rip for the round.
 	 * @param string $ytID The ID of the YouTube video that plays the rip.
-	 * @param array $jokes The jokes associated to the rip of the round.
+	 * @param array $jokes An associative array of jokes associated to the rip of the round. The key should be the ID of the joke, and the value the name.
 	 * @param ?string $ripName The name of the rip.
 	 * @param ?string $gameName The name of the game.
 	 * @param ?int $gameID The ID of the game associated to the rip.
 	 * @param ?string $altName The alternative name of the rip.
 	 * @param ?array $rippers The rippers who made the rip.
 	 */
-	public function __construct(int $ripID, string $ytID, array $jokes, ?string $ripName = null, ?string $gameName = null, ?int $gameID = null, ?string $altName = null, ?array $rippers = null)
+	public function __construct(Difficulty $difficulty, int $ripID, string $ytID, array $jokes, ?string $ripName = null, ?string $gameName = null, ?int $gameID = null, ?string $altName = null, ?array $rippers = null)
 	{
+		$this->difficulty = $difficulty;
 		$this->ripID = $ripID;
 		$this->ytID = $ytID;
-		$this->jokeIDs = $jokes;
+		$this->jokes = $jokes;
 		$this->gameID = $gameID;
 		$this->gameName = $gameName;
 		$this->ripName = $ripName;
@@ -278,33 +286,76 @@ class Round
 
 	public function getApplicableFields(): array
 	{
-		$fields = ['_RipYouTubeID' => $this->ytID, 'Jokes' => count($this->jokeIDs)];
+		$fields = ['_RipYouTubeID' => $this->ytID, 'Jokes' => count($this->jokes)];
 
-		if ($this->ripName !== null) {
-			$fields['_RipName'] = $this->ripName;
-		}
-		if ($this->gameName !== null) {
-			$fields['_GameName'] = $this->gameName;
-		}
-		if ($this->gameID !== null) {
-			$fields['GameName'] = 1;
-		}
-		if ($this->ripperIDs !== null) {
-			$fields['Rippers'] = count($this->ripperIDs);
-		}
-		if ($this->altName !== null) {
-			$fields['AlternateName'] = $this->altName;
+		switch ($this->difficulty) {
+			case Difficulty::Beginner:
+				$fields['_RipName'] = $this->ripName;
+				$fields['_GameName'] = $this->gameName;
+				break;
+			// Hard and standard difficulty have the game and rip name hidden.
+			case Difficulty::Hard:
+				$fields['Rippers'] = count($this->ripperIDs);
+				$fields['AlternateName'] = $this->altName;
+			case Difficulty::Standard:
+				$fields['GameName'] = 1;
+				$fields['RipName'] = 1;
+				break;
 		}
 
 		return $fields;
 	}
 
 	/**
-	 * Checks the submitted answers against the correct ones and calculates a score for the round.
+	 * Checks the submitted answers against the correct ones and calculates the score for the round.
+	 * @return array The correct answers for each input and a tally of the number of correct answers for each input (based on the difficulty)
+	 */
+	public function checkSubmission(array $data): array
+	{
+		$results = ['Correct' => [], 'Answers' => []];
+		$score = 0;
+		$penalty = 0;
+
+		// error_log('DATA: ' . print_r($data, true));
+
+		// Check the submitted jokes against those that are correct.
+		$jokes = array_keys($this->jokes);
+		$correctJokes = 0;
+		foreach ($data['jokes'] ?? [] as $jokeID) {
+			if (in_array($jokeID, $jokes)) {
+				$correctJokes++;
+			}
+		}
+		$score += ($correctJokes * self::PTS_CORRECT_JOKE);
+		$results['Answers']['Jokes'] = $this->jokes;
+		$results['Correct']['Jokes'] = $correctJokes;
+		
+		switch ($this->difficulty) {
+			case Difficulty::Beginner:
+				break;
+			case Difficulty::Hard:
+
+			case Difficulty::Standard:
+				break;
+		}
+
+		// Check rip name (if given)
+		// if ($this->ripID !== null) {
+		// 	if (($data['ripID'] ?? null) == $this->ripID) {
+		// 		$score += self::PTS_CORRECT_RIP_NAME;
+		// 	}
+		// }
+
+		$this->score = ($score - $penalty);
+
+		return $results;
+	}
+
+	/**
 	 * @return int Returns the calculated score based on the correct answers.
 	 */
-	public function checkSubmission(array $data):int {
-				
+	public function getScore(): int
+	{
 		return $this->score;
 	}
 }

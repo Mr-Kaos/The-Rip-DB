@@ -65,8 +65,13 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		switch ($methodGroup) {
 			// There is only one "start" request, so any requests made here will start the round.
 			case 'game':
-				if ($method == 'start') {
-					$response = $this->startGame($_POST);
+				switch ($method) {
+					case 'start':
+						$response = $this->startGame($_POST);
+						break;
+					case 'submit':
+						$response = $this->submitRound($_POST);
+						break;
 				}
 				break;
 		}
@@ -103,14 +108,6 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		}
 
 		return $this->game instanceof game\Game;
-	}
-
-	/**
-	 * Updates the game object and serialises it back to the client's session.
-	 */
-	private function updateGame()
-	{
-		// TODO
 	}
 
 	/**
@@ -167,12 +164,36 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 	private function advanceRound(): false|array
 	{
 		$roundData = false;
-		
+
 		if ($this->deserializeGame()) {
 			$roundData = $this->game->nextRound($this->model);
 			$this->model->saveGame($this->game);
 		}
 
 		return $roundData;
+	}
+
+	/**
+	 * Checks the round's submitted answers and returns an array of incorrect results and the score.
+	 * @return array An associative array with the following keys:  
+	 * - `CorrectAnswers` - Stores the correct answers for any incorrectly guessed values.
+	 * - `Score` - The score for the round.
+	 */
+	private function submitRound(array $data): false|array
+	{
+		$result = false;
+		// Preliminary checks to ensure that the game's data is not lost.
+		if ($this->deserializeGame()) {
+			if (!is_null($round = $this->game->getCurrentRound())) {
+				$result = [
+					'Results' => $round->checkSubmission($data),
+					'Score' => $round->getScore()
+				];
+			}
+
+			// error_log(print_r($this->game->getCurrentRound(), true));
+		}
+
+		return $result;
 	}
 }

@@ -44,9 +44,20 @@ class GuesserModel extends Model
 		return $success;
 	}
 
-	public function getGame(string $gameID) {}
+	/**
+	 * Retrieves a game object by the session ID.
+	 */
+	public function getGame(string $gameID)
+	{
+		//TODO
+	}
 
-	public function saveGame(game\Game $game) {
+	/**
+	 * Serialises the game object to the client's session.
+	 * @param Game $game The game object to save.
+	 */
+	public function saveGame(game\Game $game)
+	{
 		$_SESSION[self::SESS_GAME_OBJ] = serialize($game);
 	}
 

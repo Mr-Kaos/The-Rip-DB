@@ -19,12 +19,15 @@ class Game {
 	#showAnserCount = true;
 	#round = 0;
 	#roundTimer;
+	#gameContainer = null;
+	#roundData = null;
 
 	constructor() {
 		this.#initGame();
 	}
 
 	async #initGame() {
+		this.#gameContainer = document.getElementById('game');
 		let activeGame = await this.#checkForActiveGame();
 		if (activeGame !== false) {
 			this.#gameID = activeGame;
@@ -40,7 +43,7 @@ class Game {
 					background: '#ff0000'
 				},
 				'Resume Current Game': {
-					function: this.nextRound.bind(this),
+					function: this.#startGame.bind(this),
 					background: '#00ff00'
 				}
 			}
@@ -76,9 +79,17 @@ class Game {
 				displayNotification("Game failed to initialise!", NotificationPriority.Error);
 			} else {
 				this.toggleSettings();
-				this.nextRound();
+				this.#startGame();
 			}
 		}
+	}
+
+	/**
+	 * Starts/resumes the game.
+	 */
+	#startGame() {
+		this.#gameContainer.style.display = 'unset';
+		this.nextRound();
 	}
 
 	async joinGame(sessionID) {
@@ -147,20 +158,24 @@ class Game {
 		let request = await fetch('/ripguessr/game/purge', {
 			method: 'DELETE'
 		});
+
+		window.location.reload();
 	}
 
 	/**
-	 * Initialises a round by generating the 
+	 * Initialises a round by generating the form elements based on the given data.
+	 * Stores the round data in the object too for 
 	 * @param {Object} roundData A JSON object containing the fields that need to be answered.
 	 */
 	#initRound(roundData) {
-		let gameContainer = document.getElementById('game');
-		let audioPlayer = gameContainer.querySelector('#audio-player');
-		let form = gameContainer.querySelector('#round-form');
+		let roundContainer = this.#gameContainer.querySelector('#round');
+		let audioPlayer = roundContainer.querySelector('#audio-player');
+		let form = roundContainer.querySelector('#round-form');
+		form.innerHTML = '';
 		form.onsubmit = e => this.#submitRound(e, form);
-		audioPlayer.innerHTML = `<iframe width="400" height="200" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
+		// audioPlayer.innerHTML = `<iframe width="400" height="200" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
 
-		let title = gameContainer.querySelector('#rip-name');
+		let title = roundContainer.querySelector('#rip-name');
 
 		if (roundData['_RipName'] != null) {
 			title.innerText = "This round's rip is: " + roundData['_RipName'];
@@ -188,7 +203,7 @@ class Game {
 					input = document.createElement('input');
 					input.title = "The rip's name in its album release";
 					label.innerText = 'Alternative Name';
-					input.id = label.for = input.name = key;
+					input.id = label.for = input.name = 'altName';
 					break;
 				case 'Rippers':
 					input = new GuessInput('Rippers', 'rippers[]', roundData[key], '/search/rippers');
@@ -206,13 +221,15 @@ class Game {
 			}
 		}
 
-		// let test = setInterval(function() {
-		// 	console.log(navigator.mediaSession);
-		// }, 1000);
-
-		gameContainer.style.display = 'unset';
+		this.#roundData = roundData;
+		roundContainer.style.display = 'unset';
 	}
 
+	/**
+	 * 
+	 * @param {Event} event 
+	 * @param {HTMLFormElement} form 
+	 */
 	async #submitRound(event, form) {
 		event.preventDefault();
 		let data = new FormData(form);
@@ -224,9 +241,105 @@ class Game {
 
 		if (request.ok) {
 			let results = await request.json();
-
-			console.log(results);
+			this.#showResults(form.elements, data, results);
 		}
+	}
+
+	/**
+	 * Displays the results for the round.
+	 * @param {HTMLFormControlsCollection} form The form controls of the round. These may be empty if the user did not submit them.
+	 * @param {FormData} submission The submitted values.
+	 * @param {Object} results The results for the round.
+	 */
+	#showResults(form, submission, results) {
+		let resultsContainer = this.#gameContainer.querySelector('#results');
+		let roundContainer = this.#gameContainer.querySelector('#round');
+		console.log(submission);
+		console.log(results);
+
+		// Ensure the results container exists, if for whatever reason it gets removed.
+		if (resultsContainer != undefined) {
+			let score = resultsContainer.querySelector('#score');
+			score.innerText = results.Score;
+			let answersContainer = resultsContainer.querySelector('#answers');
+			answersContainer.innerHTML = '';
+			let answers = results.Results.Answers;
+			let correct = results.Results.Correct;
+
+			for (let key in form) {
+				// Make sure only the form elements are checked.
+				if (form[key] instanceof HTMLElement && form[key].id != '') {
+					let answerResult = document.createElement('li');
+					// If there are any corrections, <li> elements will be added containing the corrections.
+					let answerKey = null;
+
+					// console.log(form[key], form[key].id);
+					switch (form[key].id) {
+						case 'jokes[]':
+							answerResult.innerHTML = `<b>Jokes: </b>${correct['Jokes']}/${this.#roundData.Jokes}`;
+							answerKey = 'Jokes';
+							break;
+						// Standard Difficulty
+						case 'game':
+							answerResult.innerHTML = `<b>Game Name: </b>${correct['GameName']}/${this.#roundData.GameName}`;
+							break;
+						// Hard difficulty
+						case 'altName':
+							answerResult.innerHTML = `<b>Alternate Name: </b>`;
+							break;
+						case 'rippers[]':
+							answerResult.innerHTML = `<b>Rippers: </b>0/${this.#roundData['Rippers']}`;
+							break;
+					}
+
+					// Display the answers
+					if (answerKey != null) {
+						let correctValues = document.createElement('div');
+						correctValues.innerText = `Correct answers: `;
+						for (let jokeId in answers[answerKey]) {
+							let answer = document.createElement('span');
+							answer.innerText = answers[answerKey][jokeId];
+							correctValues.append(answer);
+						}
+
+						answerResult.appendChild(correctValues)
+					}
+
+					answersContainer.appendChild(answerResult);
+				}
+			}
+
+			resultsContainer.style.display = "unset";
+			roundContainer.style.display = "none";
+		} else {
+			this.#raiseCriticalError('Cannot find results container!');
+		}
+	}
+
+	/**
+	 * Displays a modal stating that a critical error occurred.
+	 * It prompts the user if they wish to reload the round to try again, or restart the game.
+	 * @param {String} msg An error message to log in the console.
+	 */
+	#raiseCriticalError(msg) {
+		// Ask if a new game should be started
+		let modalFunctions = {
+			'Reload and restart round': {
+				function: this.#startGame.bind(this),
+				background: '#00ff00'
+			},
+			'Reset Game': {
+				function: function () {
+					this.#resetGame();
+					this.toggleSettings();
+				}.bind(this),
+				colour: '#fff',
+				background: '#ff0000'
+			}
+		}
+		console.error(msg);
+		let modal = new Modal("game-reload", "Uh-oh, this isn't supposed to happen...", "A critical error was encountered.\nYou can attempt to restart the last round played, or reset the game from scratch again.", null, null, false, false, modalFunctions);
+		modal.open();
 	}
 }
 
