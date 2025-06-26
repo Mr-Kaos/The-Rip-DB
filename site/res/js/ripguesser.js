@@ -37,7 +37,7 @@ class Game {
 				'Start New Game': {
 					function: function () {
 						this.#resetGame();
-						this.toggleSettings();
+						this.#toggleGameDisplay('settings');
 					}.bind(this),
 					colour: '#fff',
 					background: '#ff0000'
@@ -50,7 +50,7 @@ class Game {
 			let modal = new Modal("game-reset", 'You already have a game running!', "Do you want to continue or start a new game?", null, null, false, false, modalFunctions);
 			modal.open();
 		} else {
-			this.toggleSettings();
+			this.#toggleGameDisplay('settings');
 		}
 	}
 
@@ -78,7 +78,7 @@ class Game {
 			if (!ready) {
 				displayNotification("Game failed to initialise!", NotificationPriority.Error);
 			} else {
-				this.toggleSettings();
+				this.#toggleGameDisplay('settings');
 				this.#startGame();
 			}
 		}
@@ -88,7 +88,6 @@ class Game {
 	 * Starts/resumes the game.
 	 */
 	#startGame() {
-		this.#gameContainer.style.display = 'unset';
 		this.nextRound();
 	}
 
@@ -113,15 +112,32 @@ class Game {
 	}
 
 	/**
-	 * Displays the settings form when setting up a game.
+	 * Toggles the visibility of the game's active page.
+	 * @param {String} mode 
 	 */
-	toggleSettings() {
+	#toggleGameDisplay(mode) {
 		let settingsDiv = document.getElementById('settings');
-		let display = settingsDiv.style.display;
-		if (display == 'none') {
-			settingsDiv.style.display = "unset";
-		} else {
-			settingsDiv.style.display = "none";
+		let roundContainer = this.#gameContainer.querySelector('#round');
+		let resultsContainer = this.#gameContainer.querySelector('#results');
+		switch (mode) {
+			case 'settings':
+				this.#gameContainer.style.display = 'none';
+				settingsDiv.style.display = "unset";
+				roundContainer.style.display = "none";
+				resultsContainer.style.display = "none";
+				break;
+			case 'round':
+				this.#gameContainer.style.display = 'unset';
+				settingsDiv.style.display = "none";
+				roundContainer.style.display = "unset";
+				resultsContainer.style.display = "none";
+				break;
+			case 'results':
+				this.#gameContainer.style.display = 'unset';
+				settingsDiv.style.display = "none";
+				roundContainer.style.display = "none";
+				resultsContainer.style.display = "unset";
+				break;
 		}
 	}
 
@@ -154,7 +170,6 @@ class Game {
 	 * Resets the active game, if one is set in the client's session.
 	 */
 	async #resetGame() {
-		console.log("HERE");
 		let request = await fetch('/ripguessr/game/purge', {
 			method: 'DELETE'
 		});
@@ -184,7 +199,6 @@ class Game {
 			}
 		}
 
-		console.log(roundData);
 		for (let key in roundData) {
 			let input = null;
 			let label = null;
@@ -221,7 +235,7 @@ class Game {
 		}
 
 		this.#roundData = roundData;
-		roundContainer.style.display = 'unset';
+		this.#toggleGameDisplay('round');
 	}
 
 	/**
@@ -240,25 +254,24 @@ class Game {
 
 		if (request.ok) {
 			let results = await request.json();
-			this.#showResults(form.elements, data, results);
+			this.#showResults(form.elements, results);
 		}
 	}
 
 	/**
 	 * Displays the results for the round.
 	 * @param {HTMLFormControlsCollection} form The form controls of the round. These may be empty if the user did not submit them.
-	 * @param {FormData} submission The submitted values.
 	 * @param {Object} results The results for the round.
 	 */
-	#showResults(form, submission, results) {
+	#showResults(form, results) {
 		let resultsContainer = this.#gameContainer.querySelector('#results');
-		let roundContainer = this.#gameContainer.querySelector('#round');
-		console.log(submission);
-		console.log(results);
 
 		// Ensure the results container exists, if for whatever reason it gets removed.
 		if (resultsContainer != undefined) {
 			let score = resultsContainer.querySelector('#score');
+			let btnNextRound = resultsContainer.querySelector('#advance-round');
+			btnNextRound.onclick = e => this.nextRound();
+
 			score.innerText = results.Score;
 			let answersContainer = resultsContainer.querySelector('#answers');
 			answersContainer.innerHTML = '';
@@ -314,12 +327,11 @@ class Game {
 					answersContainer.appendChild(answerResult);
 				}
 			}
-
-			resultsContainer.style.display = "unset";
-			roundContainer.style.display = "none";
 		} else {
 			this.#raiseCriticalError('Cannot find results container!');
 		}
+
+		this.#toggleGameDisplay('results');
 	}
 
 	/**

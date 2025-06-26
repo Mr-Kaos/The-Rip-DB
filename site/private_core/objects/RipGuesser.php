@@ -318,8 +318,6 @@ class Round
 		$score = 0;
 		$penalty = 0;
 
-		error_log('DATA: ' . print_r($data, true));
-
 		// Check the submitted jokes against those that are correct.
 		$jokes = array_keys($this->jokes);
 		$correctJokes = 0;
@@ -368,17 +366,12 @@ class Round
 				break;
 		}
 
-		// Check rip name (if given)
-		// if ($this->ripID !== null) {
-		// 	if (($data['ripID'] ?? null) == $this->ripID) {
-		// 		$score += self::PTS_CORRECT_RIP_NAME;
-		// 	}
-		// }
-
+		// Apply the penalty, if one is given
+		// TODO
 		$this->score = ($score - $penalty);
 
 		// Set the round as complete so it does not play again.
-		// $this->complete = true;
+		$this->complete = true;
 
 		return $results;
 	}

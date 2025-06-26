@@ -3,24 +3,24 @@
 use RipDB\Objects as o;
 use RipDB\RipGuesser as game;
 ?>
-<main>
+<main style="max-width:1000px;margin-left:auto;margin-right:auto;">
 	<div id="game" style="display:none">
 		<h1 id="title">Round 1</h1>
 		<div id="round">
 			<h2 id="rip-name"></h2>
 			<p><i>Listen to the rip and identify the jokes used in it!</i></p>
 			<div id="audio-player"></div>
-			<form id="round-form" action="javascript:void()">
+			<form id="round-form" action="javascript:void()" style="display:flex">
 			</form>
 			<button type="submit" form="round-form">Submit Guess</button>
 		</div>
 		<div id="results" style="display:none">
-			<h1>Round Results</h1>
+			<h2>Results:</h2>
 			<ul id="answers">
 				<li><b>Hmm...</b>You shouldn't really be seeing this.</li>
 			</ul>
 			<p>Total: <var id="score">0</var> Pts</p>
-			<button type="button"">Next Round</button>
+			<button type="button" id="advance-round">Next Round</button>
 		</div>
 	</div>
 	<div id="settings" style="display:none">
