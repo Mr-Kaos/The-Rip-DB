@@ -188,7 +188,7 @@ class Game {
 		let form = roundContainer.querySelector('#round-form');
 		form.innerHTML = '';
 		form.onsubmit = e => this.#submitRound(e, form);
-		audioPlayer.innerHTML = `<iframe width="400" height="200" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
+		let frameHeight = 200;
 
 		let title = roundContainer.querySelector('#rip-name');
 
@@ -210,9 +210,11 @@ class Game {
 				// Standard Difficulty
 				case 'GameName':
 					input = new GuessInput('Game Name', 'game', false, '/search/games');
+					frameHeight = 0;
 					break;
 				case 'RipName':
 					input = new GuessInput('Rip Name', 'rip', false, '/search/rip-names');
+					frameHeight = 0;
 					break;
 				// Hard difficulty
 				case 'AlternateName':
@@ -233,6 +235,9 @@ class Game {
 				form.appendChild(input.getElement());
 			}
 		}
+
+		// Hide/Display the player based on the game's difficulty.
+		audioPlayer.innerHTML = `<iframe width="400" height="${frameHeight}" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
 
 		this.#roundData = roundData;
 		this.#toggleGameDisplay('round');

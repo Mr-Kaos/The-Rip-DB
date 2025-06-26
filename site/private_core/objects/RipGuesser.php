@@ -295,7 +295,9 @@ class Round
 				break;
 			// Hard and standard difficulty have the game and rip name hidden.
 			case Difficulty::Hard:
-				$fields['Rippers'] = count($this->rippers);
+				if (is_array($this->rippers)) {
+					$fields['Rippers'] = count($this->rippers);
+				}
 				if ($this->altName !== null) {
 					$fields['AlternateName'] = $this->altName;
 				}
