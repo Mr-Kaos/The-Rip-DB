@@ -18,11 +18,11 @@ enum Difficulty: string
 	}
 }
 
-const PTS_CORRECT_JOKE = 75;
-const PTS_CORRECT_RIP_NAME = 100;
-const PTS_CORRECT_GAME = 125;
-const PTS_CORRECT_RIPPER = 150;
-const PTS_CORRECT_ALT_NAME = 200;
+const PTS_CORRECT_JOKE = 100;
+const PTS_CORRECT_RIP_NAME = 150;
+const PTS_CORRECT_GAME = 200;
+const PTS_CORRECT_RIPPER = 200;
+const PTS_CORRECT_ALT_NAME = 250;
 
 // If the player guessed more than the correct number of jokes and gets one incorrect, they will receive the following penalty.
 const PTS_INCORRECT_JOKE = -100;

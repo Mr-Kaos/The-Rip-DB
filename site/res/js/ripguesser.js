@@ -304,7 +304,8 @@ class Game {
 			host: 'https://www.youtube-nocookie.com',
 			playerVars: {
 				'playsinline': 1,
-				'controls': 0
+				'controls': 0,
+				'disablePictureInPicture': 1
 			},
 			events: {
 				'onReady': onPlayerReady,
