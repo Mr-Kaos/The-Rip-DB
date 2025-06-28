@@ -18,6 +18,15 @@ enum Difficulty: string
 	}
 }
 
+const PTS_CORRECT_JOKE = 75;
+const PTS_CORRECT_RIP_NAME = 100;
+const PTS_CORRECT_GAME = 125;
+const PTS_CORRECT_RIPPER = 150;
+const PTS_CORRECT_ALT_NAME = 200;
+
+// If the player guessed more than the correct number of jokes and gets one incorrect, they will receive the following penalty.
+const PTS_INCORRECT_JOKE = -100;
+
 /**
  * @property private string $id The unique ID of the game. This is essentially the session ID of the game.
  * @property private array $rounds The round objects for the game, i.e. the rips for the game.
@@ -34,7 +43,6 @@ class Game
 	private string $id;
 	private array $rounds;
 	private int $roundCount;
-	private int $score = 0;
 	private Settings $settings;
 
 	/**
@@ -86,6 +94,41 @@ class Game
 		return count($this->rounds);
 	}
 
+
+	/**
+	 * Gets the score for the game or the specified round
+	 * @param ?int $round The index of the round to get the score from. The index is zero-based, so round 1 is retrieved by specifying '0' as the round.
+	 * @return int Returns the score for the specified round. If no round is specified ($round is null), the total score of all rounds is returned.  
+	 * If the specified round does not exist, a score of 0 is returned.
+	 */
+	public function getScore(?int $round = null): int
+	{
+		$score = 0;
+		if ($round !== null) {
+			if ($round < count($this->rounds)) {
+				$score = $this->rounds[$round]->getScore();
+			}
+		} else {
+			foreach ($this->rounds as $round) {
+				$score += $round->getScore();
+			}
+		}
+		return $score;
+	}
+
+	/**
+	 * Determines if all rounds in the game are complete.
+	 * @return bool True if all rounds for the number of rounds in the game are complete.
+	 */
+	public function isFinished(): bool
+	{
+		$complete = 0;
+		foreach ($this->rounds as $round) {
+			$complete += (int)$round->isComplete();
+		}
+		return $complete == $this->roundCount;
+	}
+
 	/**
 	 * Returns an array of RipIDs that have been played in the game's rounds.
 	 */
@@ -98,6 +141,26 @@ class Game
 		}
 
 		return $played;
+	}
+
+	/**
+	 * Returns an associative array summarising the game's data.
+	 */
+	public function getGameSummary(): array
+	{
+		$summary = ['Rounds' => []];
+
+		foreach ($this->rounds as $round) {
+			array_push($summary['Rounds'], [
+				'Score' => $round->getScore(),
+				'MaxScore' => $round->getMaxScore(),
+				'RipID' => $round->ripID,
+				'RipName' => $round->ripName,
+				'GameName' => $round->gameName,
+				'YTID' => $round->ytID
+			]);
+		}
+		return $summary;
 	}
 
 	/**
@@ -141,24 +204,10 @@ class Game
 		}
 
 		if ($round instanceof Round) {
-			$round = $round->getApplicableFields();
+			$round = ['RoundData' => $round->getApplicableFields(), 'RoundNumber' => count($this->rounds)];
 		}
 
 		return $round;
-	}
-
-	/**
-	 * Fetches a rip based on the game's settings and previous rounds.
-	 * Will attempt to search for a rip that has not already been played in a previous round and that matches the given criteria specified in the setting's filters.
-	 * If a rip is fetched, its answers are stored in this object on the server. Only the fields that need to be answered are returned.
-	 * Special values that are not to be fields are prefixed with an underscore.
-	 * @param GuesserModel $model The RipGuesserModel object to query the database with.
-	 * @return false|array If no rip was found, false is returned. Else, an associative array of fields to answer and their number of valid answers are returned.
-	 */
-	public function fetchRip(\RipDB\Model\GuesserModel $model): false|array
-	{
-		$rip = $model->getRip($this->settings, $this->getPlayedRips());
-		return $rip;
 	}
 }
 
@@ -232,26 +281,18 @@ class Round
 	// Standard Round properties
 	public readonly int $ripID;
 	private int $score = 0;
+	private int $maxScore = 0; // The maximum possible score available for the round.
 	private bool $complete = false;
-	private readonly string $ytID;
+	public readonly string $ytID;
 	private readonly Difficulty $difficulty;
 
 	// Variables for guessable items
 	private array $jokes;
-	private ?string $ripName; // The name of the rip. Displayed in easier difficulties, for guessing on harder ones.
-	private ?string $gameName; // Used to display the name of the game the rip is from in easier difficulties.
+	public readonly ?string $ripName; // The name of the rip. Displayed in easier difficulties, for guessing on harder ones.
+	public readonly ?string $gameName; // Used to display the name of the game the rip is from in easier difficulties.
 	private ?int $gameID; // The ID of the game, should the game need to be guessed.
 	private ?string $altName; // The alternative name of the game.
 	private ?array $rippers; // The rippers associated to the rip.
-
-	const PTS_CORRECT_JOKE = 75;
-	const PTS_CORRECT_RIP_NAME = 100;
-	const PTS_CORRECT_GAME = 125;
-	const PTS_CORRECT_RIPPER = 150;
-	const PTS_CORRECT_ALT_NAME = 200;
-
-	// If the player guessed more than the correct number of jokes and gets one incorrect, they will receive the following penalty.
-	const PTS_INCORRECT_JOKE = -100;
 
 	/**
 	 * Creates a new round for the rip guesser game.
@@ -284,6 +325,29 @@ class Round
 		return $this->complete;
 	}
 
+	/**
+	 * @return int The calculated score of this round.
+	 */
+	public function getScore(): int
+	{
+		return $this->score;
+	}
+
+	/**
+	 * @return int The maximum obtainable score for this round.
+	 */
+	public function getMaxScore(): int
+	{
+		return $this->maxScore;
+	}
+
+	/**
+	 * Retrieves all data fields applicable to the rounds based on its difficulty.
+	 * Used for the client-side JavaScript so it knows which fields to create inputs for.  
+	 * - Keys that are prefixed with an underscore are used to display its value to the user.  
+	 * - Keys without an underscore define fields that need to be given an answer. Their values are a number of how many inputs are needed to be supplied.
+	 * @return array An associative array where the keys define what inputs are allowed to appear.
+	 */
 	public function getApplicableFields(): array
 	{
 		$fields = ['_RipYouTubeID' => $this->ytID, 'Jokes' => count($this->jokes)];
@@ -292,18 +356,23 @@ class Round
 			case Difficulty::Beginner:
 				$fields['_RipName'] = $this->ripName;
 				$fields['_GameName'] = $this->gameName;
+				$this->maxScore += count($this->jokes) * PTS_CORRECT_JOKE;
 				break;
 			// Hard and standard difficulty have the game and rip name hidden.
 			case Difficulty::Hard:
 				if (is_array($this->rippers)) {
 					$fields['Rippers'] = count($this->rippers);
+					$this->maxScore += count($this->rippers) * PTS_CORRECT_RIPPER;
 				}
 				if ($this->altName !== null) {
 					$fields['AlternateName'] = $this->altName;
+					$this->maxScore += PTS_CORRECT_ALT_NAME;
 				}
 			case Difficulty::Standard:
 				$fields['GameName'] = 1;
 				$fields['RipName'] = 1;
+				$this->maxScore += PTS_CORRECT_GAME;
+				$this->maxScore += PTS_CORRECT_RIP_NAME;
 				break;
 		}
 
@@ -328,7 +397,7 @@ class Round
 				$correctJokes++;
 			}
 		}
-		$score += ($correctJokes * self::PTS_CORRECT_JOKE);
+		$score += ($correctJokes * PTS_CORRECT_JOKE);
 		$results['Answers']['Jokes'] = $this->jokes;
 		$results['Correct']['Jokes'] = $correctJokes;
 
@@ -341,7 +410,7 @@ class Round
 					$correctName = (int)($data['altName'] == $this->altName);
 					$results['Answers']['AlternateName'] = $this->altName;
 					$results['Correct']['AlternateName'] = $correctName;
-					$score += ($correctName * self::PTS_CORRECT_ALT_NAME);
+					$score += ($correctName * PTS_CORRECT_ALT_NAME);
 				}
 				if (!empty($this->rippers)) {
 					$rippers = array_keys($this->rippers);
@@ -351,7 +420,7 @@ class Round
 							$correctRippers++;
 						}
 					}
-					$score += ($correctRippers * self::PTS_CORRECT_RIPPER);
+					$score += ($correctRippers * PTS_CORRECT_RIPPER);
 					$results['Answers']['Rippers'] = $this->rippers;
 					$results['Correct']['Rippers'] = $correctRippers;
 				}
@@ -359,12 +428,12 @@ class Round
 				$correctName = (int)($data['rip'] == $this->ripID);
 				$results['Answers']['RipName'] = $this->ripName;
 				$results['Correct']['RipName'] = $correctName;
-				$score += ($correctName * self::PTS_CORRECT_RIP_NAME);
+				$score += ($correctName * PTS_CORRECT_RIP_NAME);
 
 				$correctGame = (int)($data['game'] == $this->gameID);
 				$results['Answers']['GameName'] = $this->gameName;
 				$results['Correct']['GameName'] = $correctGame;
-				$score += ($correctGame * self::PTS_CORRECT_GAME);
+				$score += ($correctGame * PTS_CORRECT_GAME);
 				break;
 		}
 
@@ -376,13 +445,5 @@ class Round
 		$this->complete = true;
 
 		return $results;
-	}
-
-	/**
-	 * @return int Returns the calculated score based on the correct answers.
-	 */
-	public function getScore(): int
-	{
-		return $this->score;
 	}
 }

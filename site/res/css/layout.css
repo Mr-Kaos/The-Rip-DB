@@ -313,3 +313,27 @@ input[type=range]+span {
 	padding: 5px;
 	border-radius: 5px;
 }
+
+/* Rip Guesser Styles */
+
+#answers {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 25px;
+}
+
+#answers>div {
+	background: var(--bg-accent);
+	border-radius: 6px;
+}
+
+#answers h3 {
+	margin: 3px 2px;
+}
+
+@media only screen and (max-width: 1080px) {
+	#answers {
+		grid-template-columns: 1fr 1fr;
+		gap: 15px;
+	}
+}

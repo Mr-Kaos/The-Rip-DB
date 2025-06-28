@@ -104,7 +104,14 @@ class Game {
 		});
 
 		if (request.ok) {
-			this.#initRound(await request.json());
+			// Check if the data received is for a new round, or is the results of the game
+			let data = await request.json();
+			if (data.GameEnd != undefined) {
+				console.log('the game has ended.');
+				this.#showFinalResults(data.Summary);
+			} else {
+				this.#initRound(data);
+			}
 		} else {
 			console.error('Could not start next round!')
 			displayNotification("Failed to start next round!", NotificationPriority.Error);
@@ -113,7 +120,7 @@ class Game {
 
 	/**
 	 * Toggles the visibility of the game's active page.
-	 * @param {String} mode 
+	 * @param {String} mode Must be either "settings", "round" or "results".
 	 */
 	#toggleGameDisplay(mode) {
 		let settingsDiv = document.getElementById('settings');
@@ -184,11 +191,15 @@ class Game {
 	 */
 	#initRound(roundData) {
 		let roundContainer = this.#gameContainer.querySelector('#round');
-		let audioPlayer = roundContainer.querySelector('#audio-player');
+		let audioPlayer = roundContainer.querySelector('#player');
 		let form = roundContainer.querySelector('#round-form');
 		form.innerHTML = '';
 		form.onsubmit = e => this.#submitRound(e, form);
-		let frameHeight = 200;
+		let frameHeight = 300;
+		this.#round = roundData.RoundNumber;
+		roundData = roundData.RoundData;
+
+		this.#gameContainer.querySelector('#title').innerText = 'Round ' + this.#round;
 
 		let title = roundContainer.querySelector('#rip-name');
 
@@ -278,7 +289,7 @@ class Game {
 			btnNextRound.onclick = e => this.nextRound();
 
 			score.innerText = results.Score;
-			let answersContainer = resultsContainer.querySelector('#answers');
+			let answersContainer = resultsContainer.querySelector('#answers>ul');
 			answersContainer.innerHTML = '';
 			let answers = results.Results.Answers;
 			let correct = results.Results.Correct;
@@ -290,7 +301,6 @@ class Game {
 					// If there are any corrections, <li> elements will be added containing the corrections.
 					let answerKey = null;
 
-					// console.log(form[key], form[key].id);
 					switch (form[key].id) {
 						case 'jokes[]':
 							answerResult.innerHTML = `<b>Jokes: </b>${correct['Jokes']}/${this.#roundData.Jokes}`;
@@ -335,6 +345,62 @@ class Game {
 		} else {
 			this.#raiseCriticalError('Cannot find results container!');
 		}
+
+		this.#toggleGameDisplay('results');
+	}
+
+	/**
+	 * Displays the final results of the game.
+	 * @param {Object} resultsData The data object summarising the game
+	 */
+	#showFinalResults(resultsData) {
+		let title = this.#gameContainer.querySelector('#title');
+			title.innerText = 'Final Results';
+		let resultsContainer = this.#gameContainer.querySelector('#results');
+		let answersContainer = resultsContainer.querySelector('#answers');
+		let scoreElement = resultsContainer.querySelector('#score');
+		let btnNextRound = resultsContainer.querySelector('#advance-round');
+			btnNextRound.innerText = 'New Game';
+			btnNextRound.onclick = e => this.#resetGame();
+		let totalScore = 0;
+		let maxScore = 0;
+		answersContainer.innerHTML = '';
+
+		for (let roundNum in resultsData.Rounds) {
+			let round = resultsData.Rounds[roundNum];
+			let roundDiv = document.createElement('div');
+			let roundHeader = document.createElement('h3');
+			let roundList = document.createElement('ul');
+			roundHeader.innerText = `Round ${parseInt(roundNum) + 1} - ${round.RipName} - ${round.GameName}`;
+
+			// Add items for each rip
+			let item = document.createElement('li');
+
+			// Score
+			item.innerHTML = `<b>Score:</b> ${round.Score}/${round.MaxScore}`;
+			roundList.appendChild(item);
+
+			// Page Link
+			item = document.createElement('li');
+			item.innerHTML = `<a href="/rips/${round.RipID}">View Rip details</a>`;
+			roundList.appendChild(item);
+
+			item = document.createElement('li');
+			item.innerHTML = `<a href="https://youtube.com/watch?v=${round.YTID}" target="_blank">View on YouTube</a>`;
+			roundList.appendChild(item);
+
+			roundDiv.appendChild(roundHeader);
+			roundDiv.appendChild(roundList);
+			answersContainer.appendChild(roundDiv);
+
+			totalScore += round.Score;
+			maxScore += round.MaxScore;
+		}
+
+		scoreElement.innerHTML = `${totalScore}/${maxScore}`;
+
+		// Remove the round container to stop the video from playing.
+		this.#gameContainer.querySelector('#round').remove();
 
 		this.#toggleGameDisplay('results');
 	}

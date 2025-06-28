@@ -90,7 +90,7 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 			// There is only one "start" request, so any requests made here will start the round.
 			case 'game':
 				if ($method == 'purge') {
-					$response = $this->model->purgeGameSession();
+					$response = $this->endGame();
 				}
 				break;
 		}
@@ -151,6 +151,13 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 	}
 
 	/**
+	 * Ends the game.
+	 */
+	private function endGame(): void {
+		$this->model->purgeGameSession();
+	}
+
+	/**
 	 * Allows a player to play in a currently running game.
 	 * Retrieves the game's settings from the server with the given game ID and sets up the player's game data for this session.
 	 */
@@ -169,7 +176,12 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		$roundData = false;
 
 		if ($this->deserializeGame()) {
-			$roundData = $this->game->nextRound($this->model);
+			if ($this->game->isFinished()) {
+				$roundData = ['GameEnd' => true, 'Summary' => $this->game->getGameSummary()];
+				$this->endGame();
+			} else {
+				$roundData = $this->game->nextRound($this->model);
+			}
 			$this->model->saveGame($this->game);
 		}
 

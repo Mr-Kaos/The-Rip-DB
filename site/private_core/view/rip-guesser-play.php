@@ -5,20 +5,22 @@ use RipDB\RipGuesser as game;
 ?>
 <main style="max-width:1000px;margin-left:auto;margin-right:auto;">
 	<div id="game" style="display:none">
-		<h1 id="title">Round 1</h1>
+		<h1 id="title">Round ?</h1>
 		<div id="round">
 			<h2 id="rip-name"></h2>
 			<p><i>Listen to the rip and identify the jokes used in it!</i></p>
-			<div id="audio-player"></div>
+			<div id="player"></div>
 			<form id="round-form" action="javascript:void()" style="display:flex">
 			</form>
 			<button type="submit" form="round-form">Submit Guess</button>
 		</div>
 		<div id="results" style="display:none">
 			<h2>Results:</h2>
-			<ul id="answers">
-				<li><b>Hmm...</b>You shouldn't really be seeing this.</li>
-			</ul>
+			<div id="answers">
+				<ul>
+					<li><b>Hmm...</b>You shouldn't really be seeing this.</li>
+				</ul>
+			</div>
 			<p>Total: <var id="score">0</var> Pts</p>
 			<button type="button" id="advance-round">Next Round</button>
 		</div>
@@ -53,3 +55,4 @@ use RipDB\RipGuesser as game;
 	</div>
 </main>
 <script src="/res/js/ripguesser.js" defer></script>
+<script src="https://www.youtube.com/iframe_api"></script>
