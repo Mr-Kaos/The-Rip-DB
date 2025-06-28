@@ -6,10 +6,14 @@ use RipDB\RipGuesser as game;
 <main style="max-width:1000px;margin-left:auto;margin-right:auto;">
 	<div id="game" style="display:none">
 		<h1 id="title">Round ?</h1>
+		<h2 id="rip-name"></h2>
+		<div id="stream"></div>
 		<div id="round">
-			<h2 id="rip-name"></h2>
 			<p><i>Listen to the rip and identify the jokes used in it!</i></p>
-			<div id="player"></div>
+			<div id="player">
+				<button type="button" id="play-pause">Pause Playback</button>
+				<?= (new o\InputElement('Volume', o\InputTypes::range, ['id' => 'volume', 'min' => 0, 'max' => 100, 'value' => 50]))->buildElement() ?>
+			</div>
 			<form id="round-form" action="javascript:void()" style="display:flex">
 			</form>
 			<button type="submit" form="round-form">Submit Guess</button>
@@ -18,7 +22,7 @@ use RipDB\RipGuesser as game;
 			<h2>Results:</h2>
 			<div id="answers">
 				<ul>
-					<li><b>Hmm...</b>You shouldn't really be seeing this.</li>
+					<li><b>Hmm...</b> You shouldn't really be seeing this.</li>
 				</ul>
 			</div>
 			<p>Total: <var id="score">0</var> Pts</p>

@@ -21,6 +21,7 @@ class Game {
 	#roundTimer;
 	#gameContainer = null;
 	#roundData = null;
+	#player;
 
 	constructor() {
 		this.#initGame();
@@ -107,7 +108,6 @@ class Game {
 			// Check if the data received is for a new round, or is the results of the game
 			let data = await request.json();
 			if (data.GameEnd != undefined) {
-				console.log('the game has ended.');
 				this.#showFinalResults(data.Summary);
 			} else {
 				this.#initRound(data);
@@ -191,17 +191,14 @@ class Game {
 	 */
 	#initRound(roundData) {
 		let roundContainer = this.#gameContainer.querySelector('#round');
-		let audioPlayer = roundContainer.querySelector('#player');
 		let form = roundContainer.querySelector('#round-form');
 		form.innerHTML = '';
 		form.onsubmit = e => this.#submitRound(e, form);
-		let frameHeight = 300;
 		this.#round = roundData.RoundNumber;
 		roundData = roundData.RoundData;
 
 		this.#gameContainer.querySelector('#title').innerText = 'Round ' + this.#round;
-
-		let title = roundContainer.querySelector('#rip-name');
+		let title = this.#gameContainer.querySelector('#rip-name');
 
 		if (roundData['_RipName'] != null) {
 			title.innerText = "This round's rip is: " + roundData['_RipName'];
@@ -221,11 +218,9 @@ class Game {
 				// Standard Difficulty
 				case 'GameName':
 					input = new GuessInput('Game Name', 'game', false, '/search/games');
-					frameHeight = 0;
 					break;
 				case 'RipName':
 					input = new GuessInput('Rip Name', 'rip', false, '/search/rip-names');
-					frameHeight = 0;
 					break;
 				// Hard difficulty
 				case 'AlternateName':
@@ -247,8 +242,31 @@ class Game {
 			}
 		}
 
-		// Hide/Display the player based on the game's difficulty.
-		audioPlayer.innerHTML = `<iframe width="400" height="${frameHeight}" src="https://www.youtube-nocookie.com/embed/${roundData['_RipYouTubeID']}?autoplay=1&controls=0&showInfo=0&autohide=1" frameborder="0" allow="autoplay;"></iframe>`;
+		// Set up the embedded player and the controls.
+		let volumeSlider = roundContainer.querySelector('#volume');
+		if (this.#player == null) {
+			this.#prepareYTEmbed(roundData['_RipYouTubeID'], volumeSlider.value);
+		} else {
+			this.#player.setSize(0, 0);
+			this.#player.loadVideoById(roundData['_RipYouTubeID'], 0);
+			this.#player.setVolume(volumeSlider.value);
+		}
+		volumeSlider.oninput = function (e) {
+			this.#player.setVolume(e.target.value);
+		}.bind(this);
+
+		let btnPause = roundContainer.querySelector('#play-pause');
+		btnPause.onclick = function (e) {
+			// If paused, play
+			if (this.#player.getPlayerState() == 1) {
+				this.#player.pauseVideo();
+				e.target.innerText = "Resume Playback"
+				// If playing, pause
+			} else if (this.#player.getPlayerState() == 2) {
+				this.#player.playVideo();
+				e.target.innerText = "Pause Playback"
+			}
+		}.bind(this);
 
 		this.#roundData = roundData;
 		this.#toggleGameDisplay('round');
@@ -271,6 +289,35 @@ class Game {
 		if (request.ok) {
 			let results = await request.json();
 			this.#showResults(form.elements, results);
+		}
+	}
+
+	/**
+	 * Initialises the embedded video stream
+	 * @param {String} ytID The ID of the video stream to embed
+	 */
+	#prepareYTEmbed(ytID, initVolume) {
+		this.#player = new YT.Player('stream', {
+			height: '0',
+			width: '0',
+			videoId: ytID,
+			host: 'https://www.youtube-nocookie.com',
+			playerVars: {
+				'playsinline': 1,
+				'controls': 0
+			},
+			events: {
+				'onReady': onPlayerReady,
+				'onStateChange': onPlayerStateChange
+			}
+		});
+
+		function onPlayerReady(event) {
+			event.target.playVideo();
+			event.target.setVolume(initVolume);
+		}
+
+		function onPlayerStateChange(event) {
 		}
 	}
 
@@ -342,6 +389,10 @@ class Game {
 					answersContainer.appendChild(answerResult);
 				}
 			}
+
+			// Set the embedded player size
+			this.#player.getIframe
+			this.#player.setSize(640, 390);
 		} else {
 			this.#raiseCriticalError('Cannot find results container!');
 		}
@@ -355,13 +406,13 @@ class Game {
 	 */
 	#showFinalResults(resultsData) {
 		let title = this.#gameContainer.querySelector('#title');
-			title.innerText = 'Final Results';
+		title.innerText = 'Final Results';
 		let resultsContainer = this.#gameContainer.querySelector('#results');
 		let answersContainer = resultsContainer.querySelector('#answers');
 		let scoreElement = resultsContainer.querySelector('#score');
 		let btnNextRound = resultsContainer.querySelector('#advance-round');
-			btnNextRound.innerText = 'New Game';
-			btnNextRound.onclick = e => this.#resetGame();
+		btnNextRound.innerText = 'New Game';
+		btnNextRound.onclick = e => this.#resetGame();
 		let totalScore = 0;
 		let maxScore = 0;
 		answersContainer.innerHTML = '';
@@ -399,8 +450,10 @@ class Game {
 
 		scoreElement.innerHTML = `${totalScore}/${maxScore}`;
 
-		// Remove the round container to stop the video from playing.
-		this.#gameContainer.querySelector('#round').remove();
+		// Stop the playback
+		this.#player.pauseVideo();
+		this.#player.setSize(0, 0);
+		this.#gameContainer.querySelector('#rip-name').remove();
 
 		this.#toggleGameDisplay('results');
 	}
@@ -520,4 +573,8 @@ class GuessInput extends SearchElement {
 	}
 }
 
-let game = new Game();
+let game = null;
+
+function onYouTubeIframeAPIReady() {
+	game = new Game();
+}
