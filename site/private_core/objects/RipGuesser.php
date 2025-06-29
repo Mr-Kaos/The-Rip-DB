@@ -42,21 +42,29 @@ class Game
 
 	private string $id;
 	private array $rounds;
-	private int $roundCount;
+	public readonly int $roundCount;
 	private Settings $settings;
+	public readonly bool $tooFewRips;
 
 	/**
 	 * Creates a new game with the given settings
 	 */
-	public function __construct(int $rounds, Settings $settings)
+	public function __construct($model, int $rounds, Settings $settings)
 	{
 		$this->settings = $settings;
 		$this->rounds = [];
 
+		$maxRoundCount = min($model->getTotalRipsAvailable($settings), self::MAX_ROUNDS);
+		if ($maxRoundCount < $rounds) {
+			$this->tooFewRips = true;
+		} else {
+			$this->tooFewRips = false;
+		}
+
 		if ($rounds < 1) {
 			$rounds = 1;
-		} elseif ($rounds > self::MAX_ROUNDS) {
-			$rounds = self::MAX_ROUNDS;
+		} elseif ($rounds > $maxRoundCount) {
+			$rounds = $maxRoundCount;
 		}
 		$this->roundCount = $rounds;
 		$this->id = session_id();

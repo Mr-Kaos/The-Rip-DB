@@ -41,7 +41,7 @@ const NotificationPriority = {
  * @returns {HTMLDivElement}
  */
 function getNotificationContainer() {
-	let notifContainer = document.getElementById('Container_Notification');
+	let notifContainer = document.querySelector('.notification-container');
 
 	if (notifContainer == undefined) {
 		notifContainer = document.createElement('div');
@@ -58,24 +58,33 @@ function getNotificationContainer() {
  * @param {NotificationPriority} priority 
  */
 function displayNotification(message, priority) {
-	let notification = document.createElement("div");
+	let notification = document.createElement('div');
 	notification.innerText = message;
 	notification.className = 'notif';
+	notification.style.background = 'var(--bg-accent)'
+	notification.style.borderColor = 'var(--accent-1)';
+
+	let btnClose = document.createElement('span');
+	btnClose.className = 'close';
+	btnClose.innerHTML = '&times;';
+	btnClose.onclick = e => notification.remove();
+	notification.appendChild(btnClose);
+
+	console.log('sd');
 
 	// Apply colour to the notification
 	switch (priority) {
-		default:
-			notification.style.background = 'var(--bg-accent)'
-			notification.style.borderColor = 'var(--accent-1)';
-			break;
 		case NotificationPriority.Success:
-
+			notification.style.background = '#c5fd80'
+			notification.style.background = '#5add00'
 			break;
 		case NotificationPriority.Warning:
-
+			notification.style.background = '#fffaaa'
+			notification.style.borderColor = '#ffdd5a';
 			break;
 		case NotificationPriority.Alert:
-
+			notification.style.background = '#ffa700'
+			notification.style.borderColor = '#ee6666';
 			break;
 		case NotificationPriority.Error:
 			notification.style.background = '#ee6666'
@@ -103,7 +112,6 @@ class Modal {
 	#allowResize;
 	#open = false;
 	#functions = {};
-
 
 	/**
 	 * 

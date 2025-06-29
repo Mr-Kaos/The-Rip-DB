@@ -35,7 +35,7 @@ class GuesserModel extends Model
 			// If A LOT of filters were given, this may be exceeded. Perhaps, a limit on filters should be set in place for the game.
 			$this->db->execute("CALL usp_NewRipGuesserGame(?, ?)", [$gameID, serialize($settings)]);
 			$_SESSION[self::SESS_GAME_ID] = $gameID;
-			$game = new game\Game($settings->roundCount, $settings);
+			$game = new game\Game($this, $settings->roundCount, $settings);
 			$this->saveGame($game);
 			$success = true;
 		} catch (\PicoDb\SQLException $error) {
@@ -122,5 +122,66 @@ class GuesserModel extends Model
 		}
 
 		return $rip;
+	}
+
+	/**
+	 * Finds the number of rips with the given filters.
+	 * @return int The number of rips that exist with the given filters.
+	 */
+	public function getTotalRipsAvailable(game\Settings $settings): int
+	{
+		$count = 0;
+
+		$jokeSubquery = $this->db->table('RipJokes')
+			->columns('RipID')
+			->groupBy('RipID')
+			->having()->addCondition("COUNT(`JokeID`) >= $settings->minJokes AND COUNT(`JokeID`) <= $settings->maxJokes");
+		$qry = $this->db->table('vw_RipsDetailed')
+			->gte('RipLength', $settings->minLength)
+			->lte('RipLength', $settings->maxLength)
+			->inSubquery('RipID', $jokeSubquery);
+
+
+
+		// If no metas or meta jokes are given
+		if (empty($settings->metaJokeFilters) && empty($settings->metaFilters)) {
+			$count = $qry->count();
+		}
+		// If only meta jokes are given
+		elseif (empty($settings->metaFilters)) {
+			$count = $qry->in('MetaJokeID', $settings->metaJokeFilters)
+				->count();
+		}
+		// If only metas are given
+		elseif (empty($settings->metaJokeFilters)) {
+			$count = $qry->in('MetaID', $settings->metaFilters)
+				->count();
+		}
+		// If metas and meta jokes are given
+		else {
+			$count = $qry->in('MetaJokeID', $settings->metaJokeFilters)
+				->in('MetaID', $settings->metaFilters)
+				->count();
+		}
+
+		return $count;
+	}
+
+	/**
+	 * Returns a list of Meta Joke IDs that exist in the database from the given list.
+	 * I.e., it removes false Meta Joke IDs from the given list.
+	 */
+	public function getValidMetaJokes(array $ids): array
+	{
+		return $this->db->table('MetaJokes')->in('MetaJokeID', $ids)->findAllByColumn('MetaJokeID');
+	}
+
+	/**
+	 * Returns a list of Meta IDs that exist in the database from the given list.
+	 * I.e., it removes false Meta IDs from the given list.
+	 */
+	public function getValidMetas(array $ids): array
+	{
+		return $this->db->table('Metas')->in('MetaID', $ids)->findAllByColumn('MetaID');
 	}
 }

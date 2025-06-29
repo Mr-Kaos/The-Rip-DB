@@ -112,7 +112,7 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 
 	/**
 	 * Attempts to start the game.
-	 * Validates the given form data and if the model accepts the 
+	 * Validates the given form data and applies filters to the game's settings if they are valid.
 	 */
 	private function startGame(array $data): bool
 	{
@@ -127,8 +127,9 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		$jokesMax = $this->validateNumber($data['jokes-max'] ?? null, "You can't play with rips that have more than " . game\Settings::MAX_JOKES . " jokes!", game\Settings::MAX_JOKES, game\Settings::MIN_JOKES);
 		$minLength = '00:00:00';
 		$maxLength = $this->validateTimestamp($data['length'] ?? null, "Rips must be less than " . game\Settings::MAX_RIP_LENGTH . " minutes long.", game\Settings::MAX_RIP_LENGTH, game\Settings::MIN_RIP_LENGTH);
-		$metaJokes = [];
-		$metas = [];
+		
+		$metaJokes = $this->model->getValidMetaJokes($data['filter-metajokes'] ?? []);
+		$metas = $this->model->getValidMetas($data['filter-metas'] ?? []);
 
 		// Ensure that all the parameters are valid. If any is invalid, get the error message.
 		$valid = true;
@@ -178,6 +179,10 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		if ($this->deserializeGame()) {
 			if ($this->game->isFinished()) {
 				$roundData = ['GameEnd' => true, 'Summary' => $this->game->getGameSummary()];
+				// If the game ended early (too few rips for the requested number of rounds), supply a message
+				if ($this->game->tooFewRips) {
+					$roundData['Message'] = "There weren't enough rips with the supplied filters to play the number of requested rounds.\n(You played all rips with the filters given!)";
+				}
 				$this->endGame();
 			} else {
 				$roundData = $this->game->nextRound($this->model);

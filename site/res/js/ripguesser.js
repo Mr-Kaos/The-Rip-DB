@@ -108,6 +108,9 @@ class Game {
 			// Check if the data received is for a new round, or is the results of the game
 			let data = await request.json();
 			if (data.GameEnd != undefined) {
+				if (data.Message != undefined) {
+					displayNotification(data.Message, NotificationPriority.Warning);
+				}
 				this.#showFinalResults(data.Summary);
 			} else {
 				this.#initRound(data);
@@ -197,79 +200,83 @@ class Game {
 		this.#round = roundData.RoundNumber;
 		roundData = roundData.RoundData;
 
-		this.#gameContainer.querySelector('#title').innerText = 'Round ' + this.#round;
-		let title = this.#gameContainer.querySelector('#rip-name');
+		if (roundData != undefined) {
+			this.#gameContainer.querySelector('#title').innerText = 'Round ' + this.#round;
+			let title = this.#gameContainer.querySelector('#rip-name');
 
-		if (roundData['_RipName'] != null) {
-			title.innerText = "This round's rip is: " + roundData['_RipName'];
-			if (roundData['_GameName'] != null) {
-				title.innerText += ' - ' + roundData['_GameName'];
-			}
-		}
-
-		for (let key in roundData) {
-			let input = null;
-			let label = null;
-			switch (key) {
-				// Easy difficulty
-				case 'Jokes':
-					input = new GuessInput('Jokes', 'jokes[]', roundData[key], '/search/jokes');
-					break;
-				// Standard Difficulty
-				case 'GameName':
-					input = new GuessInput('Game Name', 'game', false, '/search/games');
-					break;
-				case 'RipName':
-					input = new GuessInput('Rip Name', 'rip', false, '/search/rip-names');
-					break;
-				// Hard difficulty
-				case 'AlternateName':
-					input = new GuessInput('Alternate Name', 'altName', false, '/search/rip-alt-names');
-					break;
-				case 'Rippers':
-					input = new GuessInput('Rippers', 'rippers[]', roundData[key], '/search/rippers');
-					break;
-				default:
-					continue;
+			if (roundData['_RipName'] != null) {
+				title.innerText = "This round's rip is: " + roundData['_RipName'];
+				if (roundData['_GameName'] != null) {
+					title.innerText += ' - ' + roundData['_GameName'];
+				}
 			}
 
-			// Append the input and label to the game container.
-			if (label != null) {
-				form.appendChild(label);
-				form.appendChild(input);
+			for (let key in roundData) {
+				let input = null;
+				let label = null;
+				switch (key) {
+					// Easy difficulty
+					case 'Jokes':
+						input = new GuessInput('Jokes', 'jokes[]', roundData[key], '/search/jokes');
+						break;
+					// Standard Difficulty
+					case 'GameName':
+						input = new GuessInput('Game Name', 'game', false, '/search/games');
+						break;
+					case 'RipName':
+						input = new GuessInput('Rip Name', 'rip', false, '/search/rip-names');
+						break;
+					// Hard difficulty
+					case 'AlternateName':
+						input = new GuessInput('Alternate Name', 'altName', false, '/search/rip-alt-names');
+						break;
+					case 'Rippers':
+						input = new GuessInput('Rippers', 'rippers[]', roundData[key], '/search/rippers');
+						break;
+					default:
+						continue;
+				}
+
+				// Append the input and label to the game container.
+				if (label != null) {
+					form.appendChild(label);
+					form.appendChild(input);
+				} else {
+					form.appendChild(input.getElement());
+				}
+			}
+
+			// Set up the embedded player and the controls.
+			let volumeSlider = roundContainer.querySelector('#volume');
+			if (this.#player == null) {
+				this.#prepareYTEmbed(roundData['_RipYouTubeID'], volumeSlider.value);
 			} else {
-				form.appendChild(input.getElement());
+				this.#player.setSize(0, 0);
+				this.#player.loadVideoById(roundData['_RipYouTubeID'], 0);
+				this.#player.setVolume(volumeSlider.value);
 			}
-		}
+			volumeSlider.oninput = function (e) {
+				this.#player.setVolume(e.target.value);
+			}.bind(this);
 
-		// Set up the embedded player and the controls.
-		let volumeSlider = roundContainer.querySelector('#volume');
-		if (this.#player == null) {
-			this.#prepareYTEmbed(roundData['_RipYouTubeID'], volumeSlider.value);
+			let btnPause = roundContainer.querySelector('#play-pause');
+			btnPause.onclick = function (e) {
+				// If paused, play
+				if (this.#player.getPlayerState() == 1) {
+					this.#player.pauseVideo();
+					e.target.innerText = "Resume Playback"
+					// If playing, pause
+				} else if (this.#player.getPlayerState() == 2) {
+					this.#player.playVideo();
+					e.target.innerText = "Pause Playback"
+				}
+			}.bind(this);
+
+			this.#roundData = roundData;
+			this.#toggleGameDisplay('round');
 		} else {
-			this.#player.setSize(0, 0);
-			this.#player.loadVideoById(roundData['_RipYouTubeID'], 0);
-			this.#player.setVolume(volumeSlider.value);
+			this.#raiseCriticalError('Could not retrieve round data!');
 		}
-		volumeSlider.oninput = function (e) {
-			this.#player.setVolume(e.target.value);
-		}.bind(this);
-
-		let btnPause = roundContainer.querySelector('#play-pause');
-		btnPause.onclick = function (e) {
-			// If paused, play
-			if (this.#player.getPlayerState() == 1) {
-				this.#player.pauseVideo();
-				e.target.innerText = "Resume Playback"
-				// If playing, pause
-			} else if (this.#player.getPlayerState() == 2) {
-				this.#player.playVideo();
-				e.target.innerText = "Pause Playback"
-			}
-		}.bind(this);
-
-		this.#roundData = roundData;
-		this.#toggleGameDisplay('round');
 	}
 
 	/**
@@ -376,10 +383,9 @@ class Game {
 
 					// Display the answers
 					if (answerKey != null) {
-						let correctValues = document.createElement('div');
-						correctValues.innerText = `Correct answers: `;
+						let correctValues = document.createElement('ul');
 						for (let jokeId in answers[answerKey]) {
-							let answer = document.createElement('span');
+							let answer = document.createElement('li');
 							answer.innerText = answers[answerKey][jokeId];
 							correctValues.append(answer);
 						}
@@ -474,7 +480,7 @@ class Game {
 			'Reset Game': {
 				function: function () {
 					this.#resetGame();
-					this.toggleSettings();
+					this.#toggleGameDisplay('settings');
 				}.bind(this),
 				colour: '#fff',
 				background: '#ff0000'
@@ -574,6 +580,7 @@ class GuessInput extends SearchElement {
 	}
 }
 
+// The main game object. This will only initialise if in the "Play" page for the game.
 let game = null;
 
 function onYouTubeIframeAPIReady() {

@@ -282,7 +282,6 @@ trait DataValidator
 	 * @param array $list The list containing items, where $value should be one of them.
 	 * @param string $errorMessage The error message to output if the validation fails.
 	 * @param bool $validIfNotExists If set to true, the function will return a valid result if the input DOES NOT exist in the array. Else, only validates if it does (default).
-	 * @param bool $looseCheck If true, as long as the value is partially contained in the list, it is valid. 
 	 * 	E.g. if searching for the word "plan" in a list of words, if the list contains "plant" or "airplane", the keyword is considered found.
 	 * @return string|array|false If the value exists in the list, it returns it. If it does not, false is returned. Note that the value from the list is returned, and not the given $value.
 	 */
