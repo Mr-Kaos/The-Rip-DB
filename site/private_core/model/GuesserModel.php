@@ -184,4 +184,26 @@ class GuesserModel extends Model
 	{
 		return $this->db->table('Metas')->in('MetaID', $ids)->findAllByColumn('MetaID');
 	}
+
+	public function getJokesWithMetaNames(string $search)
+	{
+		$records = $this->db->table('Jokes')
+			->columns('Jokes.JokeID', 'JokeName', 'MetaJokeName')
+			->join('JokeMetas', 'JokeID', 'JokeID')
+			->join('MetaJokes', 'MetaJokeID', 'MetaJokeID', 'JokeMetas')
+			->limit(50)
+			->asc('JokeName');
+
+		if (!empty($search)) {
+			$records->beginOr()->ilike('JokeName', "%$search%")->ilike('MetaJokeName', "%$search%")->closeOr();
+		}
+
+		$jokes = $records->findAll();
+
+		$results = [];
+		foreach ($jokes as $joke) {
+			array_push($results, ['ID' => $joke['JokeID'], 'NAME' => $joke['JokeName'] . ' (' . $joke['MetaJokeName'] . ')']);
+		}
+		return $results;
+	}
 }

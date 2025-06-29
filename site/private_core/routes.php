@@ -118,6 +118,9 @@ Flight::group('/ripguessr', function () {
 		Flight::route('DELETE /game/@request', function ($request) {
 			performAPIRequest('game', $request, HttpMethod::DELETE, 'GuesserController');
 		});
+		Flight::route('GET /search/@request', function ($request) {
+			performAPIRequest('search', $request, HttpMethod::GET, 'GuesserController');
+		});
 	}
 });
 

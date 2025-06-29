@@ -217,7 +217,7 @@ class Game {
 				switch (key) {
 					// Easy difficulty
 					case 'Jokes':
-						input = new GuessInput('Jokes', 'jokes[]', roundData[key], '/search/jokes');
+						input = new GuessInput('Jokes', 'jokes[]', roundData[key], '/ripguessr/search/jokes');
 						break;
 					// Standard Difficulty
 					case 'GameName':
