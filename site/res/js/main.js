@@ -70,8 +70,6 @@ function displayNotification(message, priority) {
 	btnClose.onclick = e => notification.remove();
 	notification.appendChild(btnClose);
 
-	console.log('sd');
-
 	// Apply colour to the notification
 	switch (priority) {
 		case NotificationPriority.Success:

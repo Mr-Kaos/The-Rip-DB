@@ -12,8 +12,14 @@ if ($theme !== 'light' && $theme !== 'dark') {
 	<meta name="description" content="The rip database. Find high quality rips based on their jokes, game or other sources!">
 	<meta property="og:image" content="/res/img/icon.png">
 	<meta property="og:url" content="https://ripdb.net">
+	<meta property="og:site_name" content="RipDB">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="The rip database. Find high quality rips based on their jokes, game or other sources!">
+	<meta property="og:determiner" content="the" />
+	<meta property="og:locale" content="en_GB" />
+	<meta property="og:alternate" content="en_US" />
 	<title><?= constant("PAGE_TITLE") ?></title>
 	<link rel="stylesheet" href="/res/css/theme_<?= $theme ?>.css">
 	<link rel="stylesheet" href="/res/css/layout.css">
-	<link rel="icon" href="/res/img/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
