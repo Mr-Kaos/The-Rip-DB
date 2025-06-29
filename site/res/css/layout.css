@@ -25,6 +25,11 @@ nav {
 
 nav>a {
 	margin-right: 15px;
+	color: var(--text-color);
+}
+
+nav>a:visited {
+	color: var(--text-color);
 }
 
 nav>a:hover {
@@ -109,6 +114,10 @@ input[type=range] {
 
 input[type=range]+span {
 	margin-left: 5px;
+}
+
+button {
+
 }
 
 .pagination>a {
