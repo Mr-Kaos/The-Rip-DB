@@ -192,7 +192,7 @@ class SearchElement extends MultiSelect {
 	#hasSearched = false; // Set to true once a search has been made.
 	canAdd = true;
 
-	constructor(element) {
+	constructor(element, allowRand = true) {
 		super(element);
 
 		this.#searchElement = element.querySelector('input[type="search"]');
@@ -209,7 +209,11 @@ class SearchElement extends MultiSelect {
 		// If the list has not been touched yet, make an empty search to load some results
 		this.#searchElement.onclick = function () {
 			if (!this.#init) {
-				this.search('', this.#searchElement.getAttribute('search-url'));
+				let url = '';
+				if (allowRand) {
+					url = '?rand'
+				}
+				this.search('', this.#searchElement.getAttribute('search-url') + url);
 				this.#init = true;
 			} else if(this.canAdd) {
 				this.toggleDisplay();
