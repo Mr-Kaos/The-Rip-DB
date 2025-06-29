@@ -61,7 +61,7 @@ BEGIN
 		ORDER BY RAND() LIMIT 1;
 
 	-- If only Metas are given, filter the results with them.
-	ELSEIF (Metas IS NULL) THEN
+	ELSEIF (MetaJokes IS NULL) THEN
 		SELECT RipId
 		FROM vw_RipsDetailed vrd
 		WHERE RipLength >= MinRipLength
@@ -84,7 +84,7 @@ BEGIN
 		ORDER BY RAND() LIMIT 1;
 
 	-- If only Meta Jokes are given, filter the results with them.
-	ELSEIF (MetaJokes IS NULL) THEN
+	ELSEIF (Metas IS NULL) THEN
 		SELECT RipId
 		FROM vw_RipsDetailed vrd
 		WHERE RipLength >= MinRipLength
