@@ -185,7 +185,7 @@ class GuesserModel extends Model
 		return $this->db->table('Metas')->in('MetaID', $ids)->findAllByColumn('MetaID');
 	}
 
-	public function getJokesWithMetaNames(string $search)
+	public function getJokesWithMetaNames(?string $search)
 	{
 		$records = $this->db->table('Jokes')
 			->columns('Jokes.JokeID', 'JokeName', 'MetaJokeName')
