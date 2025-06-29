@@ -316,23 +316,32 @@ input[type=range]+span {
 
 /* Rip Guesser Styles */
 
-#answers {
+.grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	gap: 25px;
 }
 
-#answers>div {
+.grid>div {
 	background: var(--bg-accent);
 	border-radius: 6px;
+	padding: 5px;
 }
 
-#answers h3 {
+.grid h3,
+h4 {
 	margin: 3px 2px;
 }
 
+.list-heading {
+	display: block;
+	margin-left: 20px;
+	font-weight: bold;
+	margin-bottom: 0px;
+}
+
 @media only screen and (max-width: 1080px) {
-	#answers {
+	.grid {
 		grid-template-columns: 1fr 1fr;
 		gap: 15px;
 	}

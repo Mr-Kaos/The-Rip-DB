@@ -20,7 +20,7 @@ use RipDB\RipGuesser as game;
 		</div>
 		<div id="results" style="display:none">
 			<h2>Results:</h2>
-			<div id="answers">
+			<div id="answers" class="grid">
 				<ul>
 					<li><b>Hmm...</b> You shouldn't really be seeing this.</li>
 				</ul>

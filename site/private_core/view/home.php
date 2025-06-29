@@ -14,4 +14,11 @@ use RipDB\Objects as o;
 		<a href="/rips/random"><button>I'm feeling lucky!</button></a>
 		<p>We currently have <?= $RipCount ?> rips!</p>
 	</section>
+	<hr>
+	<section>
+		<h2>RipGuessr</h2>
+		<p>A <i>grand</i> new game, where you listen to randomly chosen rips and identify their jokes!</p>
+		
+		<a href="/ripguessr">Play RipGuessr</a>
+	</section>
 </main>
