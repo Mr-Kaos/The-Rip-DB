@@ -19,7 +19,6 @@ use RipDB\Objects as o;
 		<thead>
 			<tr>
 				<th>Joke Name</th>
-				<th>Description</th>
 				<th>Tags</th>
 				<th>Meta Jokes</th>
 				<th>Rips With This Joke</th>
@@ -30,7 +29,6 @@ use RipDB\Objects as o;
 				<?php foreach ($results as $record): ?>
 					<tr>
 						<td><?= $record['JokeName'] ?></td>
-						<td><?= $record['JokeDescription'] ?></td>
 						<td>
 							<?php
 							foreach ($record['Tags'] as $tagId => $tag):
