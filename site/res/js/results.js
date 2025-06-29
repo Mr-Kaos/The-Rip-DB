@@ -39,7 +39,8 @@ function openRowBubble(button) {
 	// Position the callout above the middle of the button.
 	let calloutRect = callout.getBoundingClientRect();
 	callout.style.left = `${rect.left + (rect.width / 2) - (calloutRect.width / 2)}px`;
-	callout.style.top = `${rect.top - rect.height - calloutRect.height}px`;
+	// bottom y-coordinate of button + window y-coord - height of callout and button and the height of the callout's fin.
+	callout.style.top = `${rect.bottom + window.scrollY - calloutRect.height - rect.height - 15}px`;
 
 	/**
 	 * Creates the callout element.
