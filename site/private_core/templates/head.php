@@ -17,4 +17,3 @@ if ($theme !== 'light' && $theme !== 'dark') {
 	<link rel="stylesheet" href="/res/css/layout.css">
 	<link rel="icon" href="/res/img/favicon.ico" type="image/x-icon">
 </head>
-<script src="/res/js/main.js"></script>
