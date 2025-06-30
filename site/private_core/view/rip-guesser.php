@@ -26,7 +26,7 @@ use RipDB\RipGuesser as rg;
 					<i>Great for anyone who listens to music.</i>
 					<p class="list-heading">Guessable Attributes:</p>
 					<ul>
-						<li>Jokes</li>
+						<li>Jokes (<?= rg\PTS_CORRECT_JOKE ?>pts per joke)</li>
 					</ul>
 				</div>
 				<div>
@@ -34,8 +34,8 @@ use RipDB\RipGuesser as rg;
 					<i>Great for those familiar with Video Game Soundtrack.</i>
 					<p class="list-heading">Guessable Attributes:</p>
 					<ul>
-						<li>Rip Name</li>
-						<li>Rip's Game</li>
+						<li>Rip Name (<?= rg\PTS_CORRECT_RIP_NAME ?>pts)</li>
+						<li>Rip's Game (<?= rg\PTS_CORRECT_GAME ?>pts)</li>
 					</ul>
 				</div>
 				<div>
@@ -43,22 +43,17 @@ use RipDB\RipGuesser as rg;
 					<i>Designed for those who are experienced in &quot;High Quality Rips&quot;.</i>
 					<p class="list-heading">Guessable Attributes:</p>
 					<ul>
-						<li>Ripper Name</li>
-						<li>Alternate Rip Name</li>
+						<li>Ripper Name (<?= rg\PTS_CORRECT_RIPPER ?>pts per ripper)</li>
+						<li>Alternate Rip Name (<?= rg\PTS_CORRECT_ALT_NAME ?>pts)</li>
 					</ul>
 				</div>
 			</div>
+			<p>The rip's video will also be hidden on all difficulties except for Beginner.</p>
 		</div>
 		<div id="how-to-3">
 			<h3>Scoring</h3>
 			<p>Each correct guess will net you points. Depending on what attribute you are guessing will determine how many points you get.</p>
-			<ul>
-				<li>Correct joke (<?= rg\PTS_CORRECT_JOKE ?>pts per joke)</li>
-				<li>Correct rip name (<?= rg\PTS_CORRECT_RIP_NAME ?>pts)</li>
-				<li>Correct game (<?= rg\PTS_CORRECT_GAME ?>pts)</li>
-				<li>Correct ripper (<?= rg\PTS_CORRECT_RIPPER ?>pts per ripper)</li>
-				<li>Correct secondary name (<?= rg\PTS_CORRECT_ALT_NAME ?>pts)</li>
-			</ul>
+			<p>At the end of all rounds, your score will be tallied up.</p>
 		</div>
 	</section>
 </main>

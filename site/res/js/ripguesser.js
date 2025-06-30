@@ -10,6 +10,8 @@
 
 const settingsDiv = document.getElementById('settings');
 const gamDiv = document.getElementById('game');
+const EMBED_WIDTH = 640;
+const EMBED_HEIGHT = 360;
 
 /**
  * Game object. Handles user interaction with the game.
@@ -195,6 +197,7 @@ class Game {
 	#initRound(roundData) {
 		let roundContainer = this.#gameContainer.querySelector('#round');
 		let form = roundContainer.querySelector('#round-form');
+		let previewRip = true;
 		form.innerHTML = '';
 		form.onsubmit = e => this.#submitRound(e, form);
 		this.#round = roundData.RoundNumber;
@@ -222,9 +225,11 @@ class Game {
 					// Standard Difficulty
 					case 'GameName':
 						input = new GuessInput('Game Name', 'game', false, '/search/games');
+						previewRip = false;
 						break;
 					case 'RipName':
 						input = new GuessInput('Rip Name', 'rip', false, '/search/rip-names');
+						previewRip = false;
 						break;
 					// Hard difficulty
 					case 'AlternateName':
@@ -249,9 +254,9 @@ class Game {
 			// Set up the embedded player and the controls.
 			let volumeSlider = roundContainer.querySelector('#volume');
 			if (this.#player == null) {
-				this.#prepareYTEmbed(roundData['_RipYouTubeID'], volumeSlider.value);
+				this.#prepareYTEmbed(roundData['_RipYouTubeID'], volumeSlider.value, previewRip);
 			} else {
-				this.#player.setSize(0, 0);
+				this.#player.setSize(previewRip ? EMBED_WIDTH : 0, previewRip ? EMBED_HEIGHT : 0);
 				this.#player.loadVideoById(roundData['_RipYouTubeID'], 0);
 				this.#player.setVolume(volumeSlider.value);
 			}
@@ -303,10 +308,10 @@ class Game {
 	 * Initialises the embedded video stream
 	 * @param {String} ytID The ID of the video stream to embed
 	 */
-	#prepareYTEmbed(ytID, initVolume) {
+	#prepareYTEmbed(ytID, initVolume, display = false) {
 		this.#player = new YT.Player('stream', {
-			height: '0',
-			width: '0',
+			height: display ? EMBED_HEIGHT : '0',
+			width: display ? EMBED_WIDTH : '0',
 			videoId: ytID,
 			host: 'https://www.youtube-nocookie.com',
 			playerVars: {
@@ -399,7 +404,7 @@ class Game {
 
 			// Set the embedded player size
 			this.#player.getIframe
-			this.#player.setSize(640, 390);
+			this.#player.setSize(EMBED_WIDTH, EMBED_HEIGHT);
 		} else {
 			this.#raiseCriticalError('Cannot find results container!');
 		}
