@@ -9,17 +9,17 @@ use RipDB\Objects as o;
 		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
 		<a href="rips/new" style="display:inline;float:right">Add Rip</a>
-		<details <?= $open ?>>
-			<summary>More Filters</summary>
+		<summary onclick="toggleFilters(this)" class="filters">More Filters</summary>
+		<div class="filters" <?= $open ?>>
 			<?= (new o\SearchElement('Tags', '/search/tags', true, $tags, ['name' => 'tags', 'autocomplete' => 'off']))->buildElement() ?>
 			<?= (new o\SearchElement('Jokes', '/search/jokes', true, $jokes, ['name' => 'jokes', 'autocomplete' => 'off']))->buildElement() ?>
 			<?= (new o\SearchElement('Games', '/search/games', true, $games, ['name' => 'games', 'autocomplete' => 'off']))->buildElement() ?>
 			<?= (new o\SearchElement('Rippers', '/search/rippers', true, $rippers, ['name' => 'rippers', 'autocomplete' => 'off']))->buildElement() ?>
-			<?= (new o\SearchElement('RipGenres', '/search/genres', true, $genres, ['name' => 'genres', 'autocomplete' => 'off']))->buildElement() ?>
+			<?= (new o\SearchElement('Rip Genres', '/search/genres', true, $genres, ['name' => 'genres', 'autocomplete' => 'off']))->buildElement() ?>
 			<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, $metaJokes, ['name' => 'meta-jokes', 'autocomplete' => 'off']))->buildElement() ?>
 			<?= (new o\SearchElement('Metas', '/search/metas', true, $metas, ['name' => 'metas', 'autocomplete' => 'off']))->buildElement() ?>
 			<?= (new o\SearchElement('Channel', '/search/channels', false, $channel, ['name' => 'channel', 'autocomplete' => 'off']))->buildElement() ?>
-		</details>
+		</div>
 	</form>
 	<table id="results" class="table-search">
 		<thead>

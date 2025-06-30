@@ -9,11 +9,11 @@ use RipDB\Objects as o;
 		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
 		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<a href="jokes/new" style="display:inline;float:right">Add Joke</a>
-		<details <?= $open ?>>
-			<summary>More Filters</summary>
+		<summary onclick="toggleFilters(this)" class="filters">More Filters</summary>
+		<div class="filters" <?= $open ?>>
 			<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, $metaJokes, ['name' => 'metajokes', 'autocomplete' => 'off']))->buildElement() ?>
 			<?= (new o\SearchElement('Metas', '/search/metas', true, $metas, ['name' => 'metas', 'autocomplete' => 'off']))->buildElement() ?>
-		</details>
+		</div>
 	</form>
 	<table id="results" class="table-search">
 		<thead>

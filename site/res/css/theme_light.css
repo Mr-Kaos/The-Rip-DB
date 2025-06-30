@@ -1,11 +1,13 @@
 :root {
 	--bg-color: #fff;
 	--text-color: #000;
+	--text-color-invert: #fff;
 	--element-color: #ddd;
 
 	--bg-accent: #cde9d4;
 	--accent-1: #8af1b9;
-	--accent-2: #60e481;
+	--accent-2: #59d678;
+	--accent-3: #48af62;
 
 	--tbl-row-odd: #cce2f5;
 	--tbl-row-even: #a5c1d8;

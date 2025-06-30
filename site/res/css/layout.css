@@ -116,8 +116,22 @@ input[type=range]+span {
 	margin-left: 5px;
 }
 
+a.button,
 button {
+	background-color: var(--accent-2);
+	border: none;
+	border-radius: 6px;
+	padding: 5px;
+	border-bottom: var(--accent-3) solid 3px;
+	color: var(--text-color-invert);
+	cursor: pointer;
+}
 
+a.button:active,
+button:active:not(:disabled) {
+	border: unset;
+	box-shadow: 0 0 0 !important;
+	margin-bottom: 3px;
 }
 
 .pagination>a {
@@ -163,16 +177,53 @@ button {
 	display: inline-block;
 }
 
+.search-element>input {
+	display: block;
+}
+
 .search-element>div.selected {
+	display: flex;
+	flex-wrap: wrap;
 	padding: 3px;
 	border: thin solid var(--element-color);
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	display: flex;
-	flex-direction: column;
 	min-height: 0px;
 	max-height: 50px;
 	overflow-y: scroll;
+}
+
+.search-element>div.selected:empty {
+	display: none;
+}
+
+summary.filters {
+	user-select: none;
+}
+
+summary.filters:before {
+	content: "\25b8";
+	font-size: larger;
+}
+
+summary.filters[open]:before {
+	content: "\25be";
+	font-size: larger;
+}
+
+div.filters[open] {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 5px;
+}
+
+div.filters {
+	display: none;
+}
+
+div.filters>.search-element>input {
+	width: 100%;
 }
 
 .table-search {
@@ -181,6 +232,7 @@ button {
 }
 
 .pill {
+	display: flex;
 	background: var(--accent-1);
 	padding: 3px;
 	padding-right: 0px;
@@ -192,6 +244,12 @@ button {
 .pill>button {
 	border: none;
 	background: none;
+	float: right;
+	padding: 0;
+	margin: 0px 4px;
+	font-size: large;
+	font-weight: bold;
+	color: var(--text-color);
 }
 
 .pill>button:hover {

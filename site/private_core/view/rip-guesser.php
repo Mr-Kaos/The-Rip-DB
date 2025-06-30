@@ -10,7 +10,7 @@ use RipDB\RipGuesser as rg;
 		<p>Guess the rip and/or its jokes to win.</p>
 	</section>
 	<section>
-		<a href="/ripguessr/play"><button>Play</button></a>
+		<a href="/ripguessr/play" class="button">Play</a>
 	</section>
 	<section id="how-to-play">
 		<div id="how-to-1">

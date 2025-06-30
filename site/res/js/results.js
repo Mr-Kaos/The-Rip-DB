@@ -79,6 +79,21 @@ function openRowBubble(button) {
 }
 
 /**
+ * Toggles the display of a filter element on a search page
+ * @param {HTMLElement} element The filter element to toggle
+ */
+function toggleFilters(element) {
+	let container = element.nextElementSibling;
+	if (container.hasAttribute('open')) {
+		container.removeAttribute('open');
+		element.removeAttribute('open');
+	} else {
+		container.setAttribute('open', true);
+		element.setAttribute('open', true);
+	}
+}
+
+/**
  * If any part of the window is clicked that is not a callout, close any open callouts.
  * There should only ever be one callout open at a time, but in case multiple manage to open, this will close them all.
  */
