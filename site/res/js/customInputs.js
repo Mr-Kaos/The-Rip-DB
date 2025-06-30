@@ -212,6 +212,7 @@ class SearchElement extends MultiSelect {
 				let url = '';
 				if (allowRand) {
 					url = '?rand'
+					console.log('here');
 				}
 				this.search('', this.#searchElement.getAttribute('search-url') + url);
 				this.#init = true;
@@ -305,7 +306,7 @@ class SearchElement extends MultiSelect {
 					let options = this.getOptionsDiv();
 					options.innerHTML = '';
 
-					if (data.length > 0) {
+					if (data != null && data.length > 0) {
 						let noAdd = true;
 						for (let i = 0; i < data.length; i++) {
 							if (this.#multi) {
@@ -323,7 +324,7 @@ class SearchElement extends MultiSelect {
 						}
 
 						this.#hasSearched = true;
-					} else if (this.#hasSearched) {
+					} else if (this.#hasSearched && data != null && input != '') {
 						options.innerHTML = '<i>No results found</i>';
 					}
 					if (!this.isOpen()) {

@@ -196,13 +196,13 @@ class GuesserModel extends Model
 
 		if (!empty($search)) {
 			$records->beginOr()->ilike('JokeName', "%$search%")->ilike('MetaJokeName', "%$search%")->closeOr();
-		}
 
-		$jokes = $records->findAll();
+			$jokes = $records->findAll();
 
-		$results = [];
-		foreach ($jokes as $joke) {
-			array_push($results, ['ID' => $joke['JokeID'], 'NAME' => $joke['JokeName'] . ' (' . $joke['MetaJokeName'] . ')']);
+			$results = [];
+			foreach ($jokes as $joke) {
+				array_push($results, ['ID' => $joke['JokeID'], 'NAME' => $joke['JokeName'] . ' (' . $joke['MetaJokeName'] . ')']);
+			}
 		}
 		return $results;
 	}
