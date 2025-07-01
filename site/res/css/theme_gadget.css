@@ -1,0 +1,29 @@
+:root {
+	--bg-color: #fff;
+	--text-color: #000;
+	--text-color-invert: #fff;
+	--element-color: #becdd1;
+
+	--bg-accent: #dddddd;
+	--accent-1: #bababa;
+	--accent-2: #88bcdf;
+	--accent-3: #6888c4;
+
+	--tbl-row-odd: #e7e7e7;
+	--tbl-row-even: #d6d6d6;
+}
+
+body {
+	background-color: #e7e7e7 !important;
+	background-image: url(../img/gadget.png) !important;
+	background-repeat: no-repeat !important;
+	background-size: 5% !important;
+	background-position-x: 100% !important;
+	background-position-y: 20px !important;
+}
+
+@media only screen and (min-width: 1081px) {
+	body {
+		background-size: 3% !important;
+	}
+}

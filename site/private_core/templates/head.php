@@ -1,9 +1,14 @@
 <?php
-$theme = $_COOKIE['theme'] ?? 'light';
-if ($theme !== 'light' && $theme !== 'dark') {
-	$theme = 'light';
-	setcookie('theme', $theme, 0, '/');
-}
+
+use RipDB\Theme;
+
+$theme = Theme::tryFrom($_COOKIE['theme'] ?? null);
+$theme = match ($theme) {
+	Theme::Light => $theme->value,
+	Theme::Dark => $theme->value,
+	Theme::Gadget => $theme->value,
+	default => Theme::Light->value
+};
 ?>
 
 <head>
@@ -13,8 +18,8 @@ if ($theme !== 'light' && $theme !== 'dark') {
 	<meta property="og:image" content="/res/img/icon.png">
 	<meta property="og:url" content="https://ripdb.net">
 	<meta property="og:site_name" content="RipDB">
-    <meta property="og:type" content="website">
-    <meta property="og:description" content="The rip database. Find high quality rips based on their jokes, game or other sources!">
+	<meta property="og:type" content="website">
+	<meta property="og:description" content="The rip database. Find high quality rips based on their jokes, game or other sources!">
 	<meta property="og:determiner" content="the" />
 	<meta property="og:locale" content="en_GB" />
 	<meta property="og:alternate" content="en_US" />

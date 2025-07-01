@@ -1,3 +1,7 @@
+<?php
+use RipDB\Objects as o;
+use RipDB\Theme;
+?>
 <nav>
 	<a href="/">Home</a>
 	<a href="/rips">Rips</a>
@@ -5,5 +9,7 @@
 	<a href="/tags">Tags</a>
 	<a href="/ripguessr">RipGuessr</a>
 	<a href="/help">Help / FAQ</a>
-	<a href="/settings/theme" style="float:right">Swap Theme</a>
+	<form action="/settings/theme" style="float:right;">
+		<?= (new o\DropdownElement('Theme', Theme::getThemes(), ['name' => 'theme', 'selected' => $_COOKIE['theme'], 'onchange' => 'submit()', 'style' => 'background:var(--accent-2)']))->buildElement(); ?>
+	</form>
 </nav>

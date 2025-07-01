@@ -1,6 +1,6 @@
 <?php
 
-use RipDB\Objects\IAsyncHandler;
+use RipDB\Theme;
 
 /**
  * Routes file.
@@ -12,6 +12,7 @@ const PAGE_EXTENSIONS = ['html', 'php']; // All allowed webpage extensions. If f
 const RESOURCE_EXTENSIONS = ['css', 'js', 'ico', 'jpg', 'jpeg', 'png']; // All allowed file resource extensions. Any requests to other extensions result in a 404.
 
 $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
+require_once('private_core/config/themes.php');
 
 /**
  * All valid HTTP methods available in this system.
@@ -125,8 +126,16 @@ Flight::group('/ripguessr', function () {
 });
 
 // Settings Requests
-Flight::route('/settings/theme', function () {
-	$theme = ($_COOKIE['theme'] ?? 'light') == 'light' ? 'dark' : 'light';
+Flight::route('GET /settings/theme', function () {
+
+	$theme = Theme::tryFrom($_GET['theme'] ?? null);
+	$theme = match ($theme) {
+		Theme::Light => $theme->value,
+		Theme::Dark => $theme->value,
+		Theme::Gadget => $theme->value,
+		default => Theme::Light->value
+	};
+
 	setcookie('theme', $theme, 0, '/');
 	header('location:' . $_SERVER['HTTP_REFERER']);
 	die();

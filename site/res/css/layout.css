@@ -21,6 +21,7 @@ nav {
 	padding: 5px 0px;
 	padding-left: 5%;
 	padding-right: 5%;
+	max-height: 20px;
 }
 
 nav>a {
