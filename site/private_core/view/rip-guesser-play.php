@@ -11,7 +11,7 @@ use RipDB\RipGuesser as game;
 		<div id="round">
 			<p><i>Listen to the rip and identify the jokes used in it!</i></p>
 			<div id="player">
-				<button type="button" id="play-pause">Pause Playback</button>
+				<button type="button" id="play-pause">&#x23F3;</button>
 				<?= (new o\InputElement('Volume', o\InputTypes::range, ['id' => 'volume', 'min' => 0, 'max' => 100, 'value' => 50]))->buildElement() ?>
 			</div>
 			<form id="round-form" action="javascript:void()" style="display:flex">

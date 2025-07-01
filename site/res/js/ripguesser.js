@@ -269,11 +269,9 @@ class Game {
 				// If paused, play
 				if (this.#player.getPlayerState() == 1) {
 					this.#player.pauseVideo();
-					e.target.innerText = "Resume Playback"
 					// If playing, pause
 				} else if (this.#player.getPlayerState() == 2) {
 					this.#player.playVideo();
-					e.target.innerText = "Pause Playback"
 				}
 			}.bind(this);
 
@@ -331,6 +329,12 @@ class Game {
 		}
 
 		function onPlayerStateChange(event) {
+			let pauseBtn = document.getElementById('play-pause');
+			if (event.target.getPlayerState() == 1) {
+				pauseBtn.innerHTML = "&#x23F8;"
+			} else if (event.target.getPlayerState() == 2) {
+				pauseBtn.innerHTML = "&#x23EF;"
+			}
 		}
 	}
 
