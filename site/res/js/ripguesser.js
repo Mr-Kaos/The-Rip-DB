@@ -330,10 +330,20 @@ class Game {
 
 		function onPlayerStateChange(event) {
 			let pauseBtn = document.getElementById('play-pause');
-			if (event.target.getPlayerState() == 1) {
-				pauseBtn.innerHTML = "&#x23F8;"
-			} else if (event.target.getPlayerState() == 2) {
-				pauseBtn.innerHTML = "&#x23EF;"
+			switch (event.target.getPlayerState()) {
+				// Ended
+				case 0:
+					pauseBtn.innerHTML = "&#x23F9;"
+					pauseBtn.disabled = true;
+					break;
+				// Playing (Pause button display)
+				case 1:
+					pauseBtn.innerHTML = "&#x23F8;"
+					break
+				// Pause (play button display)
+				case 2:
+					pauseBtn.innerHTML = "&#x23EF;"
+					break;
 			}
 		}
 	}
