@@ -326,6 +326,7 @@ class Game {
 		function onPlayerReady(event) {
 			event.target.playVideo();
 			event.target.setVolume(initVolume);
+			pauseBtn.disabled = false;
 		}
 
 		function onPlayerStateChange(event) {

@@ -38,7 +38,7 @@ const PTS_INCORRECT_JOKE = -100;
 class Game
 {
 	// Maximum number of rounds you can have in a game
-	const MAX_ROUNDS = 15;
+	const MAX_ROUNDS = 20;
 
 	private string $id;
 	private array $rounds;
