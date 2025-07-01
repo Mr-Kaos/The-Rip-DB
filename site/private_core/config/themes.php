@@ -7,6 +7,7 @@ enum Theme: string
 	case Light = 'light';
 	case Dark = 'dark';
 	case Gadget = 'gadget';
+	case Voice = 'voice';
 
 	static function getThemes(): array
 	{

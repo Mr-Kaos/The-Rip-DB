@@ -33,6 +33,14 @@ nav>a:visited {
 	color: var(--text-color);
 }
 
+a {
+	color: var(--link);
+}
+
+a:visited {
+	color: var(--link-visited);
+}
+
 nav>a:hover {
 	opacity: 70%;
 	transition: 0.3s;

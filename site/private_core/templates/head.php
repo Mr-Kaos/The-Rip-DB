@@ -2,13 +2,7 @@
 
 use RipDB\Theme;
 
-$theme = Theme::tryFrom($_COOKIE['theme'] ?? null);
-$theme = match ($theme) {
-	Theme::Light => $theme->value,
-	Theme::Dark => $theme->value,
-	Theme::Gadget => $theme->value,
-	default => Theme::Light->value
-};
+$theme = Theme::tryFrom($_COOKIE['theme'] ?? null) ?? Theme::Light;
 ?>
 
 <head>
@@ -24,7 +18,7 @@ $theme = match ($theme) {
 	<meta property="og:locale" content="en_GB" />
 	<meta property="og:alternate" content="en_US" />
 	<title><?= constant("PAGE_TITLE") ?></title>
-	<link rel="stylesheet" href="/res/css/theme_<?= $theme ?>.css">
+	<link rel="stylesheet" href="/res/css/theme_<?= $theme->value ?>.css">
 	<link rel="stylesheet" href="/res/css/layout.css">
 	<link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>

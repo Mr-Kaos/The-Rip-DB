@@ -127,16 +127,8 @@ Flight::group('/ripguessr', function () {
 
 // Settings Requests
 Flight::route('GET /settings/theme', function () {
-
-	$theme = Theme::tryFrom($_GET['theme'] ?? null);
-	$theme = match ($theme) {
-		Theme::Light => $theme->value,
-		Theme::Dark => $theme->value,
-		Theme::Gadget => $theme->value,
-		default => Theme::Light->value
-	};
-
-	setcookie('theme', $theme, 0, '/');
+	$theme = Theme::tryFrom($_GET['theme'] ?? null) ?? Theme::Light;
+	setcookie('theme', $theme->value, 0, '/');
 	header('location:' . $_SERVER['HTTP_REFERER']);
 	die();
 });

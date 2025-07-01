@@ -1,0 +1,32 @@
+:root {
+	--bg-color: #111;
+	--text-color: #fff;
+	--text-color-invert: #000;
+	--element-color: #444;
+
+	--bg-accent: #1d3b2b;
+	--accent-1: #594866;
+	--accent-2: #8c2096;
+	--accent-3: #a748b3;
+
+	--tbl-row-odd: #39404b;
+	--tbl-row-even: #1c293a;
+
+	--link: #00b7ff;
+	--link-visited: #c6efff;
+}
+
+body {
+	background-color: var(--bg-color) !important;
+	background-image: url(../img/the_voice.png) !important;
+	background-repeat: no-repeat !important;
+	background-size: 5% !important;
+	background-position-x: 5% !important;
+	background-position-y: 95% !important;
+}
+
+@media only screen and (min-width: 1081px) {
+	body {
+		background-size: 3% !important;
+	}
+}
