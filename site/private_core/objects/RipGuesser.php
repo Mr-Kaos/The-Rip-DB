@@ -208,7 +208,7 @@ class Game
 		}
 		// If the round is not yet complete, get the current round data.
 		else {
-			$round = $this->getCurrentRound() ?? false;
+			$round = $current ?? false;
 		}
 
 		if ($round instanceof Round) {
@@ -326,6 +326,24 @@ class Round
 		$this->ripName = $ripName;
 		$this->altName = $altName;
 		$this->rippers = $rippers;
+
+		// Set max score
+		switch ($this->difficulty) {
+			case Difficulty::Beginner:
+				$this->maxScore += count($this->jokes) * PTS_CORRECT_JOKE;
+				break;
+			case Difficulty::Hard:
+				if (is_array($this->rippers)) {
+					$this->maxScore += count($this->rippers) * PTS_CORRECT_RIPPER;
+				}
+				if ($this->altName !== null) {
+					$this->maxScore += PTS_CORRECT_ALT_NAME;
+				}
+			case Difficulty::Standard:
+				$this->maxScore += PTS_CORRECT_GAME;
+				$this->maxScore += PTS_CORRECT_RIP_NAME;
+				break;
+		}
 	}
 
 	public function isComplete(): bool
@@ -364,23 +382,18 @@ class Round
 			case Difficulty::Beginner:
 				$fields['_RipName'] = $this->ripName;
 				$fields['_GameName'] = $this->gameName;
-				$this->maxScore += count($this->jokes) * PTS_CORRECT_JOKE;
 				break;
 			// Hard and standard difficulty have the game and rip name hidden.
 			case Difficulty::Hard:
 				if (is_array($this->rippers)) {
 					$fields['Rippers'] = count($this->rippers);
-					$this->maxScore += count($this->rippers) * PTS_CORRECT_RIPPER;
 				}
 				if ($this->altName !== null) {
 					$fields['AlternateName'] = $this->altName;
-					$this->maxScore += PTS_CORRECT_ALT_NAME;
 				}
 			case Difficulty::Standard:
 				$fields['GameName'] = 1;
 				$fields['RipName'] = 1;
-				$this->maxScore += PTS_CORRECT_GAME;
-				$this->maxScore += PTS_CORRECT_RIP_NAME;
 				break;
 		}
 
