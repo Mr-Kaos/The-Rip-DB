@@ -432,6 +432,35 @@ h4 {
 	margin-bottom: 0px;
 }
 
+#game>iframe {
+	margin: auto;
+	display: block;
+}
+
+#game #player,
+#game #round-form {
+	display: flex;
+	margin: auto;
+	width: fit-content;
+	margin-bottom: 5px;
+}
+
+#game #round {
+	text-align: center;
+}
+
+#game #player>* {
+	margin: 10px;
+}
+
+#game #player>#play-pause {
+	padding: unset;
+	font-size: larger;
+	content: '\23ef';
+	border: 3px solid var(--accent-1);
+	border-radius: unset;
+}
+
 @media only screen and (max-width: 1080px) {
 	.grid {
 		grid-template-columns: 1fr 1fr;

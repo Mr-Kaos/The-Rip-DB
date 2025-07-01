@@ -12,11 +12,13 @@ use RipDB\RipGuesser as game;
 			<p><i>Listen to the rip and identify the jokes used in it!</i></p>
 			<div id="player">
 				<button type="button" id="play-pause">&#x23F3;</button>
-				<?= (new o\InputElement('Volume', o\InputTypes::range, ['id' => 'volume', 'min' => 0, 'max' => 100, 'value' => 50]))->buildElement() ?>
+				<span>
+					<?= (new o\InputElement('&#x1F50A', o\InputTypes::range, ['id' => 'volume', 'min' => 0, 'max' => 100, 'value' => 50]))->buildElement() ?>
+				</span>
 			</div>
 			<form id="round-form" action="javascript:void()" style="display:flex">
 			</form>
-			<button type="submit" form="round-form">Submit Guess</button>
+			<button type="submit" form="round-form" style="display:block;margin:auto;">Submit Guess</button>
 		</div>
 		<div id="results" style="display:none">
 			<h2>Results:</h2>

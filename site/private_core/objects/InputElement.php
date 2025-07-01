@@ -172,7 +172,7 @@ class InputElement extends PageObject
 				case InputTypes::range:
 					$initVal = $this->attributes['value'] ?? 0;
 					$script = 'oninput="this.nextElementSibling.innerText = this.value;"';
-					$field = '<div><input id="' . $id . '" type="' . $this->type->value . '"' . $attributes . $script . '><span id="val_' . $id . '">' . $initVal . '</span></div>';
+					$field = '<div>' . $this->label . '<input id="' . $id . '" type="' . $this->type->value . '"' . $attributes . $script . '><span id="val_' . $id . '">' . $initVal . '</span></div>';
 					break;
 				default:
 					$field = '<input id="' . $id . '" type="' . $this->type->value . '"' . "$attributes>";
@@ -185,7 +185,9 @@ class InputElement extends PageObject
 			case InputTypes::radio:
 				$field = $field . $label;
 				break;
+			// These elements place their labels in their own way.
 			case InputTypes::button:
+			case InputTypes::range:
 				break;
 			default:
 				$field = $label . $field;
