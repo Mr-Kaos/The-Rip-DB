@@ -463,10 +463,11 @@ class Game {
 		scoreElement.innerHTML = `${totalScore}/${maxScore}`;
 
 		// Stop the playback
-		this.#player.pauseVideo();
-		this.#player.setSize(0, 0);
-		this.#gameContainer.querySelector('#rip-name').remove();
-
+		if (this.#player != null) {
+			this.#player.pauseVideo();
+			this.#player.setSize(0, 0);
+			this.#gameContainer.querySelector('#rip-name').remove();
+		}
 		this.#toggleGameDisplay('results');
 	}
 
