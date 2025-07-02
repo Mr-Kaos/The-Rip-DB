@@ -14,4 +14,13 @@
 
 	--link: #0066ff;
 	--link-visited: #8200be;
+
+	--color-good: #0edd0e;
+	--color-ok: #6be9f1;
+	--color-warn: #ffae00;
+	--color-bad: #ff0000;
+}
+
+button {
+	color: var(--text-color) !important;
 }

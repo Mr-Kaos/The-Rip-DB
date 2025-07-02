@@ -11,10 +11,15 @@
 
 	--tbl-row-odd: #e7e7e7;
 	--tbl-row-even: #d6d6d6;
+	
+	--color-good: #0edd0e;
+	--color-ok: #6be9f1;
+	--color-warn: #ffae00;
+	--color-bad: #ff0000;
 }
 
 body {
-	background-color: #e7e7e7 !important;
+	background-color: var(--bg-color) !important;
 	background-image: url(../img/gadget.png) !important;
 	background-repeat: no-repeat !important;
 	background-size: 5% !important;

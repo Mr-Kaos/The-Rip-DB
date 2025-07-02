@@ -14,6 +14,11 @@
 
 	--link: #00b7ff;
 	--link-visited: #c6efff;
+
+	--color-good: #099209;
+	--color-ok: #379bb9;
+	--color-warn: #966600;
+	--color-bad: #ca0000;
 }
 
 a {
@@ -26,4 +31,8 @@ a:visited {
 
 input {
 	color: var(--text-color);
+}
+
+.btn-bad {
+	color: var(--text-color) !important;
 }

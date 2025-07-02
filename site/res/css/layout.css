@@ -265,6 +265,26 @@ div.filters>.search-element>input {
 	cursor: pointer;
 }
 
+.btn-good {
+	background: var(--color-good);
+	color: var(--text-color);
+}
+
+.btn-ok {
+	background: var(--color-ok);
+	color: var(--text-color);
+}
+
+.btn-warn {
+	background: var(--color-warn);
+	color: var(--text-color);
+}
+
+.btn-bad {
+	background: var(--color-bad);
+	color: var(--text-color-invert);
+}
+
 .callout {
 	background: var(--element-color);
 	position: absolute;
@@ -414,7 +434,8 @@ div.filters>.search-element>input {
 	gap: 25px;
 }
 
-.grid>div {
+.grid>div,
+.container {
 	background: var(--bg-accent);
 	border-radius: 6px;
 	padding: 5px;

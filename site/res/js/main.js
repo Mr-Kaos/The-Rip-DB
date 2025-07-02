@@ -130,7 +130,8 @@ class Modal {
 	 * 	},
 	 * 	Dummy: {
 	 * 		function: console.log('lmao'),
-	 * 		close: false
+	 * 		close: false,
+	 * 		className: 'my-css-class'
 	 * 	}
 	 * }
 	 * ```  
@@ -301,6 +302,9 @@ class Modal {
 							break;
 						case 'colour':
 							btn.style.color = data[attr];
+							break;
+						case 'className':
+							btn.className = data[attr];
 							break;
 						case 'background':
 							btn.style.background = data[attr];
