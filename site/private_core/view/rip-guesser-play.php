@@ -18,17 +18,30 @@ use RipDB\RipGuesser as game;
 			</div>
 			<form id="round-form" action="javascript:void()" style="display:flex">
 			</form>
-			<button type="submit" form="round-form" style="display:block;margin:auto;">Submit Guess</button>
+			<button type="submit" id="submit-round" form="round-form" style="display:block;margin:auto;">Submit Guess</button>
 		</div>
 		<div id="results" style="display:none">
 			<h2>Results:</h2>
-			<div id="answers" class="grid">
-				<ul>
-					<li><b>Hmm...</b> You shouldn't really be seeing this.</li>
-				</ul>
+			<div id="results-data">
+				<div id="answers" class="grid">
+					<ul>
+						<li><b>Hmm...</b> You shouldn't really be seeing this.</li>
+					</ul>
+				</div>
+				<p>Total: <var id="score">0</var> Pts</p>
 			</div>
-			<p>Total: <var id="score">0</var> Pts</p>
 			<button type="button" id="advance-round">Next Round</button>
+			<div id="feedback" class="container" style="text-align:center;width:fit-content;margin:auto;">
+				<p>How suitable was this rip for RipGuessr?</p>
+				<button class="btn-good" id="btnGood">&gt;:] Nice</button>
+				<button class="btn-bad" id="btnBad">&gt;:[ Not Nice</button>
+				<button class="btn-warn" id="btnIncorrect">It was missing/has the wrong joke!</button>
+				<form id="feedback-extra" style="display:none">
+					<?= (new o\InputElement('What was wrong?', o\InputTypes::text, ['id' => 'joke', 'minlength' => 1, 'maxlength' => 1024, 'style' => 'margin-top:10px;min-width:250px', 'placeholder' => 'Enter the incorrect/missing joke(s) here', 'disabled' => true, 'required' => true]))->buildElement(); ?>
+					<br>
+					<button id="btnExtraSubmit" type="submit">Submit Feedback</button>
+				</form>
+			</div>
 		</div>
 	</div>
 	<div id="settings" style="display:none">

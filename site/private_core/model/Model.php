@@ -138,6 +138,7 @@ abstract class Model
 				$this->db->execute("CALL $storedProcedure($params)", array_values($data));
 			} catch (\PicoDb\SQLException $error) {
 				$result = [new \RipDB\Error("An error occurred when sending the data to the database.")];
+				error_log($error);
 			}
 		}
 

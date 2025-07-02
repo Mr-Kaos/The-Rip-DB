@@ -78,15 +78,16 @@ This project currently has the following features complete:
   - [X] Search page
   - [X] Add Tag page
   - [ ] Edit Tag page
-- [ ] UI/UX
-  - [X] Basic interface and layout
-  - [ ] Actually nice looking layout
 - [ ] Core System
   - [X] Page routing
   - [X] Custom input elements
   - [ ] Moderation/Anti-spam system
   - [ ] Page alerts (e.g. Form submission success)
   - [ ] API for data export
+- [ ] RipGuessr
+  - [X] Functional gameplay loop
+  - [ ] Multiplayer sessions
+  - [ ] Community playlists/game presets
 
 ### Potential Features
 

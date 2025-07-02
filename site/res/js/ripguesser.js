@@ -43,11 +43,11 @@ class Game {
 						this.#toggleGameDisplay('settings');
 					}.bind(this),
 					colour: '#fff',
-					background: '#ff0000'
+					className: 'btn-bad'
 				},
 				'Resume Current Game': {
 					function: this.#startGame.bind(this),
-					background: '#00ff00'
+					className: 'btn-good'
 				}
 			}
 			let modal = new Modal("game-reset", 'You already have a game running!', "Do you want to continue or start a new game?", null, null, false, false, modalFunctions);
@@ -59,30 +59,33 @@ class Game {
 
 	/**
 	 * Sends the game's settings to the server to start the game.
+	 * @param {Event} e The onsubmit event of the Game Settings form.
 	 */
 	async setSettings(e) {
-		e.preventDefault();
-		let data = new FormData(e.target);
-		let ready = false;
+		if (e != null) {
+			e.preventDefault();
+			let data = new FormData(e.target);
+			let ready = false;
 
-		let request = await fetch('/ripguessr/game/start', {
-			method: 'POST',
-			body: data
-		});
+			let request = await fetch('/ripguessr/game/start', {
+				method: 'POST',
+				body: data
+			});
 
-		// If the server responds with true, then the game can start
-		if (request.ok) {
-			try {
-				ready = await request.json();
-			} catch (e) {
-				console.error(e);
-				displayNotification("ERROR: The game was successfully initialised but no response was received from the server.", NotificationPriority.Error)
-			}
-			if (!ready) {
-				displayNotification("Game failed to initialise!", NotificationPriority.Error);
-			} else {
-				this.#toggleGameDisplay('settings');
-				this.#startGame();
+			// If the server responds with true, then the game can start
+			if (request.ok) {
+				try {
+					ready = await request.json();
+				} catch (e) {
+					console.error(e);
+					displayNotification("ERROR: The game was successfully initialised but no response was received from the server.", NotificationPriority.Error)
+				}
+				if (!ready) {
+					displayNotification("Game failed to initialise!", NotificationPriority.Error);
+				} else {
+					this.#toggleGameDisplay('settings');
+					this.#startGame();
+				}
 			}
 		}
 	}
@@ -216,7 +219,6 @@ class Game {
 
 			for (let key in roundData) {
 				let input = null;
-				let label = null;
 				switch (key) {
 					// Easy difficulty
 					case 'Jokes':
@@ -242,13 +244,8 @@ class Game {
 						continue;
 				}
 
-				// Append the input and label to the game container.
-				if (label != null) {
-					form.appendChild(label);
-					form.appendChild(input);
-				} else {
-					form.appendChild(input.getElement());
-				}
+				input.getElement().style.display = 'inline-block';
+				form.appendChild(input.getElement());
 			}
 
 			// Set up the embedded player and the controls.
@@ -307,6 +304,8 @@ class Game {
 	 * @param {String} ytID The ID of the video stream to embed
 	 */
 	#prepareYTEmbed(ytID, initVolume, display = false) {
+		let pauseBtn = document.getElementById('play-pause');
+
 		this.#player = new YT.Player('stream', {
 			height: display ? EMBED_HEIGHT : '0',
 			width: display ? EMBED_WIDTH : '0',
@@ -330,7 +329,6 @@ class Game {
 		}
 
 		function onPlayerStateChange(event) {
-			let pauseBtn = document.getElementById('play-pause');
 			switch (event.target.getPlayerState()) {
 				// Ended
 				case 0:
@@ -355,12 +353,12 @@ class Game {
 	 * @param {Object} results The results for the round.
 	 */
 	#showResults(form, results) {
-		let resultsContainer = this.#gameContainer.querySelector('#results');
+		let resultsContainer = this.#gameContainer.querySelector('#results-data');
 
 		// Ensure the results container exists, if for whatever reason it gets removed.
 		if (resultsContainer != undefined) {
 			let score = resultsContainer.querySelector('#score');
-			let btnNextRound = resultsContainer.querySelector('#advance-round');
+			let btnNextRound = document.getElementById('advance-round');
 			btnNextRound.onclick = e => this.nextRound();
 
 			score.innerText = results.Score;
@@ -424,7 +422,81 @@ class Game {
 			this.#raiseCriticalError('Cannot find results container!');
 		}
 
+		this.#prepareFeedbackForm();
 		this.#toggleGameDisplay('results');
+	}
+
+	/**
+	 * Prepares the feedback form on the rip's results page
+	 */
+	#prepareFeedbackForm() {
+		let feedback = this.#gameContainer.querySelector('#feedback');
+
+		if (feedback != null) {
+			let btnGood = feedback.querySelector('#btnGood');
+			let btnBad = feedback.querySelector('#btnBad');
+			let btnIncorrect = feedback.querySelector('#btnIncorrect');
+			let extra = feedback.querySelector('#feedback-extra');
+			let extraInput = extra.querySelector('#joke');
+			let extraSubmit = feedback.querySelector('#btnExtraSubmit');
+
+			// Make sure the inputs are set back to their initial styling when displayed again.
+			feedback.style.display = '';
+			btnGood.style.display = 'unset';
+			btnBad.style.display = 'unset';
+			btnIncorrect.style.display = 'unset';
+			extra.style.display = 'none';
+			extraInput.disabled = true;
+			extraInput.value = '';
+			btnGood.onclick = e => this.#sendFeedback(true);
+			btnBad.onclick = e => this.#sendFeedback(false);
+			extraSubmit.form.onsubmit = e => this.#sendFeedback(e);
+
+			// Clicking the "wrong joke" button simply toggles the display of the text input to allow submission of the missing joke.
+			// The other inputs are hidden to simplify the interface.
+			btnIncorrect.onclick = function (e) {
+				btnGood.style.display = 'none';
+				btnBad.style.display = 'none';
+				btnIncorrect.style.display = 'none';
+				extraInput.disabled = false;
+				extra.style.display = 'unset';
+			}.bind(this);
+		}
+	}
+
+	/**
+	 * Sends the feedback to the server.
+	 * @param {Event|Boolean} e The event of the feedback form's submission, or a boolean indicating if the rip was good or bad (true or false).
+	 */
+	async #sendFeedback(e) {
+		let data = null;
+		// Joke Feedback
+		if (e instanceof Event) {
+			e.preventDefault(e);
+			data = new FormData(e.target);
+		}
+		// Upvote
+		else if (e === true || e === false) {
+			data = new FormData();
+			data.append('upvote', e);
+		}
+
+		let request = await fetch('/ripguessr/game/feedback', {
+			method: 'POST',
+			body: data
+		});
+
+		if (request.ok) {
+			let results = await request.json();
+			let feedbackContainer = this.#gameContainer.querySelector('#feedback');
+
+			if (results == true) {
+				feedbackContainer.style.display = 'none';
+				displayNotification('Thanks for the feedback!');
+			} else {
+				displayNotification(e[0], NotificationPriority.Error);
+			}
+		}
 	}
 
 	/**
@@ -435,6 +507,7 @@ class Game {
 		let title = this.#gameContainer.querySelector('#title');
 		title.innerText = 'Final Results';
 		let resultsContainer = this.#gameContainer.querySelector('#results');
+		let feedback = resultsContainer.querySelector('#feedback');
 		let answersContainer = resultsContainer.querySelector('#answers');
 		let scoreElement = resultsContainer.querySelector('#score');
 		let btnNextRound = resultsContainer.querySelector('#advance-round');
@@ -483,6 +556,7 @@ class Game {
 			this.#player.setSize(0, 0);
 			this.#gameContainer.querySelector('#rip-name').remove();
 		}
+		feedback.style.display = 'none';
 		this.#toggleGameDisplay('results');
 	}
 

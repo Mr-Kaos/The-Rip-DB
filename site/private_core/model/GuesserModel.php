@@ -194,6 +194,7 @@ class GuesserModel extends Model
 			->limit(50)
 			->asc('JokeName');
 
+		$results = null;
 		if (!empty($search)) {
 			$records->beginOr()->ilike('JokeName', "%$search%")->ilike('MetaJokeName', "%$search%")->closeOr();
 

@@ -78,6 +78,9 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 					case 'submit':
 						$response = $this->submitRound($_POST);
 						break;
+					case 'feedback':
+						$response = $this->submitFeedback($_POST);
+						break;
 				}
 				break;
 		}
@@ -223,5 +226,39 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Submits feedback for a round's rip.
+	 * @param array $data The feedback data submitted. Will contain a key of either "upvote" or "joke".  
+	 * "Upvote" is a boolean indicating if the rip is suitable for the game, and "joke" is a string containing information on missing/incorrect jokes in the rip.
+	 * @return array|true Returns true if submission was successful. Else, returns an array of error messages (strings) if a failure occurred.
+	 */
+	private function submitFeedback(array $data): array|true
+	{
+
+		$submission = ['ERROR' => 'Failed to submit'];
+
+		if ($this->deserializeGame()) {
+			$ripId = $this->game->getCurrentRound()->ripID;
+			$upvote = $joke = null;
+
+			if (array_key_exists('upvote', $data)) {
+				$upvote = $this->validateBool($data['upvote']);
+			} elseif (array_key_exists('joke', $data)) {
+				$joke = $this->validateString($data['joke'], 'Invalid text given.', 1024, 1);
+			}
+
+			$submission = $this->model->submitFormData([$ripId, $upvote, $joke], 'usp_InsertRipFeedback');
+
+			if (is_array($submission)) {
+				// get error message and return it as response.
+				foreach ($submission as $key => &$error) {
+					$submission[$key] = $error->getMessage();
+				}
+			}
+		}
+
+		return $submission;
 	}
 }
