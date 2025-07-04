@@ -24,6 +24,7 @@ class Game {
 	#gameContainer = null;
 	#roundData = null;
 	#player;
+	#playerState = null;
 
 	constructor() {
 		this.#initGame();
@@ -112,17 +113,35 @@ class Game {
 		if (request.ok) {
 			// Check if the data received is for a new round, or is the results of the game
 			let data = await request.json();
-			if (data.GameEnd != undefined) {
-				if (data.Message != undefined) {
-					displayNotification(data.Message, NotificationPriority.Warning);
-				}
-				this.#showFinalResults(data.Summary);
-			} else {
-				this.#initRound(data);
-			}
+			this.#prepareRound(data);
 		} else {
 			console.error('Could not start next round!')
 			displayNotification("Failed to start next round!", NotificationPriority.Error);
+		}
+	}
+
+	async #skipRip() {
+		let request = await fetch('/ripguessr/game/skip', {
+			method: 'GET'
+		});
+
+		if (request.ok) {
+			let data = await request.json();
+			this.#prepareRound(data);
+		} else {
+			console.error("Could not skip this round's rip!")
+			displayNotification("Failed to skip round! Please reload the page and try again.", NotificationPriority.Error);
+		}
+	}
+
+	#prepareRound(data) {
+		if (data.GameEnd != undefined) {
+			if (data.Message != undefined) {
+				displayNotification(data.Message, NotificationPriority.Warning);
+			}
+			this.#showFinalResults(data.Summary);
+		} else {
+			this.#initRound(data);
 		}
 	}
 
@@ -189,7 +208,41 @@ class Game {
 			method: 'DELETE'
 		});
 
-		window.location.reload();
+		if (!request.ok) {
+			console.error('Failed to purge round...');
+		}
+
+		this.#toggleGameDisplay('settings');
+	}
+
+	/**
+	 * CHecks the player's state periodically after a round has started.
+	 * If its state is unstarted, prompt the user if they wish to skip the round due to playback error.
+	 */
+	#checkPlayerVideoState() {
+		if (this.#player.getPlayerState != undefined) {
+			if (this.#player.getPlayerState() == -1) {
+				document.getElementById('play-pause').innerHTML = "&#x274C;";
+				let alert = new Modal('skip-rip',
+					"Oh no, looks like this rip can't be played...",
+					"An error was encountered playing this rip.<br>You can either skip it and get a new one, or try again and see if it loads.",
+					null, null, true, false,
+					{
+						Retry: {
+							function: window.location.reload,
+							className: 'btn-warn'
+						},
+						Skip: {
+							function: this.#skipRip.bind(this),
+							className: 'btn-good'
+						}
+					});
+				alert.open();
+				clearInterval(this.#playerState);
+			} else {
+				clearInterval(this.#playerState);
+			}
+		}
 	}
 
 	/**
@@ -272,6 +325,8 @@ class Game {
 				}
 			}.bind(this);
 
+			this.#playerState = setInterval(this.#checkPlayerVideoState.bind(this), 100);
+
 			this.#roundData = roundData;
 			this.#toggleGameDisplay('round');
 		} else {
@@ -330,6 +385,11 @@ class Game {
 
 		function onPlayerStateChange(event) {
 			switch (event.target.getPlayerState()) {
+				// Unstarted (error)
+				case -1:
+					pauseBtn.innerHTML = "&#x274C;"
+					pauseBtn.disabled = true;
+					break;
 				// Ended
 				case 0:
 					pauseBtn.innerHTML = "&#x23F9;"
@@ -554,7 +614,7 @@ class Game {
 		if (this.#player != null) {
 			this.#player.pauseVideo();
 			this.#player.setSize(0, 0);
-			this.#gameContainer.querySelector('#rip-name').remove();
+			this.#gameContainer.querySelector('#rip-name').style.display = 'none';
 		}
 		feedback.style.display = 'none';
 		this.#toggleGameDisplay('results');

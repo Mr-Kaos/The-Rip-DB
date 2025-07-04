@@ -47,8 +47,8 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 					case 'round-next':
 						$response = $this->advanceRound();
 						break;
-					case 'round-submit':
-
+					case 'skip':
+						$response = $this->resetRound();
 						break;
 				}
 				break;
@@ -181,6 +181,7 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 
 	/**
 	 * Advances the round.
+	 * @return false|array An array containing the round's data. If a round could not be created, false is returned.
 	 */
 	private function advanceRound(): false|array
 	{
@@ -200,6 +201,21 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 			$this->model->saveGame($this->game);
 		}
 
+		return $roundData;
+	}
+
+	/**
+	 * Resets the current round by replacing it with a new round.
+	 * Used if the rip's video is unplayable and a new one is needed.
+	 * @return false|array An array containing the new round's data. If a round could not be created, false is returned.
+	 */
+	private function resetRound(): false|array
+	{
+		$roundData = false;
+		if ($this->deserializeGame()) {
+			$roundData = $this->game->resetRound($this->model);
+			$this->model->saveGame($this->game);
+		}
 		return $roundData;
 	}
 

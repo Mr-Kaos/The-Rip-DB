@@ -30,8 +30,7 @@ const PTS_INCORRECT_JOKE = -100;
 /**
  * @property private string $id The unique ID of the game. This is essentially the session ID of the game.
  * @property private array $rounds The round objects for the game, i.e. the rips for the game.
- * @property private int $round The current round in the game.
- * @property private int $roundCount The number of rounds in the game.
+ * @property private array $skippedRips An array of Rip IDs that were skipped. Usually these are skipped due to playback issues of the rip.
  * @property private int $score The total score for the game.
  * @property private Settings The settings object that defines the settings to use in the game.
  */
@@ -42,8 +41,9 @@ class Game
 
 	private string $id;
 	private array $rounds;
+	private array $skippedRips;
 	public readonly int $roundCount;
-	private Settings $settings;
+	public readonly Settings $settings;
 	public readonly bool $tooFewRips;
 
 	/**
@@ -53,6 +53,7 @@ class Game
 	{
 		$this->settings = $settings;
 		$this->rounds = [];
+		$this->skippedRips = [];
 
 		$maxRoundCount = min($model->getTotalRipsAvailable($settings), self::MAX_ROUNDS);
 		if ($maxRoundCount < $rounds) {
@@ -102,7 +103,6 @@ class Game
 		return count($this->rounds);
 	}
 
-
 	/**
 	 * Gets the score for the game or the specified round
 	 * @param ?int $round The index of the round to get the score from. The index is zero-based, so round 1 is retrieved by specifying '0' as the round.
@@ -146,6 +146,10 @@ class Game
 
 		foreach ($this->rounds as $round) {
 			array_push($played, $round->ripID);
+		}
+
+		foreach ($this->skippedRips as $ripID) {
+			array_push($played, $ripID);
 		}
 
 		return $played;
@@ -209,6 +213,45 @@ class Game
 		// If the round is not yet complete, get the current round data.
 		else {
 			$round = $current ?? false;
+		}
+
+		if ($round instanceof Round) {
+			$round = ['RoundData' => $round->getApplicableFields(), 'RoundNumber' => count($this->rounds)];
+		}
+
+		return $round;
+	}
+
+	/**
+	 * Resets the current round.
+	 * @param \RipDB\Model\GuesserModel $model The RipGuesserModel object to query the database with.
+	 * @return false|array If no rip was found, false is returned. Else, an associative array of fields to answer and their number of valid answers are returned.
+	 */
+	public function resetRound(\RipDB\Model\GuesserModel $model): false|array
+	{
+		$round = false;
+
+		$rip = $model->getRip($this->settings, $this->getPlayedRips());
+
+		// If the rip found is empty, or somehow has no jokes, abort.
+		if ($rip !== false && !empty($rip['Jokes'])) {
+			// format jokes and rippers to be ID => name key-pair.
+			$jokes = [];
+			foreach ($rip['Jokes'] as $jokeID => $joke) {
+				$jokes[$jokeID] = $joke['JokeName'];
+			}
+			if (isset($rip['Rippers'])) {
+				$rippers = [];
+				foreach (($rip['Rippers'] ?? []) as $ripperID => $ripper) {
+					$rippers[$ripperID] = $ripper['RipperName'];
+				}
+			}
+
+			$round = new Round($this->settings->difficulty, $rip['RipID'], $rip['RipYouTubeID'], $jokes, $rip['RipName'] ?? null, $rip['GameName'] ?? null, $rip['RipGame'] ?? null, $rip['RipAlternateName'] ?? null, $rippers ?? null);
+			array_push($this->skippedRips, $this->getCurrentRound()->ripID);
+			array_pop($this->rounds);
+			array_push($this->rounds, $round);
+			error_log(print_r($this->rounds, true));
 		}
 
 		if ($round instanceof Round) {
