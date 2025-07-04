@@ -53,7 +53,7 @@ use RipDB\RipGuesser as rg;
 		<div id="how-to-3">
 			<h3>Scoring</h3>
 			<p>Each correct guess will net you points. Depending on what attribute you are guessing will determine how many points you get.</p>
-			<p>At the end of all rounds, your score will be tallied up.</p>
+			<p>At the end of all rounds, your score will be tallied up. Aim for the highest score!</p>
 		</div>
 	</section>
 </main>

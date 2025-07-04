@@ -61,8 +61,8 @@ use RipDB\RipGuesser as game;
 				<?= (new o\InputElement(game\Difficulty::Standard->name, o\InputTypes::radio, ['name' => 'difficulty', 'id' => 'difficulty-2', 'value' => game\Difficulty::Standard->name, 'title' => game\Difficulty::Standard->value]))->buildElement() ?>
 				<?= (new o\InputElement(game\Difficulty::Hard->name, o\InputTypes::radio, ['name' => 'difficulty', 'id' => 'difficulty-3', 'value' => game\Difficulty::Hard->name, 'title' => game\Difficulty::Hard->value]))->buildElement() ?>
 				<!-- <details style="margin:10px 0px" open> -->
-					<!-- <summary style="margin:5px 0px">Difficulty Overrides</summary> -->
-					<!-- <?= (new o\InputElement('Show Number of Correct Answers', o\InputTypes::checkbox, ['checked' => true, 'name' => 'show-count', 'title' => "This will show how many answers there are for fields that take multiple values.\nE.g. This will show how many jokes are in the round's rip."]))->buildElement() ?> -->
+				<!-- <summary style="margin:5px 0px">Difficulty Overrides</summary> -->
+				<!-- <?= (new o\InputElement('Show Number of Correct Answers', o\InputTypes::checkbox, ['checked' => true, 'name' => 'show-count', 'title' => "This will show how many answers there are for fields that take multiple values.\nE.g. This will show how many jokes are in the round's rip."]))->buildElement() ?> -->
 				<!-- </details> -->
 			</fieldset>
 			<fieldset style="display:flex;justify-content:space-between">
@@ -76,8 +76,17 @@ use RipDB\RipGuesser as game;
 					<?= (new o\InputElement('Max. Rip Length', o\InputTypes::text, ['name' => 'maxlength', 'pattern' => '([0-9]{2}:[0-9]{2})', 'value' => '03:00', 'placeholder' => '03:00', 'required' => true, 'onchange' => 'validateLength(this)'], null, true))->buildElement() ?>
 				</div>
 			</fieldset>
-			<button type="submit">Play</button>
+			<button type="submit" style="margin: 10px auto;display: block;padding: 10px;font-size: larger;">Play</button>
 		</form>
+		<section>
+			<h3>Help/FAQ</h3>
+			<details class="example">
+				<summary>I keep getting rips with have jokes I don't know!</summary>
+				<p>You can specify <b>meta jokes</b> (e.g. artists, bands, franchises) to limit what rips will be selected to you.<br>
+					Try entering some that you're familiar with.</p>
+				<p>You can also filter by a <b>meta tag</b> (e.g. jokes from a "Video Game", "Viral Video", "Anime" etc.) if you want to explore a specific genre/field.</p>
+			</details>
+		</section>
 	</div>
 </main>
 <script src="https://www.youtube.com/iframe_api" defer></script>
