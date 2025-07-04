@@ -13,7 +13,7 @@ CREATE PROCEDURE RipDB.usp_InsertRipFeedback(
 )
 BEGIN
 
-	-- If an upvote/dwnvote is given, update the rip's upvote/downvote count
+	-- If an upvote/downvote is given, update the rip's upvote/downvote count
 	IF (Upvote IS NOT NULL) THEN
 
 		-- Check if a record exists first. If it does not, insert one. ELse, update the existing record.
@@ -21,11 +21,11 @@ BEGIN
 			INSERT INTO RipGuesserUpvotes
 				(RipID, Upvotes, Downvotes)
 			VALUES
-				(RipIDIn, IF(Upvote => 1, 1, 0), IF(Upvote => 1, 0, 1));
+				(RipIDIn, IF(Upvote >= 1, 1, 0), IF(Upvote >= 1, 0, 1));
 		ELSE
 			UPDATE RipGuesserUpvotes
-			SET Upvotes = IF(Upvote => 1, Upvotes + 1, Upvotes),
-				Downvotes = IF(Upvote => 1, Downvotes, Downvotes + 1);
+			SET Upvotes = IF(Upvote >= 1, Upvotes + 1, Upvotes),
+				Downvotes = IF(Upvote >= 1, Downvotes, Downvotes + 1);
 		END IF;
 	-- If a joke feedback is given, submit a new feedback record.
 	ELSE
