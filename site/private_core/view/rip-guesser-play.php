@@ -35,11 +35,11 @@ use RipDB\RipGuesser as game;
 				<p>How suitable was this rip for RipGuessr?</p>
 				<button class="btn-good" id="btnGood">&gt;:] Nice</button>
 				<button class="btn-bad" id="btnBad">&gt;:[ Not Nice</button>
-				<button class="btn-warn" id="btnIncorrect">It was missing/has the wrong joke!</button>
+				<button class="btn-warn" id="btnIncorrect" style="margin:auto;margin-top:5px;display:inline-block">It was missing/has the wrong joke!</button>
 				<form id="feedback-extra" style="display:none">
 					<?= (new o\InputElement('What was wrong?', o\InputTypes::text, ['id' => 'joke', 'minlength' => 1, 'maxlength' => 1024, 'style' => 'margin-top:10px;min-width:250px', 'placeholder' => 'Enter the incorrect/missing joke(s) here', 'disabled' => true, 'required' => true]))->buildElement(); ?>
 					<br>
-					<button id="btnExtraSubmit" type="submit">Submit Feedback</button>
+					<button id="btnExtraSubmit" type="submit" style="margin-top:5px;">Submit Feedback</button>
 				</form>
 			</div>
 		</div>

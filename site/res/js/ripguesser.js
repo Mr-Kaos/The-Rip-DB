@@ -385,11 +385,6 @@ class Game {
 
 		function onPlayerStateChange(event) {
 			switch (event.target.getPlayerState()) {
-				// Unstarted (error)
-				case -1:
-					pauseBtn.innerHTML = "&#x274C;"
-					pauseBtn.disabled = true;
-					break;
 				// Ended
 				case 0:
 					pauseBtn.innerHTML = "&#x23F9;"
@@ -420,16 +415,19 @@ class Game {
 			let score = resultsContainer.querySelector('#score');
 			let btnNextRound = document.getElementById('advance-round');
 			btnNextRound.onclick = e => this.nextRound();
-
 			score.innerText = results.Score;
-			let answersContainer = resultsContainer.querySelector('#answers>ul');
+
+			// Reset the answer list to prevent previous results from lingering
+			let answersContainer = resultsContainer.querySelector('#answers');
 			answersContainer.innerHTML = '';
+			let answersList = document.createElement('ul');
+			answersContainer.prepend(answersList)
 			let answers = results.Results.Answers;
 			let correct = results.Results.Correct;
 
 			for (let key in form) {
 				// Make sure only the form elements are checked.
-				if (form[key] instanceof HTMLElement && form[key].id != '') {
+				if (form[key] instanceof HTMLElement && form[key].id != '' && form[key].tagName != 'BUTTON') {
 					let answerResult = document.createElement('li');
 					// If there are any corrections, <li> elements will be added containing the corrections.
 					let answerKey = null;
@@ -462,16 +460,25 @@ class Game {
 					// Display the answers
 					if (answerKey != null) {
 						let correctValues = document.createElement('ul');
-						for (let jokeId in answers[answerKey]) {
+
+						if (answers[answerKey] instanceof Object) {
+							for (let jokeId in answers[answerKey]) {
+								let answer = document.createElement('li');
+								answer.innerText = answers[answerKey][jokeId];
+								correctValues.append(answer);
+							}
+						} else {
 							let answer = document.createElement('li');
-							answer.innerText = answers[answerKey][jokeId];
+							answer.innerText = answers[answerKey];
 							correctValues.append(answer);
 						}
 
 						answerResult.appendChild(correctValues)
 					}
 
-					answersContainer.appendChild(answerResult);
+					if (answerResult.innerText != '') {
+						answersList.appendChild(answerResult);
+					}
 				}
 			}
 
@@ -484,79 +491,6 @@ class Game {
 
 		this.#prepareFeedbackForm();
 		this.#toggleGameDisplay('results');
-	}
-
-	/**
-	 * Prepares the feedback form on the rip's results page
-	 */
-	#prepareFeedbackForm() {
-		let feedback = this.#gameContainer.querySelector('#feedback');
-
-		if (feedback != null) {
-			let btnGood = feedback.querySelector('#btnGood');
-			let btnBad = feedback.querySelector('#btnBad');
-			let btnIncorrect = feedback.querySelector('#btnIncorrect');
-			let extra = feedback.querySelector('#feedback-extra');
-			let extraInput = extra.querySelector('#joke');
-			let extraSubmit = feedback.querySelector('#btnExtraSubmit');
-
-			// Make sure the inputs are set back to their initial styling when displayed again.
-			feedback.style.display = '';
-			btnGood.style.display = 'unset';
-			btnBad.style.display = 'unset';
-			btnIncorrect.style.display = 'unset';
-			extra.style.display = 'none';
-			extraInput.disabled = true;
-			extraInput.value = '';
-			btnGood.onclick = e => this.#sendFeedback(true);
-			btnBad.onclick = e => this.#sendFeedback(false);
-			extraSubmit.form.onsubmit = e => this.#sendFeedback(e);
-
-			// Clicking the "wrong joke" button simply toggles the display of the text input to allow submission of the missing joke.
-			// The other inputs are hidden to simplify the interface.
-			btnIncorrect.onclick = function (e) {
-				btnGood.style.display = 'none';
-				btnBad.style.display = 'none';
-				btnIncorrect.style.display = 'none';
-				extraInput.disabled = false;
-				extra.style.display = 'unset';
-			}.bind(this);
-		}
-	}
-
-	/**
-	 * Sends the feedback to the server.
-	 * @param {Event|Boolean} e The event of the feedback form's submission, or a boolean indicating if the rip was good or bad (true or false).
-	 */
-	async #sendFeedback(e) {
-		let data = null;
-		// Joke Feedback
-		if (e instanceof Event) {
-			e.preventDefault(e);
-			data = new FormData(e.target);
-		}
-		// Upvote
-		else if (e === true || e === false) {
-			data = new FormData();
-			data.append('upvote', e);
-		}
-
-		let request = await fetch('/ripguessr/game/feedback', {
-			method: 'POST',
-			body: data
-		});
-
-		if (request.ok) {
-			let results = await request.json();
-			let feedbackContainer = this.#gameContainer.querySelector('#feedback');
-
-			if (results == true) {
-				feedbackContainer.style.display = 'none';
-				displayNotification('Thanks for the feedback!');
-			} else {
-				displayNotification(e[0], NotificationPriority.Error);
-			}
-		}
 	}
 
 	/**
@@ -618,6 +552,79 @@ class Game {
 		}
 		feedback.style.display = 'none';
 		this.#toggleGameDisplay('results');
+	}
+
+	/**
+	 * Prepares the feedback form on the rip's results page
+	 */
+	#prepareFeedbackForm() {
+		let feedback = this.#gameContainer.querySelector('#feedback');
+
+		if (feedback != null) {
+			let btnGood = feedback.querySelector('#btnGood');
+			let btnBad = feedback.querySelector('#btnBad');
+			let btnIncorrect = feedback.querySelector('#btnIncorrect');
+			let extra = feedback.querySelector('#feedback-extra');
+			let extraInput = extra.querySelector('#joke');
+			let extraSubmit = feedback.querySelector('#btnExtraSubmit');
+
+			// Make sure the inputs are set back to their initial styling when displayed again.
+			feedback.style.display = '';
+			btnGood.style.display = 'unset';
+			btnBad.style.display = 'unset';
+			btnIncorrect.style.display = 'block';
+			extra.style.display = 'none';
+			extraInput.disabled = true;
+			extraInput.value = '';
+			btnGood.onclick = e => this.#sendFeedback(true);
+			btnBad.onclick = e => this.#sendFeedback(false);
+			extraSubmit.form.onsubmit = e => this.#sendFeedback(e);
+
+			// Clicking the "wrong joke" button simply toggles the display of the text input to allow submission of the missing joke.
+			// The other inputs are hidden to simplify the interface.
+			btnIncorrect.onclick = function (e) {
+				btnGood.style.display = 'none';
+				btnBad.style.display = 'none';
+				btnIncorrect.style.display = 'none';
+				extraInput.disabled = false;
+				extra.style.display = 'unset';
+			}.bind(this);
+		}
+	}
+
+	/**
+	 * Sends the feedback to the server.
+	 * @param {Event|Boolean} e The event of the feedback form's submission, or a boolean indicating if the rip was good or bad (true or false).
+	 */
+	async #sendFeedback(e) {
+		let data = null;
+		// Joke Feedback
+		if (e instanceof Event) {
+			e.preventDefault(e);
+			data = new FormData(e.target);
+		}
+		// Upvote
+		else if (e === true || e === false) {
+			data = new FormData();
+			data.append('upvote', e);
+		}
+
+		let request = await fetch('/ripguessr/game/feedback', {
+			method: 'POST',
+			body: data
+		});
+
+		if (request.ok) {
+			let results = await request.json();
+			let feedbackContainer = this.#gameContainer.querySelector('#feedback');
+
+			if (results == true) {
+				feedbackContainer.style.display = 'none';
+				displayNotification('Thanks for the feedback!');
+			} else {
+				displayNotification(e[0], NotificationPriority.Error);
+			}
+		}
 	}
 
 	/**
