@@ -104,7 +104,13 @@ summary {
 	cursor: pointer;
 }
 
-input {
+label {
+	margin-right: 13px;
+}
+
+input,
+textarea,
+select {
 	border: none;
 	margin: 2px;
 	padding: 3px;

@@ -44,6 +44,7 @@ class InputElement extends PageObject
 	protected ?string $label;
 	private array $labelAttributes;
 	private InputTypes $type;
+	private bool $block = false; // If true, the generated input and label elements will be contained within a div
 
 	/**
 	 * If either a name and no id or id and no name attribute is given, it will copy the value of the given attribute to the missing one.
@@ -51,8 +52,10 @@ class InputElement extends PageObject
 	 * @param InputTypes $type The InputType of the element.
 	 * @param ?array $attributes An associative array of html attributes to add to the element.
 	 * @param ?array $labelAttributes An associative array of html attributes to add to the element's label.
+	 * @param bool $block Default false. If true, the generated label will be styled to display as a block and will be contained within a div container with its input.  
+	 * Useful if input+label pairs are used in a flex container.
 	 */
-	public function __construct(?string $label, InputTypes $type, ?array $attributes = [], ?array $labelAttributes = [])
+	public function __construct(?string $label, InputTypes $type, ?array $attributes = [], ?array $labelAttributes = [], bool $block = false)
 	{
 		$ignoreId = false;
 		$ignoreName = false;
@@ -79,7 +82,8 @@ class InputElement extends PageObject
 		parent::__construct($attributes);
 		$this->type = $type;
 		$this->label = $label;
-		$this->labelAttributes = $labelAttributes;
+		$this->labelAttributes = $labelAttributes ?? [];
+		$this->block = $block;
 	}
 
 	public function __destruct()
@@ -102,9 +106,22 @@ class InputElement extends PageObject
 	{
 		$label = '';
 		if ($this->type !== InputTypes::hidden) {
-			$for = array_key_exists('id', $this->attributes) ? ' for="' . $this->attributes['id'] . '" ' : ' ';
+			// Apply additional attributes to label, if necessary
+			if (!array_key_exists('for', $this->labelAttributes) && array_key_exists('id', $this->attributes)) {
+				$this->labelAttributes['for'] = $this->attributes['id'];
+			}
+			// If displaying as block, check if an existing display attribute is set. If it is, replace it. Else, append it.
+			if ($this->block) {
+				$style = $this->labelAttributes['style'] ?? '';
+				if (str_contains($style, 'display')) {
+					$style = preg_replace('/(?<=display:).*?(?=;|$|")/m', "block", $style);
+				} else {
+					$style .= ';display:block;';
+				}
+				$this->labelAttributes['style'] = $style;
+			}
 			$attributes = $this->buildAttributes($this->labelAttributes);
-			$label = '<label' . $for . $attributes . '>';
+			$label = '<label' . $attributes . '>';
 			if ($required) {
 				$label .= '*';
 			}
@@ -144,10 +161,10 @@ class InputElement extends PageObject
 					if (!array_key_exists('type', $this->attributes)) {
 						$type = 'type="button"';
 					}
-					$field = '<button id="' . $id . '" ' . $type . "$attributes>$this->label</button>";
+					$field .= '<button id="' . $id . '" ' . $type . "$attributes>$this->label</button>";
 					break;
 				case InputTypes::textarea:
-					$field = '<textarea id="' . $id . '" ' . $attributes . '>' . $value . '</textarea>';
+					$field .= '<textarea id="' . $id . '" ' . $attributes . '>' . $value . '</textarea>';
 					break;
 				case InputTypes::checkbox:
 					// If an alt value is specified, create the hidden checkbox.
@@ -156,26 +173,26 @@ class InputElement extends PageObject
 							throw (new Exception('Checkboxes with an alternate (hidden) value must have a name attribute specified.'));
 						}
 						unset($this->attributes['value']);
-						$field = '<input id="hidden-' . $id . '" type="hidden"' . $this->buildAttributes($this->attributes) . ' value="' . $valueAlt . '">';
+						$field .= '<input id="hidden-' . $id . '" type="hidden"' . $this->buildAttributes($this->attributes) . ' value="' . $valueAlt . '">';
 					}
 					$field .= '<input id="' . $id . '" type="' . $this->type->name . '" ' . $value . "$attributes>";
 					break;
 				case InputTypes::list:
-					$field = '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="0">' . '<input id="' . $id . '" type="' . $this->type->name . '"' . "$attributes>";
+					$field .= '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="0">' . '<input id="' . $id . '" type="' . $this->type->name . '"' . "$attributes>";
 					break;
 				case InputTypes::datetime:
-					$field = '<input id="' . $id . '" type="datetime"' . $attributes . ">";
+					$field .= '<input id="' . $id . '" type="datetime"' . $attributes . ">";
 					break;
 				case InputTypes::radio:
-					$field = '<input id="' . $id . '" type="radio"' . $attributes . ">";
+					$field .= '<input id="' . $id . '" type="radio"' . $attributes . ">";
 					break;
 				case InputTypes::range:
 					$initVal = $this->attributes['value'] ?? 0;
 					$script = 'oninput="this.nextElementSibling.innerText = this.value;"';
-					$field = '<div>' . $this->label . '<input id="' . $id . '" type="' . $this->type->value . '"' . $attributes . $script . '><span id="val_' . $id . '">' . $initVal . '</span></div>';
+					$field .= '<div>' . $this->label . '<input id="' . $id . '" type="' . $this->type->value . '"' . $attributes . $script . '><span id="val_' . $id . '">' . $initVal . '</span></div>';
 					break;
 				default:
-					$field = '<input id="' . $id . '" type="' . $this->type->value . '"' . "$attributes>";
+					$field .= '<input id="' . $id . '" type="' . $this->type->value . '"' . "$attributes>";
 			}
 		}
 
@@ -192,6 +209,10 @@ class InputElement extends PageObject
 			default:
 				$field = $label . $field;
 				break;
+		}
+
+		if ($this->block) {
+			$field = '<div>' . $field . '</div>';
 		}
 
 		return $field;

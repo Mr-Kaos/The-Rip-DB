@@ -20,8 +20,9 @@ class SearchElement extends InputElement
 	 * @param bool $allowMultiSelect If true, allows multiple searches to be performed and have them as "selected" options, similar to the MultiSelectDropdownElement. Default is false - i.e. single value.
 	 * @param ?array $value An associative array containing the IDs and text-value of the input. If $allowMultiSelect is true, then the value should be an array of key-pair values for each input.
 	 * @param ?array $attributes An associative array of html attributes to add to the element.
+	 * @param ?array $labelAttributes An associative array of html attributes to add to the element's label.
 	 */
-	public function __construct(string $label, string $url, bool $allowMultiSelect, ?array $value, ?array $attributes = [])
+	public function __construct(string $label, string $url, bool $allowMultiSelect, ?array $value, ?array $attributes = [], ?array $labelAttributes = [])
 	{
 		$this->url = $url;
 		$this->multiSelect = $allowMultiSelect;
@@ -33,7 +34,7 @@ class SearchElement extends InputElement
 			}
 		}
 		$this->values = $value;
-		parent::__construct($label, InputTypes::custom, $attributes);
+		parent::__construct($label, InputTypes::custom, $attributes, $labelAttributes);
 	}
 
 	/**
