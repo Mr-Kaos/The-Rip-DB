@@ -427,7 +427,10 @@ class Game {
 
 			for (let key in form) {
 				// Make sure only the form elements are checked.
-				if (form[key] instanceof HTMLElement && form[key].id != '' && form[key].tagName != 'BUTTON') {
+				// - The key of the form object must be an integer (nth form element)
+				// - The element in that index of the form must be an element
+				// - The element must not be a button (ignore submit button)
+				if (!isNaN(key) && form[key] instanceof HTMLElement && form[key].id != '' && form[key].tagName != 'BUTTON') {
 					let answerResult = document.createElement('li');
 					// If there are any corrections, <li> elements will be added containing the corrections.
 					let answerKey = null;
