@@ -4,7 +4,7 @@
 	--text-color-invert: #000;
 	--element-color: #444;
 
-	--bg-accent: #1d3b2b;
+	--bg-accent: #2d1d3b;
 	--accent-1: #594866;
 	--accent-2: #8c2096;
 	--accent-3: #a748b3;
@@ -21,17 +21,20 @@
 	--color-bad: #ca0000;
 }
 
-body {
-	background-color: var(--bg-color) !important;
+.funny {
+	position: absolute;
 	background-image: url(../img/the_voice.png) !important;
 	background-repeat: no-repeat !important;
-	background-size: 5% !important;
-	background-position-x: 5% !important;
-	background-position-y: 95% !important;
+	background-size: contain;
+	min-height: 64px;
+	max-height: 128px;
+	height: 5%;
+	min-width: 64px;
+	width: fit-content;
+	margin-left: 64px;
+	margin-top: calc(100vh - 150px);
 }
 
-@media only screen and (min-width: 1081px) {
-	body {
-		background-size: 3% !important;
-	}
+button {
+	color: var(--text-color) !important;
 }

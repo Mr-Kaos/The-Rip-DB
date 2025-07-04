@@ -11,24 +11,22 @@
 
 	--tbl-row-odd: #e7e7e7;
 	--tbl-row-even: #d6d6d6;
-	
+
 	--color-good: #0edd0e;
 	--color-ok: #6be9f1;
 	--color-warn: #ffae00;
 	--color-bad: #ff0000;
 }
 
-body {
-	background-color: var(--bg-color) !important;
+.funny {
+	position: relative;
 	background-image: url(../img/gadget.png) !important;
 	background-repeat: no-repeat !important;
-	background-size: 5% !important;
-	background-position-x: 100% !important;
-	background-position-y: 20px !important;
-}
-
-@media only screen and (min-width: 1081px) {
-	body {
-		background-size: 3% !important;
-	}
+	background-size: contain;
+	min-height: 64px;
+	max-height: 128px;
+	height: 5%;
+	min-width: 64px;
+	width: fit-content;
+	margin-left: calc(100vw - 80px);
 }
