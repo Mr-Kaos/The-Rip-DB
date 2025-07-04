@@ -134,8 +134,8 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		// If the min is greater than the max or vice versa, these will be rectified when creating the settings object.
 		$jokesMin = $this->validateNumber($data['jokes-min'] ?? null, 'You need at least one joke to find in a rip!', game\Settings::MAX_JOKES, game\Settings::MIN_JOKES);
 		$jokesMax = $this->validateNumber($data['jokes-max'] ?? null, "You can't play with rips that have more than " . game\Settings::MAX_JOKES . " jokes!", game\Settings::MAX_JOKES, game\Settings::MIN_JOKES);
-		$minLength = '00:00:00';
-		$maxLength = $this->validateTimestamp($data['length'] ?? null, "Rips must be less than " . game\Settings::MAX_RIP_LENGTH . " minutes long.", game\Settings::MAX_RIP_LENGTH, game\Settings::MIN_RIP_LENGTH);
+		$maxLength = $this->validateTimestamp($data['maxlength'] ?? null, "Rips must be less than " . game\Settings::MAX_RIP_LENGTH . " minutes long.", game\Settings::MAX_RIP_LENGTH, game\Settings::MIN_RIP_LENGTH);
+		$minLength = $this->validateTimestamp($data['minlength'] ?? null, "Rips must be more than " . game\Settings::MIN_RIP_LENGTH . " minutes long.", game\Settings::MAX_RIP_LENGTH, game\Settings::MIN_RIP_LENGTH);
 
 		$metaJokes = $this->model->getValidMetaJokes($data['filter-metajokes'] ?? []);
 		$metas = $this->model->getValidMetas($data['filter-metas'] ?? []);
