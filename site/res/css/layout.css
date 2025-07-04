@@ -9,24 +9,29 @@ body {
 }
 
 main {
-	margin-left: 10%;
-	margin-right: 10%;
+	margin-left: 15%;
+	margin-right: 15%;
 	margin-bottom: auto;
 	height: 100%;
-	width: 80%;
+	width: 70%;
 }
 
 nav {
+	display: flex;
 	background: var(--accent-1);
 	padding: 5px 0px;
-	padding-left: 5%;
-	padding-right: 5%;
-	max-height: 20px;
+	padding-left: 15%;
+	padding-right: 15%;
+	align-items: center;
 }
 
 nav>a {
 	margin-right: 15px;
 	color: var(--text-color);
+}
+
+nav>:last-child {
+	margin-left: auto;
 }
 
 nav>a:visited {
@@ -492,5 +497,16 @@ h4 {
 	.grid {
 		grid-template-columns: 1fr 1fr;
 		gap: 15px;
+	}
+
+	main {
+		margin-left: 10%;
+		margin-right: 10%;
+		width: 80%;
+	}
+
+	nav {
+		padding-left: 10%;
+		padding-right: 10%;
 	}
 }
