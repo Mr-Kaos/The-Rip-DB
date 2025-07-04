@@ -25,6 +25,7 @@ class Game {
 	#roundData = null;
 	#player;
 	#playerState = null;
+	#started = false;
 
 	constructor() {
 		this.#initGame();
@@ -65,27 +66,31 @@ class Game {
 	async setSettings(e) {
 		if (e != null) {
 			e.preventDefault();
-			let data = new FormData(e.target);
-			let ready = false;
+			if (!this.#started) {
+				e.target.querySelector('button[type=submit]').disabled = true;
+				this.#started = true;
+				let data = new FormData(e.target);
+				let ready = false;
 
-			let request = await fetch('/ripguessr/game/start', {
-				method: 'POST',
-				body: data
-			});
+				let request = await fetch('/ripguessr/game/start', {
+					method: 'POST',
+					body: data
+				});
 
-			// If the server responds with true, then the game can start
-			if (request.ok) {
-				try {
-					ready = await request.json();
-				} catch (e) {
-					console.error(e);
-					displayNotification("ERROR: The game was successfully initialised but no response was received from the server.", NotificationPriority.Error)
-				}
-				if (!ready) {
-					displayNotification("Game failed to initialise!", NotificationPriority.Error);
-				} else {
-					this.#toggleGameDisplay('settings');
-					this.#startGame();
+				// If the server responds with true, then the game can start
+				if (request.ok) {
+					try {
+						ready = await request.json();
+					} catch (e) {
+						console.error(e);
+						displayNotification("ERROR: The game was successfully initialised but no response was received from the server.", NotificationPriority.Error)
+					}
+					if (!ready) {
+						displayNotification("Game failed to initialise!", NotificationPriority.Error);
+					} else {
+						this.#toggleGameDisplay('settings');
+						this.#startGame();
+					}
 				}
 			}
 		}
@@ -211,6 +216,9 @@ class Game {
 		if (!request.ok) {
 			console.error('Failed to purge round...');
 		}
+
+		this.#started = false;
+
 
 		this.#toggleGameDisplay('settings');
 	}
