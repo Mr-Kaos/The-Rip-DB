@@ -81,7 +81,7 @@ use RipDB\RipGuesser as game;
 		<section>
 			<h3>Help/FAQ</h3>
 			<details class="example">
-				<summary>I keep getting rips with have jokes I don't know!</summary>
+				<summary>I keep getting rips with jokes I don't know!</summary>
 				<p>You can specify <b>meta jokes</b> (e.g. artists, bands, franchises) to limit what rips will be selected to you.<br>
 					Try entering some that you're familiar with.</p>
 				<p>You can also filter by a <b>meta tag</b> (e.g. jokes from a "Video Game", "Viral Video", "Anime" etc.) if you want to explore a specific genre/field.</p>
