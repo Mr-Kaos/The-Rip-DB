@@ -90,10 +90,12 @@ Flight::route('/help', function () {
 	displayPage('help', null, [], 'Help / FAQ');
 });
 
+const RIP_GUESSER_HEAD = 'head_ripguesser.php';
+
 // Rip Guesser Page
 Flight::group('/ripguessr', function () {
 	Flight::route('/', function () {
-		displayPage('rip-guesser', 'GuesserController', [], 'Rip Guessr');
+		displayPage('rip-guesser', 'GuesserController', [], 'Rip Guessr', RIP_GUESSER_HEAD);
 	});
 	// The play page should not have any GET tags or subpages.
 	Flight::route('/play', function () {
@@ -101,7 +103,7 @@ Flight::group('/ripguessr', function () {
 			Flight::redirect('/ripguessr/play');
 		}
 		session_start();
-		displayPage('rip-guesser-play', 'GuesserController', [], 'Rip Guessr');
+		displayPage('rip-guesser-play', 'GuesserController', [], 'Rip Guessr', RIP_GUESSER_HEAD);
 	});
 	Flight::route('/play/@any', function ($any) {
 		Flight::redirect('/ripguessr/play');
@@ -175,7 +177,7 @@ Flight::group('/search', function () {
 /**
  * Displays the page with a header and footer.
  */
-function displayPage(string $page, ?string $controllerName = null, array $data = [], ?string $pageTitle = null): void
+function displayPage(string $page, ?string $controllerName = null, array $data = [], ?string $pageTitle = null, string $headerFileOverride = 'head.php'): void
 {
 	// Include page objects that are commonly used across pages
 	include_once('private_core/objects/InputElement.php');
@@ -202,7 +204,8 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 
 	echo '<!DOCTYPE HTML><html>';
 	define('PAGE_TITLE', "The Rip Database | " . ($pageTitle === null ? $page : $pageTitle));
-	require('templates/head.php');
+	error_log("templates/$headerFileOverride");
+	require("templates/$headerFileOverride");
 	echo "<body>";
 	require('templates/globalScripts.php');
 	require('templates/nav.php');
