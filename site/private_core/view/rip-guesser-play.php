@@ -82,9 +82,25 @@ use RipDB\RipGuesser as game;
 			<h3>Help/FAQ</h3>
 			<details class="example">
 				<summary>I keep getting rips with jokes I don't know!</summary>
-				<p>You can specify <b>meta jokes</b> (e.g. artists, bands, franchises) to limit what rips will be selected to you.<br>
+				<p>You can specify <strong>meta jokes</strong> (e.g. artists, bands, franchises) to limit what rips will be selected to you.<br>
 					Try entering some that you're familiar with.</p>
-				<p>You can also filter by a <b>meta tag</b> (e.g. jokes from a "Video Game", "Viral Video", "Anime" etc.) if you want to explore a specific genre/field.</p>
+				<p>You can also filter by a <string>meta tag</strong> (e.g. jokes from a "Video Game", "Viral Video", "Anime" etc.) if you want to explore a specific genre/field.</p>
+			</details>
+			<details class="example">
+				<summary>The number of rounds I selected weren't played.</summary>
+				<p>If you've applied filters, that means <strong>there are not enough rips</strong> in the database that match the specified filters to play all the rounds you requested.<br>
+					In other words, this means you've played all the rips that contain those filters!</p>
+			</details>
+			<details class="example">
+				<summary>The game appears to be stuck and nothing is loading on-screen.</summary>
+				<p>If you've managed to make this occur, that's not good!<br>
+			To remedy this situation, you can try any of the following:</p>
+			<ul>
+				<li>Clear <strong>this site's</strong> cookies. You may have somehow launched multiple games in one session! (The game's session is stored as a cookie).</li>
+				<li>Try hard-refreshing the page. This is done by pressing <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>r</kbd>, or <kbd>ctrl</kbd> + <kbd>F5</kbd>.</li>
+				<li>Try another browser. Not an ideal solution, but this should start a new game session.</li>
+			</ul>
+			<p>Although this should never happen, if it does, please <strong>submit a bug report on the <a href="https://github.com/Mr-Kaos/The-Rip-DB">project's GitHub</a></strong>.</p>
 			</details>
 		</section>
 	</div>
