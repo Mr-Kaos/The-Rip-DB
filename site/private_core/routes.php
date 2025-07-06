@@ -13,6 +13,7 @@ const RESOURCE_EXTENSIONS = ['css', 'js', 'ico', 'jpg', 'jpeg', 'png']; // All a
 
 $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
 require_once('private_core/config/themes.php');
+require_once('private_core/objects/SessionManager.php');
 
 /**
  * All valid HTTP methods available in this system.
@@ -102,7 +103,6 @@ Flight::group('/ripguessr', function () {
 		if (count($_GET) > 0) {
 			Flight::redirect('/ripguessr/play');
 		}
-		session_start();
 		displayPage('rip-guesser-play', 'GuesserController', [], 'Rip Guessr', RIP_GUESSER_HEAD);
 	});
 	Flight::route('/play/@any', function ($any) {
@@ -134,6 +134,29 @@ Flight::route('GET /settings/theme', function () {
 	header('location:' . $_SERVER['HTTP_REFERER']);
 	die();
 });
+
+// Login requests
+Flight::group('/login', function () {
+	Flight::route('POST /', function () {
+		submitForm('login', 'LoginController');
+	});
+	Flight::route('/', function () {
+		displayPage('login', 'LoginController', [], 'Login');
+	});
+
+	Flight::route('POST /new', function () {
+		submitForm('login-new', 'LoginController');
+	});
+	Flight::route('/new', function () {
+		displayPage('login-new', 'LoginController', [], 'Login');
+	});
+
+	Flight::route('/logout', function () {
+		submitForm('logout', 'LoginController');
+	});
+});
+
+Flight::group('/account', function () {});
 
 // Dropdown search requests
 Flight::group('/search', function () {
@@ -179,6 +202,7 @@ Flight::group('/search', function () {
  */
 function displayPage(string $page, ?string $controllerName = null, array $data = [], ?string $pageTitle = null, string $headerFileOverride = 'head.php'): void
 {
+	RipDB\initSession();
 	// Include page objects that are commonly used across pages
 	include_once('private_core/objects/InputElement.php');
 	include_once('private_core/objects/DropdownElement.php');
@@ -204,13 +228,14 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 
 	echo '<!DOCTYPE HTML><html>';
 	define('PAGE_TITLE', "The Rip Database | " . ($pageTitle === null ? $page : $pageTitle));
-	error_log("templates/$headerFileOverride");
 	require("templates/$headerFileOverride");
 	echo "<body>";
 	require('templates/globalScripts.php');
 	require('templates/nav.php');
 	Flight::render($page, $pageData);
 	require('templates/footer.php');
+	// Check for any notifications
+	echo outputNotifications();
 	echo "</body></html>";
 }
 
@@ -357,12 +382,14 @@ function parsePut(): ?array
 
 	return $put;
 }
+
 /**
  * Submits a form from a POST request.
  */
 function submitForm(string $page, string $controllerName, ?array $data = null)
 {
 	if (!is_null($controllerName)) {
+		RipDB\initSession();
 		require_once("private_core/controller/$controllerName.php");
 		$controllerName = "\RipDB\\Controller\\$controllerName";
 		$controller = new $controllerName($page);
@@ -370,12 +397,27 @@ function submitForm(string $page, string $controllerName, ?array $data = null)
 
 		if (is_array($result)) {
 			foreach ($result as $error) {
-				echo $error->getMessage();
+				RipDB\addNotification($error->getMessage(), $error->getPriority());
 			}
-			echo '<a href="' . $_SERVER['HTTP_REFERER'] . '">Go Back (this page temporary)</a>';
-			die();
+			Flight::redirect($_SERVER['HTTP_REFERER']);
 		} else {
 			Flight::redirect($result);
 		}
 	}
+}
+
+/**
+ * Checks to see if there are any notifications to display, and if so creates a simple hidden HTML element for JavaScript to parse and display to the user.
+ */
+function outputNotifications(): string {
+	$notifs = '';
+	if (!empty($_SESSION[RipDB\ERRORS] ?? null)) {
+		$notifs .= '<div id="server-notifs" style="display:none">';
+		foreach ($_SESSION[RipDB\ERRORS] as $msg => $priority) {
+			$notifs .= '<p priority="' . $priority->name . '">' . htmlspecialchars($msg) . '</p>';
+		}
+		$notifs .= '</div>';
+		$_SESSION[RipDB\ERRORS] = [];
+	}
+	return $notifs;
 }

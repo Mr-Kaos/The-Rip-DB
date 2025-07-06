@@ -135,7 +135,17 @@ abstract class Model
 			$params = substr($params, 0, strlen($params) - 1);
 
 			try {
-				$this->db->execute("CALL $storedProcedure($params)", array_values($data));
+				$response = $this->db->execute("CALL $storedProcedure($params)", array_values($data))->fetch();
+
+				// If the procedure SELECTs anything, assume it is an error message.
+				if (!is_array($response)) {
+					if ($output !== null) {
+						$output = $this->db->execute('SELECT @output')->fetch()['@output'];
+					}
+				} else {
+					// Only the first SELECT message will be copied as an error message.
+					$result = [new \RipDB\Error($response[array_keys($response)[0]])];
+				}
 			} catch (\PicoDb\SQLException $error) {
 				$result = [new \RipDB\Error("An error occurred when sending the data to the database.")];
 				error_log($error);

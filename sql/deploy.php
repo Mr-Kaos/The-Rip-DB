@@ -66,7 +66,8 @@ if ($in == 'Y' || $in == '') {
 		'RipRippers',
 		'RipGuesserGame',
 		'RipGuesserUpvotes',
-		'RipJokeFeedback'
+		'RipJokeFeedback',
+		'Accounts'
 	];
 	deployFiles($pdo, 'Tables', $files);
 
@@ -101,7 +102,9 @@ if ($in == 'Y' || $in == '') {
 		'usp_NewRipGuesserGame',
 		'usp_PingRipGuesserGame',
 		'usp_SelectRandomRip',
-		'usp_InsertRipFeedback'
+		'usp_InsertRipFeedback',
+		'usp_InsertLogin',
+		'usp_SelectLogin'
 	];
 	deployFiles($pdo, 'Procedures', $files);
 

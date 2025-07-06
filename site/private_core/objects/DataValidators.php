@@ -2,17 +2,27 @@
 
 namespace RipDB;
 
+enum NotificationPriority
+{
+	case Default;
+	case Success;
+	case Warning;
+	case Alert;
+	case Error;
+}
+
 /**
  * Error class. Used when validation fails - an instance of this object is returned.
  */
 class Error
 {
 	private string $message;
-	private string $inputName;
+	private NotificationPriority $priority;
 
-	public function __construct(string $message)
+	public function __construct(string $message, NotificationPriority $priority = NotificationPriority::Error)
 	{
 		$this->message = $message;
+		$this->priority = $priority;
 	}
 
 	public function getMessage(): string
@@ -25,9 +35,9 @@ class Error
 		$this->message = $message;
 	}
 
-	public function setInput(string $inputName): void
+	public function getPriority(): NotificationPriority
 	{
-		$this->inputName = $inputName;
+		return $this->priority;
 	}
 }
 

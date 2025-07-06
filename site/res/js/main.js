@@ -33,7 +33,23 @@ const NotificationPriority = {
 	Success: 'success', // green coloured
 	Warning: "warning", // yellow coloured
 	Alert: "alert", // dark orange coloured
-	Error: "error" // red coloured
+	Error: "error", // red coloured
+
+	getByString(val) {
+		switch (val) {
+			case 'Success':
+				return this.Success;
+			case 'Warning':
+				return this.Warning;
+			case 'Alert':
+				return this.Alert;
+			case 'Error':
+				return this.Error;
+			case 'Default':
+			default:
+				return this.Default;
+		}
+	}
 }
 
 /**
@@ -350,3 +366,21 @@ class Modal {
 		return modalTitleBar;
 	}
 }
+
+/**
+ * Checks to see if any notifications were created by the server and displays them
+ */
+function checkForNotifications() {
+	let serverNotifDiv = document.getElementById('server-notifs');
+
+	if (serverNotifDiv != undefined) {
+		let notifs = serverNotifDiv.querySelectorAll('p');
+
+		for (let i = 0; i < notifs.length; i++) {
+			let priority = NotificationPriority.getByString(notifs[i].getAttribute('priority'));
+
+			displayNotification(notifs[i].innerText, priority);
+		}
+	}
+}
+window.addEventListener('load', checkForNotifications);

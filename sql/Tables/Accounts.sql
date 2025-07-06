@@ -1,0 +1,12 @@
+CREATE TABLE Accounts (
+	AccountID INT auto_increment NOT NULL,
+	Username varchar(32) CHARACTER SET utf8mb4 NOT NULL,
+	PasswordSalt BINARY(64) NOT NULL,
+	PasswordHash BINARY(64) NOT NULL,
+	CONSTRAINT PK_Account PRIMARY KEY (AccountId),
+	CONSTRAINT UQ_Username UNIQUE KEY (Username)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci
+AUTO_INCREMENT=1;
