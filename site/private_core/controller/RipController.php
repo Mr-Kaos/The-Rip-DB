@@ -8,7 +8,7 @@ use RipDB\Error;
 require_once('Controller.php');
 require_once('private_core/model/RipModel.php');
 require_once('private_core/objects/DataValidators.php');
-require_once('private_core/objects/Paginator.php');
+require_once('private_core/objects/pageElements/Paginator.php');
 
 /**
  * @property \RipDB\Model\RipModel $model

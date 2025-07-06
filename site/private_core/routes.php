@@ -204,10 +204,10 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 {
 	RipDB\initSession();
 	// Include page objects that are commonly used across pages
-	include_once('private_core/objects/InputElement.php');
-	include_once('private_core/objects/DropdownElement.php');
-	include_once('private_core/objects/MultiSelectDropdownElement.php');
-	include_once('private_core/objects/SearchElement.php');
+	include_once('private_core/objects/pageElements/InputElement.php');
+	include_once('private_core/objects/pageElements/DropdownElement.php');
+	include_once('private_core/objects/pageElements/MultiSelectDropdownElement.php');
+	include_once('private_core/objects/pageElements/SearchElement.php');
 
 	// Create controller if one exists
 	$pageData = null;

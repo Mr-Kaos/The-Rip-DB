@@ -2,7 +2,7 @@
 
 use RipDB\Objects as o;
 
-include_once('private_core/objects/InputTable.php');
+include_once('private_core/objects/pageElements/InputTable.php');
 ?>
 <main>
 	<h1>Add A New Rip</h1>

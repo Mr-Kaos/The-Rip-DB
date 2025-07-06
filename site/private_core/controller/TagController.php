@@ -6,7 +6,7 @@ use RipDB\Model as m;
 
 require_once('Controller.php');
 require_once('private_core/model/TagModel.php');
-require_once('private_core/objects/Paginator.php');
+require_once('private_core/objects/pageElements/Paginator.php');
 require_once('private_core/objects/DataValidators.php');
 
 /**
