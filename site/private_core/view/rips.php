@@ -1,10 +1,12 @@
 <?php
 
 use RipDB\Objects as o;
+use RipDB\Model\RipModel as r;
 ?>
 <main>
 	<h1>Rips</h1>
-	<form id="rip_search" method="GET">
+	<hr>
+	<form id="table_search" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
 		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
@@ -21,16 +23,16 @@ use RipDB\Objects as o;
 			<?= (new o\SearchElement('Channel', '/search/channels', false, $channel, ['name' => 'channel', 'autocomplete' => 'off']))->buildElement() ?>
 		</div>
 	</form>
-	<table id="results" class="table-search">
+	<table id="results" class="table-search" data-for="table_search">
 		<thead>
 			<tr>
-				<th>Rip Name</th>
-				<th>Alternative Name</th>
-				<th>Length</th>
+				<th id="col-<?= r::SORT_RipName ?>" <?= empty($sort[r::SORT_RipName]) ? '' : 'data-sort="' . $sort[r::SORT_RipName] . '" data-ord="' . array_search($sort[r::SORT_RipName], array_keys($sort)) . '"' ?>>Rip Name</th>
+				<th id="col-<?= r::SORT_RipAlternateName ?>" <?= empty($sort[r::SORT_RipAlternateName]) ? '' : 'data-sort="' . $sort[r::SORT_RipAlternateName] . '" data-ord="' . array_search(r::SORT_RipAlternateName, array_keys($sort)) . '"' ?>>Alternative Name</th>
+				<th id="col-<?= r::SORT_RipLength ?>" <?= empty($sort[r::SORT_RipLength]) ? '' : 'data-sort="' . $sort[r::SORT_RipLength] . '" data-ord="' . array_search(r::SORT_RipLength, array_keys($sort)) . '"' ?>>Length</th>
 				<th>Ripper</th>
 				<th>Jokes</th>
 				<th>Genres</th>
-				<th>Upload Date</th>
+				<th id="col-<?= r::SORT_RipDate ?>">Upload Date</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -74,11 +76,11 @@ use RipDB\Objects as o;
 			<tr>
 				<td colspan="7" style="text-align:center" class="pagination">
 					<span style="float:left">
-						<?= (new o\InputElement('Rips per page:', o\InputTypes::number, ['id' => 'c', 'min' => 1, 'max' => 100, 'form' => 'rip_search', 'value' => $Count]))->buildElement() ?>
+						<?= (new o\InputElement('Rips per page:', o\InputTypes::number, ['id' => 'c', 'min' => 1, 'max' => 100, 'form' => 'table_search', 'value' => $Count]))->buildElement() ?>
 					</span>
 					<?= $pagination ?>
-					<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'rip_search', 'value' => $Page, 'onchange' => 'this.form.submit()']))->buildElement() ?>
-					<button type="submit" form="rip_search">Go</button>
+					<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'table_search', 'value' => $Page, 'onchange' => 'this.form.submit()']))->buildElement() ?>
+					<button type="submit" form="table_search">Go</button>
 					<span style="float:right">Showing <b><?= $RecordStart ?> to <?= $RecordEnd ?></b> of <?= $RipCount ?> rips</span>
 				</td>
 			</tr>

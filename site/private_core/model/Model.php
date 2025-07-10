@@ -177,4 +177,22 @@ abstract class Model
 
 		return $result;
 	}
+
+	/**
+	 * Applies sorting to the given query.
+	 * @param \PicoDB\Table $qry The table query to sort.
+	 * @param string $col The column in the table to sort
+	 * @param string $direction The sorting direction. Should be either 'ASC' or 'DESC'. Any other values will be ignored and sorting will not be applied.
+	 */
+	protected function quickSort(\PicoDb\Table &$qry, string $col, ?string $direction): void
+	{
+		switch (strtoupper($direction)) {
+			case 'ASC':
+				$qry->asc($col);
+				break;
+			case 'DESC':
+				$qry->desc($col);
+				break;
+		}
+	}
 }

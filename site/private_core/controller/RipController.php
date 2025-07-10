@@ -53,6 +53,7 @@ class RipController extends Controller
 				$rips = $this->model->searchRips(
 					$rowCount,
 					$offset,
+					$_GET['s'] ?? null,
 					$_GET['search'] ?? null,
 					$_GET['tags'] ?? [],
 					$_GET['jokes'] ?? [],
@@ -75,6 +76,14 @@ class RipController extends Controller
 				$this->setData('metaJokes', $this->model->getFilterResults('MetaJoke', $_GET['meta-jokes'] ?? []));
 				$this->setData('metas', $this->model->getFilterResults('Meta', $_GET['metas'] ?? []));
 				$this->setData('channel', $this->model->getFilterResults('Channel', $_GET['channel'] ?? null));
+				$sort = [];
+				foreach ($_GET['s'] ?? [] as $col) {
+					$split = explode('-', $col);
+					if (!empty($split[1]) ?? null) {
+						$sort[$split[0]] = $split[1];
+					}
+				}
+				$this->setData('sort', $sort);
 
 				// If any filter is given, make sure the details element is open by setting its "open" attribute
 				if (

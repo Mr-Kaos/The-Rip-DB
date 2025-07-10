@@ -5,7 +5,7 @@ use RipDB\Objects as o;
 <main>
 	<h1>Jokes</h1>
 	<p>This page just shows what jokes exist in the database.</p>
-	<form id="rip_search" style="display:inline" method="GET">
+	<form id="table_search" style="display:inline" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
 		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<a href="jokes/new" style="display:inline;float:right">Add Joke</a>
@@ -58,11 +58,11 @@ use RipDB\Objects as o;
 			<tr>
 				<td colspan="5" style="text-align:center" class="pagination">
 					<span style="float:left">
-						<?= (new o\InputElement('Jokes per page:', o\InputTypes::number, ['id' => 'c', 'min' => 1, 'max' => 100, 'form' => 'rip_search', 'value' => $Count]))->buildElement() ?>
+						<?= (new o\InputElement('Jokes per page:', o\InputTypes::number, ['id' => 'c', 'min' => 1, 'max' => 100, 'form' => 'table_search', 'value' => $Count]))->buildElement() ?>
 					</span>
 					<?= $pagination ?>
-					<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'rip_search', 'value' => $Page, 'onchange' => 'this.form.submit()']))->buildElement() ?>
-					<button type="submit" form="rip_search">Go</button>
+					<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'table_search', 'value' => $Page, 'onchange' => 'this.form.submit()']))->buildElement() ?>
+					<button type="submit" form="table_search">Go</button>
 					<span style="float:right">Showing <b><?= $RecordStart ?> to <?= $RecordEnd ?></b> of <?= $JokeCount ?> jokes</span>
 				</td>
 			</tr>

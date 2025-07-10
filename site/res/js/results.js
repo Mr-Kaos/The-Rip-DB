@@ -3,7 +3,7 @@
  * Author: Mr Kaos
  * Created: 10/05/2025
  * 
- * This script provides useful interaction tools on the search page (/rips).
+ * This script provides useful interaction tools on search pages.
  */
 "use strict"
 
@@ -94,6 +94,51 @@ function toggleFilters(element) {
 }
 
 /**
+ * Applies a column sorting button to the specified column
+ * @param {HTMLTableRowElement} th The table 
+ * @param {HTMLFormElement} form The form the table ias associated with for searching.
+ */
+function applySort(th, form) {
+	let btn = document.createElement('i');
+	let input = document.createElement('input');
+	let sort = th.getAttribute('data-sort'); // Should be "ASC", "DESC" or null.
+	input.hidden = true;
+	input.name = 's[]';
+
+	switch (sort) {
+		case 'ASC':
+			btn.innerHTML = "&#x2191;";
+			input.value = `${th.id.substring(4)}-${sort}`;
+			btn.onclick = e => changeSort(`${th.id.substring(4)}-DESC`, input);
+			break;
+		case 'DESC':
+			btn.innerHTML = "&#x2193;";
+			input.value = `${th.id.substring(4)}-${sort}`;
+			btn.onclick = e => changeSort('', input);
+			break;
+		default:
+			btn.innerHTML = "&#x21C5;";
+			btn.onclick = e => changeSort(`${th.id.substring(4)}-ASC`, input);
+			input.disabled = true;
+			break;
+	}
+
+	th.appendChild(btn);
+	form.appendChild(input);
+
+	/**
+	 * Changes the sort direction of the input and submits the table's form.
+	 */
+	function changeSort(newDirection, input) {
+		if (newDirection != '') {
+			input.disabled = false;
+		}
+		input.value = newDirection;
+		form.submit();
+	}
+}
+
+/**
  * If any part of the window is clicked that is not a callout, close any open callouts.
  * There should only ever be one callout open at a time, but in case multiple manage to open, this will close them all.
  */
@@ -105,3 +150,27 @@ window.addEventListener('click', function (e) {
 		}
 	}
 });
+
+
+/**
+ * Page initialiser function.
+ */
+function init() {
+	// Query the page for the headers of a table. If any exist, prepare them to allow sorting.
+	// Only th elements with id attributes are applicable.
+	let tables = document.querySelectorAll('table.table-search');
+
+	for (let i = 0; i < tables.length; i++) {
+		let tableHeads = tables[i].querySelectorAll('thead>tr>th[id]');
+		let form = document.getElementById(tables[i].getAttribute('data-for'));
+		for (let j = 0; j < tableHeads.length; j++) {
+			applySort(tableHeads[j], form);
+		}
+	}
+
+	function compareSortOrdinal(inputA, inputB) {
+		return 
+	}
+}
+
+window.addEventListener('load', init);

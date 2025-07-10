@@ -9,6 +9,12 @@ class RipModel extends Model
 	const TABLE = 'Rips';
 	const VIEW = 'vw_RipsDetailed';
 	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipYouTubeID', 'RipLength', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL'];
+	const SORT_RipName = 'Name';
+	const SORT_RipAlternateName = 'AltName';
+	const SORT_RipDescription = 'Description';
+	const SORT_RipDate = 'Date';
+	const SORT_RipLength = 'Length';
+	const SORT_RipChannel = 'Channel';
 
 	/**
 	 * Gets data about a specific rip.
@@ -167,17 +173,44 @@ class RipModel extends Model
 	 * Returns a resultset of rips based on the given search criteria.
 	 * @param int $count The number of rips to retrieve
 	 * @param int $offset How many records to offset the resultset by.
+	 * @param ?array $sort An array of columns to sort by and their direction. E.g. 'RipName-A' for RipName ASC, or 'RipName-D' for sorting results by rip name descending.  
+	 * The order the columns are given in determines the order the sort is applied.
 	 * @param ?string $name A string to query the rip by its name. The RipName or RipAlternateName fields use this string. The column is toggled by $useAltName.
 	 * @param ?array $tags An array of tag IDs to query rips by.
 	 * @param bool $useAltName If true and $name is given, it will find rips based on their alternate name. Defaults to the RipName column.
 	 * @return array An array of rips found by the given search criteria.
 	 */
-	public function searchRips(int $count, int $offset, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false)
+	public function searchRips(int $count, int $offset, ?array $sort, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false)
 	{
 		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $channel, $useAltName);
 		$qry->groupBy('RipID')
 			->limit($count)
 			->offset($offset);
+
+		// Prepare sorting
+		if (!empty($sort)) {
+			foreach ($sort as $colAlias) {
+				// Split the column name to get the alias and the sort direction.
+				// Column is index 0, sort direction is index 1.
+				$split = explode('-', $colAlias);
+				if (!empty($split[1]) ?? null) {
+					switch ($split[0]) {
+						case self::SORT_RipName:
+							$this->quickSort($qry, 'RipName', $split[1]);
+							break;
+						case self::SORT_RipAlternateName:
+							$this->quickSort($qry, 'RipAlternateName', $split[1]);
+							break;
+						case self::SORT_RipLength:
+							$this->quickSort($qry, 'RipLength', $split[1]);
+							break;
+						case self::SORT_RipDate:
+							$this->quickSort($qry, 'RipDate', $split[1]);
+							break;
+					}
+				}
+			}
+		}
 		$rips = $qry->findAll();
 
 		$rips = $this->setSubArrayValueToKey($rips, 'RipID', false);
@@ -219,6 +252,7 @@ class RipModel extends Model
 
 			$rips[$ripId]['Genres'][$genre['GenreID']] = $genre;
 		}
+
 		return $rips;
 	}
 
@@ -315,8 +349,7 @@ class RipModel extends Model
 	private function generateRipQuery(string $table, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false)
 	{
 		$qry = $this->db->table($table)
-			->columns(...self::COLUMNS)
-			->asc('RipID');
+			->columns(...self::COLUMNS);
 
 		// Apply name search if name is given.
 		if (!empty($name)) {

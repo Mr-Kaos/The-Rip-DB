@@ -251,6 +251,10 @@ div.filters>.search-element>input {
 	margin: auto;
 }
 
+.table-search th>i {
+	cursor: pointer;
+}
+
 .pill {
 	display: flex;
 	background: var(--accent-1);
