@@ -2,7 +2,11 @@
 
 namespace RipDB\Model;
 
-require("private_core/config/db.php");
+if (!file_exists("private_core/config/db.php")) {
+	require_once("private_core/config/db-template.php");
+} else {
+	require_once("private_core/config/db.php");
+}
 
 use PicoDb\Database;
 

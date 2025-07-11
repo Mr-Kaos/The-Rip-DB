@@ -3,3 +3,6 @@ sql/.dbeaver
 site/vendor/
 *.log
 *.code-workspace
+
+# config files
+db.php
