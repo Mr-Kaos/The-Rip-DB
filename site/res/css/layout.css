@@ -497,6 +497,35 @@ h4 {
 	border-radius: unset;
 }
 
+/* Split container with sidebar */
+
+.sidebar-split {
+	display: grid;
+	grid-template-columns: 1fr 5fr;
+}
+
+.sidebar-split>div:first-child {
+	background: var(--bg-accent);
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.sidebar-split>div:first-child>a {
+	padding: 5px;
+}
+
+.sidebar-split>div:first-child>a:hover,
+.sidebar-split>div:first-child>a.active {
+	backdrop-filter: brightness(80%);
+}
+
+.sidebar-split>div:nth-child(2) {
+	padding: 5px;
+	border: var(--bg-accent) solid thin;
+}
+
+/* Vertical 1080p monitor/thin display adjustments */
 @media only screen and (max-width: 1080px) {
 	.grid {
 		grid-template-columns: 1fr 1fr;
@@ -512,5 +541,10 @@ h4 {
 	nav {
 		padding-left: 10%;
 		padding-right: 10%;
+	}
+
+	.sidebar-split {
+		display: grid;
+		grid-template-columns: 1fr 3r;
 	}
 }

@@ -164,7 +164,15 @@ Flight::group('/login', function () {
 	});
 });
 
-Flight::group('/account', function () {});
+Flight::group('/account', function () {
+	Flight::route('POST /', function () {
+		submitForm('account', 'AccountController');
+	});
+
+	Flight::route('/', function () {
+		displayPage('account', 'AccountController', ['subPage' => 'account']);
+	});
+});
 
 // Dropdown search requests
 Flight::group('/search', function () {

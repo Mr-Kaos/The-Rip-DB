@@ -3,6 +3,7 @@ CREATE TABLE Accounts (
 	Username varchar(32) CHARACTER SET utf8mb4 NOT NULL,
 	PasswordSalt BINARY(64) NOT NULL,
 	PasswordHash BINARY(64) NOT NULL,
+	Created DATETIME NOT NULL DEFAULT NOW(),
 	CONSTRAINT PK_Account PRIMARY KEY (AccountId),
 	CONSTRAINT UQ_Username UNIQUE KEY (Username)
 )

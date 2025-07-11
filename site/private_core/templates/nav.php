@@ -6,7 +6,7 @@
 	<a href="/ripguessr">RipGuessr</a>
 	<a href="/help">Help / FAQ</a>
 	<?php if (RipDB\checkAuth()) : ?>
-		<a href="/login/logout">Logout</a>
+		<a href="/account">Account</a>
 	<?php else: ?>
 		<a href="/login">Login</a>
 	<?php endif; ?>
