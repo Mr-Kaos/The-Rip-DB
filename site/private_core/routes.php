@@ -26,6 +26,14 @@ enum HttpMethod
 	case DELETE;
 }
 
+// Error page
+Flight::group('/error', function () {
+	Flight::route('/@code', function ($code) {
+		displayPage('error', 'ErrorController', ['error' => $code], 'Oh No!');
+		http_response_code(500);
+	});
+});
+
 // Home Page
 Flight::route('/', function () {
 	displayPage('home', 'HomeController', [], 'Home');

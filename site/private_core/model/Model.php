@@ -31,13 +31,18 @@ abstract class Model
 	 */
 	public function newConn(): void
 	{
-		$this->db = new Database([
-			'driver' => 'mysql',
-			'hostname' => constant('SQL_HOST'),
-			'username' => constant('SQL_USER'),
-			'password' => constant('SQL_PASS'),
-			'database' => constant('SQL_DB')
-		]);
+		try {
+			$this->db = new Database([
+				'driver' => 'mysql',
+				'hostname' => constant('SQL_HOST'),
+				'username' => constant('SQL_USER'),
+				'password' => constant('SQL_PASS'),
+				'database' => constant('SQL_DB')
+			]);
+		} catch (\PDOException $e) {
+			error_log($e->getMessage());
+			\Flight::redirect('/error/db', 500);
+		}
 	}
 
 	/**
