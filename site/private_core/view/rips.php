@@ -26,13 +26,13 @@ use RipDB\Model\RipModel as r;
 	<table id="results" class="table-search" data-for="table_search">
 		<thead>
 			<tr>
-				<th id="col-<?= r::SORT_RipName ?>" <?= empty($sort[r::SORT_RipName]) ? '' : 'data-sort="' . $sort[r::SORT_RipName] . '" data-ord="' . array_search($sort[r::SORT_RipName], array_keys($sort)) . '"' ?>>Rip Name</th>
+				<th id="col-<?= r::SORT_RipName ?>" <?= empty($sort[r::SORT_RipName]) ? '' : 'data-sort="' . $sort[r::SORT_RipName] . '" data-ord="' . array_search(r::SORT_RipName, array_keys($sort)) . '"' ?>>Rip Name</th>
 				<th id="col-<?= r::SORT_RipAlternateName ?>" <?= empty($sort[r::SORT_RipAlternateName]) ? '' : 'data-sort="' . $sort[r::SORT_RipAlternateName] . '" data-ord="' . array_search(r::SORT_RipAlternateName, array_keys($sort)) . '"' ?>>Alternative Name</th>
 				<th id="col-<?= r::SORT_RipLength ?>" <?= empty($sort[r::SORT_RipLength]) ? '' : 'data-sort="' . $sort[r::SORT_RipLength] . '" data-ord="' . array_search(r::SORT_RipLength, array_keys($sort)) . '"' ?>>Length</th>
 				<th>Ripper</th>
 				<th>Jokes</th>
 				<th>Genres</th>
-				<th id="col-<?= r::SORT_RipDate ?>">Upload Date</th>
+				<th id="col-<?= r::SORT_RipDate ?>" <?= empty($sort[r::SORT_RipDate]) ? '' : 'data-sort="' . $sort[r::SORT_RipDate] . '" data-ord="' . array_search(r::SORT_RipDate, array_keys($sort)) . '"' ?>>Upload Date</th>
 			</tr>
 		</thead>
 		<tbody>

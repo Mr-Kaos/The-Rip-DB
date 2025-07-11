@@ -8,6 +8,7 @@
 "use strict"
 
 let callouts = []; // Store any open callouts here so they can be closed later.
+const ORDINAL_LAST = 99; // This value is used if a heading sort input does not have the ordinal attribute. In other words, it ensures that the input is placed at the end of the sorted list.
 
 /**
  * Opens a dialog pop-up of the selected button from a row's column and displays its related data and options.
@@ -101,9 +102,12 @@ function toggleFilters(element) {
 function applySort(th, form) {
 	let btn = document.createElement('i');
 	let input = document.createElement('input');
+	let sortContainer = form.querySelector('.sorts');
 	let sort = th.getAttribute('data-sort'); // Should be "ASC", "DESC" or null.
+	let ordinal = th.getAttribute('data-ord') ?? ORDINAL_LAST; // Should be "ASC", "DESC" or null.
 	input.hidden = true;
 	input.name = 's[]';
+	input.setAttribute('data-ord', ordinal == '' ? ORDINAL_LAST : ordinal);
 
 	switch (sort) {
 		case 'ASC':
@@ -124,7 +128,7 @@ function applySort(th, form) {
 	}
 
 	th.appendChild(btn);
-	form.appendChild(input);
+	sortContainer.appendChild(input);
 
 	/**
 	 * Changes the sort direction of the input and submits the table's form.
@@ -163,13 +167,28 @@ function init() {
 	for (let i = 0; i < tables.length; i++) {
 		let tableHeads = tables[i].querySelectorAll('thead>tr>th[id]');
 		let form = document.getElementById(tables[i].getAttribute('data-for'));
+		let sortInputContainer = document.createElement('div');
+		sortInputContainer.className = 'sorts';
+		form.appendChild(sortInputContainer);
 		for (let j = 0; j < tableHeads.length; j++) {
 			applySort(tableHeads[j], form);
+		}
+
+		// Sort the sorting inputs to ensure they are submitted in the order the user has selected
+		let sorts = sortInputContainer.querySelectorAll('input');
+		let clones = Array.from(sorts).sort(compareSortOrdinal);
+
+		sortInputContainer.innerHTML = '';
+		for (let j = 0; j < clones.length; j++) {
+			sortInputContainer.appendChild(clones[j])
 		}
 	}
 
 	function compareSortOrdinal(inputA, inputB) {
-		return 
+		let ordinalA = inputA.getAttribute('data-ord') ?? ORDINAL_LAST;
+		let ordinalB = inputB.getAttribute('data-ord') ?? ORDINAL_LAST;
+
+		return parseInt(ordinalA) > parseInt(ordinalB);
 	}
 }
 
