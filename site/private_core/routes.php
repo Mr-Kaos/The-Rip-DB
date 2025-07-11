@@ -224,13 +224,12 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 		$controllerName = "\RipDB\\Controller\\$controllerName";
 		$controller = new $controllerName($page);
 		$controller->performRequest($data);
-
 		$pageData = $controller->getPreparedData();
-	}
 
-	if ($controller != null) {
-		if (!is_null($pageTitleOverride = $controller->getPageTitle())) {
-			$pageTitle = $pageTitleOverride;
+		if ($controller != null) {
+			if (!is_null($pageTitleOverride = $controller->getPageTitle())) {
+				$pageTitle = $pageTitleOverride;
+			}
 		}
 	}
 
@@ -284,113 +283,6 @@ function performAPIRequest(?string $functionGroup, string $function, HttpMethod 
 	}
 }
 
-function parsePut(): ?array
-{
-	$input = file_get_contents('php://input', 'r');
-	$put = [];
-
-	/**
-	 * This code has been adapted from code provided here https://gist.github.com/cwhsu1984/3419584ad31ce12d2ad5fed6155702e2.
-	 * Adjustments have been made to improve efficiency and cleanliness.
-	 * 
-	 * Parse raw HTTP request data
-	 *
-	 * Pass in $a_data as an array. This is done by reference to avoid copying
-	 * the data around too much.
-	 *
-	 * Any files found in the request will be added by their field name to the
-	 * $data['files'] array.
-	 *
-	 * @param string $input The input from php://input.
-	 * @return array Associative array of request data
-	 */
-	function parse_raw_http_request(string $input): array
-	{
-		$a_data = [];
-		// read incoming data
-
-		// grab multipart boundary from content type header
-		preg_match('/boundary=(.*)$/', $_SERVER['CONTENT_TYPE'], $matches);
-
-		$boundary = null;
-		// content type is probably regular form-encoded
-		if (!count($matches)) {
-			// Check the input to be certain there is no boundary - DISABlED AS THE PUT seems to work for now.
-			// Note: This might work IF the submitted form type was Form-Data and not x-www-form-urlencoded. Will need to be tested one day.
-			// $boundary = trim(substr($input, 0, strpos($input, "\n")));
-			// if (!str_starts_with($boundary, '----')) {
-			// we expect regular puts to contain a query string containing data
-			parse_str(urldecode($input), $a_data);
-			return $a_data;
-			// }
-		} else {
-			$boundary = $matches[1];
-		}
-
-		// split content by boundary and get rid of last -- element
-		$a_blocks = explode('--' . $boundary, $input);
-		array_pop($a_blocks);
-
-		// loop data blocks
-		foreach ($a_blocks as $block) {
-			if (empty($block)) {
-				continue;
-			}
-			$separator = "\n\r";
-
-			// Check if the block is a file. if it is, set a flag so  we know to grab the filename instead.
-			$isFile = strpos($block, 'filename') !== FALSE;
-			$line = strtok($block, $separator);
-
-			// First line should always contain the name and content disposition.
-			if ($isFile) {
-				preg_match('/filename=\"([^\"]*)\"/m', $line, $matches);
-			} else {
-				preg_match('/name=\"([^\"]*)\"/m', $line, $matches);
-			}
-			$name = $matches[1];
-			$val = '';
-
-			// Check all other lines to check for the data and the content-type
-			while ($line !== false) {
-				// Ignore the content type if given.
-				if (strpos($line, 'Content-Type') == false) {
-					$val = $line;
-				}
-				$line = strtok($separator);
-			}
-
-			if ($isFile) {
-				array_push($a_data['_FILES'], [
-					'name' => [$name],
-					'file' => $val
-				]);
-			} elseif (str_ends_with($name, '[]')) {
-				$name = substr($name, 0, strlen($name) - 2);
-				if (!is_array($a_data[$name] ?? null)) {
-					$a_data[$name] = [];
-				}
-				array_push($a_data[$name], $val);
-			} else {
-				$a_data[$name] = $val;
-			}
-		}
-		return $a_data;
-	}
-
-	// Check if the content type is multipart/form-data or x-www-form-urlencoded
-	// If form-data, parse the php input file for each submitted FormData component
-	if (str_contains($_SERVER["CONTENT_TYPE"], 'form-data')) {
-		$put = parse_raw_http_request($input);
-	}
-	// If x-www-form-urlencoded, the values should only be delimited by ampersands like a URL.
-	else {
-		parse_str($input, $put);
-	}
-
-	return $put;
-}
-
 /**
  * Submits a form from a POST request.
  */
@@ -417,7 +309,8 @@ function submitForm(string $page, string $controllerName, ?array $data = null)
 /**
  * Checks to see if there are any notifications to display, and if so creates a simple hidden HTML element for JavaScript to parse and display to the user.
  */
-function outputNotifications(): string {
+function outputNotifications(): string
+{
 	$notifs = '';
 	if (!empty($_SESSION[RipDB\ERRORS] ?? null)) {
 		$notifs .= '<div id="server-notifs" style="display:none">';
