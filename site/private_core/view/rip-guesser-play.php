@@ -106,5 +106,6 @@ use RipDB\RipGuesser as game;
 		</section>
 	</div>
 </main>
+<img src="/res/img/loading.gif" style="display:none">
 <script src="https://www.youtube.com/iframe_api" defer></script>
 <script src="/res/js/ripguesser.js" defer></script>
