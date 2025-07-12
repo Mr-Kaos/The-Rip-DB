@@ -250,11 +250,11 @@ class RipController extends Controller
 				$validated['RipIDTarget'] = $this->validateNumber($extraData['id'], 'The given Rip ID is invalid.', null, 1);
 			case 'new-rip':
 				// Validate data in order of stored procedure parameters.
-				$validated['RipName'] = $this->validateString($_POST['name'], 'The given rip name is invalid.', 1024);
+				$validated['Name'] = $this->validateString($_POST['name'], 'The given rip name is invalid.', 1024);
 				$validated['AlternateName'] = $this->validateString($_POST['altName'], 'The given alternate name is invalid.');
 				$validated['Description'] = $this->validateString($_POST['description'], 'The given description is invalid.');
 				$validated['UploadDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
-				$validated['RipLength'] = $this->validateTimestamp($_POST['length']);
+				$validated['Length'] = $this->validateTimestamp($_POST['length']);
 				$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 				$validated['YTID'] = $this->validateString($_POST['ytId'], 'The given youTube ID is invalid.', null, null, '/[A-Za-z0-9_-]{11}/');;
 				$validated['AltURL'] = $this->validateString(null);
@@ -299,6 +299,7 @@ class RipController extends Controller
 					var_dump($submission);
 					if ($submission == true) {
 						$result = '/rips';
+						\RipDB\addNotification('Successfully added rip!', \RipDB\NotificationPriority::Success);
 					} else {
 						$result = $submission;
 					}
@@ -306,6 +307,7 @@ class RipController extends Controller
 					$submission = $this->model->submitFormData($validated, 'usp_UpdateRip');
 					if ($submission == true) {
 						$result = '/rips/' . $extraData['id'];
+						\RipDB\addNotification('Successfully updated rip!', \RipDB\NotificationPriority::Success);
 					} else {
 						$result = $submission;
 					}

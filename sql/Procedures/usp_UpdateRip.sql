@@ -1,15 +1,17 @@
 -- This Stored procedure inserts a rip and all related data.
 
-DROP PROCEDURE IF EXISTS RipDB.usp_UpdateRip;
+DROP PROCEDURE IF EXISTS usp_UpdateRip;
 
-CREATE PROCEDURE RipDB.usp_UpdateRip(
+CREATE PROCEDURE usp_UpdateRip(
 	IN RipIDTarget int,
 	IN Name varchar(1024),
 	IN AlternateName varchar(2048),
 	IN Description text,
 	IN UploadDate datetime,
 	IN Length time,
-	IN URL varchar(2048),
+	IN URL varchar(512),
+	IN YTID varchar(12),
+	IN AltURL varchar(512),
 	IN Game int,
 	IN Channel int,
 	IN Genres json,
@@ -36,6 +38,8 @@ BEGIN
 			RipLength = Length,
 			RipGame = Game,
 			RipURL = URL,
+			RipYouTubeID = YTID,
+			RipAlternateURL = AltURL,
 			RipChannel = Channel
 		WHERE RipID = RipIDTarget;
 	

@@ -17,7 +17,7 @@ class SearchElement extends InputElement
 	 * Sets up a searchable input element object.
 	 * @param ?string $label The label of the input element.
 	 * @param string $url The URL to query with the users input.
-	 * @param bool $allowMultiSelect If true, allows multiple searches to be performed and have them as "selected" options, similar to the MultiSelectDropdownElement. Default is false - i.e. single value.
+	 * @param bool $allowMultiSelect If true, allows multiple searches to be performed and have them as "selected" options. Default is false - i.e. single value.
 	 * @param ?array $value An associative array containing the IDs and text-value of the input. If $allowMultiSelect is true, then the value should be an array of key-pair values for each input.
 	 * @param ?array $attributes An associative array of html attributes to add to the element.
 	 * @param ?array $labelAttributes An associative array of html attributes to add to the element's label.

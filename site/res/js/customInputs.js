@@ -7,7 +7,6 @@
 "use strict";
 
 // Globals for accessing inputs from outside
-let multiSelects = [];
 let inputTables = [];
 let searchElements = [];
 
@@ -20,54 +19,6 @@ class CustomElement {
 
 	getElement() {
 		return this.#element;
-	}
-}
-
-class MultiSelect extends CustomElement {
-	#open = false;
-	#optionsDiv;
-	#inputElement;
-
-	/**
-	 * 
-	 * @param {HTMLElement} element The element that defines the multi select dropdown.
-	 */
-	constructor(element) {
-		super(element);
-		this.#inputElement = element.querySelector(`input[type=search]`)
-		this.#optionsDiv = this.getElement().querySelector('.options');
-		this.#optionsDiv.style.left = `${this.getElement().offsetLeft}px`
-
-		element.firstElementChild.onclick = e => this.toggleDisplay();
-	}
-
-	/**
-	 * Displays the options in the multi select.
-	 * @param {Boolean} open Determines if the multi select is to be displayed or not. If null, it toggles to the opposite of its current state.
-	 */
-	toggleDisplay(open = null) {
-		this.#optionsDiv.style.left = `${this.#inputElement.offsetLeft}px`;
-		this.#inputElement.clientWidth;
-		this.#optionsDiv.style.minWidth = `${this.#inputElement.clientWidth}px`;
-		if (open == null) {
-			this.#open = !this.#open;
-		} else {
-			this.#open = open;
-		}
-
-		if (this.#open) {
-			this.#optionsDiv.style.display = 'flex';
-		} else {
-			this.#optionsDiv.style.display = 'none';
-		}
-	}
-
-	isOpen() {
-		return this.#open;
-	}
-
-	getOptionsDiv() {
-		return this.#optionsDiv;
 	}
 }
 
@@ -156,7 +107,10 @@ class InputTable extends CustomElement {
 
 		// Ensure that the remove buttons are disabled if there is exactly one row. (There should always be one row when #rowCount is 1.)
 		if (this.#rowCount == 1) {
-			this.getElement().querySelector('tbody button[btnRemove]').disabled = true;
+			let button = this.getElement().querySelector('tbody button[btnRemove]');
+			if (button != null) {
+				button.disabled = true;
+			}
 		}
 	}
 
@@ -181,7 +135,10 @@ let ev = new Event('setOption');
  * @event setOption This event fires when an option is selected in list of results given.
  * @event unsetOption This event fires when an option is removed from the list of selected results.
  */
-class SearchElement extends MultiSelect {
+class SearchElement extends CustomElement {
+	#open = false;
+	#optionsDiv;
+	#inputElement;
 	#init = false;
 	#multi = false;
 	#value = null;
@@ -194,6 +151,11 @@ class SearchElement extends MultiSelect {
 
 	constructor(element, allowRand = true) {
 		super(element);
+		this.#inputElement = element.querySelector(`input[type=search]`)
+		this.#optionsDiv = this.getElement().querySelector('.options');
+		this.#optionsDiv.style.left = `${this.getElement().offsetLeft}px`
+
+		element.firstElementChild.onclick = e => this.toggleDisplay();
 
 		this.#searchElement = element.querySelector('input[type="search"]');
 		this.#required = this.#searchElement.required;
@@ -206,17 +168,17 @@ class SearchElement extends MultiSelect {
 			this.#initValues(element.querySelector('span.pill'));
 		}
 
+		/* Add event listeners */
 		// If the list has not been touched yet, make an empty search to load some results
 		this.#searchElement.onclick = function () {
 			if (!this.#init) {
 				let url = '';
 				if (allowRand) {
 					url = '?rand'
-					console.log('here');
 				}
 				this.search('', this.#searchElement.getAttribute('search-url') + url);
 				this.#init = true;
-			} else if(this.canAdd) {
+			} else if (this.canAdd) {
 				this.toggleDisplay();
 			}
 		}.bind(this);
@@ -270,6 +232,43 @@ class SearchElement extends MultiSelect {
 		}.bind(this));
 	}
 
+	/**
+	 * Displays the options in the multi select.
+	 * @param {Boolean} open Determines if the multi select is to be displayed or not. If null, it toggles to the opposite of its current state.
+	 */
+	toggleDisplay(open = null) {
+		this.#optionsDiv.style.left = `${this.#inputElement.offsetLeft}px`;
+		this.#inputElement.clientWidth;
+		this.#optionsDiv.style.minWidth = `${this.#inputElement.clientWidth}px`;
+		if (open == null) {
+			this.#open = !this.#open;
+		} else {
+			this.#open = open;
+		}
+
+		if (this.#open) {
+			this.#optionsDiv.style.display = 'flex';
+		} else {
+			this.#optionsDiv.style.display = 'none';
+		}
+	}
+
+	/**
+	 * Returns the selected value(s) of the input.
+	 * @returns {String[]|String|Number[]|Number|null} The selected value(s) of the search element. If the element allows for multiple selections, an array of all selected values is returned. Else, the selected value is returned.
+	 */
+	getSelection() {
+		return this.#value;
+	}
+
+	isOpen() {
+		return this.#open;
+	}
+
+	getOptionsDiv() {
+		return this.#optionsDiv;
+	}
+
 	getSearchElement() {
 		return this.#searchElement;
 	}
@@ -279,18 +278,24 @@ class SearchElement extends MultiSelect {
 	 * @param {NodeList} elements
 	 */
 	#initValues(elements) {
+		// If multi, get all pills and add their values to this input's value list
 		if (this.#multi) {
 			for (let i = 0; i < elements.length; i++) {
+				this.#inputElement.required = false;
 				let input = elements[i].querySelector('input');
 				let btnRemove = elements[i].querySelector('button');
 				this.#value.push(input.value);
 				btnRemove.onclick = e => this.#unsetOption(elements[i]);
 			}
-		} else if (elements != null) {
-			let input = this.getElement().querySelector('input[type=search]');
-			input.style.display = 'none';
+		}
+		// If a single-select, {elements} is the pill.
+		else if (elements != null) {
+			let input = elements.querySelector('input[hidden]');
+			this.#inputElement.style.display = 'none';
 			let btnRemove = elements.querySelector('button');
 			btnRemove.onclick = e => this.#unsetOption(elements);
+			this.#value = input.value;
+			this.#inputElement.required = false;
 		}
 	}
 
@@ -472,13 +477,8 @@ function findParentElement(child, attributes, depth = 32) {
 }
 
 function setupCustomInputs() {
-	let multiSelectElements = document.querySelectorAll('span.multi-select');
 	let inputTableElements = document.querySelectorAll('table[InputTable]');
 	let searchInputElements = document.querySelectorAll('span.search-element');
-
-	if (multiSelectElements.length > 0) {
-		prepareMultiSelects(multiSelectElements);
-	}
 
 	if (inputTableElements.length > 0) {
 		prepareInputTables(inputTableElements);
@@ -486,16 +486,6 @@ function setupCustomInputs() {
 
 	if (searchInputElements.length > 0) {
 		prepareSearchElements(searchInputElements);
-	}
-
-	/**
-	 * Prepares any multi-select elements on the page.
-	 * @param {NodeListOf<Element>} elements 
-	 */
-	function prepareMultiSelects(elements) {
-		for (let i = 0; i < elements.length; i++) {
-			multiSelects.push(new MultiSelect(elements[i]));
-		}
 	}
 
 	/**
@@ -517,19 +507,18 @@ function setupCustomInputs() {
 		}
 	}
 
-	// Close any multi-select elements if they are clicked out of.
+	// Close any search elements if they are clicked out of.
 	window.addEventListener('click', function (e) {
-		let inputs = multiSelects.concat(searchElements);
-		for (let i = 0; i < inputs.length; i++) {
-			let el = findParentElement(e.target, { class: ['multi-select', 'search-element'] });
+		for (let i = 0; i < searchElements.length; i++) {
+			let el = findParentElement(e.target, { class: ['search-element'] });
 			if (el !== null) {
-				if (inputs[i].isOpen() && (el.className != 'multi-select' && el.className != 'search-element')) {
-					inputs[i].toggleDisplay(false);
-				} else if (inputs[i].getElement() != el) {
-					inputs[i].toggleDisplay(false);
+				if (searchElements[i].isOpen() && (el.className != 'search-element')) {
+					searchElements[i].toggleDisplay(false);
+				} else if (searchElements[i].getElement() != el) {
+					searchElements[i].toggleDisplay(false);
 				}
 			} else {
-				inputs[i].toggleDisplay(false);
+				searchElements[i].toggleDisplay(false);
 			}
 		}
 	});
