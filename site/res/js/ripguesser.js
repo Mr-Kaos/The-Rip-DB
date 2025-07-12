@@ -67,7 +67,7 @@ class Game {
 		if (e != null) {
 			e.preventDefault();
 			if (!this.#started) {
-				e.target.querySelector('button[type=submit]').disabled = true;
+				this.#displayLoading(e.target.querySelector('button[type=submit]'));
 				this.#started = true;
 				let data = new FormData(e.target);
 				let ready = false;
@@ -99,8 +99,11 @@ class Game {
 	/**
 	 * Starts/resumes the game.
 	 */
-	#startGame() {
-		this.nextRound();
+	async #startGame() {
+		await this.nextRound();
+		let btnStart = document.getElementById('start-game');
+		btnStart.disabled = false;
+		btnStart.innerHTML = "Play";
 	}
 
 	async joinGame(sessionID) {
@@ -109,8 +112,13 @@ class Game {
 
 	/**
 	 * Moves the game to the next round.
+	 * @param {Event} e The event object.
 	 */
-	async nextRound() {
+	async nextRound(e) {
+		if (e != undefined) {
+			this.#displayLoading(e.target);
+		}
+
 		let request = await fetch('/ripguessr/game/round-next', {
 			method: 'GET'
 		});
@@ -261,6 +269,7 @@ class Game {
 	#initRound(roundData) {
 		let roundContainer = this.#gameContainer.querySelector('#round');
 		let form = roundContainer.querySelector('#round-form');
+		let btnSubmit = document.getElementById('submit-round')
 		let previewRip = true;
 		form.innerHTML = '';
 		form.onsubmit = e => this.#submitRound(e, form);
@@ -268,6 +277,8 @@ class Game {
 		roundData = roundData.RoundData;
 
 		if (roundData != undefined) {
+			btnSubmit.disabled = false;
+			btnSubmit.innerHTML = "Submit Guess";
 			this.#gameContainer.querySelector('#title').innerText = 'Round ' + this.#round;
 			let title = this.#gameContainer.querySelector('#rip-name');
 
@@ -338,6 +349,7 @@ class Game {
 	 */
 	async #submitRound(event, form) {
 		event.preventDefault();
+		this.#displayLoading(document.getElementById('submit-round'));
 		let data = new FormData(form);
 
 		let request = await fetch('/ripguessr/game/submit', {
@@ -410,7 +422,7 @@ class Game {
 			}
 		}.bind(this);
 
-		btnRewind.onclick = function(e) {
+		btnRewind.onclick = function (e) {
 			btnPause.disabled = false;
 			this.#player.playVideo();
 			btnRewind.disabled = true;
@@ -429,7 +441,9 @@ class Game {
 		if (resultsContainer != undefined) {
 			let score = resultsContainer.querySelector('#score');
 			let btnNextRound = document.getElementById('advance-round');
-			btnNextRound.onclick = e => this.nextRound();
+			btnNextRound.onclick = e => this.nextRound(e);
+			btnNextRound.disabled = false;
+			btnNextRound.innerHTML = "Next Round";
 			score.innerText = results.Score;
 
 			// Reset the answer list to prevent previous results from lingering
@@ -523,6 +537,7 @@ class Game {
 		let answersContainer = resultsContainer.querySelector('#answers');
 		let scoreElement = resultsContainer.querySelector('#score');
 		let btnNextRound = resultsContainer.querySelector('#advance-round');
+		btnNextRound.disabled = false;
 		btnNextRound.innerText = 'New Game';
 		btnNextRound.onclick = e => this.#resetGame();
 		let totalScore = 0;
@@ -669,6 +684,15 @@ class Game {
 		console.error(msg);
 		let modal = new Modal("game-reload", "Uh-oh, this isn't supposed to happen...", "A critical error was encountered.\nYou can attempt to restart the last round played, or reset the game from scratch again.", null, null, false, false, modalFunctions);
 		modal.open();
+	}
+
+	/**
+	 * Displays a loading icon in a button
+	 * @param {HTMLButtonElement} element The element to display loading in
+	 */
+	#displayLoading(button) {
+		button.disabled = true;
+		button.innerHTML = '<img src="/res/img/loading.gif" style="max-height:64px;">';
 	}
 }
 

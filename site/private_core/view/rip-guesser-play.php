@@ -77,7 +77,7 @@ use RipDB\RipGuesser as game;
 					<?= (new o\InputElement('Max. Rip Length', o\InputTypes::text, ['name' => 'maxlength', 'pattern' => '([0-9]{2}:[0-9]{2})', 'value' => '03:00', 'placeholder' => '03:00', 'required' => true, 'onchange' => 'validateLength(this)'], null, true))->buildElement() ?>
 				</div>
 			</fieldset>
-			<button type="submit" style="margin: 10px auto;display: block;padding: 10px;font-size: larger;">Play</button>
+			<button id="start-game" type="submit" style="margin: 10px auto;display: block;padding: 10px;font-size: larger;">Play</button>
 		</form>
 		<section>
 			<h3>Help/FAQ</h3>
