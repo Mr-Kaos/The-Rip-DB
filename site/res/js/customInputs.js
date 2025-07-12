@@ -24,6 +24,7 @@ class CustomElement {
 
 class InputTable extends CustomElement {
 	#rowCount = 0;
+	#body = null
 
 	/**
 	 * Constructs a object reference to an InputTable "element"
@@ -31,6 +32,7 @@ class InputTable extends CustomElement {
 	 */
 	constructor(element) {
 		super(element);
+		this.#body = this.getElement().querySelector(`tbody#body_${this.getElement().id}`);
 
 		// If values are prefilled, do not add an empty row.
 		if (element.getAttribute('data-value')) {
@@ -43,6 +45,12 @@ class InputTable extends CustomElement {
 
 		let addButton = element.querySelector(`#add_${element.id}`);
 		addButton.onclick = e => this.addRow();
+
+		// Initialise any existing/current rows
+		let removeButtons = this.#body.querySelectorAll(`button[btnRemove]`);
+		for (let i = 0; i < removeButtons.length; i++) {
+			removeButtons[i].onclick = e => this.removeRow(removeButtons[i].parentElement.parentElement);
+		}
 	}
 
 	/**
@@ -50,8 +58,7 @@ class InputTable extends CustomElement {
 	 */
 	addRow() {
 		let template = this.getElement().querySelector(`thead#temp_${this.getElement().id}>tr`);
-		let body = this.getElement().querySelector(`tbody#body_${this.getElement().id}`);
-		let removeButtons = this.getElement().querySelectorAll(`tbody#body_${this.getElement().id} button[btnRemove]`);
+		let removeButtons = this.#body.querySelectorAll(`button[btnRemove]`);
 
 		let clone = template.cloneNode(true);
 		clone.style = null;
@@ -80,7 +87,7 @@ class InputTable extends CustomElement {
 		removeButton.disabled = !(this.#rowCount > 0);
 		removeButton.onclick = e => this.removeRow(clone);
 
-		body.append(clone);
+		this.#body.append(clone);
 		this.#rowCount++;
 	}
 
