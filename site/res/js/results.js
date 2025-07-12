@@ -169,18 +169,21 @@ function init() {
 		let form = document.getElementById(tables[i].getAttribute('data-for'));
 		let sortInputContainer = document.createElement('div');
 		sortInputContainer.className = 'sorts';
-		form.appendChild(sortInputContainer);
-		for (let j = 0; j < tableHeads.length; j++) {
-			applySort(tableHeads[j], form);
-		}
 
-		// Sort the sorting inputs to ensure they are submitted in the order the user has selected
-		let sorts = sortInputContainer.querySelectorAll('input');
-		let clones = Array.from(sorts).sort(compareSortOrdinal);
+		if (form != null) {
+			form.appendChild(sortInputContainer);
+			for (let j = 0; j < tableHeads.length; j++) {
+				applySort(tableHeads[j], form);
+			}
 
-		sortInputContainer.innerHTML = '';
-		for (let j = 0; j < clones.length; j++) {
-			sortInputContainer.appendChild(clones[j])
+			// Sort the sorting inputs to ensure they are submitted in the order the user has selected
+			let sorts = sortInputContainer.querySelectorAll('input');
+			let clones = Array.from(sorts).sort(compareSortOrdinal);
+
+			sortInputContainer.innerHTML = '';
+			for (let j = 0; j < clones.length; j++) {
+				sortInputContainer.appendChild(clones[j])
+			}
 		}
 	}
 
