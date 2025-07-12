@@ -98,7 +98,8 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 
 							$submission = $this->model->submitFormData($validated, 'usp_DeleteAccount');
 							if ($submission === true) {
-								session_reset();
+								session_destroy();
+								session_start();
 								\RipDB\addNotification('Successfully deleted account.', \RipDB\NotificationPriority::Success);
 								$result = '/';
 							} else {

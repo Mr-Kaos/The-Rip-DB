@@ -15,7 +15,7 @@ class AccountModel extends Model
 		// If the account is somehow not found (most likely due to the session value being invalid), kill the session to retry.
 		if (is_null($account)) {
 			session_destroy();
-			\Flight::Redirect('/');
+			\Flight::redirect('/');
 		}
 		return $account;
 	}
