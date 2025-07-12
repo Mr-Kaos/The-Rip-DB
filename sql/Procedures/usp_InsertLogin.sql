@@ -1,9 +1,9 @@
 -- Stored procedure for inserting a new suer account into the database.
 -- This procedure does not validate the password. This must be done in the application level.
 
-DROP PROCEDURE IF EXISTS RipDB.usp_InsertLogin;
+DROP PROCEDURE IF EXISTS usp_InsertLogin;
 
-CREATE PROCEDURE RipDB.usp_InsertLogin(
+CREATE PROCEDURE usp_InsertLogin(
 	IN NewUsername varchar(32),
 	IN NewPassword varchar(64),
 	OUT NewLoginID int)

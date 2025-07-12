@@ -9,9 +9,15 @@ class AccountModel extends Model
 	const TABLE = 'Accounts';
 	const ILLEGAL_NAMES = ['admin', 'Admin'];
 
-	public function getAccountInfo(): array
+	public function getAccountInfo(): ?array
 	{
-		return $this->db->table(self::TABLE)->columns('Username', 'Created')->findOne();
+		$account = $this->db->table(self::TABLE)->columns('Username', 'Created')->eq('AccountID', $_SESSION[\RipDB\AUTH_USER])->findOne();
+		// If the account is somehow not found (most likely due to the session value being invalid), kill the session to retry.
+		if (is_null($account)) {
+			session_destroy();
+			\Flight::Redirect('/');
+		}
+		return $account;
 	}
 
 	/**

@@ -4,10 +4,9 @@ use RipDB\Objects as o;
 ?>
 <main>
 	<h1>Create An Account For the Rip Database</h1>
-	<p>Please </p>
 	<form method="POST">
 		<fieldset>
-			<?= (new o\InputElement('Username', o\InputTypes::text, ['name' => 'username', 'minlength' => 3, 'maxlength' => 32, 'required' => true, 'pattern' => '^(?=.{3,32}$)[a-zA-Z0-9._+-~]+$'], null, true))->buildElement() ?>
+			<?= (new o\InputElement('Username', o\InputTypes::text, ['name' => 'username', 'minlength' => 3, 'maxlength' => 32, 'required' => true, 'pattern' => '^(?=.{3,32}$)[a-zA-Z0-9._+-~]+$', 'oninput' => 'validateForm(this)'], null, true))->buildElement() ?>
 			<ul>
 				<li>Username must be between 3 and 32 characters long.</li>
 				<li>Only alpha-numeric characters or any of the symbols <code>_ - . ~ +</code> are allowed (excludes spaces).</li>
@@ -15,8 +14,8 @@ use RipDB\Objects as o;
 			</ul>
 		</fieldset>
 		<fieldset>
-			<?= (new o\InputElement('Password', o\InputTypes::password, ['name' => 'password', 'minlength' => 6, 'maxlength' => 64, 'required' => true], null, true))->buildElement() ?>
-			<?= (new o\InputElement('Confirm Password', o\InputTypes::password, ['name' => 'password2', 'minlength' => 6, 'maxlength' => 64, 'required' => true], null, true))->buildElement() ?>
+			<?= (new o\InputElement('Password', o\InputTypes::password, ['name' => 'password', 'minlength' => 6, 'maxlength' => 64, 'required' => true, 'oninput' => "checkPasswordMatch(this, 'password2')"], null, true))->buildElement() ?>
+			<?= (new o\InputElement('Confirm Password', o\InputTypes::password, ['name' => 'password2', 'minlength' => 6, 'maxlength' => 64, 'required' => true, 'oninput' => "checkPasswordMatch(this, 'password')"], null, true))->buildElement() ?>
 			<ul>
 				<li>Password must be at least 6 characters long. Maximum length allowed is 64 characters.</li>
 				<li>Password must not match your username.</li>
@@ -24,7 +23,7 @@ use RipDB\Objects as o;
 				<li>Password should not be something that is easily guessable based on your details.</li>
 			</ul>
 		</fieldset>
-		<button type="submit">Create Account</button>
+		<button id="submit" type="submit" disabled>Create Account</button>
 	</form>
 	<br>
 	<details>
@@ -37,3 +36,17 @@ use RipDB\Objects as o;
 		<p>Since emails are not stored for privacy concerns, if you forget your password, it won't be possible to recover your account. Please keep your login details safe to prevent this from happening!</p>
 	</details>
 </main>
+<script>
+	async function validateForm(input) {
+		let btnSubmit = document.getElementById('submit');
+		let passwordInput = document.getElementById('password');
+		let valid = checkUsername(input);
+
+		if (passwordInput.value == '') {
+			valid = false;
+		}
+
+		btnSubmit.disabled = !valid;
+	}
+</script>
+<script src="/res/js/account.js" defer></script>

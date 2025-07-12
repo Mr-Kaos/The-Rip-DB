@@ -28,12 +28,18 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 	 */
 	public function performRequest(array $data = []): void
 	{
-
-		$this->setData('subPage', $data['subPage'] ?? '');
-		switch ($data['subPage'] ?? null) {
-			case 'account':
-				$this->setData('account', $this->model->getAccountInfo());
-				break;
+		// Ensure the user is authenticated before proceeding
+		if (\RipDB\checkAuth()) {
+			$this->setData('subPage', $data['subPage'] ?? '');
+			switch ($data['subPage'] ?? null) {
+				case 'account':
+					$this->setData('account', $this->model->getAccountInfo());
+					break;
+			}
+		} else {
+			\RipDB\addNotification('You must login to access that page.', \RipDB\NotificationPriority::Warning);
+			\Flight::redirect('/login');
+			die();
 		}
 	}
 
@@ -75,6 +81,26 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 							if ($submission === true) {
 								\RipDB\addNotification('Successfully updated password!', \RipDB\NotificationPriority::Success);
 								$result = '/account';
+							} else {
+								$result = $submission;
+							}
+						} else {
+							$result = [new Error('The passwords do not match')];
+						}
+						break;
+					case 'delete':
+						$validated['InAccountId'] = $_SESSION[\RipDB\AUTH_USER];
+						$pass = $this->validateString($_POST['password-check'], 'The given password is invalid.', 64, 6);
+						$pass2 = $this->validateString($_POST['password-check2'], 'The given password is invalid.', 64, 6);
+
+						if ($pass == $pass2 && !($pass instanceof Error || $pass2 instanceof Error)) {
+							$validated['InPassword'] = $pass;
+
+							$submission = $this->model->submitFormData($validated, 'usp_DeleteAccount');
+							if ($submission === true) {
+								session_reset();
+								\RipDB\addNotification('Successfully deleted account.', \RipDB\NotificationPriority::Success);
+								$result = '/';
 							} else {
 								$result = $submission;
 							}

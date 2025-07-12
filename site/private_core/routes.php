@@ -174,11 +174,11 @@ Flight::group('/account', function () {
 	});
 
 	// Async requests:
-	// if (str_ends_with($_SERVER['HTTP_REFERER'] ?? null, '/account')) {
+	if (str_ends_with($_SERVER['HTTP_REFERER'] ?? null, '/account') || str_ends_with($_SERVER['HTTP_REFERER'] ?? null, '/login/new')) {
 		Flight::route('GET /check-username', function () {
 			performAPIRequest('check', 'user', HttpMethod::GET, 'AccountController');
 		});
-	// }
+	}
 });
 
 // Dropdown search requests

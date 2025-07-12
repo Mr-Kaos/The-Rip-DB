@@ -39,3 +39,31 @@ async function checkUsername(input) {
 
 	return valid;
 }
+
+/**
+ * Checks that the two passwords match in real-time.
+ * @param {HTMLInputElement} input The password input being used
+ * @param {String} otherInputID The input of the other password input that must match the current one.
+ */
+function checkPasswordMatch(input, otherInputID) {
+	let password2 = document.getElementById(otherInputID);
+	let valid = false;
+	let msg = null;
+	let btnSubmit = input.form.querySelector('button[type="submit"]');
+
+	// If one or both inputs are empty, do not display messages
+	if (input.value != '' && password2.value != '') {
+		if (input.value != password2.value) {
+			msg = 'The passwords do not match!'
+		} else if (input.value.length < 6) {
+			msg = 'The password must be at least 6 characters!';
+		} else {
+			valid = true;
+		}
+	}
+
+	displayErrorMessage(input, msg);
+	displayErrorMessage(password2, msg);
+
+	btnSubmit.disabled = !valid;
+}

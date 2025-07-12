@@ -27,9 +27,18 @@ use RipDB\Objects as o;
 					<fieldset>
 						<legend>Update Password</legend>
 						<?= (new o\InputElement('Current Password', o\InputTypes::password, ['id' => 'password-old', 'name' => 'password', 'minlength' => 6, 'maxlength' => 64, 'required' => true], null, true))->buildElement() ?>
-						<?= (new o\InputElement('New Password', o\InputTypes::password, ['name' => 'password-new', 'minlength' => 6, 'maxlength' => 64, 'required' => true], null, true))->buildElement() ?>
-						<?= (new o\InputElement('Confirm New Password', o\InputTypes::password, ['name' => 'password-new2', 'minlength' => 6, 'maxlength' => 64, 'required' => true], null, true))->buildElement() ?>
+						<?= (new o\InputElement('New Password', o\InputTypes::password, ['name' => 'password-new', 'minlength' => 6, 'maxlength' => 64, 'required' => true, 'oninput' => "checkPasswordMatch(this, 'password-new2')"], null, true))->buildElement() ?>
+						<?= (new o\InputElement('Confirm New Password', o\InputTypes::password, ['name' => 'password-new2', 'minlength' => 6, 'maxlength' => 64, 'required' => true, 'oninput' => "checkPasswordMatch(this, 'password-new')"], null, true))->buildElement() ?>
 						<button type="submit">Update Password</button>
+					</fieldset>
+				</form>
+				<form id="delete" action="?mode=delete" method="post">
+					<fieldset>
+						<legend>Delete Account</legend>
+						<?= (new o\InputElement('Current Password', o\InputTypes::password, ['name' => 'password-check', 'minlength' => 6, 'maxlength' => 64, 'required' => true, 'oninput' => "checkPasswordMatch(this, 'password-check2')"], null, true))->buildElement() ?>
+						<?= (new o\InputElement('Confirm Password', o\InputTypes::password, ['name' => 'password-check2', 'minlength' => 6, 'maxlength' => 64, 'required' => true, 'oninput' => "checkPasswordMatch(this, 'password-check')"], null, true))->buildElement() ?>
+						<p style="color:red">Please note that deleting your account is permanent!</p>
+						<button type="submit" class="btn-bad" disabled>Delete Account</button>
 					</fieldset>
 				</form>
 				<script>
@@ -41,7 +50,7 @@ use RipDB\Objects as o;
 					}
 				</script>
 			<?php elseif ($subPage == 'playlists') : ?>
-
+				<p>Coming soon...</p>
 			<?php endif; ?>
 		</div>
 	</div>
