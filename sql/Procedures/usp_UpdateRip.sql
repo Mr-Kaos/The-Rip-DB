@@ -44,6 +44,11 @@ BEGIN
 		WHERE RipID = RipIDTarget;
 	
 		-- RIPPER DATA
+
+		-- Delete all rippers so they can be re-inserted again.
+		DELETE FROM RipRippers
+		WHERE RipId = RipIDTarget;
+
 		-- Add new Rippers
 		INSERT INTO RipRippers (RipId, RipperID, Alias)
 		SELECT RipIDTarget, JSON_UNQUOTE(k.RipperIDJSON), JSON_UNQUOTE(Alias)
@@ -55,35 +60,29 @@ BEGIN
 			WHERE RipID = RipIDTarget
 		);
 	
-		-- Delete any removed rippers
-		DELETE FROM RipRippers
-		WHERE RipperID NOT IN (
-			SELECT JSON_UNQUOTE(t.RipperIDJSON)
-			FROM JSON_TABLE (json_keys(Rippers), '$[*]' COLUMNS(RipperIDJSON JSON PATH '$')) t
-		)
-		AND RipID = RipIDTarget;
-	
 		-- JOKE DATA
+
+		-- Delete all jokes so they can be re-inserted again.
+		DELETE FROM RipJokes
+		WHERE RipId = RipIDTarget;
+		
 		-- Add new Jokes
 		INSERT INTO RipJokes (RipId, JokeID, JokeTimestamps, JokeComment)
 		SELECT RipIDTarget, JSON_UNQUOTE(k.JokeIDJSON), JSON_UNQUOTE(Timestamps), JSON_UNQUOTE(Comment)
 		FROM JSON_TABLE (json_keys(Jokes), '$[*]' COLUMNS(rn FOR ORDINALITY, JokeIDJSON JSON PATH '$')) k
-		JOIN JSON_TABLE(Jokes, '$.*' COLUMNS (rn FOR ORDINALITY, Timestamps JSON PATH '$', Comment JSON PATH '$.comment')) v ON v.rn = k.rn
+		JOIN JSON_TABLE(Jokes, '$.*' COLUMNS (rn FOR ORDINALITY, Timestamps JSON PATH '$.timestamps', Comment JSON PATH '$.comment')) v ON v.rn = k.rn
 		WHERE JSON_UNQUOTE(k.JokeIDJSON) NOT IN (
 			SELECT JokeID
 			FROM RipJokes
 			WHERE RipID = RipIDTarget
 		);
 	
-		-- Delete any removed jokes
-		DELETE FROM RipJokes 
-		WHERE JokeID NOT IN (
-			SELECT JSON_UNQUOTE(t.JokeIDJSON)
-			FROM JSON_TABLE (json_keys(Jokes), '$[*]' COLUMNS(JokeIDJSON JSON PATH '$')) t
-		)
-		AND RipID = RipIDTarget;
-		
 		-- GENRE DATA
+		
+		-- Delete all genres so they can be re-inserted again.
+		DELETE FROM RipGenres
+		WHERE RipId = RipIDTarget;
+	
 		-- Add new Genres
 		INSERT INTO RipGenres (RipID, GenreID)
 		SELECT RipIDTarget, JSON_UNQUOTE(g.GenreIDJSON)
@@ -93,14 +92,6 @@ BEGIN
 			FROM RipGenres
 			WHERE RipID = RipIDTarget
 		);
-		
-		-- Delete any removed genres
-		DELETE FROM RipGenres
-		WHERE GenreID NOT IN (
-			SELECT JSON_UNQUOTE(g.GenreIDJSON)
-			FROM JSON_TABLE (Genres, '$[*]' COLUMNS(rn FOR ORDINALITY, GenreIDJSON JSON PATH '$')) g
-		)
-		AND RipID = RipIDTarget;
 	END IF;
 
 	COMMIT;

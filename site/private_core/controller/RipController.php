@@ -273,13 +273,24 @@ class RipController extends Controller
 					$validated['Jokes'] = $ends;
 				} else {
 					$validated['Jokes'] = [];
+					// Format the jokes array so it can be encoded in JSON.
 					for ($i = 0; $i < count($jokes); $i++) {
 						$jokeId = $jokes[$i];
 						if (!is_array($validated['Jokes'][$jokeId] ?? null)) {
 							$validated['Jokes'][$jokeId] = ['timestamps' => [], 'comment' => null];
 						}
 
-						array_push($validated['Jokes'][$jokeId]['timestamps'], ['start' => $starts[$i], 'end' => $ends[$i]]);
+						$timestamp = [];
+						if (!empty($starts[$i])) {
+							$timestamp['start'] = $starts[$i];
+						}
+						if (!empty($ends[$i])) {
+							$timestamp['end'] = $ends[$i];
+						}
+
+						if (!empty($timestamp)) {
+							array_push($validated['Jokes'][$jokeId]['timestamps'], ['start' => $starts[$i], 'end' => $ends[$i]]);
+						}
 					}
 					$validated['Jokes'] = json_encode($validated['Jokes']);
 				}
