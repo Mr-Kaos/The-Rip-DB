@@ -9,7 +9,7 @@ require_once('Controller.php');
 /**
  * @property \RipDB\Model\HomeModel $model
  */
-class ERrorController extends Controller
+class ErrorController extends Controller
 {
 	public function __construct(string $page)
 	{
