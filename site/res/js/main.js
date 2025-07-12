@@ -77,6 +77,9 @@ function getNotificationContainer() {
  * @param {NotificationPriority} priority 
  */
 function displayNotification(message, priority) {
+	const NOTIFICATION_FADE_TIMEOUT = 3000; // standard number of millis for notification to fade out.
+	const MILLIS_PER_CHAR = 25; // If the message is longer than 30 chars, millis are added per character in the message.
+
 	let notification = document.createElement('div');
 	notification.innerText = message;
 	notification.className = 'notif';
@@ -111,6 +114,38 @@ function displayNotification(message, priority) {
 	}
 
 	getNotificationContainer().append(notification);
+
+	// Depending on the length of the text, adjust how long it takes before the alert fades out.
+	let delay = NOTIFICATION_FADE_TIMEOUT;
+	if (notification.innerText.length > 30) {
+		delay += notification.innerText.length * MILLIS_PER_CHAR;
+	}
+	setTimeout(fadeOut, delay, notification);
+
+	/**
+	 * 
+	 * @param {Element} element The notification element to fade out.
+	 */
+	function fadeOut(element) {
+		element.style.opacity = 1;
+		let interval = setInterval(function () {
+			element.style.opacity -= 0.01;
+
+			if (element.style.opacity <= 0) {
+				removeNotification(element);
+				clearInterval(interval, NOTIFICATION_FADE_TIMEOUT);
+			}
+		}, 10, element);
+
+	}
+
+	/**
+	 * Removes the given notification element from the DOM.
+	 * @param {Element} element 
+	 */
+	function removeNotification(element) {
+		element.remove();
+	}
 }
 
 /**
