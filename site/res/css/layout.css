@@ -145,6 +145,7 @@ button {
 	border-bottom: var(--accent-3) solid 3px;
 	color: var(--text-color-invert);
 	cursor: pointer;
+	transition: 0.3s;
 }
 
 a.button:active,
@@ -152,6 +153,11 @@ button:active:not(:disabled) {
 	border: unset;
 	box-shadow: 0 0 0 !important;
 	margin-bottom: 3px;
+}
+
+button[disabled] {
+	filter: grayscale();
+	cursor: not-allowed;
 }
 
 .pagination>a {
@@ -523,6 +529,40 @@ h4 {
 .sidebar-split>div:nth-child(2) {
 	padding: 5px;
 	border: var(--bg-accent) solid thin;
+}
+
+/* Alert highlight colours */
+.highlight {
+	transition: ease 0.5s;
+}
+
+.highlight.clear {
+	border-color: initial;
+}
+
+.highlight.default {
+	border-color: var(--color-ok);
+	background-color: var(--color-ok);
+}
+
+.highlight.success {
+	border-color: var(--color-good);
+	background-color: var(--color-good-alt);
+}
+
+.highlight.warning {
+	border-color: var(--color-warn);
+	background-color: var(--color-warn-alt);
+}
+
+.highlight.alert {
+	border-color: var(--color-bad);
+	background-color: var(--color-bad-alt);
+}
+
+.highlight.error {
+	border-color: var(--color-bad);
+	background-color: var(--color-bad-alt);
 }
 
 /* Vertical 1080p monitor/thin display adjustments */

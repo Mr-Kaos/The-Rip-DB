@@ -49,6 +49,9 @@ const NotificationPriority = {
 			default:
 				return this.Default;
 		}
+	},
+	cases() {
+		return [this.Success, this.Warning, this.Alert, this.Error, this.Default];
 	}
 }
 
@@ -90,7 +93,7 @@ function displayNotification(message, priority) {
 	switch (priority) {
 		case NotificationPriority.Success:
 			notification.style.background = '#c5fd80'
-			notification.style.background = '#5add00'
+			notification.style.borderColor = '#5add00'
 			break;
 		case NotificationPriority.Warning:
 			notification.style.background = '#fffaaa'
@@ -108,6 +111,121 @@ function displayNotification(message, priority) {
 	}
 
 	getNotificationContainer().append(notification);
+}
+
+/**
+ * Manages the displaying of messages beside a specified element, typically inputs.
+ * If no message is given (i.e. message is null), it is assumed to remove any messages associated with the given element.
+ * Else if a message is given, it is assumed that the specified message is to be displayed for the given element.
+ * If a message already exists on the given element, the message is replaced with the next one given.
+ * 
+ * @param {Element} element The element to append or remove an error message from.
+ * @param {String} message The message to append to the specified element.
+ * @param {NotificationPriority} alertType The type of alert to display beside the error message.
+ */
+function displayErrorMessage(element, message = null, alertType = NotificationPriority.Error) {
+
+	if (element !== null) {
+		if (message == null) {
+			removeErrorMessage(element);
+		} else {
+			appendErrorMessage(element, message, alertType);
+		}
+	} else {
+		console.warn('Could not display or hide error message as the target element is null.');
+	}
+
+	/**
+	 * Appends a span element after the specified element with the specified message.
+	 * Used to alert the user of invalid inputs if one is made.
+	 * Also adds a red outline to the associated fieldset where the error occurs.
+	 * 
+	 * @param {Element} element The element to append the message beside. Should be an input element.
+	 * @param {String} message The message to be appended next to the element.
+	 * @param {NotificationPriority} alertType Optional. The type of alert to present to the user.
+	 */
+	function appendErrorMessage(element, message, alertType = NotificationPriority.Error) {
+		let associatedFieldset;
+		let msgElement = document.getElementById(element.id + "_MSG");
+		element.classList.add('highlight');
+		clearHighlight(element);
+		element.classList.add(alertType);
+
+		// Make sure the message element being appended does not already exist
+		if (msgElement === null) {
+			msgElement = document.createElement("span");
+			msgElement.id = element.id + "_MSG";
+			msgElement.innerText = message;
+			element.insertAdjacentElement('afterend', msgElement);
+		} else {
+			msgElement.innerText = message;
+		}
+
+		// Disabled as highlighting the whole fieldset felt too distracting. Might remove completely later.
+		// // Find the associated fieldset of the input and style it accordingly.
+		// if ((associatedFieldset = getInputFieldset(element)) !== undefined) {
+		// 	if (alertType == NotificationPriority.Alert || alertType == NotificationPriority.Error || alertType == NotificationPriority.Warning) {
+		// 		associatedFieldset.classList.add('highlight');
+		// 		associatedFieldset.classList.add(alertType);
+		// 		associatedFieldset.classList.remove('clear');
+		// 	} else {
+		// 		clearHighlight(associatedFieldset);
+		// 	}
+		// }
+	}
+
+	/**
+	 * Removes an error message from an input element if one exists.
+	 * @param {Element} element 
+	 * @returns {Boolean} True if an error message exists and is removed. Else returns false.
+	 */
+	function removeErrorMessage(element) {
+		let removed = false;
+		let msgElement = document.getElementById(element.id + "_MSG");
+		if (msgElement !== null) {
+			msgElement.remove();
+			removed = true;
+		}
+		clearHighlight(element);
+
+		return removed;
+	}
+
+	/**
+	 * Removes any highlight colours from the given element.
+	 * @param {HTMLElement} element The element tor remove any highlights from
+	 */
+	function clearHighlight(element) {
+		let notifTypes = NotificationPriority.cases();
+		for (let i = 0; i < notifTypes.length; i++) {
+			element.classList.remove(notifTypes[i]);
+		}
+	}
+
+	/**
+	 * Finds the fieldset that is the parent of the given input element and returns it.
+	 * @param {Element} input The input element to find its fieldset for.
+	 * @returns {Element|null} The fieldset if found. Else null.
+	 */
+	function getInputFieldset(input) {
+		let fieldset = undefined;
+		const MAX_ITERATIONS = 5;
+		let i = 0;
+
+		if (input !== null) {
+			while (i < MAX_ITERATIONS && fieldset == null) {
+				if (input.parentElement !== null) {
+					if (input.parentElement.tagName == 'FIELDSET') {
+						fieldset = input.parentElement;
+					} else {
+						input = input.parentElement;
+					}
+				}
+				i++;
+			}
+		}
+		return fieldset;
+	}
 }
 
 /**

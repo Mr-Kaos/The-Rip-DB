@@ -7,12 +7,14 @@ use RipDB\Model as m;
 
 require_once('Controller.php');
 require_once('private_core/model/AccountModel.php');
+require_once('private_core/controller/LoginController.php');
 require_once('private_core/objects/DataValidators.php');
+require_once('private_core/objects/IAsyncHandler.php');
 
 /**
  * @property \RipDB\Model\AccountModel $model
  */
-class AccountController extends Controller
+class AccountController extends Controller implements \RipDB\Objects\IAsyncHandler
 {
 	use \RipDB\DataValidator;
 	public function __construct(string $page)
@@ -47,7 +49,17 @@ class AccountController extends Controller
 			case 'account';
 				switch ($_GET['mode']) {
 					case 'username':
+						$validated['InAccountId'] = $_SESSION[\RipDB\AUTH_USER];
+						$validated['NewUsername'] = $this->validateString($_POST['username'], 'The given username is invalid', 32, 3, '/' . LoginController::USERNAME_REGEX . '/');
+						$validated['InPassword'] = $this->validateString($_POST['password'], 'The given password is invalid.', 64, 6);
 
+						$submission = $this->model->submitFormData($validated, 'usp_UpdateAccountUsername');
+						if ($submission === true) {
+							\RipDB\addNotification('Successfully updated username!', \RipDB\NotificationPriority::Success);
+							$result = '/account';
+						} else {
+							$result = $submission;
+						}
 						break;
 					case 'password':
 						$validated['InAccountId'] = $_SESSION[\RipDB\AUTH_USER];
@@ -75,5 +87,30 @@ class AccountController extends Controller
 		}
 
 		return $result;
+	}
+
+	public function get(string $method, ?string $methodGroup = null): mixed
+	{
+		$result = null;
+		switch ($methodGroup) {
+			case 'check':
+				if ($method == 'user') {
+					$result = $this->model->checkValidUsername($_GET['username'] ?? null);
+				}
+				break;
+		}
+		return $result;
+	}
+	public function post(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
+	}
+	public function put(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
+	}
+	public function delete(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
 	}
 }

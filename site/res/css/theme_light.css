@@ -16,9 +16,13 @@
 	--link-visited: #8200be;
 
 	--color-good: #0edd0e;
+	--color-good-alt: #b0fab0;
 	--color-ok: #6be9f1;
+	--color-ok-alt: #d0fcff;
 	--color-warn: #ffae00;
+	--color-warn-alt: #ffe9ba;
 	--color-bad: #ff0000;
+	--color-bad-alt: #ffb3b3;
 }
 
 button {

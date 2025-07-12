@@ -16,9 +16,13 @@
 	--link-visited: #c6efff;
 
 	--color-good: #099209;
+	--color-good-alt: #267226;
 	--color-ok: #379bb9;
-	--color-warn: #966600;
+	--color-ok-alt: #6aa7ac;
+	--color-warn: #ac7807;
+	--color-warn-alt: #99762a;
 	--color-bad: #ca0000;
+	--color-bad-alt: #b65c5c;
 }
 
 a {
