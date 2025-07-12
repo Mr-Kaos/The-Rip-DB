@@ -355,7 +355,7 @@ class SearchElement extends CustomElement {
 	 */
 	#setOption(option) {
 		// Only add the element if adding is allowed
-		if (this.canAdd) {
+		if (this.canAdd && option != undefined) {
 			let clone = option.cloneNode(true);
 			let input = document.createElement('input');
 			input.hidden = true;
