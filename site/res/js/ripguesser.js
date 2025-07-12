@@ -322,17 +322,6 @@ class Game {
 				this.#player.setVolume(e.target.value);
 			}.bind(this);
 
-			let btnPause = roundContainer.querySelector('#play-pause');
-			btnPause.onclick = function (e) {
-				// If paused, play
-				if (this.#player.getPlayerState() == 1) {
-					this.#player.pauseVideo();
-					// If playing, pause
-				} else if (this.#player.getPlayerState() == 2) {
-					this.#player.playVideo();
-				}
-			}.bind(this);
-
 			this.#playerState = setInterval(this.#checkPlayerVideoState.bind(this), 100);
 
 			this.#roundData = roundData;
@@ -367,7 +356,8 @@ class Game {
 	 * @param {String} ytID The ID of the video stream to embed
 	 */
 	#prepareYTEmbed(ytID, initVolume, display = false) {
-		let pauseBtn = document.getElementById('play-pause');
+		let btnPause = document.getElementById('play-pause');
+		let btnRewind = document.getElementById('rewind');
 
 		this.#player = new YT.Player('stream', {
 			height: display ? EMBED_HEIGHT : '0',
@@ -388,26 +378,43 @@ class Game {
 		function onPlayerReady(event) {
 			event.target.playVideo();
 			event.target.setVolume(initVolume);
-			pauseBtn.disabled = false;
+			btnPause.disabled = false;
 		}
 
 		function onPlayerStateChange(event) {
 			switch (event.target.getPlayerState()) {
 				// Ended
 				case 0:
-					pauseBtn.innerHTML = "&#x23F9;"
-					pauseBtn.disabled = true;
+					btnPause.innerHTML = "&#x23F9;"
+					btnPause.disabled = true;
+					btnRewind.disabled = false;
 					break;
 				// Playing (Pause button display)
 				case 1:
-					pauseBtn.innerHTML = "&#x23F8;"
+					btnPause.innerHTML = "&#x23F8;"
 					break
 				// Pause (play button display)
 				case 2:
-					pauseBtn.innerHTML = "&#x23EF;"
+					btnPause.innerHTML = "&#x23EF;"
 					break;
 			}
 		}
+
+		btnPause.onclick = function (e) {
+			// If paused, play
+			if (this.#player.getPlayerState() == 1) {
+				this.#player.pauseVideo();
+				// If playing, pause
+			} else if (this.#player.getPlayerState() == 2) {
+				this.#player.playVideo();
+			}
+		}.bind(this);
+
+		btnRewind.onclick = function(e) {
+			btnPause.disabled = false;
+			this.#player.playVideo();
+			btnRewind.disabled = true;
+		}.bind(this);
 	}
 
 	/**

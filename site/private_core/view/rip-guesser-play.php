@@ -15,6 +15,7 @@ use RipDB\RipGuesser as game;
 				<span>
 					<?= (new o\InputElement('&#x1F50A', o\InputTypes::range, ['id' => 'volume', 'min' => 0, 'max' => 100, 'value' => 50]))->buildElement() ?>
 				</span>
+				<button type="button" id="rewind" disabled>&#x1F501;</button>
 			</div>
 			<form id="round-form" action="javascript:void()" style="display:flex">
 			</form>
