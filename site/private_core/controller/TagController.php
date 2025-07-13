@@ -31,7 +31,7 @@ class TagController extends Controller
 	public function performRequest(array $data = []): void
 	{
 		switch ($this->getPage()) {
-			case 'tags':
+			case 'tags/search':
 				$recordCount = $this->model->getTagCount();
 				$rowCount = $this->getRowCount();
 				$page = $this->getPageNumber();
@@ -61,7 +61,7 @@ class TagController extends Controller
 				$this->setData('TagCount', $recordCount);
 				$this->setData('pagination', $this->buildPagination($recordCount, '/tags'));
 				break;
-			case 'new-tag':
+			case 'tags/new':
 				break;
 		}
 	}
@@ -69,7 +69,7 @@ class TagController extends Controller
 	public function submitRequest(?array $extraData = null): array|string
 	{
 		$result = [];
-		if ($this->getPage() == 'new-tag') {
+		if ($this->getPage() == 'tags/new') {
 			$validated['TagName'] = $this->validateFromList($_POST['name'], $this->model->getAllTagNames(), 'The given value is already taken', true);
 		} else {
 			$result = [new \RipDB\Error('Invalid form submission.')];
@@ -79,6 +79,7 @@ class TagController extends Controller
 		$submission = $this->model->submitFormData($validated, 'usp_InsertTag', $newTag);
 		if ($submission == true) {
 			$result = '/tags';
+				\RipDB\addNotification('Tag successfully added!', \RipDB\NotificationPriority::Success);
 		} else {
 			$result = $submission;
 		}

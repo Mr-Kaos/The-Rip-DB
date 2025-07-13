@@ -30,7 +30,7 @@ class RipController extends Controller
 	public function performRequest(array $data = []): void
 	{
 		switch ($this->getPage()) {
-			case 'rips':
+			case 'rips/search':
 				$useAltName = ($_GET['use_secondary'] ?? 0) == 1;
 				$ripCount = $this->model->getRipCount(
 					$_GET['search'] ?? null,
@@ -116,7 +116,7 @@ class RipController extends Controller
 				$this->setData('RipCount', $ripCount);
 				$this->setData('pagination', $this->buildPagination($ripCount, '/rips'));
 				break;
-			case 'rip':
+			case 'rips/rip':
 				if (array_key_exists('random', $data)) {
 					$ripId = $this->model->getRandomRip();
 					\Flight::redirect("/rips/$ripId");
@@ -136,7 +136,7 @@ class RipController extends Controller
 					}
 				}
 				break;
-			case 'edit-rip':
+			case 'rips/edit':
 				$rip = null;
 				if (is_numeric($data['id'])) {
 					$rip = $this->model->getRip($data['id']);
@@ -169,7 +169,7 @@ class RipController extends Controller
 				}
 				$rip['Jokes'] = $temp;
 				$this->setData('rip', $rip);
-			case 'new-rip':
+			case 'rips/new':
 				$this->setData('rippers', $this->model->getRippers());
 				$this->setData('channels', $this->model->getChannels());
 				$this->setData('games', $this->model->getGames());
@@ -245,10 +245,10 @@ class RipController extends Controller
 
 		// Only submit the form if the form is submitted from the new-rip page.
 		switch ($this->getPage()) {
-			case 'edit-rip':
+			case 'rips/edit':
 				// The rip ID is validated in the stored procedure to ensure it exists.
 				$validated['RipIDTarget'] = $this->validateNumber($extraData['id'], 'The given Rip ID is invalid.', null, 1);
-			case 'new-rip':
+			case 'rips/new':
 				// Validate data in order of stored procedure parameters.
 				$validated['Name'] = $this->validateString($_POST['name'], 'The given rip name is invalid.', 1024);
 				$validated['AlternateName'] = $this->validateString($_POST['altName'], 'The given alternate name is invalid.');
@@ -305,7 +305,7 @@ class RipController extends Controller
 					$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
 				}
 
-				if ($this->getPage() == 'new-rip') {
+				if ($this->getPage() == 'rips/new') {
 					$submission = $this->model->submitFormData($validated, 'usp_InsertRip');
 					var_dump($submission);
 					if ($submission == true) {

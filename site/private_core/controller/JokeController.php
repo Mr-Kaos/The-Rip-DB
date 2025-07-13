@@ -31,7 +31,7 @@ class JokeController extends Controller
 	public function performRequest(array $data = []): void
 	{
 		switch ($this->getPage()) {
-			case 'jokes':
+			case 'jokes/search':
 				$recordCount = $this->model->getJokeCount();
 				$rowCount = $this->getRowCount();
 				$page = $this->getPageNumber();
@@ -75,7 +75,7 @@ class JokeController extends Controller
 				}
 
 				break;
-			case 'new-joke':
+			case 'jokes/new':
 				$this->setData('tags', $this->model->getTags());
 				break;
 		}
@@ -84,13 +84,13 @@ class JokeController extends Controller
 	public function submitRequest(?array $extraData = null): array|string
 	{
 		$result = null;
-		if ($this->getPage() == 'new-joke') {
+		if ($this->getPage() == 'jokes/new') {
 			// Validate data in order of stored procedure parameters.
 			$validated = [];
 			$validated['NewJokeName'] = $this->validateString($_POST['name'], 'The given joke name is invalid.', 128);
 			$validated['JokeDescription'] = $this->validateString($_POST['description'], 'The given description is invalid.', null, 1);
 			$existingTags = $this->model->getTags();
-			$validated['PrimaryTag'] = $this->validateFromList(intval( $_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
+			$validated['PrimaryTag'] = $this->validateFromList(intval($_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
 			$tags = $this->validateFromList($_POST['tags'], $existingTags, 'One or more of the given tags do not exist in the database.');
 			if ($tags instanceof \RipDB\Error) {
 				$validated['TagsJSON'] = $tags;
@@ -110,6 +110,7 @@ class JokeController extends Controller
 			$submission = $this->model->submitFormData($validated, 'usp_InsertJoke', $newId);
 			if ($submission === true) {
 				$result = '/jokes';
+				\RipDB\addNotification('Joke successfully added!', \RipDB\NotificationPriority::Success);
 			} else {
 				$result = $submission;
 			}

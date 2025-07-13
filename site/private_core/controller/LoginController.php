@@ -36,7 +36,7 @@ class LoginController extends Controller
 		$loginId = 0;
 
 		switch ($this->getPage()) {
-			case 'login';
+			case 'login/login';
 				$validated['InUsername'] = $this->validateString($_POST['username'], 'The given username is invalid', 32, 3, '/' . self::USERNAME_REGEX . '/');
 				$validated['InPassword'] = $this->validateString($_POST['password'], 'The given password is invalid.', 64, 6);
 				
@@ -50,7 +50,7 @@ class LoginController extends Controller
 				}
 
 				break;
-			case 'login-new':
+			case 'login/new':
 				if (!empty($_POST['password'] ?? null) && !empty($_POST['password2'] ?? null)) {
 					if ($_POST['password'] == $_POST['password2']) {
 						$validated['NewUsername'] = $this->validateString($_POST['username'], 'The given username is not valid', 32, 3, '/' . self::USERNAME_REGEX . '/');

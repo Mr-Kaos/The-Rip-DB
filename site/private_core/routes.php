@@ -42,55 +42,55 @@ Flight::route('/', function () {
 // Rips Pages
 Flight::group('/rips', function () {
 	Flight::route('/', function () {
-		displayPage('rips', 'RipController', [], 'Rips');
+		displayPage('rips/search', 'RipController', [], 'Rips');
 	});
 	Flight::route('/random', function () {
-		displayPage('rip', 'RipController', ['random' => true]);
+		displayPage('rips/rip', 'RipController', ['random' => true]);
 	});
 
 	Flight::route('POST /new', function () {
-		submitForm('new-rip', 'RipController');
+		submitForm('rips/new', 'RipController');
 	});
 
 	Flight::route('/new', function () {
-		displayPage('new-rip', 'RipController', [], 'New Rip');
+		displayPage('rips/new', 'RipController', [], 'New Rip');
 	});
 
 	Flight::route('POST /edit/@id', function ($id) {
-		submitForm('edit-rip', 'RipController', ['id' => $id]);
+		submitForm('rips/edit', 'RipController', ['id' => $id]);
 	});
 	Flight::route('/edit/@id', function ($id) {
-		displayPage('edit-rip', 'RipController', ['id' => $id], 'Edit Rip');
+		displayPage('rips/edit', 'RipController', ['id' => $id], 'Edit Rip');
 	});
 
 	Flight::route('/@id', function ($id) {
-		displayPage('rip', 'RipController', ['id' => $id], 'View Rip');
+		displayPage('rips/rip', 'RipController', ['id' => $id], 'View Rip');
 	});
 });
 
 // Jokes Pages
 Flight::group('/jokes', function () {
 	Flight::route('POST /new', function () {
-		submitForm('new-joke', 'JokeController');
+		submitForm('jokes/new', 'JokeController');
 	});
 	Flight::route('/new', function () {
-		displayPage('new-joke', 'JokeController', [], 'New Joke');
+		displayPage('jokes/new', 'JokeController', [], 'New Joke');
 	});
 	Flight::route('/', function () {
-		displayPage('jokes', 'JokeController', [], 'Jokes');
+		displayPage('jokes/search', 'JokeController', [], 'Jokes');
 	});
 });
 
 // Tag Pages
 Flight::group('/tags', function () {
 	Flight::route('/', function () {
-		displayPage('tags', 'TagController', [], 'Tags');
+		displayPage('tags/search', 'TagController', [], 'Tags');
 	});
 	Flight::route('POST /new', function () {
-		submitForm('new-tag', 'TagController');
+		submitForm('tags/new', 'TagController');
 	});
 	Flight::route('/new', function () {
-		displayPage('new-tag', 'TagController', [], 'New Tag');
+		displayPage('tags/new', 'TagController', [], 'New Tag');
 	});
 });
 
@@ -146,17 +146,17 @@ Flight::route('GET /settings/theme', function () {
 // Login requests
 Flight::group('/login', function () {
 	Flight::route('POST /', function () {
-		submitForm('login', 'LoginController');
+		submitForm('login/login', 'LoginController');
 	});
 	Flight::route('/', function () {
-		displayPage('login', 'LoginController', [], 'Login');
+		displayPage('login/login', 'LoginController', [], 'Login');
 	});
 
 	Flight::route('POST /new', function () {
-		submitForm('login-new', 'LoginController');
+		submitForm('login/new', 'LoginController');
 	});
 	Flight::route('/new', function () {
-		displayPage('login-new', 'LoginController', [], 'Login');
+		displayPage('login/new', 'LoginController', [], 'Login');
 	});
 
 	Flight::route('/logout', function () {
@@ -166,11 +166,11 @@ Flight::group('/login', function () {
 
 Flight::group('/account', function () {
 	Flight::route('POST /', function () {
-		submitForm('account', 'AccountController');
+		submitForm('account/edit', 'AccountController');
 	});
 
 	Flight::route('/', function () {
-		displayPage('account', 'AccountController', ['subPage' => 'account']);
+		displayPage('account/edit', 'AccountController', ['subPage' => 'account']);
 	});
 
 	// Async requests:
@@ -229,7 +229,6 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 	// Include page objects that are commonly used across pages
 	include_once('private_core/objects/pageElements/InputElement.php');
 	include_once('private_core/objects/pageElements/DropdownElement.php');
-	include_once('private_core/objects/pageElements/MultiSelectDropdownElement.php');
 	include_once('private_core/objects/pageElements/SearchElement.php');
 
 	// Create controller if one exists

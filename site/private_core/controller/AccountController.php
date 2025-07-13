@@ -52,7 +52,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 		$validated = [];
 
 		switch ($this->getPage()) {
-			case 'account';
+			case 'account/edit';
 				switch ($_GET['mode']) {
 					case 'username':
 						$validated['InAccountId'] = $_SESSION[\RipDB\AUTH_USER];
