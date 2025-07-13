@@ -2,6 +2,9 @@
 
 This project aims to provide an easy way to catalog and find "[rips](#what-are-rips)" uploaded by all "ripping" channels on YouTube.
 
+It is a PHP and MySQL based system that is currently hosted on [ripdb.net](https://ripdb.net), but can be entirely self-hosted should you want an offline copy.  
+See [the releases page](https://github.com/Mr-Kaos/The-Rip-DB/releases) for stable releases of the site along with a full dump of the database (excluding all credentials and stuff of course).
+
 ## Table of Contents:
 
 - [Aim of the Project](#aim-of-the-project)
@@ -78,6 +81,10 @@ This project currently has the following features complete:
   - [X] Search page
   - [X] Add Tag page
   - [ ] Edit Tag page
+- [X] Games
+  - [X] Search page
+  - [X] Add Game page
+  - [X] Edit Game page
 - [ ] Core System
   - [X] Page routing
   - [X] Custom input elements

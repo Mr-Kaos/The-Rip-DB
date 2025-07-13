@@ -94,6 +94,25 @@ Flight::group('/tags', function () {
 	});
 });
 
+// Game Pages
+Flight::group('/games', function () {
+	Flight::route('/', function () {
+		displayPage('games/search', 'GameController', [], 'Games');
+	});
+	Flight::route('POST /new', function () {
+		submitForm('games/new', 'GameController');
+	});
+	Flight::route('/new', function () {
+		displayPage('games/new', 'GameController', [], 'New Game');
+	});
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('games/edit', 'GameController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('games/edit', 'GameController', ['GameID' => $id], 'Edit Game');
+	});
+});
+
 // Help Page
 Flight::route('/help', function () {
 	displayPage('help', null, [], 'Help / FAQ');
