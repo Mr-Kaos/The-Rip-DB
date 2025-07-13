@@ -1,17 +1,18 @@
 -- Stored procedure for inserting tags into the database easily.
 
-DROP PROCEDURE IF EXISTS RipDB.usp_InsertGame;
+DROP PROCEDURE IF EXISTS usp_InsertGame;
 
-CREATE PROCEDURE RipDB.usp_InsertGame(
+CREATE PROCEDURE usp_InsertGame(
 	IN NewGame varchar(256),
-	IN GameDescription text,
+	IN NewDescription text,
+	IN FakeGame int,
 	OUT GameIDOut int)
 BEGIN
 	IF (SELECT GameID FROM Games WHERE GameName = NewGame) IS NULL THEN
 		INSERT INTO Games
-			(GameName, GameDescription)
+			(GameName, GameDescription, IsFake)
 		VALUES
-			(NewGame, GameDescription);
+			(NewGame, NewDescription, FakeGame);
 
 		SET GameIDOut = LAST_INSERT_ID();
 	ELSE

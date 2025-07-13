@@ -4,6 +4,7 @@ CREATE TABLE Games (
 	GameID int NOT NULL AUTO_INCREMENT,
 	GameName varchar(256) CHARACTER SET utf8mb4 NOT NULL,
 	GameDescription text COMMENT 'Basic information about the game',
+	IsFake bit DEFAULT 0 NOT NULL,
 	PRIMARY KEY (GameID),
 	UNIQUE KEY UQ_GameName (GameName)
 )
