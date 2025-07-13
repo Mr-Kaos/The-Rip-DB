@@ -1,8 +1,13 @@
 <nav>
 	<a href="/">Home</a>
-	<a href="/rips">Rips</a>
-	<a href="/jokes">Jokes</a>
-	<a href="/tags">Tags</a>
+	<div>
+		<a href="/rips">Search</a>
+		<ul>
+			<li><a href="/rips">Rips</a></li>
+			<li><a href="/jokes">Jokes</a></li>
+			<li><a href="/tags">Tags</a></li>
+		</ul>
+	</div>
 	<a href="/ripguessr">RipGuessr</a>
 	<a href="/help">Help / FAQ</a>
 	<?php if (RipDB\checkAuth()) : ?>

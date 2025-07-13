@@ -25,8 +25,13 @@ nav {
 	align-items: center;
 }
 
-nav>a {
+nav>a,
+nav>div {
 	margin-right: 15px;
+}
+
+nav a,
+nav div {
 	color: var(--text-color);
 }
 
@@ -34,7 +39,7 @@ nav>:last-child {
 	margin-left: auto;
 }
 
-nav>a:visited {
+nav a:visited {
 	color: var(--text-color);
 }
 
@@ -50,6 +55,38 @@ nav>a:hover {
 	opacity: 70%;
 	transition: 0.3s;
 }
+
+nav>div {
+	display: inline-block;
+}
+
+nav>div>ul {
+	display: none;
+	position: absolute;
+	background-color: var(--accent-1);
+	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+	margin: 0;
+	list-style-type: none;
+	padding: 0;
+	min-width: 64px;
+}
+
+nav>div:hover>ul {
+	display: block;
+}
+
+nav>div>ul a {
+	padding: 6px 2px;
+	text-decoration: none;
+	display: block;
+	text-align: left;
+}
+
+nav>div>ul a:hover {
+	backdrop-filter: brightness(80%);
+}
+
 
 footer {
 	display: flex;
@@ -190,6 +227,7 @@ button[disabled] {
 	position: absolute;
 	max-height: 250px;
 	overflow-y: scroll;
+	z-index: 1;
 }
 
 .multi-select>div.options>span:hover,
