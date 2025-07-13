@@ -308,7 +308,7 @@ class RipController extends Controller
 				if ($this->getPage() == 'rips/new') {
 					$submission = $this->model->submitFormData($validated, 'usp_InsertRip');
 					var_dump($submission);
-					if ($submission == true) {
+					if ($submission === true) {
 						$result = '/rips';
 						\RipDB\addNotification('Successfully added rip!', \RipDB\NotificationPriority::Success);
 					} else {
@@ -316,7 +316,7 @@ class RipController extends Controller
 					}
 				} else {
 					$submission = $this->model->submitFormData($validated, 'usp_UpdateRip');
-					if ($submission == true) {
+					if ($submission === true) {
 						$result = '/rips/' . $extraData['id'];
 						\RipDB\addNotification('Successfully updated rip!', \RipDB\NotificationPriority::Success);
 					} else {

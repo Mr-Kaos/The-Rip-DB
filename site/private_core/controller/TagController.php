@@ -41,6 +41,7 @@ class TagController extends Controller
 				$tags = $this->model->search(
 					$rowCount,
 					$offset,
+					null,
 					$_GET['search'] ?? null,
 				);
 
@@ -77,7 +78,7 @@ class TagController extends Controller
 
 		$newTag = 0;
 		$submission = $this->model->submitFormData($validated, 'usp_InsertTag', $newTag);
-		if ($submission == true) {
+		if ($submission === true) {
 			$result = '/tags';
 				\RipDB\addNotification('Tag successfully added!', \RipDB\NotificationPriority::Success);
 		} else {
