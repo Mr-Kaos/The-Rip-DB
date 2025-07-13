@@ -4,13 +4,13 @@ namespace RipDB\Model;
 
 require('Model.php');
 
-class JokeModel extends Model
+class JokeModel extends Model implements ResultsetSearch
 {
 	const TABLE = 'Jokes';
 	const VIEW = 'vw_JokesDetailed';
 	const COLUMNS = ['JokeID', 'JokeName', 'JokeDescription'];
 
-	public function searchJokes(int $count, int $offset, ?string $name = null, array $tags = [], array $metas = [], array $metaJokes = [])
+	public function search(int $count, int $offset, ?array $sort, ?string $name = null, array $tags = [], array $metas = [], array $metaJokes = []): array 
 	{
 		$qry = $this->db->table(self::VIEW)
 			->columns(...self::COLUMNS)
@@ -81,7 +81,7 @@ class JokeModel extends Model
 		return $jokes;
 	}
 
-	public function getJokeCount()
+	public function getCount(): int
 	{
 		return $this->db->table(self::TABLE)->count();
 	}

@@ -32,16 +32,17 @@ class JokeController extends Controller
 	{
 		switch ($this->getPage()) {
 			case 'jokes/search':
-				$recordCount = $this->model->getJokeCount();
+				$recordCount = $this->model->getCount();
 				$rowCount = $this->getRowCount();
 				$page = $this->getPageNumber();
 
 				// Get records of jokes
 				$jokes = [];
 				$offset = $this->getOffset($recordCount, '/jokes');
-				$jokes = $this->model->searchJokes(
+				$jokes = $this->model->search(
 					$rowCount,
 					$offset,
+					null,
 					$_GET['search'] ?? null,
 					$_GET['tags'] ?? [],
 					$_GET['metas'] ?? [],

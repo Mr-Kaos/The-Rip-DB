@@ -4,12 +4,12 @@ namespace RipDB\Model;
 
 require('Model.php');
 
-class TagModel extends Model
+class TagModel extends Model implements ResultsetSearch
 {
 	const TABLE = 'Tags';
 	const COLUMNS = ['TagID', 'TagName'];
 
-	public function searchTags(int $count, int $offset, ?string $name = null)
+	public function search(int $count, int $offset, ?array $sort, ?string $name = null): array
 	{
 		$qry = $this->db->table(self::TABLE)
 			->columns(...self::COLUMNS)
@@ -37,7 +37,7 @@ class TagModel extends Model
 		return $tags;
 	}
 
-	public function getTagCount()
+	public function getCount(): int
 	{
 		return $this->db->table(self::TABLE)->count();
 	}

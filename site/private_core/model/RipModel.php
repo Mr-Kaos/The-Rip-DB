@@ -4,7 +4,7 @@ namespace RipDB\Model;
 
 require_once('Model.php');
 
-class RipModel extends Model
+class RipModel extends Model implements ResultsetSearch
 {
 	const TABLE = 'Rips';
 	const VIEW = 'vw_RipsDetailed';
@@ -180,7 +180,7 @@ class RipModel extends Model
 	 * @param bool $useAltName If true and $name is given, it will find rips based on their alternate name. Defaults to the RipName column.
 	 * @return array An array of rips found by the given search criteria.
 	 */
-	public function searchRips(int $count, int $offset, ?array $sort, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false)
+	public function search(int $count, int $offset, ?array $sort, ?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false): array
 	{
 		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $channel, $useAltName);
 		$qry->groupBy('RipID')
@@ -256,7 +256,7 @@ class RipModel extends Model
 		return $rips;
 	}
 
-	public function getRipCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false)
+	public function getCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false): int
 	{
 		$where = '';
 		$params = [];

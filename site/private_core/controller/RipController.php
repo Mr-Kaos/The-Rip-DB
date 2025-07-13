@@ -32,7 +32,7 @@ class RipController extends Controller
 		switch ($this->getPage()) {
 			case 'rips/search':
 				$useAltName = ($_GET['use_secondary'] ?? 0) == 1;
-				$ripCount = $this->model->getRipCount(
+				$ripCount = $this->model->getCount(
 					$_GET['search'] ?? null,
 					$_GET['tags'] ?? [],
 					$_GET['jokes'] ?? [],
@@ -50,7 +50,7 @@ class RipController extends Controller
 				// Get records of rips
 				$rips = [];
 				$offset = $this->getOffset($ripCount, '/rips');
-				$rips = $this->model->searchRips(
+				$rips = $this->model->search(
 					$rowCount,
 					$offset,
 					$_GET['s'] ?? null,

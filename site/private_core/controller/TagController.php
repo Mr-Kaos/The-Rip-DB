@@ -32,13 +32,13 @@ class TagController extends Controller
 	{
 		switch ($this->getPage()) {
 			case 'tags/search':
-				$recordCount = $this->model->getTagCount();
+				$recordCount = $this->model->getCount();
 				$rowCount = $this->getRowCount();
 				$page = $this->getPageNumber();
 
 				// Get records of rips
 				$offset = $this->getOffset($recordCount, '/tags');
-				$tags = $this->model->searchTags(
+				$tags = $this->model->search(
 					$rowCount,
 					$offset,
 					$_GET['search'] ?? null,

@@ -205,3 +205,27 @@ abstract class Model
 		}
 	}
 }
+
+/**
+ * This is an interface that is used for models that need to provide results for a search table.
+ */
+interface ResultsetSearch
+{
+	/**
+	 * Table search function.
+	 * The implementation should be responsible for querying the desired table using an offset and row count and returning the results as an array.
+	 * Optional parameters can be given in the 4th+ parameters for use in specific column searching.
+	 * @param int $count The number of rows to retrieve in the query.
+	 * @param int $offset The number of rows to skip.
+	 * @param ?array $sort An associative array of columns to sort by, with the value being the sorting direction (ASC or DESC).
+	 * @return array The queried results.
+	 */
+	function search(int $rows, int $offset, ?array $sort): array;
+
+	/**
+	 * Table count function
+	 * The implementation of this function should return the number of records that exist in the given table.
+	 * If a search is made with filters, such as a where clause, the count should also take this into account.
+	 */
+	function getCount(): int;
+}
