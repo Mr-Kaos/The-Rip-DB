@@ -29,7 +29,7 @@ class LoginController extends Controller
 	/**
 	 * 
 	 */
-	public function submitRequest(?array $extraData = null): array|string
+	public function validateRequest(?array $extraData = null): array|string
 	{
 		$result = [];
 		$validated = [];
@@ -39,16 +39,12 @@ class LoginController extends Controller
 			case 'login/login';
 				$validated['InUsername'] = $this->validateString($_POST['username'], 'The given username is invalid', 32, 3, '/' . self::USERNAME_REGEX . '/');
 				$validated['InPassword'] = $this->validateString($_POST['password'], 'The given password is invalid.', 64, 6);
-				
-				$submission = $this->model->submitFormData($validated, 'usp_SelectLogin', $loginId);
-				if ($submission === true && $loginId != 0) {
-					$_SESSION[\RipDB\AUTH_USER] = $loginId;
-					\RipDB\addNotification('Successfully logged in!', \RipDB\NotificationPriority::Success);
-					$result = '/';
-				} else {
-					$result = $submission;
-				}
 
+				$result = $this->submitRequest($validated, 'usp_SelectLogin', '/', 'Successfully logged in!', $loginId);
+
+				if (is_string($result)) {
+					$_SESSION[\RipDB\AUTH_USER] = $loginId;
+				}
 				break;
 			case 'login/new':
 				if (!empty($_POST['password'] ?? null) && !empty($_POST['password2'] ?? null)) {
@@ -56,13 +52,10 @@ class LoginController extends Controller
 						$validated['NewUsername'] = $this->validateString($_POST['username'], 'The given username is not valid', 32, 3, '/' . self::USERNAME_REGEX . '/');
 						$validated['NewPassword'] = $this->validateString($_POST['password'], 'The given password is not valid.', 64, 6);
 
-						$submission = $this->model->submitFormData($validated, 'usp_InsertLogin', $loginId);
-						if ($submission === true) {
-							\RipDB\addNotification('Successfully created account!', \RipDB\NotificationPriority::Success);
+						$result = $this->submitRequest($validated, 'usp_InsertLogin', '/', 'Successfully created account!', $loginId);
+
+						if (is_string($result)) {
 							$_SESSION[\RipDB\AUTH_USER] = $loginId;
-							$result = '/';
-						} else {
-							$result = $submission;
 						}
 					} else {
 						$result = [new \RipDB\Error("The given passwords do not match!")];

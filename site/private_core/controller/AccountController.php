@@ -46,7 +46,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 	/**
 	 * 
 	 */
-	public function submitRequest(?array $extraData = null): array|string
+	public function validateRequest(?array $extraData = null): array|string
 	{
 		$result = [];
 		$validated = [];
@@ -76,14 +76,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 						if ($newPass == $newPass2 && !($newPass instanceof Error || $newPass2 instanceof Error)) {
 							$validated['NewPassword'] = $newPass;
 							$validated['NewPassword2'] = $newPass2;
-
-							$submission = $this->model->submitFormData($validated, 'usp_UpdateAccountPassword');
-							if ($submission === true) {
-								\RipDB\addNotification('Successfully updated password!', \RipDB\NotificationPriority::Success);
-								$result = '/account';
-							} else {
-								$result = $submission;
-							}
+							$result = $this->submitRequest($validated, 'usp_UpdateAccountPassword', '/account', 'Successfully updated password!', true);
 						} else {
 							$result = [new Error('The passwords do not match')];
 						}
@@ -95,16 +88,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 
 						if ($pass == $pass2 && !($pass instanceof Error || $pass2 instanceof Error)) {
 							$validated['InPassword'] = $pass;
-
-							$submission = $this->model->submitFormData($validated, 'usp_DeleteAccount');
-							if ($submission === true) {
-								session_destroy();
-								session_start();
-								\RipDB\addNotification('Successfully deleted account.', \RipDB\NotificationPriority::Success);
-								$result = '/';
-							} else {
-								$result = $submission;
-							}
+							$result = $this->submitRequest($validated, 'usp_DeleteAccount', '/', 'Successfully deleted account.', true);
 						} else {
 							$result = [new Error('The passwords do not match')];
 						}

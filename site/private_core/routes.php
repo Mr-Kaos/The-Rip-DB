@@ -326,15 +326,18 @@ function submitForm(string $page, string $controllerName, ?array $data = null)
 		require_once("private_core/controller/$controllerName.php");
 		$controllerName = "\RipDB\\Controller\\$controllerName";
 		$controller = new $controllerName($page);
-		$result = $controller->submitRequest($data);
+		$result = $controller->validateRequest($data);
 
-		if (is_array($result)) {
-			foreach ($result as $error) {
-				RipDB\addNotification($error->getMessage(), $error->getPriority());
-			}
-			Flight::redirect($_SERVER['HTTP_REFERER']);
+		// If an ACCEPT header was requested to respond as JSON, be sure to fulfil it.
+		// Ths is often used for modals that are submitting forms from other pages.
+		if (($_SERVER['HTTP_ACCEPT'] ?? null) == 'application/json') {
+			Flight::json($result);
 		} else {
-			Flight::redirect($result);
+			if ($result === false) {
+				Flight::redirect($_SERVER['HTTP_REFERER']);
+			} else {
+				Flight::redirect($result);
+			}
 		}
 	}
 }

@@ -82,7 +82,7 @@ class JokeController extends Controller
 		}
 	}
 
-	public function submitRequest(?array $extraData = null): array|string
+	public function validateRequest(?array $extraData = null): array|string
 	{
 		$result = null;
 		if ($this->getPage() == 'jokes/new') {
@@ -107,14 +107,7 @@ class JokeController extends Controller
 				$validated['MetasJSON'] = json_encode($metas, JSON_NUMERIC_CHECK);
 			}
 
-			$newId = 0;
-			$submission = $this->model->submitFormData($validated, 'usp_InsertJoke', $newId);
-			if ($submission === true) {
-				$result = '/jokes';
-				\RipDB\addNotification('Joke successfully added!', \RipDB\NotificationPriority::Success);
-			} else {
-				$result = $submission;
-			}
+			$result = $this->submitRequest($validated, 'usp_InsertJoke', '/jokes', 'Joke successfully added!', true);
 		}
 		return $result;
 	}

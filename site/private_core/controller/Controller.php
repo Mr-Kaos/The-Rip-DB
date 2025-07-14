@@ -11,6 +11,10 @@ abstract class Controller
 	private string $page;
 	private ?string $pageTitleOverride = null;
 
+	const SUBMIT_RESPONSE_ID = '_NewID';
+	const SUBMIT_RESPONSE_MSG = '_Message';
+	const SUBMIT_RESPONSE_ERR = '_Error';
+
 	public function __construct(string $page, ?m\Model $model = null)
 	{
 		$this->model = $model;
@@ -51,9 +55,9 @@ abstract class Controller
 	 * @return RipDB\Error[]|string Returns a URL to redirect to upon a successful submission. Else, if an error occurred, an array of each error encountered will be returned.
 	 * 	This array is retrieved from the model.
 	 */
-	public function submitRequest(?array $extraData = null): array|string
+	public function validateRequest(?array $extraData = null): array|string
 	{
-		throw (new \Exception("This controller's submitRequest function has not been initialised!"));
+		throw (new \Exception("This controller's validateRequest function has not been initialised!"));
 		return '';
 	}
 
@@ -72,5 +76,46 @@ abstract class Controller
 	public function getPageTitle(): ?string
 	{
 		return $this->pageTitleOverride;
+	}
+
+	/**
+	 * Submits the request to the controller's model. The data should be validated before sending it through this function.
+	 * 
+	 * @return false|array|string If submission fails, False is returned. If successful, depending on whether an HTTP_ACCEPT header is sent or not will determine if an array or string is returned.  
+	 * - If HTTP_ACCEPT is sent, an array of the validated data submitted is returned, along with an ID of the record (if applicable) and a success message.
+	 * - If no HTTP_ACCEPT is sent, a URI is returned to indicate where the user should be redirected to.
+	 */
+	protected function submitRequest(array $validatedData, string $storedProcedure, string $redirectLink, string $successMessage = "Request successfully submitted!", mixed &$outputParam = null): false|array|string
+	{
+		$result = [];
+
+		$submission = $this->model->submitFormData($validatedData, $storedProcedure, $outputParam);
+		if ($submission === true) {
+			// If the sender sent an ACCEPT header, ensure that the submitted data is returned.
+			if (($_SERVER['HTTP_ACCEPT'] ?? null) == 'application/json') {
+				$result = $validatedData;
+				$result[self::SUBMIT_RESPONSE_ID] = $outputParam;
+				$result[self::SUBMIT_RESPONSE_MSG] = $successMessage;
+			} else {
+				\RipDB\addNotification($successMessage, \RipDB\NotificationPriority::Success);
+				$result = $redirectLink;
+			}
+		} else {
+			// If an accept header is sent, send the error messages as a single string. Else, create Notifications for each error.
+			if (($_SERVER['HTTP_ACCEPT'] ?? null) == 'application/json') {
+				$msg = "Failed to submit request";
+				foreach ($submission as $error) {
+					$msg .= "\n" . $error->getMessage();
+				}
+				$result = [self::SUBMIT_RESPONSE_ERR => $msg];
+			} else {
+				foreach ($submission as $error) {
+					\RipDB\addNotification($error->getMessage(), $error->getPriority());
+				}
+				$result = false;
+			}
+		}
+
+		return $result;
 	}
 }

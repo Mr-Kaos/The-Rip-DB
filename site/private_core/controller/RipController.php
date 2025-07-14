@@ -238,7 +238,7 @@ class RipController extends Controller
 	 * Handles the submission of the new rip form.
 	 * @return Error|string Returns an Error if an error occurred, or a string of a URI to redirect to upon completion.
 	 */
-	public function submitRequest(?array $extraData = null): array|string
+	public function validateRequest(?array $extraData = null): array|string
 	{
 		$result = null;
 		$validated = [];
@@ -306,22 +306,9 @@ class RipController extends Controller
 				}
 
 				if ($this->getPage() == 'rips/new') {
-					$submission = $this->model->submitFormData($validated, 'usp_InsertRip');
-					var_dump($submission);
-					if ($submission === true) {
-						$result = '/rips';
-						\RipDB\addNotification('Successfully added rip!', \RipDB\NotificationPriority::Success);
-					} else {
-						$result = $submission;
-					}
+					$result = $this->submitRequest($validated, 'usp_InsertRip', '/rips', 'Rip successfully added!');
 				} else {
-					$submission = $this->model->submitFormData($validated, 'usp_UpdateRip');
-					if ($submission === true) {
-						$result = '/rips/' . $extraData['id'];
-						\RipDB\addNotification('Successfully updated rip!', \RipDB\NotificationPriority::Success);
-					} else {
-						$result = $submission;
-					}
+					$result = $this->submitRequest($validated, 'usp_UpdateRip', '/rips/' . $extraData['id'], 'Rip successfully updated!');
 				}
 
 				break;

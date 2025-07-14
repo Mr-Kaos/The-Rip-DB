@@ -67,7 +67,7 @@ class TagController extends Controller
 		}
 	}
 
-	public function submitRequest(?array $extraData = null): array|string
+	public function validateRequest(?array $extraData = null): array|string
 	{
 		$result = [];
 		if ($this->getPage() == 'tags/new') {

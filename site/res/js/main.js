@@ -263,22 +263,19 @@ function displayErrorMessage(element, message = null, alertType = NotificationPr
 	}
 }
 
-/**
- * The base modal class
- */
-class Modal {
+
+class IModal {
 	#bg;
 	#id;
-	#title;
+	#allowClose = true;
+	#functions = {};
 	#width;
 	#height;
-	#openCheck = null
+	allowResize;
+	content = null;
+	isOpen = false;
 	#onClose = null
-	#content = null;
-	#allowClose = true;
-	#allowResize;
-	#open = false;
-	#functions = {};
+	title;
 
 	/**
 	 * 
@@ -308,7 +305,7 @@ class Modal {
 	 */
 	constructor(id, title, text, width = null, height = null, allowResize = true, allowClose = true, functions = null) {
 		this.#id = id;
-		this.#title = title;
+		this.title = title;
 		this.#allowClose = allowClose;
 		this.setWidth(width);
 		this.setHeight(height);
@@ -317,8 +314,8 @@ class Modal {
 			console.warn(`The modal (ID: ${id}) has closing disabled and has no functions assigned! This modal may not be closable by the user once opened!`);
 		}
 
-		this.#content = text;
-		this.#allowResize = allowResize;
+		this.content = text;
+		this.allowResize = allowResize;
 		//build the grey background
 		this.#bg = document.createElement("div");
 		this.#bg.id = this.#id;
@@ -346,13 +343,21 @@ class Modal {
 	}
 
 	/**
-	 * @param {String} width a valid value for the CSS height attribute.
+	 * @param {String} width A valid value for the CSS height attribute.
 	 */
 	setHeight(height) {
 		height = this.#setSize(height, 'height');
 		if (height != null) {
 			this.#height = height;
 		}
+	}
+
+	getWidth() {
+		return this.#width;
+	}
+
+	getHeight() {
+		return this.#height;
 	}
 
 	/**
@@ -392,108 +397,14 @@ class Modal {
 	}
 
 	/**
-	 * Destroys the modal's content and hides it.
+	 * @returns {HTMLElement} The modal's background element (the eldest parent).
 	 */
-	close() {
-		this.#bg.remove();
-		this.#open = false;
-		if (this.#onClose != null) {
-			if (this.#onClose.length == 0) {
-				this.#onClose(this);
-			} else {
-				this.#onClose(this);
-			}
-		}
+	getBG() {
+		return this.#bg;
 	}
 
-	/**
-	 * Builds and opens the modal.
-	 */
-	open() {
-		let modalWindow = document.createElement("div");
-		modalWindow.classList.add("modal-window");
-
-		modalWindow.appendChild(this.#buildModalTitleBar(this.#title));
-		modalWindow.appendChild(this.#buildContent());
-		this.#bg.appendChild(modalWindow);
-		this.boundHandleClick = this.handleClick.bind(this);
-		this.boundOpenModal = this.open.bind(this);
-
-		this.#bg.addEventListener("mousedown", this.boundHandleClick);
-		document.body.appendChild(this.#bg);
-
-		this.#bg.classList.remove("hidden");
-		this.#open = true;
-		if (this.#openCheck != null) {
-			if (this.#openCheck.length == 0) {
-				this.#openCheck();
-			} else {
-				this.#openCheck(this);
-			}
-		}
-	}
-
-	/**
-	 * Builds the content to be displayed in the modal's content container.
-	 */
-	#buildContent() {
-		let contentDiv = document.createElement('div');
-		contentDiv.className = 'content';
-		contentDiv.innerHTML = this.#content;
-		contentDiv.style.width = this.#width;
-		contentDiv.style.height = this.#height;
-
-		if (this.#allowResize) {
-			contentDiv.style.resize = "both";
-			contentDiv.style.overflow = "scroll";
-			contentDiv.style.minWidth = '100%';
-			contentDiv.style.minHeight = '100%';
-			contentDiv.style.maxWidth = '100%';
-			contentDiv.style.maxHeight = '87vh';
-		}
-
-		// If functions are given, build them
-		if (this.#functions != null) {
-			let btnDiv = document.createElement('div');
-			btnDiv.className = 'modal-buttons';
-
-			for (let btnName in this.#functions) {
-				let data = this.#functions[btnName];
-				let btn = document.createElement('button');
-				let canClose = true;
-				btn.type = "button";
-				btn.innerText = btnName;
-
-				for (let attr in data) {
-					switch (attr) {
-						case 'function':
-							btn.onclick = data[attr];
-							break;
-						case 'colour':
-							btn.style.color = data[attr];
-							break;
-						case 'className':
-							btn.className = data[attr];
-							break;
-						case 'background':
-							btn.style.background = data[attr];
-							break;
-						case 'close':
-							canClose = data[attr];
-							break;
-					}
-				}
-
-				if (canClose) {
-					btn.addEventListener('click', this.close.bind(this));
-				}
-
-				btnDiv.append(btn);
-			}
-			contentDiv.append(btnDiv);
-		}
-
-		return contentDiv;
+	getFunctions() {
+		return this.#functions;
 	}
 
 	/**
@@ -501,7 +412,7 @@ class Modal {
 	 * @param {string} title 
 	 * @returns {bg} modalBar
 	 */
-	#buildModalTitleBar(title) {
+	buildModalTitleBar(title) {
 		let modalTitle = document.createElement("h3");
 		modalTitle.innerHTML = title;
 		this.modalTitleHeading = modalTitle;
@@ -517,6 +428,237 @@ class Modal {
 		}
 
 		return modalTitleBar;
+	}
+
+	/**
+	 * Replaces the existing content with new content.
+	 * @param {String} content The content to replace the existing content with.
+	 */
+	setContent(content) {
+		this.content = content;
+	}
+
+	/**
+	 * Builds and opens the modal.
+	 */
+	async open() {
+		let modalWindow = document.createElement("div");
+		modalWindow.classList.add("modal-window");
+
+		modalWindow.appendChild(this.buildModalTitleBar(this.title));
+		let contentDiv = await this.constructContainer();
+
+		if (contentDiv != null) {
+			// If functions are given, build them
+			let funcs = this.getFunctions();
+			if (funcs != null) {
+				let btnDiv = document.createElement('div');
+				btnDiv.className = 'modal-buttons';
+
+				for (let btnName in funcs) {
+					let data = funcs[btnName];
+					let btn = document.createElement('button');
+					let canClose = true;
+					btn.type = "button";
+					btn.innerText = btnName;
+
+					for (let attr in data) {
+						switch (attr) {
+							case 'function':
+								btn.onclick = data[attr];
+								break;
+							case 'colour':
+								btn.style.color = data[attr];
+								break;
+							case 'className':
+								btn.className = data[attr];
+								break;
+							case 'background':
+								btn.style.background = data[attr];
+								break;
+							case 'close':
+								canClose = data[attr];
+								break;
+						}
+					}
+
+					if (canClose) {
+						btn.addEventListener('click', this.close.bind(this));
+					}
+
+					btnDiv.append(btn);
+				}
+				contentDiv.append(btnDiv);
+			}
+
+			if (this.allowResize) {
+				contentDiv.style.resize = "both";
+				contentDiv.style.overflow = "scroll";
+				contentDiv.style.minWidth = '100%';
+				contentDiv.style.minHeight = '100%';
+				contentDiv.style.maxWidth = '100%';
+				contentDiv.style.maxHeight = '87vh';
+			}
+
+			modalWindow.appendChild(contentDiv);
+		}
+		this.getBG().appendChild(modalWindow);
+		this.boundHandleClick = this.handleClick.bind(this);
+		this.boundOpenModal = this.open.bind(this);
+
+		this.getBG().addEventListener("mousedown", this.boundHandleClick);
+		document.body.appendChild(this.getBG());
+
+		this.getBG().classList.remove("hidden");
+		this.isOpen = true;
+	}
+
+	/**
+	 * Destroys the modal's content and hides it.
+	 */
+	async close() {
+		let closeValue = null;
+		this.getBG().remove();
+		this.isOpen = false;
+		if (this.#onClose != null) {
+			if (this.#onClose.length == 0) {
+				closeValue = await this.#onClose(this);
+			} else {
+				closeValue = await this.#onClose(this);
+			}
+		}
+		return closeValue
+	}
+
+	/**
+	 * Abstract method to construct the modal's contents.
+	 */
+	async constructContainer() {
+		console.error('The construct method has not been implemented!');
+	}
+}
+/**
+ * The base modal class
+ */
+class Modal extends IModal {
+
+	constructor(id, title, text, width = null, height = null, allowResize = true, allowClose = true, functions = null) {
+		super(id, title, text, width, height, allowResize, allowClose, functions)
+	}
+
+	/**
+	 * Builds the content to be displayed in the modal's content container.
+	 */
+	async constructContainer() {
+		let contentDiv = document.createElement('div');
+		contentDiv.className = 'content';
+		if (this.content instanceof HTMLElement) {
+			contentDiv.innerHTML = '';
+			contentDiv.append(this.content);
+		} else {
+			contentDiv.innerHTML = this.content;
+		}
+		contentDiv.style.width = this.getWidth;
+		contentDiv.style.height = this.getHeight;
+
+		return contentDiv;
+	}
+}
+
+/**
+ * This type of modal embeds a form from another page in the site into a modal, which when submitted returns the submitted value.
+ */
+class FormModal extends IModal {
+	#srcPage;
+	#formId;
+	#submissionResponse; // The response to the submission.
+
+	/**
+	 * Builds the page modal.
+	 * @param {String} id The ID of the modal
+	 * @param {String} title The title name of the modal
+	 * @param {String} text The content to be displayed in a modal.
+	 * @param {String} formSrc The page to retrieve the form from.
+	 * @param {String} formId The ID of the form in the formSrc page to retrieve.
+	 * @param {Number} width The initial width of the modal
+	 * @param {Number} height The initial height of the modal
+	 * @param {Boolean} allowResize Determines if the modal is allowed to be resized.
+	 * @param {Boolean} allowClose Determines if the modal is allowed to be closed. Useful if the user needs to confirm an action with the `functions` parameter.  
+	 */
+	constructor(id, title, formSrc, formId, width = null, height = null, allowResize = true, allowClose = true) {
+		super(id, title, '', width, height, allowResize, allowClose);
+		this.#srcPage = formSrc;
+		this.#formId = formId;
+		this.#submissionResponse = null;
+	}
+
+	/**
+	 * Builds the content to be displayed in the modal's content container.
+	 * Performs a fetch request to retrieve the form from the modal's srcPage attribute
+	 */
+	async constructContainer() {
+		let request = await fetch(this.#srcPage, {
+			method: 'GET'
+		});
+
+		return new Promise(async (resolve, reject) => {
+			if (request.ok) {
+				// Get the form from the page
+				let page = await request.text();
+				let parser = new DOMParser();
+				let doc = parser.parseFromString(page, 'text/html');
+				let form = doc.getElementById(this.#formId);
+
+				if (form != null) {
+					// Setup submission listener.
+					form.onsubmit = async function (e) {
+						e.preventDefault();
+
+						let data = new FormData(form);
+
+						let submission = await fetch(this.#srcPage, {
+							method: 'POST',
+							body: data,
+							headers: {
+								"Accept": "application/json"
+							}
+						});
+
+						if (submission.ok) {
+							this.#submissionResponse = await submission.json();
+						}
+					}.bind(this);
+					resolve(form);
+				} else {
+					reject(`No form with ID "${this.#formId}" exists on the specified page.`);
+				}
+			} else reject('Failed to get form');
+		});
+	}
+
+	/**
+	 * Asynchronous function that retrieves the submitted response from the form.
+	 * @returns Promise The ID of the inserted record and an alias name for it.
+	 */
+	async onSubmit() {
+		return new Promise((resolve) => {
+			let interval = setInterval(function () {
+				if (this.#submissionResponse !== null) {
+					clearInterval(interval);
+
+					// if an error message is in the response, display it
+					if (this.#submissionResponse['_Error'] != undefined) {
+						displayNotification(this.#submissionResponse['_Error'], NotificationPriority.Error);
+					}
+					else if (this.#submissionResponse['_Message'] != undefined) {
+						displayNotification(this.#submissionResponse['_Message'], NotificationPriority.Success);
+					}
+
+					this.close();
+					return resolve(this.#submissionResponse);
+				}
+			}.bind(this), 100);
+		});
 	}
 }
 
