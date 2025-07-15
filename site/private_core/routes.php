@@ -113,6 +113,25 @@ Flight::group('/games', function () {
 	});
 });
 
+// Channel Pages
+Flight::group('/channels', function () {
+	Flight::route('/', function () {
+		displayPage('channels/search', 'ChannelController', [], 'Channels');
+	});
+	Flight::route('POST /new', function () {
+		submitForm('channels/new', 'ChannelController');
+	});
+	Flight::route('/new', function () {
+		displayPage('channels/new', 'ChannelController', [], 'New Channel');
+	});
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('channels/edit', 'ChannelController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('channels/edit', 'ChannelController', ['id' => $id], 'Edit Channel');
+	});
+});
+
 // Help Page
 Flight::route('/help', function () {
 	displayPage('help', null, [], 'Help / FAQ');

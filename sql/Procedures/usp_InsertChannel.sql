@@ -4,15 +4,15 @@ DROP PROCEDURE IF EXISTS RipDB.usp_InsertChannel;
 
 CREATE PROCEDURE RipDB.usp_InsertChannel(
 	IN NewChannel varchar(128),
-	IN ChannelDescription text,
-	IN URL varchar(512),
+	IN NewDescription text,
+	IN NewURL varchar(512),
 	OUT ChannelIDOut INT)
 BEGIN
 	IF (SELECT ChannelID FROM Channels WHERE ChannelName = NewChannel) IS NULL THEN
 		INSERT INTO Channels
 			(ChannelName, ChannelDescription, ChannelURL)
 		VALUES
-			(NewChannel, ChannelDescription, URL);
+			(NewChannel, NewDescription, NewURL);
 
 		SET ChannelIDOut = LAST_INSERT_ID();
 	ELSE

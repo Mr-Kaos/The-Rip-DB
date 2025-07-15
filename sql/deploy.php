@@ -89,6 +89,7 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'usp_DeleteRip',
 			'usp_InsertTag',
 			'usp_InsertChannel',
+			'usp_UpdateChannel',
 			'usp_InsertGame',
 			'usp_UpdateGame',
 			'usp_InsertRipper',

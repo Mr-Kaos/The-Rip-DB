@@ -1,4 +1,4 @@
--- Stored procedure for inserting tags into the database easily.
+-- Stored procedure for inserting games into the database easily.
 
 DROP PROCEDURE IF EXISTS usp_UpdateGame;
 
