@@ -107,7 +107,8 @@ class JokeController extends Controller
 				$validated['MetasJSON'] = json_encode($metas, JSON_NUMERIC_CHECK);
 			}
 
-			$result = $this->submitRequest($validated, 'usp_InsertJoke', '/jokes', 'Joke successfully added!', true);
+			$jokeId = 0;
+			$result = $this->submitRequest($validated, 'usp_InsertJoke', '/jokes', 'Joke successfully added!', $jokeId);
 		}
 		return $result;
 	}

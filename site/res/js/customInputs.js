@@ -240,6 +240,26 @@ class SearchElement extends CustomElement {
 	}
 
 	/**
+	 * Opens up a modal to add a new item to the search element's options.
+	 * Upon submission of the form, if successful, the value is automatically selected via #setOption.
+	 * @param {Element} options The div element containing the search element's list of options.
+	 */
+	async #addItem(options) {
+		let form = new FormModal(`new_item-${this.getElement().id}`, 'Add Item', this.#inputElement.getAttribute('modal'), this.#inputElement.getAttribute('modal-tgt-id'));
+		form.open();
+
+		let response = await form.onSubmit();
+
+		let option = document.createElement('span');
+		option.innerText = response[this.#inputElement.getAttribute('modal-value-key')];
+		option.setAttribute('value', response['_NewID']);
+		options.append(option);
+		this.#setOption(option);
+
+		this.toggleDisplay(false);
+	}
+
+	/**
 	 * Displays the options in the multi select.
 	 * @param {Boolean} open Determines if the multi select is to be displayed or not. If null, it toggles to the opposite of its current state.
 	 */
@@ -314,9 +334,22 @@ class SearchElement extends CustomElement {
 			let response = await fetch(url);
 
 			if (response.ok) {
-				let result = response.json().then(data => {
+				response.json().then(data => {
 					let options = this.getOptionsDiv();
 					options.innerHTML = '';
+
+					// If a modal is assigned, add an "Add Item" option
+					if (this.#inputElement.hasAttribute('modal')) {
+						// Make sure all other modal attributes are set. If not, produce a warning.
+						if (this.#inputElement.hasAttribute('modal-tgt-id') && this.#inputElement.hasAttribute('modal-value-key')) {
+							let option = document.createElement('span');
+							option.innerText = '< Add Item >';
+							option.onclick = e => this.#addItem(options);
+							options.append(option);
+						} else {
+							console.warn('DEV WARNING: This search element has a modal set, but is missing ts other required attributes!', this.getElement());
+						}
+					}
 
 					if (data != null && data.length > 0) {
 						let noAdd = true;
@@ -483,9 +516,10 @@ function findParentElement(child, attributes, depth = 32) {
 	return parent;
 }
 
-function setupCustomInputs() {
-	let inputTableElements = document.querySelectorAll('table[InputTable]');
-	let searchInputElements = document.querySelectorAll('span.search-element');
+function setupCustomInputs(mainElement) {
+	let inputTableElements = mainElement.querySelectorAll('table[InputTable]');
+	let dropdownElements = mainElement.querySelectorAll('select[modal]');
+	let searchInputElements = mainElement.querySelectorAll('span.search-element');
 
 	if (inputTableElements.length > 0) {
 		prepareInputTables(inputTableElements);
@@ -493,6 +527,10 @@ function setupCustomInputs() {
 
 	if (searchInputElements.length > 0) {
 		prepareSearchElements(searchInputElements);
+	}
+
+	if (dropdownElements.length > 0) {
+		prepareDropdownElements(dropdownElements);
 	}
 
 	/**
@@ -508,27 +546,39 @@ function setupCustomInputs() {
 		}
 	}
 
+	/**
+	 * Prepares search input elements on the page and creates a window event listener to ensure only one is open at a time.
+	 * @param {NodeListOf<Element>} elements 
+	 */
 	function prepareSearchElements(elements) {
 		for (let i = 0; i < elements.length; i++) {
 			searchElements.push(new SearchElement(elements[i]));
 		}
-	}
 
-	// Close any search elements if they are clicked out of.
-	window.addEventListener('click', function (e) {
-		for (let i = 0; i < searchElements.length; i++) {
-			let el = findParentElement(e.target, { class: ['search-element'] });
-			if (el !== null) {
-				if (searchElements[i].isOpen() && (el.className != 'search-element')) {
-					searchElements[i].toggleDisplay(false);
-				} else if (searchElements[i].getElement() != el) {
+		// Close any search elements if they are clicked out of.
+		window.addEventListener('click', function (e) {
+			for (let i = 0; i < searchElements.length; i++) {
+				let el = findParentElement(e.target, { class: ['search-element'] });
+				if (el !== null) {
+					if (searchElements[i].isOpen() && (el.className != 'search-element')) {
+						searchElements[i].toggleDisplay(false);
+					} else if (searchElements[i].getElement() != el) {
+						searchElements[i].toggleDisplay(false);
+					}
+				} else {
 					searchElements[i].toggleDisplay(false);
 				}
-			} else {
-				searchElements[i].toggleDisplay(false);
 			}
-		}
-	});
+		});
+	}
+
+	/**
+	 * Checks any dropdown (select) elements on the page if they require a modal to add new items.
+	 * @param {NodeListOf<HTMLSelectElement>} elements 
+	 */
+	function prepareDropdownElements(elements) {
+		console.error("TODO");
+	}
 }
 
-window.onload = setupCustomInputs;
+window.onload = e => setupCustomInputs(document);
