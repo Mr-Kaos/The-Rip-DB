@@ -132,6 +132,25 @@ Flight::group('/channels', function () {
 	});
 });
 
+// Ripper Pages
+Flight::group('/rippers', function () {
+	Flight::route('/', function () {
+		displayPage('rippers/search', 'RipperController', [], 'Rippers');
+	});
+	Flight::route('POST /new', function () {
+		submitForm('rippers/new', 'RipperController');
+	});
+	Flight::route('/new', function () {
+		displayPage('rippers/new', 'RipperController', [], 'New Ripper');
+	});
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('rippers/edit', 'RipperController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('rippers/edit', 'RipperController', ['id' => $id], 'Edit Ripper');
+	});
+});
+
 // Help Page
 Flight::route('/help', function () {
 	displayPage('help', null, [], 'Help / FAQ');
@@ -243,8 +262,8 @@ Flight::group('/search', function () {
 	Flight::route('GET /genres', function () {
 		performAPIRequest('search', 'genres', HttpMethod::GET);
 	});
-	Flight::route('GET /channels', function () {
-		performAPIRequest('search', 'channels', HttpMethod::GET);
+	Flight::route('GET /rippers', function () {
+		performAPIRequest('search', 'rippers', HttpMethod::GET);
 	});
 	Flight::route('GET /rip-names', function () {
 		performAPIRequest('search', 'rip-names', HttpMethod::GET);
