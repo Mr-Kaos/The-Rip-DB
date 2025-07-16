@@ -87,13 +87,12 @@ class ChannelController extends Controller
 				$result = $this->submitRequest($validated, 'usp_InsertChannel', '/channels', 'Channel successfully added!', $channelId);
 				break;
 			case 'channels/edit':
-				$validated['ChannelID'] = $this->validateNumber($extraData['id']);
+				$validated['InChannelID'] = $this->validateNumber($extraData['id']);
 				$validated['InChannel'] = $this->validateFromList($_POST['name'], $this->model->getAllChannelNames((int)$extraData['id']), 'This channel already exists.', true);
 				$validated['InDescription'] = $this->validateString($_POST['description']);
 				$validated['InURL'] = $this->validateString($_POST['url'] ?? false);
 
-				$channelID = 0;
-				$result = $this->submitRequest($validated, 'usp_UpdateChannel', '/channels', 'Channel successfully updated!', $channelID);
+				$result = $this->submitRequest($validated, 'usp_UpdateChannel', '/channels', 'Channel successfully updated!');
 				break;
 			default:
 				$result = [new \RipDB\Error('Invalid form submission.')];

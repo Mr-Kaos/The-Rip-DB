@@ -6,8 +6,7 @@ CREATE PROCEDURE usp_UpdateChannel(
 	IN InChannelID int,
 	IN InChannelName varchar(256),
 	IN InDescription text,
-	IN InURL varchar(512),
-	IN FakeChannel int)
+	IN InURL varchar(512))
 BEGIN
 	-- Check to make sure the channel exists.
 	IF (SELECT ChannelID FROM Channels WHERE ChannelID = InChannelID) IS NOT NULL THEN

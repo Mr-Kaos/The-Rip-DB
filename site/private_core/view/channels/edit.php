@@ -4,7 +4,7 @@ use RipDB\Objects as o;
 ?>
 <main>
 	<h1>Edit Channel</h1>
-	<p>Update an existing channels's record here.</p>
+	<p>Update an existing channel's record here.</p>
 	<form id="edit-channel" method="POST">
 		<fieldset>
 			<legend>Channel Information</legend>
