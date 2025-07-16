@@ -19,7 +19,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 				<?= (new o\InputElement('Upload Date', o\InputTypes::date, ['name' => 'date', 'required' => true]))->buildElement() ?>
 				<?= (new o\InputElement('Rip URL', o\InputTypes::url, ['name' => 'url', 'required' => true]))->buildElement() ?>
 				<?= (new o\InputElement('YouTube Video ID', o\InputTypes::text, ['name' => 'ytId', 'minlength' => 11, 'maxlength' => 11, 'pattern' => '[A-Za-z0-9_\-]{11}']))->buildElement() ?>
-				<?= (new o\DropdownElement('Rip Channel', $channels, ['name' => 'channel', 'required' => true]))->buildElement() ?>
+				<?= (new o\DropdownElement('Rip Channel', $channels, ['name' => 'channel', 'required' => true, 'modal' => '/channels/new', 'modal-tgt-id' => 'new-channel', 'modal-value-key' => 'NewChannel']))->buildElement() ?>
 			</div>
 		</fieldset>
 		<fieldset>

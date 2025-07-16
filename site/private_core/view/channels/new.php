@@ -5,7 +5,7 @@ use RipDB\Objects as o;
 <main>
 	<h1>Add Channel</h1>
 	<p>Add a new ripping channel to the database here!</p>
-	<form id="edit-channel" method="POST">
+	<form id="new-channel" method="POST">
 		<fieldset>
 			<legend>Channel Information</legend>
 			<?= (new o\InputElement('Channel Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 128, 'required' => true], null, true))->buildElement() ?>

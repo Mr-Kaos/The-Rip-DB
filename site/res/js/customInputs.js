@@ -253,6 +253,7 @@ class SearchElement extends CustomElement {
 		let option = document.createElement('span');
 		option.innerText = response[this.#inputElement.getAttribute('modal-value-key')];
 		option.setAttribute('value', response['_NewID']);
+		option.onclick = e => this.#setOption(e.target);
 		options.append(option);
 		this.#setOption(option);
 
@@ -577,7 +578,30 @@ function setupCustomInputs(mainElement) {
 	 * @param {NodeListOf<HTMLSelectElement>} elements 
 	 */
 	function prepareDropdownElements(elements) {
-		console.error("TODO");
+		for (let i = 0; i < elements.length; i++) {
+			// Apply any form modals to the dropdown if they are set up.
+			if (elements[i].hasAttribute('modal') && elements[i].hasAttribute('modal-tgt-id') && elements[i].hasAttribute('modal-value-key')) {
+				let option = document.createElement('option');
+				option.value = 'null';
+				option.innerText = '< Add Item >';
+				elements[i].options.add(option, 0);
+
+				elements[i].onchange = async function (e) {
+					if (e.target.value == 'null') {
+						let form = new FormModal(`new_item-${e.target.id}`, 'Add Item', e.target.getAttribute('modal'), e.target.getAttribute('modal-tgt-id'));
+						form.open();
+						let response = await form.onSubmit();
+
+						let option = document.createElement('option');
+						option.value = response['_NewID'];
+						option.innerText = response[e.target.getAttribute('modal-value-key')];
+						elements[i].options.add(option);
+
+						e.target.selectedIndex = e.target.options.length - 1;
+					}
+				}
+			}
+		}
 	}
 }
 

@@ -608,9 +608,9 @@ class FormModal extends IModal {
 				let parser = new DOMParser();
 				let doc = parser.parseFromString(page, 'text/html');
 				let form = doc.getElementById(this.#formId);
-				setupCustomInputs(form);
 
 				if (form != null) {
+					setupCustomInputs(form);
 					// Setup submission listener.
 					form.onsubmit = async function (e) {
 						e.preventDefault();
