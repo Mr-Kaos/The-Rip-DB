@@ -76,6 +76,12 @@ Flight::group('/jokes', function () {
 	Flight::route('/new', function () {
 		displayPage('jokes/new', 'JokeController', [], 'New Joke');
 	});
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('jokes/edit', 'JokeController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('jokes/edit', 'JokeController', ['id' => $id], 'Edit Joke');
+	});
 	Flight::route('/', function () {
 		displayPage('jokes/search', 'JokeController', [], 'Jokes');
 	});

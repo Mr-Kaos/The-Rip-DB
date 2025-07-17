@@ -7,13 +7,14 @@ require('Model.php');
 class JokeModel extends Model implements ResultsetSearch
 {
 	const TABLE = 'Jokes';
-	const VIEW = 'vw_JokesDetailed';
 	const COLUMNS = ['JokeID', 'JokeName', 'JokeDescription'];
+	const VIEW = 'vw_JokesDetailed';
+	const VIEW_COLUMNS = ['JokeID', 'TagID', 'TagName', 'IsPrimary', 'MetaJokeID', 'MetaJokeName', 'MetaID', 'MetaName'];
 
-	public function search(int $count, int $offset, ?array $sort, ?string $name = null, array $tags = [], array $metas = [], array $metaJokes = []): array 
+	public function search(int $count, int $offset, ?array $sort, ?string $name = null, array $tags = [], array $metas = [], array $metaJokes = []): array
 	{
 		$qry = $this->db->table(self::VIEW)
-			->columns(...self::COLUMNS)
+			->columns('RipCount', ...self::COLUMNS)
 			->asc('JokeID');
 
 		// Apply name search if name is given.
@@ -49,33 +50,13 @@ class JokeModel extends Model implements ResultsetSearch
 		$jokes = $this->setSubArrayValueToKey($jokes, 'JokeID', false);
 
 		// Get tags and metas from the resultset of rips.
-		$tags = $this->getJokeTags($qry);
-		$metas = $this->getJokeMetas($qry);
-		$counts = $this->getJokeRipCount($qry);
-		foreach ($jokes as &$joke) {
-			$joke['Tags'] = [];
-			$joke['MetaJokes'] = [];
-			if (is_array($tags[$joke['JokeID']] ?? null)) {
-				foreach ($tags[$joke['JokeID']] as $tag) {
-					$joke['Tags'][$tag['TagID']] = ['TagName' => $tag['TagName'], 'IsPrimary' => $tag['IsPrimary']];
-				}
-			}
+		$associatedData = $this->db->table(self::VIEW)
+			->columns(...self::VIEW_COLUMNS)
+			->asc('JokeID')->findAll();
+		$associatedData = $this->setSubArrayValueToKey2D($associatedData, 'JokeID');
 
-			if (is_array($metas[$joke['JokeID']] ?? null)) {
-				foreach ($metas[$joke['JokeID']] ?? [] as $metaJoke) {
-					$joke['MetaJokes'][$metaJoke['MetaJokeID']] = [
-						'MetaJokeName' => $metaJoke['MetaJokeName'],
-						// There can only be one meta per meta joke, but in case this gets changed in the future, it will be stored in an associative array.
-						'Metas' => [$metaJoke['MetaID'] => ['MetaName' => $metaJoke['MetaName']]]
-					];
-				}
-			}
-
-			if (!empty($counts[$joke['JokeID']] ?? null)) {
-				$joke['RipCount'] = $counts[$joke['JokeID']]['RipCount'];
-			} else {
-				$joke['RipCount'] = 0;
-			}
+		foreach ($jokes as $jokeId => &$joke) {
+			$this->groupJokeAssociateData($joke, $associatedData[$jokeId] ?? null);
 		}
 
 		return $jokes;
@@ -96,39 +77,77 @@ class JokeModel extends Model implements ResultsetSearch
 		return $this->db->table('MetaJokes')->findAllByColumn('MetaJokeID');
 	}
 
-	private function getJokeTags($qry)
+	public function getJoke(int $id): array
 	{
-		$tags = $this->db->table('Tags')
-			->columns('j.JokeID', 'JokeTags.TagID', 'TagName', 'IsPrimary')
-			->join('JokeTags', 'TagID', 'TagID')
-			->joinSubquery($qry, 'j', 'JokeID', 'JokeID', 'JokeTags')
-			->desc('IsPrimary')
-			->findAll();
+		$joke = $this->db->table(self::TABLE)->columns(...self::COLUMNS)->eq('JokeID', $id)->findOne();
 
-		return $this->setSubArrayValueToKey2D($tags, 'JokeID');
+		$associatedData = $this->db->table(self::VIEW)
+			->columns(...self::VIEW_COLUMNS)
+			->eq('JokeID', $id)
+			->findAll();
+		$associatedData = $this->setSubArrayValueToKey2D($associatedData, 'JokeID');
+
+		$this->groupJokeAssociateData($joke, $associatedData[$id]);
+
+		// Prepare the tags for use in the input elements
+		$joke['OtherTags'] = [];
+		foreach ($joke['Tags'] as $tag) {
+			if ($tag['IsPrimary']) {
+				$joke['PrimaryTagID'] = [$tag['TagID'] => $tag['TagName']];
+			} else {
+				array_push($joke['OtherTags'], ['Tag' => [$tag['TagID'] => $tag['TagName']]]);
+			}
+		}
+
+		// Prepare the meta jokes for use in the input elements
+		if (!empty($joke['MetaJokes'])) {
+			$metaJokes = $joke['MetaJokes'];
+			$joke['MetaJokes'] = [];
+			foreach ($metaJokes as $mjID => $mj) {
+				array_push($joke['MetaJokes'], ['Meta' => [$mjID => $mj['MetaJokeName']]]);
+			}
+		}
+
+		return $joke;
 	}
 
-	private function getJokeMetas($qry)
+	/**
+	 * Associates tags, meta jokes and metas to the given joke record.
+	 * 
+	 * The joke record should be retrieved from vw_JokesDetailed or the Jokes table.  
+	 * Passing the same joke through here multiple times will clear the previous associations made.
+	 * 
+	 * @param array &$joke A reference to the joke record to be associated with the additional data.
+	 * @param ?array $associatedData An array of rows from vw_JokesDetailed that are associated to the given joke.
+	 */
+	private function groupJokeAssociateData(array &$joke, ?array $associatedData): void
 	{
-		$metas = $this->db->table('MetaJokes')
-			->columns('j.JokeID', 'JokeMetas.MetaJokeID', 'MetaJokeName', 'Metas.MetaID', 'MetaName')
-			->join('JokeMetas', 'MetaJokeID', 'MetaJokeID')
-			->join('Metas', 'MetaID', 'MetaID', 'MetaJokes')
-			->innerJoinSubquery($qry, 'j', 'JokeID', 'JokeID', 'JokeMetas')
-			->findAll();
+		$joke['Tags'] = [];
+		$joke['MetaJokes'] = [];
 
-		return $this->setSubArrayValueToKey2D($metas, 'JokeID');
-	}
+		// Associate tags, meta jokes and metas to each joke.
+		if (!empty($associatedData)) {
+			foreach ($associatedData as $tagMetas) {
+				// Add tags
+				if (!empty($tagMetas['TagID'])) {
+					// Create the tags array, if it does not already exist.
+					$joke['Tags'][$tagMetas['TagID']] = ['TagID' => $tagMetas['TagID'], 'TagName' => $tagMetas['TagName'], 'IsPrimary' => $tagMetas['IsPrimary']];
+				}
 
-	private function getJokeRipCount($qry)
-	{
-		$counts = $this->db->table('Jokes')
-			->select('r.JokeID, COUNT(RipID) AS RipCount')
-			->join('RipJokes', 'JokeID', 'JokeID')
-			->joinSubquery($qry, 'r', 'JokeID', 'JokeID')
-			->groupBy('r.JokeID')
-			->findAll();
+				// Add meta Jokes
+				if ($tagMetas['MetaJokeID'] !== null) {
+					$joke['MetaJokes'][$tagMetas['MetaJokeID']] = [
+						'MetaJokeName' => $tagMetas['MetaJokeName'],
+					];
 
-		return $this->setSubArrayValueToKey($counts, 'JokeID');
+					// Add metas to meta jokes
+					if (isset($joke['MetaJokes'][$tagMetas['MetaJokeID']]['Metas'])) {
+						$joke['MetaJokes'][$tagMetas['MetaJokeID']]['Metas'] = [];
+					}
+					// There can only be one meta per meta joke, but in case this gets changed in the future, it will be stored in an associative array.
+					$joke['MetaJokes'][$tagMetas['MetaJokeID']]['Metas'][$tagMetas['MetaID']] = $tagMetas['MetaName'];
+				}
+			}
+		}
 	}
 }

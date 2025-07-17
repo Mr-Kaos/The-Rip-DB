@@ -3,8 +3,8 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertJoke;
 
 CREATE PROCEDURE RipDB.usp_InsertJoke(
-	IN NewJokeName varchar(512),
-	IN JokeDescription text,
+	IN InJokeName varchar(512),
+	IN InJokeDescription text,
 	IN PrimaryTag int,
 	IN TagsJSON json,
 	IN MetasJSON json,
@@ -22,11 +22,11 @@ BEGIN
 
 	START TRANSACTION;
 
-	IF (SELECT JokeID FROM Jokes WHERE JokeName = NewJokeName) IS NULL THEN
+	IF (SELECT JokeID FROM Jokes WHERE JokeName = InJokeName) IS NULL THEN
 		INSERT INTO Jokes
 			(JokeName, JokeDescription)
 		VALUES
-			(NewJokeName, JokeDescription);
+			(InJokeName, InJokeDescription);
 
 		SET JokeIDOut = LAST_INSERT_ID();
 
@@ -65,7 +65,7 @@ BEGIN
 			END WHILE;
 		END IF;
 	ELSE
-		SELECT JokeID INTO JokeIDOut FROM Jokes WHERE JokeName = NewJokeName;
+		SELECT JokeID INTO JokeIDOut FROM Jokes WHERE JokeName = InJokeName;
 	END IF;
 
 	COMMIT;

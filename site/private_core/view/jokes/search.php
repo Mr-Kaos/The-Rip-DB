@@ -28,7 +28,7 @@ use RipDB\Objects as o;
 			<?php if (!empty($results)): ?>
 				<?php foreach ($results as $record): ?>
 					<tr>
-						<td><?= $record['JokeName'] ?></td>
+						<td><a href="/jokes/edit/<?= $record['JokeID'] ?>"><?= $record['JokeName'] ?></a></td>
 						<td>
 							<?php
 							foreach ($record['Tags'] as $tagId => $tag):

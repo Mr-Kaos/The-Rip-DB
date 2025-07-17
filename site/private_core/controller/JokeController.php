@@ -79,36 +79,47 @@ class JokeController extends Controller
 			case 'jokes/new':
 				$this->setData('tags', $this->model->getTags());
 				break;
+			case 'jokes/edit':
+				$joke = $this->model->getJoke($data['id']);
+				if (empty($joke)) {
+					\RipDB\addNotification('That joke does not exist.', \RipDB\NotificationPriority::Warning);
+					\Flight::redirect('/jokes');
+					die();
+				}
+				$this->setData('joke', $joke);
+				break;
 		}
 	}
 
 	public function validateRequest(?array $extraData = null): array|string
 	{
-		$result = null;
-		if ($this->getPage() == 'jokes/new') {
-			// Validate data in order of stored procedure parameters.
-			$validated = [];
-			$validated['NewJokeName'] = $this->validateString($_POST['name'], 'The given joke name is invalid.', 128);
-			$validated['JokeDescription'] = $this->validateString($_POST['description'], 'The given description is invalid.', null, 1);
-			$existingTags = $this->model->getTags();
-			$validated['PrimaryTag'] = $this->validateFromList(intval($_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
-			$tags = $this->validateFromList($_POST['tags'], $existingTags, 'One or more of the given tags do not exist in the database.');
-			if ($tags instanceof \RipDB\Error) {
-				$validated['TagsJSON'] = $tags;
-			} else {
-				$validated['TagsJSON'] = json_encode($tags, JSON_NUMERIC_CHECK);
-			}
-			$existingTags = $this->model->getMetaJokes();
+		$result = [];
+		$validated = [];
+		// Validate data in order of stored procedure parameters.
+		switch ($this->getPage()) {
+			case 'jokes/edit':
+				$validated['InJokeID'] = $this->validateNumber($extraData['id']);
+			case 'jokes/new':
+				$validated['InJokeName'] = $this->validateString($_POST['name'], 'The given joke name is invalid.', 128);
+				$validated['InJokeDescription'] = $this->validateString($_POST['description'], 'The given description is invalid.', null, 1);
 
-			$metas = $this->validateFromList($_POST['metas'], $existingTags, 'One or more of the given meta tags do not exist in the database.');
-			if ($metas instanceof \RipDB\Error) {
-				$validated['MetasJSON'] = $metas;
-			} else {
-				$validated['MetasJSON'] = json_encode($metas, JSON_NUMERIC_CHECK);
-			}
+				$existingTags = $this->model->getTags();
+				$validated['PrimaryTag'] = $this->validateFromList(intval($_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
+				$validated['TagsJSON'] = $this->validateArray($_POST['tags'] ?? null, 'validateFromList', [$existingTags], 'One or more of the given tags do not exist in the database.');
 
-			$jokeId = 0;
-			$result = $this->submitRequest($validated, 'usp_InsertJoke', '/jokes', 'Joke successfully added!', $jokeId);
+				$existingMetas = $this->model->getMetaJokes();
+				$validated['MetasJSON'] = $this->validateArray($_POST['metas'] ?? null, 'validateFromList', [$existingMetas], 'One or more of the given meta tags do not exist in the database.');
+
+				switch ($this->getPage()) {
+					case 'jokes/new':
+						$jokeId = 0;
+						$result = $this->submitRequest($validated, 'usp_InsertJoke', '/jokes', 'Joke successfully added!', $jokeId);
+						break;
+					case 'jokes/edit':
+						$result = $this->submitRequest($validated, 'usp_UpdateJoke', '/jokes', 'Joke successfully updated!');
+						break;
+				}
+				break;
 		}
 		return $result;
 	}

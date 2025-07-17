@@ -7,8 +7,6 @@ include_once('private_core/objects/pageElements/InputTable.php');
 <main>
 	<h1>Add A New Joke</h1>
 	<p>Fill in this form to add a new joke to the database.</p>
-	<p>It's best not to do it here, and instead do it while <a href="/rips/new">adding a new rip</a>.</p>
-
 	<form id="new-joke" method="POST">
 		<fieldset>
 			<legend>Joke Information</legend>
@@ -25,7 +23,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<legend>Meta Jokes</legend>
 			<p>Select what Meta Jokes this joke is classified under.</p>
 			<?php
-			$tagList = new o\SearchElement('Meta', '/search/meta-jokes', false, null, ['name' => 'metas[]', 'required' => true]);
+			$tagList = new o\SearchElement('Meta Joke', '/search/meta-jokes', false, null, ['name' => 'metas[]', 'required' => true]);
 			?>
 			<?= (new o\InputTable('Meta Jokes', [$tagList]))->buildElement() ?>
 		</fieldset>
