@@ -62,28 +62,43 @@ class TagController extends Controller
 				$this->setData('TagCount', $recordCount);
 				$this->setData('pagination', $this->buildPagination($recordCount, '/tags'));
 				break;
-			case 'tags/new':
+			case 'tags/edit':
+				$tag = $this->model->getTag($data['id']);
+				if ($tag === null) {
+					\Flight::redirect('/tags');
+					\RipDB\addNotification('The specified tag does not exist.', \RipDB\NotificationPriority::Warning);
+					die();
+				}
+				$this->setData('tag', $tag);
+
 				break;
 		}
 	}
 
+	/**
+	 * Validates the submission of forms through the tags pages.
+	 */
 	public function validateRequest(?array $extraData = null): array|string
 	{
 		$result = [];
-		if ($this->getPage() == 'tags/new') {
-			$validated['TagName'] = $this->validateFromList($_POST['name'], $this->model->getAllTagNames(), 'The given value is already taken', true);
-		} else {
-			$result = [new \RipDB\Error('Invalid form submission.')];
-		}
+		switch ($this->getPage()) {
+			case 'tags/edit':
+				$validated['InTagID'] = $this->validateNumber($extraData['id']);
+			case 'tags/new':
+				$validated['InTagName'] = $this->validateFromList($_POST['name'], $this->model->getAllTagNames($extraData['id'] ?? null), 'The given value is already taken', true);
 
-		$newTag = 0;
-		$submission = $this->model->submitFormData($validated, 'usp_InsertTag', $newTag);
-		if ($submission === true) {
-			$result = '/tags';
-				\RipDB\addNotification('Tag successfully added!', \RipDB\NotificationPriority::Success);
-		} else {
-			$result = $submission;
+				if ($this->getPage() == 'tags/new') {
+					$newTag = 0;
+					$result = $this->submitRequest($validated, 'usp_InsertTag', '/tags', 'Tag successfully submitted!', $newTag);
+				} else {
+					$result = $this->submitRequest($validated, 'usp_UpdateTag', '/tags', 'Tag successfully updated!');
+				}
+				break;
+			default:
+				$result = [new \RipDB\Error('Invalid form submission.')];
+				break;
 		}
+		
 		return $result;
 	}
 }

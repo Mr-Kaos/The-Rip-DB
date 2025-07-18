@@ -42,9 +42,21 @@ class TagModel extends Model implements ResultsetSearch
 		return $this->db->table(self::TABLE)->count();
 	}
 
+	/**
+	 * Gets all tag names.
+	 * Used for validating tag submission to ensure the submitted tag is not already in use.
+	 */
 	public function getAllTagNames(): array
 	{
 		return $this->db->table('Tags')->findAllByColumn('TagName');
+	}
+
+	/**
+	 * Fetches the tag record with the given ID.
+	 */
+	public function getTag(int $id): ?array
+	{
+		return $this->db->table(self::TABLE)->eq('TagID', $id)->findOne();
 	}
 
 	private function getTagJokeCount($qry)

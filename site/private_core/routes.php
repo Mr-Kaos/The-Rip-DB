@@ -98,6 +98,12 @@ Flight::group('/tags', function () {
 	Flight::route('/new', function () {
 		displayPage('tags/new', 'TagController', [], 'New Tag');
 	});
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('tags/edit', 'TagController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('tags/edit', 'TagController', ['id' => $id], 'Edit Tag');
+	});
 });
 
 // Game Pages
