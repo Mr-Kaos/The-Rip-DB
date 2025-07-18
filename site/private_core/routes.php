@@ -8,9 +8,6 @@ use RipDB\Theme;
  * This file contains all routes available in the web app.
  */
 
-const PAGE_EXTENSIONS = ['html', 'php']; // All allowed webpage extensions. If found in the request URi, the client is redirected to the same page without it.
-const RESOURCE_EXTENSIONS = ['css', 'js', 'ico', 'jpg', 'jpeg', 'png']; // All allowed file resource extensions. Any requests to other extensions result in a 404.
-
 $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
 require_once('private_core/config/themes.php');
 require_once('private_core/objects/SessionManager.php');

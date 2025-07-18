@@ -132,7 +132,7 @@ class RipModel extends Model implements ResultsetSearch
 
 		foreach ($jokes as &$joke) {
 			$joke['Tags'] = [];
-			foreach ($tags[$joke['JokeID']] as $tag) {
+			foreach ($tags[$joke['JokeID']] ?? [] as $tag) {
 				$id = $tag['TagID'];
 				unset($tag['TagID']);
 				$joke['Tags'][$id] = $tag;

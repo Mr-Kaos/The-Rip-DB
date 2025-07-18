@@ -17,8 +17,6 @@ class ChannelController extends Controller
 	use \RipDB\DataValidator;
 	use \Paginator;
 
-	const RIPS_PER_PAGE = 25;
-
 	public function __construct(string $page)
 	{
 		parent::__construct($page, new m\ChannelModel());
