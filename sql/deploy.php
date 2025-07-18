@@ -72,7 +72,8 @@ if (!file_exists('../site/private_core/config/db.php')) {
 
 		$files = [
 			'vw_RipsDetailed',
-			'vw_JokesDetailed'
+			'vw_JokesDetailed',
+			'vw_MetaJokesDetailed'
 		];
 		deployFiles($pdo, 'Views', $files);
 
@@ -85,6 +86,7 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'usp_InsertJoke',
 			'usp_UpdateJoke',
 			'usp_InsertMetaJoke',
+			'usp_UpdateMetaJoke',
 			'usp_InsertRip',
 			'usp_UpdateRip',
 			'usp_DeleteRip',

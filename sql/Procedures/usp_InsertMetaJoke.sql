@@ -1,9 +1,9 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertMetaJoke;
 
 CREATE PROCEDURE RipDB.usp_InsertMetaJoke(
-	IN NewMetaJokeName varchar(128),
-	IN MetaDescription text,
-	IN MetaID INT,
+	IN InName varchar(128),
+	IN InDescription text,
+	IN InMetaID INT,
 	OUT MetaJokeIDOut INT)
 BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -14,15 +14,15 @@ BEGIN
 
 	START TRANSACTION;
 
-	IF (SELECT MetaJokeID FROM MetaJokes WHERE MetaJokeName = NewMetaJokeName) IS NULL THEN
+	IF (SELECT MetaJokeID FROM MetaJokes WHERE MetaJokeName = InName) IS NULL THEN
 		INSERT INTO MetaJokes
 			(MetaJokeName, MetaJokeDescription, MetaID)
 		VALUES
-			(NewMetaJokeName, MetaDescription, MetaID);
+			(InName, InDescription, InMetaID);
 
 		SET MetaJokeIDOut = LAST_INSERT_ID();
 	ELSE
-		SELECT MetaJokeID INTO MetaJokeIDOut FROM MetaJokes WHERE MetaJokeName = NewMetaJokeName;
+		SELECT MetaJokeID INTO MetaJokeIDOut FROM MetaJokes WHERE MetaJokeName = InName;
 	END IF;
 	COMMIT;
 END

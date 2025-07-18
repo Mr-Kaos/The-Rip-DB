@@ -52,27 +52,34 @@ function openRowBubble(button) {
 	 * @returns 
 	 */
 	function buildCallout(type, id, extraData, nameKey, targetUrl, filterName) {
-		let callout = document.querySelector(`#templates>#callout-${type}`).cloneNode(true);
-		let mainLink = callout.querySelector('a');
-		callout.removeAttribute('id');
-		mainLink.href = `rips?${type}[]=${id}`;
+		let callout = document.querySelector(`#templates>#callout-${type}`);
 
-		if (extraData != null) {
-			let dataContainer = callout.querySelector('div.extras');
-			extraData = JSON.parse(extraData);
-			for (let key in extraData) {
-				let extraTag = document.createElement('button');
-				extraTag.innerText = extraData[key][nameKey];
-				extraTag.value = key;
-				if (extraData[key].IsPrimary) {
-					extraTag.style.fontWeight = 'bold';
+		if (callout != null) {
+			callout = callout.cloneNode(true);
+			let mainLink = callout.querySelector('a');
+			callout.removeAttribute('id');
+			mainLink.href = `rips?${type}[]=${id}`;
+
+			if (extraData != null) {
+				let dataContainer = callout.querySelector('div.extras');
+				extraData = JSON.parse(extraData);
+				for (let key in extraData) {
+					let extraTag = document.createElement('button');
+					extraTag.innerText = extraData[key][nameKey];
+					extraTag.value = key;
+					if (extraData[key].IsPrimary) {
+						extraTag.style.fontWeight = 'bold';
+					}
+					let url = `${targetUrl}?${filterName}[]=${key}`;
+					extraTag.onclick = function () {
+						window.location = url;
+					}
+					dataContainer.append(extraTag);
 				}
-				let url = `${targetUrl}?${filterName}[]=${key}`;
-				extraTag.onclick = function () {
-					window.location = url;
-				}
-				dataContainer.append(extraTag);
 			}
+		} else {
+			console.warn('The template for the callout does not exist on the page!');
+			callout = null;
 		}
 
 		return callout;
