@@ -87,6 +87,14 @@ nav>div>ul a:hover {
 	backdrop-filter: brightness(80%);
 }
 
+.sub-nav {
+	display: flex;
+	padding: 5px 0px;
+	align-items: center;
+}
+.sub-nav * {
+	margin-right: 20px;
+}
 
 footer {
 	display: flex;
@@ -115,6 +123,9 @@ thead {
 	background-color: var(--accent-2);
 }
 
+tbody>tr>td {
+	overflow-wrap: anywhere;
+}
 tbody>tr:nth-child(even) {
 	background: var(--tbl-row-even);
 

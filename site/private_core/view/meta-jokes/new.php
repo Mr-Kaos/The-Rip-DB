@@ -1,8 +1,6 @@
 <?php
 
 use RipDB\Objects as o;
-
-include_once('private_core/objects/pageElements/InputTable.php');
 ?>
 <main>
 	<h1>Add A Meta Joke</h1>
