@@ -2,6 +2,30 @@
 
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertRip;
 
+-- The jokes parameter should be formatted like so:
+-- {
+-- 	"JokeID": {
+-- 		"timestamps": [
+-- 			{
+-- 				"start": "--:--:--",
+-- 				"end": "--:--:--"
+-- 			}
+-- 		],
+-- 		"comment": null
+-- 	}
+-- }
+-- Where "JokeID" is the ID of the joke.
+-- The timestamps key stores an array of start and/or end timestamps of when the joke appears in the rip.
+-- Either or both the start and end timestamps should be present when adding a timestamp entry.
+-- The comment is a description of the joke and how it is used in the rip. It is optional.
+
+-- The Rippers JSON should be formatted like so:
+-- {
+-- 	"RipperID": "Alias Name for rip"
+-- }
+-- Where "RipperID is the ID of the ripper."
+-- The value associated to the ripper ID is the alias name of the ripper as they appear in the rip (if one is given).
+
 CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN RipName varchar(1024),
 	IN AlternateName varchar(2048),

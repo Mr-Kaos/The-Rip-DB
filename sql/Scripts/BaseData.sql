@@ -1,46 +1,42 @@
--- Meta Tags
--- These are the most basic/broad tags that are used to group joke metas
-INSERT INTO Metas
-	(MetaName, MetaDescription)
-VALUES
-	('Music', 'Anything that is a genre or era of music.'),
-	('Video Game', 'Any joke that is from a video game.'),
-	('Artist', 'Any individual or group who produces and is credited for creating music.'),
-	('Film', null),
-	('Animation', null),
-	('Anime', null),
-	('Content Creator', null),
-	('Viral Video', null);
+-- Metas
+-- These are the most basic/broad tags that are used to group meta jokes
+CALL usp_InsertMeta('Music', @out);
+CALL usp_InsertMeta('Video Game', @out);
+CALL usp_InsertMeta('Animated Series', @out);
+CALL usp_InsertMeta('TV Series', @out);
+CALL usp_InsertMeta('Anime', @out); -- 5
+CALL usp_InsertMeta('Artist', @out);
+CALL usp_InsertMeta('Film', @out);
+CALL usp_InsertMeta('Company', @out);
+CALL usp_InsertMeta('Content Creator', @out);
 
 -- Standard Tags
 -- These are tags that are more specific than meta tags, and are applied directly to jokes
-INSERT INTO Tags
-	(TagName)
-VALUES
-	('Theme Song'),
-	('VGM'),
-	('Animation'),
-	('Meme');
+CALL usp_InsertTag('Song', @out);
+CALL usp_InsertTag('Theme Song', @out);
+CALL usp_InsertTag('Meme', @out);
+CALL usp_InsertTag('Character', @out);
+CALL usp_InsertTag('Voiceline', @out); -- 5
+CALL usp_InsertTag('Video', @out);
+CALL usp_InsertTag('YTP', @out);
+CALL usp_InsertTag('Commercial', @out);
 
--- -- Meta Jokes
--- -- These are jokes that are used to group jokes
-INSERT INTO MetaJokes
-	(MetaJokeName, MetaJokeDescription, MetaID)
-VALUES
-	('1960s Music', 'Music that was released in the 1960s', 1),
-	('1970s Music', 'Music that was released in the 1970s', 1),
-	('1980s Music', 'Music that was released in the 1980s', 1),
-	('1990s Music', 'Music that was released in the 1990s', 1),
-	('2000s Music', 'Music that was released in the 2000s', 1),
-	('2010s Music', 'Music that was released in the 2010s', 1),
-	('2020s Music', 'Music that was released in the 2010s', 1),
-	('Pop Music', 'Music that is classified as "Pop"', 1),
-	('Rock Music', 'Music that is classified as "Rock"', 1),
-	('Electronic Music', 'Music that is classified as "Electronic"', 1),
-	('Classical Music', 'Music that is classified as "Classical"', 1),
-	('Jazz Music', 'Music that is classified as "Jazz"', 1),
-	('Disco Music', 'Music that is classified as "Disco"', 1),
-	('Video Game Music', 'Music that originated from a video game', 1);
+-- Meta Jokes
+-- These are jokes that are used to group jokes
+CALL usp_InsertMetaJoke('1960s Music', 'Music released in between 1960 and 1969', 1, @out);
+CALL usp_InsertMetaJoke('1970s Music', 'Music released in between 1970 and 1979', 1, @out);
+CALL usp_InsertMetaJoke('1980s Music', 'Music released in between 1980 and 1989', 1, @out);
+CALL usp_InsertMetaJoke('1990s Music', 'Music released in between 1990 and 1999', 1, @out);
+CALL usp_InsertMetaJoke('2000s Music', 'Music released in between 2000 and 2009', 1, @out); -- 5
+CALL usp_InsertMetaJoke('2010s Music', 'Music released in between 2010 and 2019', 1, @out);
+CALL usp_InsertMetaJoke('2020s Music', 'Music released in between 2020 and 2029', 1, @out);
+CALL usp_InsertMetaJoke('Pop Music', 'Music that is classified as "Pop"', 1, @out);
+CALL usp_InsertMetaJoke('Rock Music', 'Music that is classified as "Rock"', 1, @out);
+CALL usp_InsertMetaJoke('Electronic Music', 'Music that is classified as "Electronic"', 1, @out); -- 10
+CALL usp_InsertMetaJoke('Classical Music', 'Music that is classified as "Classical"', 1, @out);
+CALL usp_InsertMetaJoke('Jazz Music', 'Music that is classified as "Jazz"', 1, @out);
+CALL usp_InsertMetaJoke('Disco Music', 'Music that is classified as "Disco"', 1, @out);
+CALL usp_InsertMetaJoke('Video Game Music', 'Music that originates from a video game', 1, @out);
 
 -- Rip Channels
 INSERT INTO Channels
