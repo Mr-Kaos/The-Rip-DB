@@ -73,7 +73,8 @@ if (!file_exists('../site/private_core/config/db.php')) {
 		$files = [
 			'vw_RipsDetailed',
 			'vw_JokesDetailed',
-			'vw_MetaJokesDetailed'
+			'vw_MetaJokesDetailed',
+			'vw_MetasDetailed'
 		];
 		deployFiles($pdo, 'Views', $files);
 
@@ -83,6 +84,7 @@ if (!file_exists('../site/private_core/config/db.php')) {
 
 		$files = [
 			'usp_InsertMeta',
+			'usp_UpdateMeta',
 			'usp_InsertJoke',
 			'usp_UpdateJoke',
 			'usp_InsertMetaJoke',
@@ -125,18 +127,7 @@ if (!file_exists('../site/private_core/config/db.php')) {
 
 		$in = strtoupper($in);
 		if ($in == 'Y') {
-			$sampleProcedures = [
-				'usp_InsertJoke_SAMPLE',
-				'usp_InsertMetaJoke_SAMPLE'
-			];
-			deployFiles($pdo, 'Procedures', $sampleProcedures);
-
 			deployFiles($pdo, 'Scripts', ['Sample_data']);
-
-			foreach ($sampleProcedures as $procName) {
-				echo "Dropping: $procName\n";
-				$pdo->exec("DROP PROCEDURE $procName;");
-			}
 		}
 	} else {
 		echo 'Aborting.';

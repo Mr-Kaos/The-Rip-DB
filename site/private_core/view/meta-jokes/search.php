@@ -3,8 +3,9 @@
 use RipDB\Objects as o;
 ?>
 <main>
+	<?php include('private_core/templates/header-tag-metas.php') ?>
 	<h1>Meta Jokes</h1>
-	<p>This page just shows what jokes exist in the database.</p>
+	<p>This page shows the meta jokes that jokes are categorised within.</p>
 	<form id="table_search" style="display:inline" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>
 		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
@@ -58,7 +59,7 @@ use RipDB\Objects as o;
 					<?= $pagination ?>
 					<?= (new o\InputElement(null, o\InputTypes::number, ['id' => 'p', 'min' => 1, 'placeholder' => 'Page number', 'form' => 'table_search', 'value' => $Page, 'onchange' => 'this.form.submit()']))->buildElement() ?>
 					<button type="submit" form="table_search">Go</button>
-					<span style="float:right">Showing <b><?= $RecordStart ?> to <?= $RecordEnd ?></b> of <?= $RecordCount ?> jokes</span>
+					<span style="float:right">Showing <b><?= $RecordStart ?> to <?= $RecordEnd ?></b> of <?= $RecordCount ?> meta jokes</span>
 				</td>
 			</tr>
 		</tfoot>

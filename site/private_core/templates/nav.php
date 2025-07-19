@@ -8,7 +8,7 @@
 			<li><a href="/rippers">Rippers</a></li>
 			<li><a href="/channels">Channels</a></li>
 			<li><a href="/games">Games</a></li>
-			<li><a href="/tags">Tags</a></li>
+			<li><a href="/tags">Tags & Metas</a></li>
 		</ul>
 	</div>
 	<a href="/ripguessr">RipGuessr</a>

@@ -103,6 +103,25 @@ Flight::group('/meta-jokes', function () {
 	});
 });
 
+// Meta Pages
+Flight::group('/metas', function () {
+	Flight::route('POST /new', function () {
+		submitForm('metas/new', 'MetaController');
+	});
+	Flight::route('/new', function () {
+		displayPage('metas/new', 'MetaController', [], 'New Meta');
+	});
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('metas/edit', 'MetaController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('metas/edit', 'MetaController', ['id' => $id], 'Edit Meta');
+	});
+	Flight::route('/', function () {
+		displayPage('metas/search', 'MetaController', [], 'Metas');
+	});
+});
+
 // Tag Pages
 Flight::group('/tags', function () {
 	Flight::route('/', function () {

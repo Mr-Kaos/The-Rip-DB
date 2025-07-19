@@ -3,6 +3,7 @@
 use RipDB\Objects as o;
 ?>
 <main>
+	<?php include('private_core/templates/header-tag-metas.php') ?>
 	<h1>Tags</h1>
 	<p>This page just shows what tags exist in the database.</p>
 	<div>
