@@ -257,7 +257,7 @@ class RipController extends Controller
 				$validated['Length'] = $this->validateTimestamp($_POST['length']);
 				$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 				$validated['YTID'] = $this->validateString($_POST['ytId'], 'The given youTube ID is invalid.', null, null, '/[A-Za-z0-9_-]{11}/');;
-				$validated['AltURL'] = $this->validateString(null);
+				$validated['AltURL'] = $this->validateString($_POST['alturl'], 'The given alternate URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 				$validated['Game'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
 				$validated['Channel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
 				$validated['Genres'] = $this->validateArray($_POST['genres'], 'validateFromList', [$this->model->getGenres(true)], 'One or more of the given genres do not exist in the database.');
