@@ -1,7 +1,5 @@
 DROP TRIGGER IF EXISTS b_upd_EnsureSinglePrimaryTag;
 
-DELIMITER $$
-$$
 CREATE TRIGGER b_upd_EnsureSinglePrimaryTag
 BEFORE UPDATE
 ON JokeTags FOR EACH ROW
@@ -18,5 +16,4 @@ BEGIN
 	IF PrimaryExists = 1 AND NEW.IsPrimary = 1 THEN
 		SET NEW.IsPrimary = 0;
 	END IF;
-END$$
-DELIMITER ;
+END

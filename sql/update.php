@@ -16,55 +16,25 @@ if (!file_exists('../site/private_core/config/db.php')) {
 	// DEPLOYMENT COMMENCE
 	// -------------------
 
-	$pdo = new PDO('mysql:host=' . constant('SQL_HOST') . ';charset=UTF8mb4', constant('SQL_USER'), constant('SQL_PASS'));
+	$pdo = new PDO('mysql:host=' . constant('SQL_HOST') . ';dbname=' . constant('SQL_DB') . ';charset=UTF8', constant('SQL_USER'), constant('SQL_PASS'));
 
-	$in = readline("Deploying to " . constant('SQL_HOST') . '. Is this OK? [Y or Enter to continue]');
+	$in = readline('Updating views and procedures "' . constant('SQL_DB') . '" on "' . constant('SQL_HOST') . '". Is this OK? [Y or Enter to continue]');
 
 	$in = strtoupper($in);
 	if ($in == 'Y' || $in == '') {
 		if (!$pdo) {
 			echo "Database connection failed! Please check the connection details in this file (deploy.php).";
 			exit();
-		} else {
-			$pdo->exec('DROP DATABASE IF EXISTS ' . constant('SQL_DB') . ';');
-			$pdo->exec('CREATE DATABASE ' . constant('SQL_DB') . ' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;');
-			$pdo = new PDO('mysql:host=' . constant('SQL_HOST') . ';dbname=' . constant('SQL_DB') . ';charset=UTF8', constant('SQL_USER'), constant('SQL_PASS'));
 		}
 
 		function deployFiles($pdo, string $folder, array $fileNames)
 		{
 			foreach ($fileNames as $file) {
 				$sql = file_get_contents("$folder/$file.sql");
-				echo "Deploying: $folder/$file.sql\n";
+				echo "Udpating: $folder/$file.sql\n";
 				$pdo->exec($sql);
 			}
 		}
-
-		// ------
-		// TABLES
-		// ------
-
-		$files = [
-			'Metas',
-			'Tags',
-			'Channels',
-			'Jokes',
-			'Games',
-			'Rippers',
-			'MetaJokes',
-			'JokeMetas',
-			'JokeTags',
-			'Genres',
-			'Rips',
-			'RipJokes',
-			'RipGenres',
-			'RipRippers',
-			'RipGuesserGame',
-			'RipGuesserUpvotes',
-			'RipJokeFeedback',
-			'Accounts'
-		];
-		deployFiles($pdo, 'Tables', $files);
 
 		// ------
 		// VIEWS
@@ -107,7 +77,6 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'usp_InsertRipFeedback',
 			'usp_InsertLogin',
 			'usp_SelectLogin',
-			'usp_DeleteAccount',
 			'usp_UpdateAccountPassword',
 			'usp_UpdateAccountUsername'
 		];
@@ -125,22 +94,6 @@ if (!file_exists('../site/private_core/config/db.php')) {
 
 		deployFiles($pdo, 'Triggers', $files);
 
-		// ------
-		// Base Data
-		// ------
-
-		deployFiles($pdo, 'Scripts', ['BaseData']);
-
-		// ----------------------
-		// Sample Data (optional)
-		// ----------------------
-
-		$in = readline("Database deployment successful! Would you like to deploy some sample data? [y/N]");
-
-		$in = strtoupper($in);
-		if ($in == 'Y') {
-			deployFiles($pdo, 'Scripts', ['Sample_data']);
-		}
 	} else {
 		echo 'Aborting.';
 	}
