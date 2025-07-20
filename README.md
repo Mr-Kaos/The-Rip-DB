@@ -1,3 +1,33 @@
+<style>
+  .milestone {
+		border-left: solid green 5px;
+	}
+  .milestone table {
+    width: 70%;
+    margin: 0;
+  }
+  .milestone table td {
+    border-right: solid thin grey;
+    border-bottom: solid thin grey;
+  }
+  .milestone.working,
+  .milestone.working>h4 {
+		border-left: solid yellow 5px;
+	}
+  .milestone.future,
+  .milestone.future>h4  {
+		border-left: solid lightgrey 5px;
+	}
+	.milestone>h4 {
+    padding-left: 10px;
+    padding-top: 10px;
+    margin: 0;
+		border-left: solid green 10px;
+	}
+  .milestone.working>h4 {
+		border-left: solid yellow 10px;
+	}
+</style>
 # The Rip Database Project
 
 This project aims to provide an easy way to catalog and find "[rips](#what-are-rips)" uploaded by all "ripping" channels on YouTube.
@@ -57,56 +87,149 @@ A more detailed (and automated) guide will be produced as the project progresses
 
 The primary goal of this project is to provide a complete and detailed database that allows users to search for a rip based on its contents, i.e. tags. This will also be crowd sourced, meaning anyone can contribute to fill in any gaps of information that this database is missing.
 
-### Main Features (Current Progress)
+### Release Plan
 
-This project currently has the following features complete:
+This project aims to have the following features:
 
-- [X] Rips
-  - [X] Search page
-    - [X] Search filters
-  - [X] Add Rip page
-  - [X] Edit Rip page
-- [ ] Jokes
-  - [X] Search page
-    - [X] Search filters
-  - [X] Add Joke page
-  - [ ] Edit Joke page
-- [ ] Metas
-  - [ ] Search page
-  - [ ] Add Meta Joke page
-  - [ ] Edit Meta Joke page
-  - [ ] Add Meta page
-  - [ ] Edit Meta page
-- [ ] Tags
-  - [X] Search page
-  - [X] Add Tag page
-  - [ ] Edit Tag page
-- [X] Games
-  - [X] Search page
-  - [X] Add Game page
-  - [X] Edit Game page
-- [ ] Core System
-  - [X] Page routing
-  - [X] Custom input elements
-  - [ ] Moderation/Anti-spam system
-  - [ ] Page alerts (e.g. Form submission success)
-  - [ ] API for data export
-- [ ] RipGuessr
-  - [X] Functional gameplay loop
-  - [ ] Multiplayer sessions
-  - [ ] Community playlists/game presets
+<div class="milestone">
 
-### Potential Features
+#### v0.1.0
 
-Some other features that this project aims to include in the future are:
+<table>
+<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
+<tbody>
+<tr><td>
 
-- [ ] Statistical features:
-  - [ ] Statistics that show how common particular jokes are used in rips
-  - [ ] Graphs that show how different rips relate to each other
-- [ ] Ability to make quick YouTube playlists based on a search result
-- [ ] Moderation/Anti-Spam tools. Potentially a way to prevent spam or bots from submitting bogus content.
+- Core system design
+- Essential data/pages
+  - Rip pages
+    - Search
+    - Add/Edit
+    - View
+  - Joke Search
+    - Search
+    - Add
 
-If you have any cool or useful ideas for features, please feel free to suggest them!
+</td><td>
+
+No features planned.
+
+</td></tr>
+</table>
+
+#### v0.2.0
+
+<table>
+<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
+<tbody>
+<tr><td>
+
+- Account framework
+  - Account creation and management
+- Sorting features for search pages
+- Notifications
+
+</td><td>
+
+- Core engine design
+- Core gameplay loop
+
+</td></tr>
+</table>
+
+#### v0.3.0
+
+<table>
+<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
+<tbody>
+<tr><td>
+
+- Pages for all user-manageable components
+  - Meta Jokes
+    - Search
+    - Add/Edit
+  - Metas
+    - Search
+    - Add/Edit
+  - Tags
+    - Search
+    - Add/Edit
+  - Channels
+    - Search
+    - Add/Edit
+  - Games
+    - Search
+    - Add/Edit
+- Dynamic modal forms for easy addition of data
+
+</td><td>
+
+No new features planned.
+
+</td></tr>
+</table>
+
+</div>
+<div class="milestone working">
+
+#### Upcoming Features
+
+<table>
+<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
+<tbody>
+<tr><td>
+
+- Wiki Integration
+  - Ability to export data to the channel's wiki
+  - (Maybe) Ability to import rip from wiki page
+- Separation of "Mix Names" from rip names
+- API
+  - Ability to fetch data via an API  
+  *(Could allow for cool new games like Connections or interesting statistical analyses.)*
+
+</td><td>
+
+- New game settings
+  - Filter by channel
+  - Filter by game
+- Gameplay features
+  - Guess Mix Name
+  - Thumbnail only (guess rip name and not game)
+- Playlists
+  - Create
+  - Edit (users with accounts)
+  - Play game using playlist
+- Multiplayer sessions
+
+</td></tr>
+</table>
+
+</div>
+<div class="milestone future">
+
+#### Future Updates and Features
+
+<table>
+<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
+<tbody>
+<tr><td>
+
+- Statistical Visualisations
+  - Graphs and charts of common rips, jokes, games etc.
+  - Relational graphs of jokes and their metas
+- Mobile support
+- YouTube playlist creation
+  - Ability to search for rips using the database to create playlists on YouTube easily.
+
+</td><td>
+
+No new features planned.
+
+</td></tr>
+</table>
+
+</div>
+
 
 ## System Design
 
