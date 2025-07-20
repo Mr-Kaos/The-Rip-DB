@@ -38,11 +38,6 @@ class DropdownElement extends InputElement
 		parent::__construct($label, InputTypes::dropdown, $attributes, $labelAttributes, $block);
 	}
 
-	public function __destruct()
-	{
-		return "DropdownElement destroyed.";
-	}
-
 	/**
 	 * Returns the number of options in the dropdown.
 	 */

@@ -80,6 +80,12 @@ abstract class Controller
 
 	/**
 	 * Submits the request to the controller's model. The data should be validated before sending it through this function.
+	 * @param array $validatedData An associative array that contains the validated submission data from the controller's {@see validateRequest} function.
+	 * @param string $storedProcedure The name of the SQL stored procedure that will send the data to the database.
+	 * @param string $redirectLink The URI in the site to redirect to upon successful submission to the database.
+	 * @param string $successMessage A message to display to the user when the submission to the database is successful.
+	 * @param mixed &$outputParam An output parameter to use in the stored procedure if a value needs to be returned.  
+	 * The Output parameter will always be set the last parameter if it is not null, so the stored procedure being executed must have an OUT parameter as the last parameter.
 	 * 
 	 * @return false|array|string If submission fails, False is returned. If successful, depending on whether an HTTP_ACCEPT header is sent or not will determine if an array or string is returned.  
 	 * - If HTTP_ACCEPT is sent, an array of the validated data submitted is returned, along with an ID of the record (if applicable) and a success message.

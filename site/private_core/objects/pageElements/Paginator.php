@@ -4,12 +4,18 @@ trait Paginator
 	const DEFAULT_ROWCOUNT = 25;
 	const PAGINATION_LINKS = 3;
 
-	protected function getRowCount()
+	/**
+	 * @return int The number of rows to be displayed
+	 */
+	protected function getRowCount(): int
 	{
 		return intval($_GET['c'] ?? self::DEFAULT_ROWCOUNT);
 	}
 
-	protected function getPageNumber()
+	/**
+	 * @return int The page number of the paginator
+	 */
+	protected function getPageNumber(): int
 	{
 		$page =  empty($_GET['p'] ?? null) ? 1 : (int)$_GET['p'];
 		return $page > 0 ? $page : 1;
@@ -40,6 +46,11 @@ trait Paginator
 		return $rowCount * ($page - 1);
 	}
 
+	/**
+	 * Builds up a set of pagination links for insertion in the footer of a table.
+	 * @param int $recordCount The total number of records available to the table across all pages.
+	 * @param string $page The URI of the page to use in the links. Should be the the URI of the current page 
+	 */
 	protected function buildPagination(int $recordCount, string $page)
 	{
 		$rowCount = $this->getRowCount();
