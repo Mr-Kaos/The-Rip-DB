@@ -120,11 +120,12 @@ class InputElement extends PageObject
 				}
 				$this->labelAttributes['style'] = $style;
 			}
+			// If required, add required class
+			if ($required && !isset($this->labelAttributes['no-asterisk'])) {
+				$this->labelAttributes['class'] .= ' required';
+			}
 			$attributes = $this->buildAttributes($this->labelAttributes);
 			$label = '<label' . $attributes . '>';
-			if ($required && !is_null($this->labelAttributes['no-asterisk'] ?? null)) {
-				$label .= '*';
-			}
 			$label .= $this->label . '</label>';
 		}
 		return $label;

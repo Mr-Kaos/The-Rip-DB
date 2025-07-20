@@ -20,7 +20,7 @@ class DropdownElement extends InputElement
 	 * @param ?array $options An array of values to use as options in the dropdown.
 	 * @param ?array $attributes An associative array of html attributes to add to the element.
 	 */
-	public function __construct(string $label, ?array $options = [], ?array $attributes = [])
+	public function __construct(string $label, ?array $options = [], ?array $attributes = [], ?array $labelAttributes = [], bool $block = false)
 	{
 		if (is_null($options)) {
 			$options = array();
@@ -35,7 +35,7 @@ class DropdownElement extends InputElement
 			$attributes = array();
 		}
 		$this->options = $options;
-		parent::__construct($label, InputTypes::dropdown, $attributes);
+		parent::__construct($label, InputTypes::dropdown, $attributes, $labelAttributes, $block);
 	}
 
 	public function __destruct()

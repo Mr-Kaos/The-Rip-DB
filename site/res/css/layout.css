@@ -184,6 +184,14 @@ input[type=range]+span {
 	margin-left: 5px;
 }
 
+label.required {
+	font-weight: bold;
+}
+label.required:before {
+	content: "*";
+	color: red;
+}
+
 a.button,
 button {
 	background-color: var(--accent-2);
@@ -411,7 +419,7 @@ div.filters>.search-element>input {
 	right: 0;
 	display: flex;
 	flex-direction: column;
-	z-index: 1;
+	z-index: 10;
 	width: fit-content;
 	max-width: 90%;
 	margin: 0px auto;
@@ -441,7 +449,7 @@ div.filters>.search-element>input {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	z-index: 8;
+	z-index: 5;
 	background-color: #55555580;
 }
 
@@ -450,7 +458,6 @@ div.filters>.search-element>input {
 	top: 5%;
 	background-color: var(--bg-color);
 	margin: auto;
-	/* border:  */
 	border-radius: 10px;
 	min-width: 40%;
 	width: fit-content;
@@ -458,7 +465,7 @@ div.filters>.search-element>input {
 	z-index: 10;
 	max-height: 90vh;
 	max-width: 90vw;
-	overflow: hidden;
+	padding: 5px;
 }
 
 .modal-window>.content {
@@ -494,6 +501,11 @@ div.filters>.search-element>input {
 	cursor: pointer;
 	padding: 5px;
 	border-radius: 5px;
+}
+
+.form-grid {
+	display: grid;
+	grid-template-columns:  1fr 1fr;
 }
 
 /* Rip Guesser Styles */

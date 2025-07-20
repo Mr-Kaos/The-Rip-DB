@@ -77,7 +77,7 @@ function getNotificationContainer() {
  * @param {NotificationPriority} priority 
  */
 function displayNotification(message, priority) {
-	const NOTIFICATION_FADE_TIMEOUT = 3000; // standard number of millis for notification to fade out.
+	const NOTIFICATION_FADE_TIMEOUT = 5000; // standard number of millis for notification to fade out.
 	const MILLIS_PER_CHAR = 25; // If the message is longer than 30 chars, millis are added per character in the message.
 
 	let notification = document.createElement('div');
@@ -275,6 +275,7 @@ class IModal {
 	content = null;
 	isOpen = false;
 	#onClose = null
+	#onOpen = null
 	title;
 
 	/**
@@ -324,11 +325,19 @@ class IModal {
 	}
 
 	/**
-	 * Add a function to run once the modal is closed
-	 * @param {Function} fun - the function to run when the modal is closed
+	 * Add a function to run when the modal is closed
+	 * @param {Function} func - the function to run
 	 */
-	setCloseListener(fun) {
-		this.#onClose = fun;
+	setCloseListener(func) {
+		this.#onClose = func;
+	}
+
+	/**
+	 * Add a function to run when the modal is opened
+	 * @param {Function} func - the function to run
+	 */
+	setOpenListener(func) {
+		this.#onOpen = func;
 	}
 
 	/**
@@ -510,6 +519,10 @@ class IModal {
 		document.body.appendChild(this.getBG());
 
 		this.getBG().classList.remove("hidden");
+
+		if (this.#onOpen != null) {
+			this.#onOpen();
+		}
 		this.isOpen = true;
 	}
 
@@ -571,6 +584,7 @@ class Modal extends IModal {
 class FormModal extends IModal {
 	#srcPage;
 	#formId;
+	#form;
 	#submissionResponse; // The response to the submission.
 
 	/**
@@ -590,6 +604,7 @@ class FormModal extends IModal {
 		this.#srcPage = formSrc;
 		this.#formId = formId;
 		this.#submissionResponse = null;
+		this.setOpenListener(this.#setFocus);
 	}
 
 	/**
@@ -610,6 +625,7 @@ class FormModal extends IModal {
 				let form = doc.getElementById(this.#formId);
 
 				if (form != null) {
+					this.#form = form;
 					setupCustomInputs(form);
 					// Setup submission listener.
 					form.onsubmit = async function (e) {
@@ -642,7 +658,7 @@ class FormModal extends IModal {
 	 * @returns Promise The ID of the inserted record and an alias name for it.
 	 */
 	async onSubmit() {
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			let interval = setInterval(function () {
 				if (this.#submissionResponse !== null) {
 					clearInterval(interval);
@@ -650,16 +666,27 @@ class FormModal extends IModal {
 					// if an error message is in the response, display it
 					if (this.#submissionResponse['_Error'] != undefined) {
 						displayNotification(this.#submissionResponse['_Error'], NotificationPriority.Error);
+					this.close();
+						return reject(this.#submissionResponse['_Error']);
 					}
 					else if (this.#submissionResponse['_Message'] != undefined) {
 						displayNotification(this.#submissionResponse['_Message'], NotificationPriority.Success);
-					}
-
 					this.close();
-					return resolve(this.#submissionResponse);
+						return resolve(this.#submissionResponse);
+					}
 				}
 			}.bind(this), 100);
 		});
+	}
+
+	/**
+	 * Focuses onto the first input element.
+	 */
+	#setFocus() {
+		let firstInput = this.#form.querySelector('input,select,textarea');
+		if (firstInput != null) {
+			firstInput.focus();
+		}
 	}
 }
 
