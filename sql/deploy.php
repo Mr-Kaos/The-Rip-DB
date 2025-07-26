@@ -62,7 +62,8 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'RipGuesserGame',
 			'RipGuesserUpvotes',
 			'RipJokeFeedback',
-			'Accounts'
+			'Accounts',
+			'Playlists'
 		];
 		deployFiles($pdo, 'Tables', $files);
 

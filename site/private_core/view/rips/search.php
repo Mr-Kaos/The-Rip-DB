@@ -11,6 +11,8 @@ use RipDB\Model\RipModel as r;
 		<?= (new o\InputElement(null, o\InputTypes::search, ['id' => 'search', 'value' => $_GET['search'] ?? null]))->buildElement() ?>
 		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
 		<a href="rips/new" style="display:inline;float:right">Add Rip</a>
+		<br>
+		<a href="#" style="display:inline;float:right" onclick="initPlaylistCreator()">Create Playlist</a>
 		<summary onclick="toggleFilters(this)" class="filters">More Filters</summary>
 		<div class="filters" <?= $open ?>>
 			<?= (new o\SearchElement('Tags', '/search/tags', true, $tags, ['name' => 'tags', 'autocomplete' => 'off']))->buildElement() ?>
@@ -38,7 +40,7 @@ use RipDB\Model\RipModel as r;
 		<tbody>
 			<?php if (!empty($results)): ?>
 				<?php foreach ($results as $record): ?>
-					<tr>
+					<tr rip-id="<?= $record['RipID'] ?>">
 						<td><a href="/rips/<?= $record['RipID'] ?>"><?= $record['RipName'] . ' - ' . $record['GameName'] ?></a></td>
 						<td>
 							<?php if (!empty($record['RipAlternateURL'])): ?>
@@ -102,3 +104,4 @@ use RipDB\Model\RipModel as r;
 	</div>
 </section>
 <script src="/res/js/results.js" defer></script>
+<script src="/res/js/playlistCreator.js" defer></script>
