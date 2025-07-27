@@ -203,6 +203,14 @@ Flight::route('/help', function () {
 	displayPage('help', null, [], 'Help / FAQ');
 });
 
+// Playlist Pages
+Flight::group('/playlist', function () {
+	
+	Flight::route('POST /new', function () {
+		submitForm('playlist/new', 'PlaylistController');
+	});
+});
+
 const RIP_GUESSER_HEAD = 'head_ripguesser.php';
 
 // Rip Guesser Page
@@ -421,6 +429,9 @@ function submitForm(string $page, string $controllerName, ?array $data = null)
 			if ($result === false) {
 				Flight::redirect($_SERVER['HTTP_REFERER']);
 			} else {
+				if (is_array($result)) {
+					$result = $_SERVER['HTTP_REFERER'] ?? '/';
+				}
 				Flight::redirect($result);
 			}
 		}

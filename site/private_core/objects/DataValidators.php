@@ -185,11 +185,11 @@ trait DataValidator
 	 * @param ?string $minTimestamp A timestamp dictating the minimum allowed length. (e.g. 00:20 for 20 seconds.)
 	 * @return Error|string|null If valid, the timestamp without colons is returned.
 	 */
-	protected function validateTimestamp(string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.', ?string $maxTimestamp = null, ?string $minTimestamp = null): Error|string|null
+	protected function validateTimestamp(?string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.', ?string $maxTimestamp = null, ?string $minTimestamp = null): Error|string|null
 	{
 		$validated = new Error($errorMessage);
 
-		if ($time != "") {
+		if (!empty($time)) {
 			if ($maxTimestamp !== null) {
 				$maxTimestamp = $this->validateTimestamp($maxTimestamp, 'max validate invalid');
 			}
@@ -254,7 +254,7 @@ trait DataValidator
 	/**
 	 * Validates the data in the given array by validating each value with the given function.
 	 * @param array|string|null $data The array with the to validate. Must be a 1-dimensional array. If a string or null is passed, it is assumed that there are no values in the array (i.e. an empty string)
-	 * @param $func The name of a function within the DataValidators trait to use in validating each value in the array. This function must be within the DataValidators trait to work.
+	 * @param $func The name of a function within the DataValidators trait to use in validating each value in the array. This function must be static and specify the class it belongs to. If the lass is omitted, it is assumed to be part of the DataValidators trait.
 	 * @param array $params An array of parameters to pass into the validator function specified by $func. By default, the $data given is passed as the first parameter in this function.
 	 * @param bool $outputAsJSONArray Determines if the function should return a JSON array of the validated array or just return an array. By default a JSON array is returned for use in Stored Procedures.
 	 * @return array The validated array values.
@@ -268,7 +268,11 @@ trait DataValidator
 		if (!empty($data)) {
 			foreach ($data as $val) {
 				$funcParams = array_merge([$val], $params);
-				$out = call_user_func_array("self::$func", $funcParams);
+				// CHeck if class was specified for function. If not, assume it is part of the DataValidators trait.
+				if (!str_contains($func, '::')) {
+					$func = "self::$func";
+				}
+				$out = call_user_func_array($func, $funcParams);
 				if (!$out instanceof Error) {
 					array_push($result, $out);
 				} else {

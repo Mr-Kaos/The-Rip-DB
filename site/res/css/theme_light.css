@@ -28,3 +28,7 @@
 button {
 	color: var(--text-color) !important;
 }
+
+.btn-bad {
+	color: var(--text-color-invert) !important;
+}

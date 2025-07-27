@@ -63,7 +63,8 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'RipGuesserUpvotes',
 			'RipJokeFeedback',
 			'Accounts',
-			'Playlists'
+			'Playlists',
+			'AnonymousPlaylists'
 		];
 		deployFiles($pdo, 'Tables', $files);
 
@@ -110,7 +111,8 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'usp_SelectLogin',
 			'usp_DeleteAccount',
 			'usp_UpdateAccountPassword',
-			'usp_UpdateAccountUsername'
+			'usp_UpdateAccountUsername',
+			'usp_InsertPlaylist'
 		];
 
 		deployFiles($pdo, 'Procedures', $files);

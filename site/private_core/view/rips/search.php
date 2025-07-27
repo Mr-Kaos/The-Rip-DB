@@ -88,6 +88,16 @@ use RipDB\Model\RipModel as r;
 			</tr>
 		</tfoot>
 	</table>
+	<div id="playlist-creator" style="text-align:center">
+		<form action="/playlist/new" method="POST" onsubmit="playlist.submitPlaylist(event)">
+			<h2>Playlist Summary</h2>
+			<?= (new o\InputElement(null, o\InputTypes::text, ['id' => 'playlist-name', 'max-length' => 128, 'required' => true, 'oninput' => 'playlist.updateName(this.value)']))->buildElement() ?>
+			<details class="playlist-rips" open>
+				<summary id="rips">Show Rips</summary>
+			</details>
+			<button type="submit">Create Playlist</button>
+		</form>
+	</div>
 </main>
 <section id="templates" style="display:none">
 	<div id="callout-rippers" class="callout down">

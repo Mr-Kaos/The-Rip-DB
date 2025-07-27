@@ -92,6 +92,7 @@ nav>div>ul a:hover {
 	padding: 5px 0px;
 	align-items: center;
 }
+
 .sub-nav * {
 	margin-right: 20px;
 }
@@ -126,6 +127,7 @@ thead {
 tbody>tr>td {
 	overflow-wrap: anywhere;
 }
+
 tbody>tr:nth-child(even) {
 	background: var(--tbl-row-even);
 
@@ -187,6 +189,7 @@ input[type=range]+span {
 label.required {
 	font-weight: bold;
 }
+
 label.required:before {
 	content: "*";
 	color: red;
@@ -505,7 +508,40 @@ div.filters>.search-element>input {
 
 .form-grid {
 	display: grid;
-	grid-template-columns:  1fr 1fr;
+	grid-template-columns: 1fr 1fr;
+}
+
+/* Playlist Creator */
+.playlist-rips {
+	width: fit-content;
+	margin: auto;
+}
+
+.playlist-rips>div {
+	display: flex;
+	align-items: center;
+	background-color: var(--tbl-row-odd);
+}
+
+.playlist-rips>div:nth-child(even) {
+	background-color: var(--tbl-row-even);
+}
+
+.playlist-rips>div a {
+	padding: 0px 10px;
+}
+
+.playlist-rips>div button {
+	margin-left: auto;
+}
+
+.playlist-rips>div i {
+	cursor: pointer;
+	padding: 1px 3px;
+}
+
+.playlist-rips>div i:hover {
+	opacity: 40%;
 }
 
 /* Rip Guesser Styles */
