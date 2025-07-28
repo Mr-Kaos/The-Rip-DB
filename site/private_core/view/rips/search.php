@@ -12,7 +12,7 @@ use RipDB\Model\RipModel as r;
 		<?= (new o\InputElement('Search by secondary (album) name', o\InputTypes::checkbox, ['name' => 'use_secondary', 'value' => 1, 'checked' => ($_GET['use_secondary'] ?? null) == 1]))->buildElement() ?>
 		<a href="rips/new" style="display:inline;float:right">Add Rip</a>
 		<br>
-		<a href="#" style="display:inline;float:right" onclick="initPlaylistCreator()">Create Playlist</a>
+		<a id="playlist-toggle" href="#" style="display:inline;float:right" onclick="togglePlaylistCreator()">Create Playlist</a>
 		<summary onclick="toggleFilters(this)" class="filters">More Filters</summary>
 		<div class="filters" <?= $open ?>>
 			<?= (new o\SearchElement('Tags', '/search/tags', true, $tags, ['name' => 'tags', 'autocomplete' => 'off']))->buildElement() ?>
@@ -88,12 +88,15 @@ use RipDB\Model\RipModel as r;
 			</tr>
 		</tfoot>
 	</table>
-	<div id="playlist-creator" style="text-align:center">
+	<div id="playlist-creator" style="text-align:center;display:none;margin-bottom:10px;">
 		<form action="/playlist/new" method="POST" onsubmit="playlist.submitPlaylist(event)">
 			<h2>Playlist Summary</h2>
 			<?= (new o\InputElement(null, o\InputTypes::text, ['id' => 'playlist-name', 'max-length' => 128, 'required' => true, 'oninput' => 'playlist.updateName(this.value)']))->buildElement() ?>
-			<details class="playlist-rips" open>
-				<summary id="rips">Show Rips</summary>
+			<details open>
+				<summary id="rips" style="width:100%">Show Rips
+					<button type="button" class="btn-bad" onclick="playlist.promptClear()">Clear</button>
+				</summary>
+				<div class="playlist-rips"></div>
 			</details>
 			<button type="submit">Create Playlist</button>
 		</form>

@@ -73,7 +73,7 @@ class Playlist {
 		}
 
 		this.#appendToForm(id, name);
-		this.saveToStorage();
+		this.#saveToStorage();
 	}
 
 	/**
@@ -85,11 +85,11 @@ class Playlist {
 			let ripIndex = this.#rips.indexOf(id);
 			this.#rips.splice(ripIndex, 1);
 			this.#names.splice(ripIndex, 1);
-			this.saveToStorage();
+			this.#saveToStorage();
 
 			// Remove the rip from the form too
-			let list = this.#form.querySelector('details');
-			list.children[ripIndex + 1].remove();
+			let list = this.#form.querySelector('.playlist-rips');
+			list.children[ripIndex].remove();
 
 			// Check if the rip exists on the page's table, and if so, update the "add/remove" button to its "add" state.
 			let rows = document.querySelectorAll('#results>tbody>tr');
@@ -132,17 +132,17 @@ class Playlist {
 
 			[this.#rips[ripIndex], this.#rips[moveTo]] = [this.#rips[moveTo], this.#rips[ripIndex]];
 			[this.#names[ripIndex], this.#names[moveTo]] = [this.#names[moveTo], this.#names[ripIndex]];
-			this.saveToStorage();
+			this.#saveToStorage();
 		}
 	}
 
 	/**
 	 * Saves the playlist's data to the session storage.
 	 */
-	saveToStorage() {
+	#saveToStorage() {
 		sessionStorage.setItem('playlist-rips', this.#rips);
 		sessionStorage.setItem('playlist-names', JSON.stringify(this.#names));
-		sessionStorage.setItem('playlist-name', this.#name);
+		sessionStorage.setItem('playlist-name', this.#name ?? '');
 	}
 
 	/**
@@ -163,7 +163,7 @@ class Playlist {
 	 * @param {String} name The name of the rip
 	 */
 	#appendToForm(id, name) {
-		let list = this.#form.querySelector('details');
+		let list = this.#form.querySelector('.playlist-rips');
 		let row = document.createElement('div');
 		let cellMove = document.createElement('div');
 		let cellName = document.createElement('a');
@@ -205,7 +205,7 @@ class Playlist {
 		let clone;
 		let ripIndex = this.#rips.indexOf(ripId);
 
-		if (up && row.previousElementSibling.tagName != 'summary') {
+		if (up && row.previousElementSibling.tagName != 'SUMMARY') {
 			swapRow = row.previousElementSibling;
 			clone = row.cloneNode(true);
 			this.moveRip(ripId, ripIndex - 1);
@@ -228,7 +228,7 @@ class Playlist {
 	 */
 	updateName(name) {
 		this.#name = name;
-		this.saveToStorage();
+		this.#saveToStorage();
 	}
 
 	/**
@@ -258,6 +258,34 @@ class Playlist {
 			let response = await submission.json();
 			console.log(response);
 		}
+	}
+
+	/**
+	 * Clears the playlist.
+	 */
+	#clearList() {
+		let ripIds = new Array(...this.#rips);
+		for (let i = 0; i < ripIds.length; i++) {
+			this.removeRip(ripIds[i]);
+		}
+	}
+
+	/**
+	 * Prompts the user if they wish to clear the playlist through a modal.
+	 * If they select yes, #clearList is called.
+	 */
+	promptClear() {
+		let funcs = {
+			'Yes': {
+				className: 'btn-bad',
+				function: this.#clearList.bind(this)
+			},
+			'No': {
+				className: 'btn-good'
+			}
+		};
+		let modal = new Modal('clear', "Confirm Playlist Clear", 'Are you sure you want to clear the playlist?', null, null, null, true, funcs);
+		modal.open();
 	}
 }
 
@@ -319,6 +347,34 @@ function prepareTable() {
 }
 
 /**
+ * Toggles the display of the playlist buttons.
+ */
+function togglePlaylistCreator() {
+	let playlistContainer = document.getElementById('playlist-creator');
+	let rows = document.querySelectorAll('#results>tbody>tr,#results>thead>tr');
+	let btnToggle = document.getElementById('playlist-toggle')
+
+	// Set the display of the playlist container and update the text of the "Create Playlist" button 
+	if (playlistContainer.style.display == 'none') {
+		playlistContainer.style.display = null;
+		btnToggle.innerText = 'Hide Playlist Creator';
+	} else {
+		playlistContainer.style.display = 'none';
+		btnToggle.innerText = 'Show Playlist Creator';
+	}
+
+	// Update the visibility of each row.
+	for (let i = 0; i < rows.length; i++) {
+		rows[i].children[0].style.display = playlistContainer.style.display;
+	}
+
+	// If the playlist creator is not initialised, initialise it
+	if (playlist == null) {
+		initPlaylistCreator();
+	}
+}
+
+/**
  * Initialises the playlist editing session storage.
  * If no previous storage exists, it is created, else it is loaded.
  */
@@ -336,10 +392,9 @@ function initPlaylistCreator() {
 /**
  * Checks if an existing playlist creator session is open. If it is, resumes it.
  */
-function checkSession() {
+window.addEventListener('load', function () {
 	if (sessionStorage.getItem('playlist-rips') !== null) {
 		initPlaylistCreator();
+		togglePlaylistCreator();
 	}
-}
-
-window.onload = checkSession;
+});

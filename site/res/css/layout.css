@@ -515,6 +515,8 @@ div.filters>.search-element>input {
 .playlist-rips {
 	width: fit-content;
 	margin: auto;
+	max-height: 500px;
+	overflow-y: scroll;
 }
 
 .playlist-rips>div {
