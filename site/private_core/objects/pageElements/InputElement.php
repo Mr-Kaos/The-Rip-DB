@@ -122,6 +122,9 @@ class InputElement extends PageObject
 			}
 			// If required, add required class
 			if ($required && !isset($this->attributes['no-asterisk'])) {
+				if (!isset($this->labelAttributes['class'])) {
+					$this->labelAttributes['class'] = '';
+				}
 				$this->labelAttributes['class'] .= ' required';
 			}
 			$attributes = $this->buildAttributes($this->labelAttributes);

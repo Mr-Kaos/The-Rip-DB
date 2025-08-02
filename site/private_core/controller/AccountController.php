@@ -76,7 +76,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 						if ($newPass == $newPass2 && !($newPass instanceof Error || $newPass2 instanceof Error)) {
 							$validated['NewPassword'] = $newPass;
 							$validated['NewPassword2'] = $newPass2;
-							$result = $this->submitRequest($validated, 'usp_UpdateAccountPassword', '/account', 'Successfully updated password!', true);
+							$result = $this->submitRequest($validated, 'usp_UpdateAccountPassword', '/account', 'Successfully updated password!');
 						} else {
 							$result = [new Error('The passwords do not match')];
 						}
@@ -88,7 +88,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 
 						if ($pass == $pass2 && !($pass instanceof Error || $pass2 instanceof Error)) {
 							$validated['InPassword'] = $pass;
-							$result = $this->submitRequest($validated, 'usp_DeleteAccount', '/', 'Successfully deleted account.', true);
+							$result = $this->submitRequest($validated, 'usp_DeleteAccount', '/', 'Successfully deleted account.');
 						} else {
 							$result = [new Error('The passwords do not match')];
 						}
