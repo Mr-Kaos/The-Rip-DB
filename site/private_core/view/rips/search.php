@@ -100,6 +100,17 @@ use RipDB\Model\RipModel as r;
 			</details>
 			<button type="submit">Create Playlist</button>
 		</form>
+		<div id="playlist-modal-msg" style="display:none;text-align:center">
+			<p>Your playlist has been successfully created!</p>
+			<p>Use the code below to share it with others:</p>
+			<code id="share-code" style="font-weight:bold;font-size:larger">ERROR OBTAINING CODE!</code>
+			<div>
+				<hr>
+				<p>If you want to edit this playlist, create an account and use the code below to claim it.</p>
+				<code id="claim-code" style="font-weight:bold;font-size:larger">ERROR OBTAINING CODE!</code><br><br>
+				<i>Note that this playlist will be deleted if not claimed or used for 30 days.</i>
+			</div>
+		</div>
 	</div>
 </main>
 <section id="templates" style="display:none">

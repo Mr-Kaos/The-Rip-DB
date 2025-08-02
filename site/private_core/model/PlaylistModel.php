@@ -35,4 +35,18 @@ class PlaylistModel extends Model
 			->join('AnonymousPlaylists', 'PlaylistID', 'PlaylistID')
 			->columns('ShareCode', 'ClaimCode')->eq('Playlists.PlaylistID', $playlistId)->findOne();
 	}
+
+	/**
+	 * Gets the codes for a newly created playlist. A name and id is required to verify that the playlist was created by the user making the request.
+	 * @param string $playlistId The ID of the playlist to get. Is a string due to being retrieved by a GET variable.
+	 * @param string $name The name of the playlist created.
+	 * @return array The Share Code and Claim code (if the playlist was created without a login)
+	 */
+	public function getNewPlaylist(string $playlistId, string $name): ?array {
+		return $this->db->table('Playlists')
+			->join('AnonymousPlaylists', 'PlaylistID', 'PlaylistID')
+			->columns('ShareCode', 'ClaimCode')
+			->eq('Playlists.PlaylistID', $playlistId)
+			->eq('PlaylistName', $name)->findOne();
+	}
 }

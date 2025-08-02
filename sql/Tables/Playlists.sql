@@ -1,5 +1,5 @@
 -- Table used to store playlists of rips. Mainly used for RipGuesser games.
--- Playlists without an creator (account) associated to them are deleted after 77 (Grand) days.
+-- Playlists without an creator (account) associated to them are deleted after 30 days.
 
 CREATE TABLE Playlists (
 	PlaylistID INT NOT NULL AUTO_INCREMENT,

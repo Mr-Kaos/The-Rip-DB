@@ -28,6 +28,18 @@ function getCookie(name) {
 	return cookie;
 }
 
+/**
+ * Sets a cookie.
+ * @param {String} name The name of the cookie to set
+ * @param {String} value The value of the cookie
+ * @param {Number} daysToExpiry The number of days from now until the cookie expires
+ */
+function setCookie(name, value, daysToExpiry) {
+	let date = new Date();
+	date.setTime(date.getTime() + (daysToExpiry * 24 * 60 * 60 * 1000));
+	document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+}
+
 const NotificationPriority = {
 	Default: "default", // neutral (theme) coloured
 	Success: 'success', // green coloured
@@ -282,7 +294,7 @@ class IModal {
 	 * 
 	 * @param {String} id The ID of the modal
 	 * @param {String} title The title name of the modal
-	 * @param {String} text The content to be displayed in a modal.
+	 * @param {HTMLElement|String} text The content to be displayed in a modal.
 	 * @param {Number} width The initial width of the modal
 	 * @param {Number} height The initial height of the modal
 	 * @param {Boolean} allowResize Determines if the modal is allowed to be resized.
@@ -565,7 +577,7 @@ class Modal extends IModal {
 	async constructContainer() {
 		let contentDiv = document.createElement('div');
 		contentDiv.className = 'content';
-		if (this.content instanceof HTMLElement) {
+		if (typeof (this.content) == 'object') {
 			contentDiv.innerHTML = '';
 			contentDiv.append(this.content);
 		} else {
@@ -666,12 +678,12 @@ class FormModal extends IModal {
 					// if an error message is in the response, display it
 					if (this.#submissionResponse['_Error'] != undefined) {
 						displayNotification(this.#submissionResponse['_Error'], NotificationPriority.Error);
-					this.close();
+						this.close();
 						return reject(this.#submissionResponse['_Error']);
 					}
 					else if (this.#submissionResponse['_Message'] != undefined) {
 						displayNotification(this.#submissionResponse['_Message'], NotificationPriority.Success);
-					this.close();
+						this.close();
 						return resolve(this.#submissionResponse);
 					}
 				}

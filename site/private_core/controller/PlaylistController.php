@@ -8,11 +8,12 @@ require_once('Controller.php');
 require_once('private_core/model/PlaylistModel.php');
 require_once('private_core/objects/pageElements/Paginator.php');
 require_once('private_core/objects/DataValidators.php');
+require_once('private_core/objects/IAsyncHandler.php');
 
 /**
  * @property \RipDB\Model\PlaylistModel $model
  */
-class PlaylistController extends Controller
+class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHandler
 {
 	use \RipDB\DataValidator;
 	use \Paginator;
@@ -40,6 +41,33 @@ class PlaylistController extends Controller
 
 				break;
 		}
+	}
+
+	public function get(string $method, ?string $methodGroup = null): mixed
+	{
+		$result = null;
+
+		switch ($methodGroup) {
+			case 'getNewPlaylist':
+				$result = $this->model->getNewPlaylist($_GET['id'] ?? 0, $_GET['name'] ?? '');
+				break;
+			default:
+				break;
+		}
+
+		return $result;
+	}
+	public function post(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
+	}
+	public function put(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
+	}
+	public function delete(string $method, ?string $methodGroup = null): mixed
+	{
+		return null;
 	}
 
 	/**
@@ -76,13 +104,13 @@ class PlaylistController extends Controller
 					$playlistId = 0;
 					$result = $this->submitRequest($validated, 'usp_InsertPlaylist', '/playlists', 'Playlist successfully submitted!', $playlistId);
 					// If submission was successful, and the the playlist is not linked to a user, get the save code
-					
+
 					// $result = array_merge($validated, $this->model->getCodes($playlistId));
 					// var_dump($result);
 					// die();
 					// $result['ShareCode'] = $this->model->getCodes($playlistId);
 
-				// } else {
+					// } else {
 					// $result = $this->submitRequest($validated, 'usp_UpdatePlaylist', '/playlists', 'Playlist successfully updated!');
 				}
 				break;
@@ -90,7 +118,7 @@ class PlaylistController extends Controller
 				$result = [new \RipDB\Error('Invalid form submission.')];
 				break;
 		}
-		
+
 		return $result;
 	}
 }

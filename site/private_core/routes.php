@@ -205,10 +205,17 @@ Flight::route('/help', function () {
 
 // Playlist Pages
 Flight::group('/playlist', function () {
-	
+
 	Flight::route('POST /new', function () {
 		submitForm('playlist/new', 'PlaylistController');
 	});
+
+	// Async requests:
+	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'rips')) {
+		Flight::route('GET /getNewPlaylist', function () {
+			performAPIRequest('getNewPlaylist', '', HttpMethod::GET, 'PlaylistController');
+		});
+	}
 });
 
 const RIP_GUESSER_HEAD = 'head_ripguesser.php';

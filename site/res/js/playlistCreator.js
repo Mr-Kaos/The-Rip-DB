@@ -146,6 +146,21 @@ class Playlist {
 	}
 
 	/**
+	 * Deletes the playlist from the local storage.
+	 * Only called when submission is successful.
+	 */
+	#deleteFromStorage() {
+		this.#clearList();
+		this.#name = '';
+		document.getElementById('playlist-name').value = '';
+		sessionStorage.removeItem('playlist-rips');
+		sessionStorage.removeItem('playlist-names');
+		sessionStorage.removeItem('playlist-name');
+		// Hide the playlist creator.
+		togglePlaylistCreator();
+	}
+
+	/**
 	 * Updates the playlist creator form to display all rips and their order in the playlist.
 	 */
 	updateForm() {
@@ -256,7 +271,54 @@ class Playlist {
 
 		if (submission.ok) {
 			let response = await submission.json();
-			console.log(response);
+			let codeRequest = await getCodes(response['_NewID'], response['InPlaylistName']);
+
+			if (codeRequest != null) {
+				// Get the template for the text box and set the codes.
+				let template = document.getElementById('playlist-modal-msg').cloneNode(true);
+				let claimSection = template.querySelector('div');
+				if (codeRequest.ClaimCode == null) {
+					claimSection.remove();
+				} else {
+					claimSection.querySelector('#claim-code').innerText = codeRequest.ClaimCode;
+				}
+				template.querySelector('#share-code').innerText = codeRequest.ShareCode;
+				template.style.display = null;
+
+				let functions = {
+					'Click Here to Close': {
+						close: true,
+						function: this.#deleteFromStorage.bind(this)
+					}
+				}
+				let modal = new Modal('codes', 'Playlist Codes', template, null, null, true, false, functions);
+				modal.open();
+
+				// Store the claim cookie as a cookie for 60 days. If the user logs in, this cookie will be used to check if they have any unclaimed playlists.
+				// Claim codes expire in 30 days, but in the event the playlist is used but not claimed within 30 days, its lifetime will be extended 30 days from its last use.
+				let claimCodes = getCookie('claimCodes');
+				setCookie('claimCodes', (claimCodes == null ? '' : (claimCodes + ',')) + codeRequest.ClaimCode, 60);
+			}
+		}
+
+		/**
+		 * Fetches the sharecode and the claim code (if the user is not logged in).
+		 * @param {Number} id The ID of the new playlist
+		 * @param {String} name The name of the new playlist
+		 * @returns 
+		 */
+		async function getCodes(id, name) {
+			let request = await fetch(`/playlist/getNewPlaylist?id=${id}&name=${name}`, {
+				method: 'GET'
+			});
+
+			if (request.ok) {
+				let codes = await request.json();
+
+				return codes;
+			} else {
+				return null;
+			}
 		}
 	}
 

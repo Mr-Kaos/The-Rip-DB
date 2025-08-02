@@ -3,7 +3,7 @@
 
 CREATE TABLE AnonymousPlaylists (
 	PlaylistID INT NOT NULL,
-	ClaimCode char(8),
+	ClaimCode char(8) UNIQUE,
 	CONSTRAINT PK_PlaylistID PRIMARY KEY (PlaylistID),
 	CONSTRAINT FK_PlaylistID FOREIGN KEY (PlaylistID) REFERENCES Playlists(PlaylistID)
 )
