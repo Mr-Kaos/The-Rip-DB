@@ -22,7 +22,7 @@ use RipDB\Objects as o;
 		<tbody>
 			<?php foreach ($results as $record): ?>
 				<tr>
-					<td><?= $record['PlaylistName'] ?></a></td>
+					<td><a href="/rips?playlist=<?= $record['ShareCode'] ?>"><?= $record['PlaylistName'] ?></a></td>
 					<td style="text-align:center"><?= $record['ShareCode'] ?></td>
 					<td style="text-align:center"><?= (new o\InputElement(null, o\InputTypes::checkbox, ['checked' => $record['IsPublic'] == 1]))->buildElement() ?></td>
 					<td style="text-align:center"><?= $record['Created'] ?></td>

@@ -209,6 +209,9 @@ Flight::group('/playlist', function () {
 	Flight::route('POST /new', function () {
 		submitForm('playlist/new', 'PlaylistController');
 	});
+	Flight::route('POST /edit', function () {
+		submitForm('playlist/edit', 'PlaylistController');
+	});
 
 	// Async requests:
 	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'account/')) {
@@ -222,6 +225,10 @@ Flight::group('/playlist', function () {
 	} elseif (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'rips')) {
 		Flight::route('GET /getNewPlaylist', function () {
 			performAPIRequest('getNewPlaylist', '', HttpMethod::GET, 'PlaylistController');
+		});
+		Flight::route('GET /getPlaylist', function () {
+			RipDB\initSession();
+			performAPIRequest('getPlaylist', '', HttpMethod::GET, 'PlaylistController');
 		});
 	}
 });
@@ -447,6 +454,19 @@ function submitForm(string $page, string $controllerName, ?array $data = null)
 		// If an ACCEPT header was requested to respond as JSON, be sure to fulfil it.
 		// Ths is often used for modals that are submitting forms from other pages.
 		if (($_SERVER['HTTP_ACCEPT'] ?? null) == 'application/json') {
+			// Check if the result is an error message. If it is, return it.
+			if (is_array($result)) {
+				$error = '';
+				foreach ($result as $var) {
+					if ($var instanceof \RipDB\Error) {
+						$error .= $var->getMessage() . "\n";
+					}
+				}
+
+				if (!empty($error)) {
+					$result = $error;
+				}
+			}
 			Flight::json($result);
 		} else {
 			if ($result === false) {

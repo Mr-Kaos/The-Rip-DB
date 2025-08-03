@@ -98,7 +98,7 @@ use RipDB\Model\RipModel as r;
 				</summary>
 				<div class="playlist-rips"></div>
 			</details>
-			<button type="submit">Create Playlist</button>
+			<button type="submit">Save Playlist</button>
 		</form>
 		<div id="playlist-modal-msg" style="display:none;text-align:center">
 			<p>Your playlist has been successfully created!</p>

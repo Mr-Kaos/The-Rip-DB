@@ -21,5 +21,7 @@ BEGIN
 		SELECT Code
 		FROM JSON_TABLE (ClaimCodes, '$[*]' COLUMNS(Code JSON PATH '$')) k
 	);
+
+	CALL usp_DeleteUnclaimedPlaylists;
 	COMMIT;
 END

@@ -17,6 +17,30 @@ class PlaylistModel extends Model
 	}
 
 	/**
+	 * Fetches the playlist record with the given share code and account id.
+	 * @param string $code The ShareCode of the playlist
+	 * @param int $user The ID of the account that owns the playlist with the given share code.
+	 */
+	public function getPlaylistForEdit(string $code, int $userId): ?array
+	{
+		$playlist = $this->db->table(self::TABLE)
+			->eq('ShareCode', $code)
+			->eq('Creator', $userId)
+			->findOne();
+
+		if (!empty($playlist)) {
+			$ids = json_decode($playlist['RipIDs'], true);
+
+			$playlist['RipIDs'] = $ids;
+			$playlist['RipNames'] = $this->db->table('Rips')
+				->in('RipID', $ids)
+				->findAllByColumn('RipName');
+		}
+
+		return $playlist;
+	}
+
+	/**
 	 * Checks if the given Rip IDs exist in the database. If any don't, they are removed.
 	 * @param array $ripIDs The IDs of rips to check if they exist.
 	 */

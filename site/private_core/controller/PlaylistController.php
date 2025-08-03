@@ -34,16 +34,6 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 	public function performRequest(array $data = []): void
 	{
 		switch ($this->getPage()) {
-			case 'playlists/edit':
-				$playlist = $this->model->getPlaylist($data['id']);
-				if ($playlist === null) {
-					\Flight::redirect('/playlists');
-					\RipDB\addNotification('The specified playlist does not exist.', \RipDB\NotificationPriority::Warning);
-					die();
-				}
-				$this->setData('playlist', $playlist);
-
-				break;
 		}
 	}
 
@@ -54,6 +44,17 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 		switch ($methodGroup) {
 			case 'getNewPlaylist':
 				$result = $this->model->getNewPlaylist($_GET['id'] ?? 0, $_GET['name'] ?? '');
+				break;
+			case 'getPlaylist':
+				// The user must be logged in to edit their playlist
+				if (checkAuth()) {
+					$result = $this->model->getPlaylistForEdit($_GET['code'] ?? '', $_SESSION[AUTH_USER]);
+					if (empty($result)) {
+						$result = 'The specified playlist does not exist.';
+					}
+				} else {
+					$result = 'You must be logged in to edit a playlist.';
+				}
 				break;
 			case 'checkUnclaimed':
 				$result = checkAuth();
@@ -105,10 +106,14 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 	public function validateRequest(?array $extraData = null): array|string
 	{
 		$result = [];
-		error_log($this->getPage());
 		switch ($this->getPage()) {
 			case 'playlist/edit':
-				$validated['InPlaylistID'] = $this->validateNumber($extraData['id']);
+				$playlist = $this->model->getPlaylistForEdit($_POST['code'] ?? '', $_SESSION[AUTH_USER]);
+				if (empty($playlist)) {
+					$result = [new \RipDB\Error('The playlist being edited does not belong to you.')];
+					break;
+				}
+				$validated['InPlaylistId'] = $playlist['PlaylistID'];
 			case 'playlist/new':
 				$validated['InPlaylistName'] = $this->validateString($_POST['name'], 'The playlist name is not valid.', 128, 1);
 				// Make sure all rips given exist
@@ -133,6 +138,8 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 				if ($this->getPage() == 'playlist/new') {
 					$playlistId = 0;
 					$result = $this->submitRequest($validated, 'usp_InsertPlaylist', '/playlists', 'Playlist successfully submitted!', $playlistId);
+				} else {
+					$result = $this->submitRequest($validated, 'usp_UpdatePlaylist', '/rips', 'Playlist successfully updated!');
 				}
 				break;
 			case 'claim':

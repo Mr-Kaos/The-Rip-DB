@@ -51,5 +51,6 @@ BEGIN
 			));
 	END IF;
 
+	CALL usp_DeleteUnclaimedPlaylists;
 	COMMIT;
 END
