@@ -76,7 +76,8 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'vw_RipsDetailed',
 			'vw_JokesDetailed',
 			'vw_MetaJokesDetailed',
-			'vw_MetasDetailed'
+			'vw_MetasDetailed',
+			'vw_Playlists'
 		];
 		deployFiles($pdo, 'Views', $files);
 
@@ -112,7 +113,8 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'usp_DeleteAccount',
 			'usp_UpdateAccountPassword',
 			'usp_UpdateAccountUsername',
-			'usp_InsertPlaylist'
+			'usp_InsertPlaylist',
+			'usp_ClaimPlaylists'
 		];
 
 		deployFiles($pdo, 'Procedures', $files);

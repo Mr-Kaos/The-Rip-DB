@@ -47,6 +47,17 @@ class AccountModel extends Model implements ResultsetSearch
 	}
 
 	/**
+	 * Checks if the given claim code exists.
+	 * @param string $code The claim code to check.
+	 */
+	public function checkClaimCode(string $code): bool
+	{
+		return $this->db->table('AnonymousPlaylists')
+			->eq('ClaimCode', strtoupper($code))
+			->exists();
+	}
+
+	/**
 	 * Searches the playlists view for the user's playlists. If somehow no user id is set in the session, the user ID of 0 is used.
 	 */
 	public function search(int $count, int $offset, ?array $sort, int $userId = 0, ?string $name = null): array

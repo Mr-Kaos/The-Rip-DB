@@ -304,6 +304,10 @@ Flight::group('/account', function () {
 		displayPage('account/edit', 'AccountController', ['subPage' => 'playlists']);
 	});
 
+	Flight::route('POST /playlists/claim', function () {
+		submitForm('playlists/claim', 'AccountController');
+	});
+
 	// Async requests:
 	if (str_ends_with($_SERVER['HTTP_REFERER'] ?? null, '/account') || str_ends_with($_SERVER['HTTP_REFERER'] ?? null, '/login/new')) {
 		Flight::route('GET /check-username', function () {

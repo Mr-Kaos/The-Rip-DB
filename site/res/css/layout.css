@@ -607,6 +607,7 @@ h4 {
 .sidebar-split {
 	display: grid;
 	grid-template-columns: 1fr 5fr;
+	max-height: 90vh;
 }
 
 .sidebar-split>div:first-child {
@@ -618,6 +619,10 @@ h4 {
 
 .sidebar-split>div:first-child>a {
 	padding: 5px;
+}
+
+.sidebar-split>div>a:last-child {
+	margin-top: auto;
 }
 
 .sidebar-split>div:first-child>a:hover,

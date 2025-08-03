@@ -5,8 +5,6 @@ namespace RipDB\Controller;
 use RipDB\Error;
 use RipDB\Model as m;
 
-use const RipDB\AUTH_USER;
-
 require_once('Controller.php');
 require_once('private_core/model/AccountModel.php');
 require_once('private_core/controller/LoginController.php');
@@ -41,9 +39,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 					$this->setData('account', $this->model->getAccountInfo());
 					break;
 				case 'playlists':
-					// $this->setData('playlists', $this->model->getPlaylists($_SESSION[\RipDB\AUTH_USER]));
-
-					$recordCount = $this->model->getCount($_SESSION[AUTH_USER], $_GET['search'] ?? null);
+					$recordCount = $this->model->getCount($_SESSION[\RipDB\AUTH_USER], $_GET['search'] ?? null);
 					$rowCount = $this->getRowCount();
 					$page = $this->getPageNumber();
 
@@ -53,7 +49,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 						$rowCount,
 						$offset,
 						null,
-						$_SESSION[AUTH_USER],
+						$_SESSION[\RipDB\AUTH_USER],
 						$_GET['search'] ?? null,
 					);
 
@@ -126,6 +122,16 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 							$result = [new Error('The passwords do not match')];
 						}
 						break;
+				}
+				break;
+			case 'playlists/claim':
+				if ($this->model->checkClaimCode($_POST['code'] ?? '')) {
+					$validated['ClaimCodes'] = '["' . strtoUpper($_POST['code']) . '"]';
+					$validated['AccountID'] = $_SESSION[\RipDB\AUTH_USER];
+
+					$result = $this->submitRequest($validated, 'usp_ClaimPlaylists', '/account/playlists', 'Successfully claimed playlist!');
+				} else {
+					$result = [new Error('This claim code has expired or has already been claimed.')];
 				}
 				break;
 		}

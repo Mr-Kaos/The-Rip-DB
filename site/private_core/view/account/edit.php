@@ -43,12 +43,24 @@ use RipDB\Objects as o;
 					async function validateUsernameChange(input) {
 						let btnSubmit = document.getElementById('submit-username');
 						let valid = checkUsername(input);
-
 						btnSubmit.disabled = !valid;
 					}
 				</script>
 			<?php elseif ($subPage == 'playlists') : ?>
 				<?php include_once('playlist-search.php') ?>
+				<hr>
+				<details>
+					<summary>Claim an Unsaved Playlist</summary>
+					<p>Use this form to claim a playlist that was saved while not logged in.</p>
+					<form action="/account/playlists/claim" method="post">
+						<fieldset>
+							<legend>Enter your playlist's claim code below</legend>
+							<?= (new o\InputElement('Claim Code', o\InputTypes::text, ['name' => 'code', 'maxlength' => 8, 'minlength' => 8, 'pattern' => '[0-9a-zA-Z]{8}', 'required' => true]))->buildElement() ?>
+						</fieldset>
+						<button type="submit">Claim</button>
+					</form>
+					<p><em>If you've lost your claim code, you will need to create a new playlist. Sorry!</em></p>
+				</details>
 			<?php endif; ?>
 		</div>
 	</div>
