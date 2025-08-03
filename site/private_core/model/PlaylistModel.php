@@ -42,11 +42,23 @@ class PlaylistModel extends Model
 	 * @param string $name The name of the playlist created.
 	 * @return array The Share Code and Claim code (if the playlist was created without a login)
 	 */
-	public function getNewPlaylist(string $playlistId, string $name): ?array {
+	public function getNewPlaylist(string $playlistId, string $name): ?array
+	{
 		return $this->db->table('Playlists')
 			->join('AnonymousPlaylists', 'PlaylistID', 'PlaylistID')
 			->columns('ShareCode', 'ClaimCode')
 			->eq('Playlists.PlaylistID', $playlistId)
 			->eq('PlaylistName', $name)->findOne();
+	}
+
+	/**
+	 * Checks if the given anonymous playlist codes exist and returns the ones that do.
+	 * @return array An array of playlist claim codes that exist and can be claimed.
+	 */
+	public function checkUnclaimed(array $codes): array
+	{
+		return $this->db->table('AnonymousPlaylists')
+			->in('ClaimCode', $codes)
+			->findAllByColumn('ClaimCode');
 	}
 }

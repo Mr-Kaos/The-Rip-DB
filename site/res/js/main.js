@@ -40,6 +40,14 @@ function setCookie(name, value, daysToExpiry) {
 	document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
 }
 
+/**
+ * Deletes a cookie.
+ * @param {String} name The name of the cookie to delete.
+ */
+function deleteCookie(name) {
+	document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00;path=/`;
+}
+
 const NotificationPriority = {
 	Default: "default", // neutral (theme) coloured
 	Success: 'success', // green coloured

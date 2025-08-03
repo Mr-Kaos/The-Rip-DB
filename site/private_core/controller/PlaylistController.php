@@ -4,6 +4,10 @@ namespace RipDB\Controller;
 
 use RipDB\Model as m;
 
+use const RipDB\AUTH_USER;
+
+use function RipDB\checkAuth;
+
 require_once('Controller.php');
 require_once('private_core/model/PlaylistModel.php');
 require_once('private_core/objects/pageElements/Paginator.php');
@@ -51,6 +55,13 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 			case 'getNewPlaylist':
 				$result = $this->model->getNewPlaylist($_GET['id'] ?? 0, $_GET['name'] ?? '');
 				break;
+			case 'checkUnclaimed':
+				$result = checkAuth();
+				if (checkAuth()) {
+					$codes = $_GET['codes'] ?? '';
+					$result = $this->model->checkUnclaimed(explode(',', $codes));
+				}
+				break;
 			default:
 				break;
 		}
@@ -59,7 +70,25 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 	}
 	public function post(string $method, ?string $methodGroup = null): mixed
 	{
-		return null;
+		$result = null;
+
+		switch ($methodGroup) {
+			case 'claimPlaylists':
+				// If an array is returned (i.e. an error), return the error messages.
+				if (is_array($out = $this->validateRequest())) {
+					$result = '';
+					foreach ($out as $msg) {
+						$result .= $msg->getMessage() . "\n";
+					}
+				} else {
+					$result = true;
+				}
+				break;
+			default:
+				break;
+		}
+
+		return $result;
 	}
 	public function put(string $method, ?string $methodGroup = null): mixed
 	{
@@ -76,6 +105,7 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 	public function validateRequest(?array $extraData = null): array|string
 	{
 		$result = [];
+		error_log($this->getPage());
 		switch ($this->getPage()) {
 			case 'playlist/edit':
 				$validated['InPlaylistID'] = $this->validateNumber($extraData['id']);
@@ -103,15 +133,18 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 				if ($this->getPage() == 'playlist/new') {
 					$playlistId = 0;
 					$result = $this->submitRequest($validated, 'usp_InsertPlaylist', '/playlists', 'Playlist successfully submitted!', $playlistId);
-					// If submission was successful, and the the playlist is not linked to a user, get the save code
+				}
+				break;
+			case 'claim':
+				$codes = $_POST['ClaimCodes'] ?? null;
+				if (!empty($codes) && checkAuth()) {
+					$codes = $this->model->checkUnclaimed(explode(',', $codes));
+					$validated['ClaimCodes'] = json_encode($codes);
+					$validated['AccountID'] = $_SESSION[AUTH_USER];
 
-					// $result = array_merge($validated, $this->model->getCodes($playlistId));
-					// var_dump($result);
-					// die();
-					// $result['ShareCode'] = $this->model->getCodes($playlistId);
-
-					// } else {
-					// $result = $this->submitRequest($validated, 'usp_UpdatePlaylist', '/playlists', 'Playlist successfully updated!');
+					$result = $this->submitRequest($validated, 'usp_ClaimPlaylists', '', 'Playlists successfully claimed!');
+				} else {
+					$result = [new \RipDB\Error('Invalid Claim Code format given.')];
 				}
 				break;
 			default:

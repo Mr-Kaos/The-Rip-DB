@@ -8,8 +8,6 @@
  * Checks of the username is already taken.
  * @param {HTMLInputElement} input The input element responsible for storing the username.
  */
-
-
 async function checkUsername(input) {
 	let og = input.getAttribute('data-og');
 	let valid = false;
@@ -67,3 +65,82 @@ function checkPasswordMatch(input, otherInputID) {
 
 	btnSubmit.disabled = !valid;
 }
+
+/**
+ * Checks if the user has any unclaimed playlists created while not logged in stored as cookies.
+ * This function is called when in the "playlists" sub-page.
+ */
+async function checkForUnclaimedPlaylists() {
+	let codes = getCookie('claimCodes');
+
+	if (codes != null) {
+		let functions = {
+			'Save Playlists': {
+				className: 'btn-good',
+				function: function () { savePlaylists(codes) }
+			},
+			'Remind me Later': {
+				className: 'btn-ok'
+			},
+			'Delete them': {
+				className: 'btn-bad',
+				function: clearPlaylistCookie
+			}
+		};
+		let text = document.createElement('div');
+		text.style.textAlign = 'center';
+		text.innerHTML = '<p>You have created some playlists while not logged in.</p><p>Would you like to save these to your account?</p>';
+		let modal = new Modal('playlist-claim', 'You have claimable playlists!', text, null, null, false, true, functions);
+		modal.open();
+	} else {
+		console.log()
+	}
+}
+
+/**
+ * Checks if there are any playlists that can be claimed. If there are, displays an icon beside the playlists tab.
+ */
+function checkForClaimablePlaylists() {
+
+}
+
+/**
+ * Saves the given unclaimed playlists to the account.
+ * @param {Array} claimCodes An array of claim codes to use to save their associated playlists to their account.
+ */
+async function savePlaylists(claimCodes) {
+	let data = new FormData();
+	data.append('ClaimCodes', claimCodes);
+	let request = await fetch('/playlist/claim', {
+		method: 'POST',
+		body: data
+	});
+
+	if (request.ok) {
+		// The json response will either be true or a string containing an error message.
+		let success = await request.json();
+
+
+		if (success == true) {
+			displayNotification('Successfully saved playlists to your account!');
+		} else {
+			displayNotification(success, NotificationPriority.Error);
+		}
+
+		clearPlaylistCookie();
+		window.location.reload();
+	}
+}
+
+/**
+ * Clears all playlist claim codes form the client's cookies.
+ */
+function clearPlaylistCookie() {
+	deleteCookie('claimCodes');
+}
+
+window.addEventListener('load', (e) => {
+	if (window.location.pathname == '/account/playlists') {
+		checkForUnclaimedPlaylists();
+	}
+});

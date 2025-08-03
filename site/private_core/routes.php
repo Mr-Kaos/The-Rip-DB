@@ -211,7 +211,15 @@ Flight::group('/playlist', function () {
 	});
 
 	// Async requests:
-	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'rips')) {
+	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'account/')) {
+		RipDB\initSession();
+		Flight::route('GET /checkUnclaimed', function () {
+			performAPIRequest('checkUnclaimed', '', HttpMethod::GET, 'PlaylistController');
+		});
+		Flight::route('POST /claim', function () {
+			performAPIRequest('claimPlaylists', 'claim', HttpMethod::POST, 'PlaylistController');
+		});
+	} elseif (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'rips')) {
 		Flight::route('GET /getNewPlaylist', function () {
 			performAPIRequest('getNewPlaylist', '', HttpMethod::GET, 'PlaylistController');
 		});
@@ -290,6 +298,10 @@ Flight::group('/account', function () {
 
 	Flight::route('/', function () {
 		displayPage('account/edit', 'AccountController', ['subPage' => 'account']);
+	});
+
+	Flight::route('/playlists', function () {
+		displayPage('account/edit', 'AccountController', ['subPage' => 'playlists']);
 	});
 
 	// Async requests:

@@ -5,11 +5,14 @@ namespace RipDB\Controller;
 use RipDB\Error;
 use RipDB\Model as m;
 
+use const RipDB\AUTH_USER;
+
 require_once('Controller.php');
 require_once('private_core/model/AccountModel.php');
 require_once('private_core/controller/LoginController.php');
 require_once('private_core/objects/DataValidators.php');
 require_once('private_core/objects/IAsyncHandler.php');
+require_once('private_core/objects/pageElements/Paginator.php');
 
 /**
  * @property \RipDB\Model\AccountModel $model
@@ -17,6 +20,8 @@ require_once('private_core/objects/IAsyncHandler.php');
 class AccountController extends Controller implements \RipDB\Objects\IAsyncHandler
 {
 	use \RipDB\DataValidator;
+	use \Paginator;
+
 	public function __construct(string $page)
 	{
 		parent::__construct($page, new m\AccountModel());
@@ -34,6 +39,40 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 			switch ($data['subPage'] ?? null) {
 				case 'account':
 					$this->setData('account', $this->model->getAccountInfo());
+					break;
+				case 'playlists':
+					// $this->setData('playlists', $this->model->getPlaylists($_SESSION[\RipDB\AUTH_USER]));
+
+					$recordCount = $this->model->getCount($_SESSION[AUTH_USER], $_GET['search'] ?? null);
+					$rowCount = $this->getRowCount();
+					$page = $this->getPageNumber();
+
+					// Get records of rips
+					$offset = $this->getOffset($recordCount, '/account/playlists');
+					$playlists = $this->model->search(
+						$rowCount,
+						$offset,
+						null,
+						$_SESSION[AUTH_USER],
+						$_GET['search'] ?? null,
+					);
+
+					$this->setData('results', $playlists);
+
+					// Pagination values
+					$recordStart = (($page - 1) * $rowCount) + 1;
+					$recordEnd = $page * $rowCount;
+
+					if ($recordEnd > $recordCount) {
+						$recordEnd = $recordCount;
+					}
+
+					$this->setData('RecordStart', $recordStart);
+					$this->setData('RecordEnd', $recordEnd);
+					$this->setData('Page', $page);
+					$this->setData('Count', $rowCount);
+					$this->setData('TagCount', $recordCount);
+					$this->setData('pagination', $this->buildPagination($recordCount, '/account/playlists'));
 					break;
 			}
 		} else {
@@ -59,13 +98,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 						$validated['NewUsername'] = $this->validateString($_POST['username'], 'The given username is invalid', 32, 3, '/' . LoginController::USERNAME_REGEX . '/');
 						$validated['InPassword'] = $this->validateString($_POST['password'], 'The given password is invalid.', 64, 6);
 
-						$submission = $this->model->submitFormData($validated, 'usp_UpdateAccountUsername');
-						if ($submission === true) {
-							\RipDB\addNotification('Successfully updated username!', \RipDB\NotificationPriority::Success);
-							$result = '/account';
-						} else {
-							$result = $submission;
-						}
+						$result = $this->submitRequest($validated, 'usp_UpdateAccountUsername', '/account', 'Successfully updated username!');
 						break;
 					case 'password':
 						$validated['InAccountId'] = $_SESSION[\RipDB\AUTH_USER];

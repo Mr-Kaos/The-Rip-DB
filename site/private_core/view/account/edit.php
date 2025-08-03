@@ -1,11 +1,9 @@
 <?php
 
 use RipDB\Objects as o;
-
 ?>
 <main>
 	<h1>Account</h1>
-
 	<div class="sidebar-split">
 		<div>
 			<a href="/account" <?= $subPage == 'account' ? 'class="active"' : '' ?>>Account Info</a>
@@ -50,7 +48,7 @@ use RipDB\Objects as o;
 					}
 				</script>
 			<?php elseif ($subPage == 'playlists') : ?>
-				<p>Coming soon...</p>
+				<?php include_once('playlist-search.php') ?>
 			<?php endif; ?>
 		</div>
 	</div>

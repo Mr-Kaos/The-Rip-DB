@@ -281,7 +281,13 @@ class Playlist {
 					claimSection.remove();
 				} else {
 					claimSection.querySelector('#claim-code').innerText = codeRequest.ClaimCode;
+
+					// Store the claim cookie as a cookie for 60 days. If the user logs in, this cookie will be used to check if they have any unclaimed playlists.
+					// Claim codes expire in 30 days, but in the event the playlist is used but not claimed within 30 days, its lifetime will be extended 30 days from its last use.
+					let claimCodes = getCookie('claimCodes');
+					setCookie('claimCodes', (claimCodes == null ? '' : (claimCodes + ',')) + codeRequest.ClaimCode, 60);
 				}
+
 				template.querySelector('#share-code').innerText = codeRequest.ShareCode;
 				template.style.display = null;
 
@@ -293,11 +299,6 @@ class Playlist {
 				}
 				let modal = new Modal('codes', 'Playlist Codes', template, null, null, true, false, functions);
 				modal.open();
-
-				// Store the claim cookie as a cookie for 60 days. If the user logs in, this cookie will be used to check if they have any unclaimed playlists.
-				// Claim codes expire in 30 days, but in the event the playlist is used but not claimed within 30 days, its lifetime will be extended 30 days from its last use.
-				let claimCodes = getCookie('claimCodes');
-				setCookie('claimCodes', (claimCodes == null ? '' : (claimCodes + ',')) + codeRequest.ClaimCode, 60);
 			}
 		}
 
