@@ -254,7 +254,7 @@ class RipController extends Controller
 				$validated['AlternateName'] = $this->validateString($_POST['altName'], 'The given alternate name is invalid.');
 				$validated['Description'] = $this->validateString($_POST['description'], 'The given description is invalid.');
 				$validated['UploadDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
-				$validated['Length'] = $this->validateTimestamp($_POST['length']);
+				$validated['Length'] = $this->validateTimestamp($_POST['length'] ?? null);
 				$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 				$validated['YTID'] = $this->validateString($_POST['ytId'], 'The given youTube ID is invalid.', null, null, '/[A-Za-z0-9_-]{11}/');;
 				$validated['AltURL'] = $this->validateString($_POST['alturl'], 'The given alternate URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');

@@ -22,7 +22,9 @@ abstract class Model
 	public function __construct()
 	{
 		$this->newConn();
-		$this->db->getStatementHandler()->withLogging(true);
+		if (isset($this->db)) {
+			$this->db->getStatementHandler()->withLogging(true);
+		}
 	}
 
 	public function __destruct()
