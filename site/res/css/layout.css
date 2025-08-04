@@ -512,6 +512,19 @@ div.filters>.search-element>input {
 }
 
 /* Playlist Creator */
+.playlist-creator {
+	text-align: center;
+	width: fit-content;
+	margin: auto;
+	margin-bottom: 10px;
+}
+
+.playlist-creator>form fieldset {
+	display: flex;
+	align-items: last baseline;
+	justify-content: space-evenly;
+}
+
 .playlist-rips {
 	width: fit-content;
 	margin: auto;
@@ -535,6 +548,7 @@ div.filters>.search-element>input {
 
 .playlist-rips>div button {
 	margin-left: auto;
+	margin-right: 3px;
 }
 
 .playlist-rips>div i {

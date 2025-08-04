@@ -88,17 +88,27 @@ use RipDB\Model\RipModel as r;
 			</tr>
 		</tfoot>
 	</table>
-	<div id="playlist-creator" style="text-align:center;display:none;margin-bottom:10px;">
+	<div id="playlist-creator" style="display:none" class="playlist-creator">
 		<form action="/playlist/new" method="POST" onsubmit="playlist.submitPlaylist(event)">
-			<h2>Playlist Summary</h2>
-			<?= (new o\InputElement(null, o\InputTypes::text, ['id' => 'playlist-name', 'max-length' => 128, 'required' => true, 'oninput' => 'playlist.updateName(this.value)']))->buildElement() ?>
-			<details open>
-				<summary id="rips" style="width:100%">Show Rips
-					<button type="button" class="btn-bad" onclick="playlist.promptClear()">Clear</button>
-				</summary>
-				<div class="playlist-rips"></div>
-			</details>
-			<button type="submit">Save Playlist</button>
+			<h2>Playlist Editor</h2>
+			<fieldset>
+				<legend>Playlist Details</legend>
+				<?= (new o\InputElement('Playlist Name', o\InputTypes::text, ['id' => 'playlist-name', 'max-length' => 128, 'required' => true, 'oninput' => 'playlist.updateName(this.value)', 'no-asterisk' => true], null, true))->buildElement() ?>
+				<?php if (\RipDB\checkAuth()): ?>
+					<div>
+						<?= (new o\InputElement('Public Playlist?', o\InputTypes::checkbox, ['id' => 'playlist-public', 'oninput' => 'playlist.updatePublicity(this.checked)', 'title' => 'Public playlists are searchable by anyone in RipGuessr.']))->buildElement() ?>
+					</div>
+				<?php endif; ?>
+			</fieldset>
+			<div>
+				<details open>
+					<summary id="rips" style="width:100%">Show Rips
+					</summary>
+					<div class="playlist-rips"></div>
+				</details>
+				<button type="submit" style="float:left">Save Playlist</button>
+				<button type="button" class="btn-bad" style="float:right" onclick="playlist.promptClear()">Clear Playlist</button>
+			</div>
 		</form>
 		<div id="playlist-modal-msg" style="display:none;text-align:center">
 			<p>Your playlist has been successfully created!</p>
@@ -111,7 +121,9 @@ use RipDB\Model\RipModel as r;
 				<i>Note that this playlist will be deleted if not claimed or used for 30 days.</i>
 			</div>
 		</div>
+		<br>
 	</div>
+	<br>
 </main>
 <section id="templates" style="display:none">
 	<div id="callout-rippers" class="callout down">

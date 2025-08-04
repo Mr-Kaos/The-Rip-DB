@@ -24,7 +24,7 @@ use RipDB\Objects as o;
 				<tr>
 					<td><a href="/rips?playlist=<?= $record['ShareCode'] ?>"><?= $record['PlaylistName'] ?></a></td>
 					<td style="text-align:center"><?= $record['ShareCode'] ?></td>
-					<td style="text-align:center"><?= (new o\InputElement(null, o\InputTypes::checkbox, ['checked' => $record['IsPublic'] == 1]))->buildElement() ?></td>
+					<td style="text-align:center"><?= (new o\InputElement(null, o\InputTypes::checkbox, ['checked' => $record['IsPublic'] == 1, 'disabled' => true]))->buildElement() ?></td>
 					<td style="text-align:center"><?= $record['Created'] ?></td>
 					<td style="text-align:center"><?= $record['RipCount'] ?></td>
 				</tr>

@@ -98,13 +98,6 @@ async function checkForUnclaimedPlaylists() {
 }
 
 /**
- * Checks if there are any playlists that can be claimed. If there are, displays an icon beside the playlists tab.
- */
-function checkForClaimablePlaylists() {
-
-}
-
-/**
  * Saves the given unclaimed playlists to the account.
  * @param {Array} claimCodes An array of claim codes to use to save their associated playlists to their account.
  */

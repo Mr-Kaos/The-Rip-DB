@@ -22,6 +22,7 @@ class Playlist {
 	#name;
 	#form;
 	#shareCode;
+	#public = false;
 
 	/**
 	 * Creates a playlist object.
@@ -29,7 +30,7 @@ class Playlist {
 	 * @param {String} name The name of the playlist.
 	 * @param {String} shareCode The share code of the playlist. If given, the playlist will be in "edit" mode and will update this playlist.
 	 */
-	constructor(rips = [], names = [], name = 'My Playlist', shareCode = null) {
+	constructor(rips = [], names = [], name = 'My Playlist', shareCode = null, isPublic = false) {
 		// Ensure all rips are numbers. If one is not, clear the array.
 		if (Array.isArray(rips)) {
 			for (let i = 0; i < rips.length; i++) {
@@ -59,6 +60,7 @@ class Playlist {
 		this.#name = name;
 		this.#names = names;
 		this.#shareCode = shareCode;
+		this.#public = isPublic;
 		this.#form = document.getElementById('playlist-creator');
 	}
 
@@ -90,9 +92,9 @@ class Playlist {
 		id = parseInt(id);
 		if (this.hasRip(id)) {
 			let ripIndex = this.#rips.indexOf(id);
-			this.#rips.splice(ripIndex, 1);
-			this.#names.splice(ripIndex, 1);
-			this.saveToStorage();
+			// this.#rips.splice(ripIndex, 1);
+			// this.#names.splice(ripIndex, 1);
+			// this.saveToStorage();
 
 			// Remove the rip from the form too
 			let list = this.#form.querySelector('.playlist-rips');
@@ -110,6 +112,7 @@ class Playlist {
 				}
 			}
 		}
+		console.log(this.#rips);
 	}
 
 	/**
@@ -155,6 +158,7 @@ class Playlist {
 		localStorage.setItem('playlist-names', JSON.stringify(this.#names));
 		localStorage.setItem('playlist-name', this.#name ?? '');
 		localStorage.setItem('playlist-code', this.#shareCode ?? '');
+		localStorage.setItem('playlist-publicity', this.#public ?? false);
 	}
 
 	/**
@@ -181,7 +185,13 @@ class Playlist {
 		}
 
 		let inputName = this.#form.querySelector('#playlist-name');
-		inputName.value = this.#name;
+		if (inputName != null) {
+			inputName.value = this.#name;
+		}
+		let inputPublic = this.#form.querySelector('#playlist-public');
+		if (inputPublic != null) {
+			inputPublic.checked = this.#public;
+		}
 	}
 
 	/**
@@ -259,6 +269,15 @@ class Playlist {
 	}
 
 	/**
+	 * Sets the publicity status of the playlist.
+	 * @param {Boolean} publicState The publicity state of the playlist.
+	 */
+	updatePublicity(publicState) {
+		this.#public = publicState;
+		this.saveToStorage();
+	}
+
+	/**
 	 * Submits rip to the database asynchronously.
 	 * Upon a successful submission, if the user is not logged in, it will give them a unique ID of the playlist for use in sharing.
 	 * This ID can be used to claim the playlist and save it to an account too.
@@ -267,94 +286,101 @@ class Playlist {
 	async submitPlaylist(e) {
 		e.preventDefault();
 
-		let data = new FormData();
-		data.append('name', this.#name);
-		for (let i = 0; i < this.#rips.length; i++) {
-			data.append('rips[]', this.#rips[i]);
-		}
-
-		// If a sharecode is set, update its playlist.
-		if (this.#shareCode != null) {
-			data.append('code', this.#shareCode);
-			let submission = await fetch('/playlist/edit', {
-				method: 'POST',
-				body: data,
-				headers: {
-					"Accept": "application/json"
-				}
-			});
-
-			if (submission.ok) {
-				let response = await submission.json();
-				if (response instanceof Object) {
-					displayNotification(response['_Message'], NotificationPriority.Success);
-				} else {
-					displayNotification(response, NotificationPriority.Error);
-				}
+		// Make sure there is at least one rip in the playlist
+		console.log(this.#rips);
+		if (this.#rips.length > 0) {
+			let data = new FormData();
+			data.append('name', this.#name);
+			data.append('public', this.#public);
+			for (let i = 0; i < this.#rips.length; i++) {
+				data.append('rips[]', this.#rips[i]);
 			}
-		}
-		// Else, create a new playlist.
-		else {
-			let submission = await fetch('/playlist/new', {
-				method: 'POST',
-				body: data,
-				headers: {
-					"Accept": "application/json"
-				}
-			});
 
-			if (submission.ok) {
-				let response = await submission.json();
-				let codeRequest = await getCodes(response['_NewID'], response['InPlaylistName']);
+			// If a sharecode is set, update its playlist. (sharecode means it is in edit mode)
+			if (this.#shareCode != null && this.#shareCode != '') {
+				data.append('code', this.#shareCode);
+				let submission = await fetch('/playlist/edit', {
+					method: 'POST',
+					body: data,
+					headers: {
+						"Accept": "application/json"
+					}
+				});
 
-				if (codeRequest != null) {
-					// Get the template for the text box and set the codes.
-					let template = document.getElementById('playlist-modal-msg').cloneNode(true);
-					let claimSection = template.querySelector('div');
-					if (codeRequest.ClaimCode == null) {
-						claimSection.remove();
+				if (submission.ok) {
+					let response = await submission.json();
+					if (response instanceof Object) {
+						displayNotification(response['_Message'], NotificationPriority.Success);
 					} else {
-						claimSection.querySelector('#claim-code').innerText = codeRequest.ClaimCode;
-
-						// Store the claim cookie as a cookie for 60 days. If the user logs in, this cookie will be used to check if they have any unclaimed playlists.
-						// Claim codes expire in 30 days, but in the event the playlist is used but not claimed within 30 days, its lifetime will be extended 30 days from its last use.
-						let claimCodes = getCookie('claimCodes');
-						setCookie('claimCodes', (claimCodes == null ? '' : (claimCodes + ',')) + codeRequest.ClaimCode, 60);
+						displayNotification(response, NotificationPriority.Error);
 					}
-
-					template.querySelector('#share-code').innerText = codeRequest.ShareCode;
-					template.style.display = null;
-
-					let functions = {
-						'Click Here to Close': {
-							close: true,
-							function: this.#deleteFromStorage.bind(this)
-						}
-					}
-					let modal = new Modal('codes', 'Playlist Codes', template, null, null, true, false, functions);
-					modal.open();
 				}
 			}
-		}
+			// Else, create a new playlist.
+			else {
+				let submission = await fetch('/playlist/new', {
+					method: 'POST',
+					body: data,
+					headers: {
+						"Accept": "application/json"
+					}
+				});
 
-		/**
-		 * Fetches the sharecode and the claim code (if the user is not logged in).
-		 * @param {Number} id The ID of the new playlist
-		 * @param {String} name The name of the new playlist
-		 * @returns 
-		 */
-		async function getCodes(id, name) {
-			let request = await fetch(`/playlist/getNewPlaylist?id=${id}&name=${name}`, {
-				method: 'GET'
-			});
+				if (submission.ok) {
+					let response = await submission.json();
+					let codeRequest = await getCodes(response['_NewID'], response['InPlaylistName']);
 
-			if (request.ok) {
-				let codes = await request.json();
+					if (codeRequest != null) {
+						// Get the template for the text box and set the codes.
+						let template = document.getElementById('playlist-modal-msg').cloneNode(true);
+						let claimSection = template.querySelector('div');
+						if (codeRequest.ClaimCode == null) {
+							claimSection.remove();
+						} else {
+							claimSection.querySelector('#claim-code').innerText = codeRequest.ClaimCode;
 
-				return codes;
-			} else {
-				return null;
+							// Store the claim cookie as a cookie for 60 days. If the user logs in, this cookie will be used to check if they have any unclaimed playlists.
+							// Claim codes expire in 30 days, but in the event the playlist is used but not claimed within 30 days, its lifetime will be extended 30 days from its last use.
+							let claimCodes = getCookie('claimCodes');
+							setCookie('claimCodes', (claimCodes == null ? '' : (claimCodes + ',')) + codeRequest.ClaimCode, 60);
+						}
+
+						template.querySelector('#share-code').innerText = codeRequest.ShareCode;
+						template.style.display = null;
+
+						let functions = {
+							'Click Here to Close': {
+								close: true,
+								function: this.#deleteFromStorage.bind(this)
+							}
+						}
+						let modal = new Modal('codes', 'Playlist Codes', template, null, null, true, false, functions);
+						modal.open();
+					}
+				}
 			}
+
+			/**
+			 * Fetches the sharecode and the claim code (if the user is not logged in).
+			 * @param {Number} id The ID of the new playlist
+			 * @param {String} name The name of the new playlist
+			 * @returns 
+			 */
+			async function getCodes(id, name) {
+				let request = await fetch(`/playlist/getNewPlaylist?id=${id}&name=${name}`, {
+					method: 'GET'
+				});
+
+				if (request.ok) {
+					let codes = await request.json();
+
+					return codes;
+				} else {
+					return null;
+				}
+			}
+		} else {
+			displayNotification('Please add at least one rip to the playlist!', NotificationPriority.Warning);
 		}
 	}
 
@@ -416,7 +442,7 @@ function prepareTable() {
 	}
 	playlist.updateForm();
 
-	// Update ht header and footer to match the correct number of rows/colspan.
+	// Update the header and footer to match the correct number of rows/colspan.
 	let footer = table.querySelector('tfoot>tr>td');
 	footer.setAttribute('colspan', footer.getAttribute('colspan') + 1);
 	let head = table.querySelector('thead>tr');
@@ -481,24 +507,27 @@ async function initPlaylistCreator(shareCode = null) {
 	let names;
 	let name;
 	let existingRips;
-	let abort = true;
+	let isPublic = false;
 
-	if (shareCode != null) {
+	if (shareCode != null && shareCode != '') {
 		let request = await fetch(`/playlist/getPlaylist?code=${shareCode}`, {
 			method: 'get'
 		});
-
 		if (request.ok) {
 			// If a string is returned, an error message should be displayed. If a JSON object is returned, parse it and build the playlist object.
 			let response = await request.json();
 
 			if (typeof (response) == 'string') {
 				displayNotification(response, NotificationPriority.Error);
-				abort = true;
 			} else if (response !== null) {
 				name = response.PlaylistName;
 				names = response.RipNames;
 				existingRips = response.RipIDs;
+				isPublic = response.IsPublic;
+
+				playlist = new Playlist(existingRips, names, name, shareCode, isPublic);
+				playlist.saveToStorage();
+				this.window.location = "/rips";
 			} else {
 				displayNotification('Failed to obtain the specified playlist.', NotificationPriority.Error);
 			}
@@ -511,13 +540,11 @@ async function initPlaylistCreator(shareCode = null) {
 		names = JSON.parse(localStorage.getItem('playlist-names'));
 		name = localStorage.getItem('playlist-name');
 		shareCode = localStorage.getItem('playlist-code');
-	}
+		isPublic = localStorage.getItem('playlist-publicity') == 'true';
 
-	if (!abort) {
-		playlist = new Playlist(existingRips, names, name, shareCode);
+		playlist = new Playlist(existingRips, names, name, shareCode, isPublic);
 		playlist.saveToStorage();
 
-		togglePlaylistCreator();
 		prepareTable();
 	}
 }
@@ -537,5 +564,6 @@ window.addEventListener('load', function () {
 	// Check if a playlist is currently being edited.
 	else if (localStorage.getItem('playlist-rips') !== null) {
 		initPlaylistCreator();
+		togglePlaylistCreator();
 	}
 });
