@@ -124,6 +124,41 @@ async function savePlaylists(claimCodes) {
 }
 
 /**
+ * Deletes the playlist with the given id.
+ */
+function deletePlaylist(code) {
+	let funcs = {
+		'Delete': {
+			function: sendDeleteRequest,
+			className: 'btn-bad'
+		},
+		'Cancel': {
+			className: 'btn-good'
+		}
+	}
+	let modal = new Modal('delete-playlist', 'Confirm Playlist Deletion', 'Are you sure you want to delete this playlist? This is permanent and cannot be undone!', null, null, null, true, funcs);
+	modal.open();
+
+	async function sendDeleteRequest() {
+		let data = new FormData();
+		data.append('code', code);
+		let request = await fetch('/playlist/delete', {
+			method: 'POST',
+			body: data
+		});
+
+		if (request.ok) {
+			let response = await request.json();
+			if (response == true) {
+				window.location.reload();
+			} else {
+				displayNotification(response, NotificationPriority.Error);
+			}
+		}
+	}
+}
+
+/**
  * Clears all playlist claim codes form the client's cookies.
  */
 function clearPlaylistCookie() {

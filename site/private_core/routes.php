@@ -231,6 +231,9 @@ Flight::group('/playlist', function () {
 		Flight::route('POST /claim', function () {
 			performAPIRequest('claimPlaylists', 'claim', HttpMethod::POST, 'PlaylistController');
 		});
+		Flight::route('POST /delete', function () {
+			performAPIRequest('delete', 'delete', HttpMethod::POST, 'PlaylistController');
+		});
 	} elseif (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'rips')) {
 		Flight::route('GET /getNewPlaylist', function () {
 			performAPIRequest('getNewPlaylist', '', HttpMethod::GET, 'PlaylistController');
@@ -307,17 +310,18 @@ Flight::group('/login', function () {
 	});
 });
 
+// Account pages
 Flight::group('/account', function () {
 	Flight::route('POST /', function () {
 		submitForm('account/edit', 'AccountController');
 	});
 
 	Flight::route('/', function () {
-		displayPage('account/edit', 'AccountController', ['subPage' => 'account']);
+		displayPage('account/edit', 'AccountController', ['subPage' => 'account'], 'Account');
 	});
 
 	Flight::route('/playlists', function () {
-		displayPage('account/edit', 'AccountController', ['subPage' => 'playlists']);
+		displayPage('account/edit', 'AccountController', ['subPage' => 'playlists'], 'My Playlists');
 	});
 
 	Flight::route('POST /playlists/claim', function () {

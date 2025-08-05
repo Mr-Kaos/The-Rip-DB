@@ -17,6 +17,7 @@ use RipDB\Objects as o;
 				<th>Public?</th>
 				<th>Created</th>
 				<th>Rips</th>
+				<th></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -27,6 +28,7 @@ use RipDB\Objects as o;
 					<td style="text-align:center"><?= (new o\InputElement(null, o\InputTypes::checkbox, ['checked' => $record['IsPublic'] == 1, 'disabled' => true]))->buildElement() ?></td>
 					<td style="text-align:center"><?= $record['Created'] ?></td>
 					<td style="text-align:center"><?= $record['RipCount'] ?></td>
+					<td style="text-align:center"><button class="btn-bad" type="button" onclick="deletePlaylist('<?= $record['ShareCode'] ?>')">Delete</button></td>
 				</tr>
 			<?php endforeach; ?>
 		</tbody>

@@ -116,6 +116,7 @@ if (!file_exists('../site/private_core/config/db.php')) {
 			'usp_DeleteUnclaimedPlaylists',
 			'usp_InsertPlaylist',
 			'usp_UpdatePlaylist',
+			'usp_DeletePlaylist',
 			'usp_ClaimPlaylists'
 		];
 

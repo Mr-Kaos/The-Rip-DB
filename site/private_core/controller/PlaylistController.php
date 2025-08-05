@@ -75,6 +75,7 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 
 		switch ($methodGroup) {
 			case 'claimPlaylists':
+			case 'delete':
 				// If an array is returned (i.e. an error), return the error messages.
 				if (is_array($out = $this->validateRequest())) {
 					$result = '';
@@ -108,7 +109,7 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 		$result = [];
 		switch ($this->getPage()) {
 			case 'playlist/edit':
-				$playlist = $this->model->getPlaylistForEdit($_POST['code'] ?? '', $_SESSION[AUTH_USER]);
+				$playlist = $this->model->getPlaylistForEdit($_POST['code'] ?? '', $_SESSION[AUTH_USER] ?? 0);
 				if (empty($playlist)) {
 					$result = [new \RipDB\Error('The playlist being edited does not belong to you.')];
 					break;
@@ -153,6 +154,19 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 				} else {
 					$result = [new \RipDB\Error('Invalid Claim Code format given.')];
 				}
+				break;
+			case 'delete':
+				$playlist = $this->model->getPlaylistForEdit($_POST['code'] ?? '', $_SESSION[AUTH_USER] ?? 0);
+
+				if (!empty($playlist)) {
+					$validated['InPlaylistID'] = $playlist['PlaylistID'];
+					$validated['AccountID'] = $_SESSION[AUTH_USER];
+
+					$result = $this->submitRequest($validated, 'usp_DeletePlaylist', '', 'Playlists successfully deleted!');
+				}else {
+					$result = [new \RipDB\Error('The playlist does not exist.')];
+				}
+
 				break;
 			default:
 				$result = [new \RipDB\Error('Invalid form submission.')];

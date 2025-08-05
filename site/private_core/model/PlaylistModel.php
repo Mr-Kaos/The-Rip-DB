@@ -20,6 +20,7 @@ class PlaylistModel extends Model
 	 * Fetches the playlist record with the given share code and account id.
 	 * @param string $code The ShareCode of the playlist
 	 * @param int $user The ID of the account that owns the playlist with the given share code.
+	 * @return ?array If a playlist is found with the given code and user id, its record is returned. Else, null is returned.
 	 */
 	public function getPlaylistForEdit(string $code, int $userId): ?array
 	{
