@@ -92,27 +92,33 @@ class Playlist {
 		id = parseInt(id);
 		if (this.hasRip(id)) {
 			let ripIndex = this.#rips.indexOf(id);
-			// this.#rips.splice(ripIndex, 1);
-			// this.#names.splice(ripIndex, 1);
-			// this.saveToStorage();
+			this.#rips.splice(ripIndex, 1);
+			this.#names.splice(ripIndex, 1);
+			this.saveToStorage();
 
 			// Remove the rip from the form too
 			let list = this.#form.querySelector('.playlist-rips');
-			list.children[ripIndex].remove();
+			if (list.childElementCount > 0) {
+				list.children[ripIndex].remove();
+			}
 
 			// Check if the rip exists on the page's table, and if so, update the "add/remove" button to its "add" state.
 			let rows = document.querySelectorAll('#results>tbody>tr');
+
 			for (let i = 0; i < rows.length; i++) {
 				if (rows[i].getAttribute('rip-id') == id) {
-					let btn = rows[i].firstChild.querySelector('button');
-					btn.classList.remove('btn-bad');
-					btn.innerText = "+";
-					btn.title = 'Add to playlist';
+					if (rows[i] != null) {
+						let btn = rows[i].firstElementChild.querySelector('button');
+						if (btn != null) {
+							btn.classList.remove('btn-bad');
+							btn.innerText = "+";
+							btn.title = 'Add to playlist';
+						}
+					}
 					break;
 				}
 			}
 		}
-		console.log(this.#rips);
 	}
 
 	/**
@@ -163,15 +169,16 @@ class Playlist {
 
 	/**
 	 * Deletes the playlist from the local storage.
-	 * Only called when submission is successful.
 	 */
-	#deleteFromStorage() {
+	deleteFromStorage() {
 		this.#clearList();
 		this.#name = '';
 		document.getElementById('playlist-name').value = '';
 		localStorage.removeItem('playlist-rips');
 		localStorage.removeItem('playlist-names');
 		localStorage.removeItem('playlist-name');
+		localStorage.removeItem('playlist-code');
+		localStorage.removeItem('playlist-publicity');
 		// Hide the playlist creator.
 		togglePlaylistCreator();
 	}
@@ -287,7 +294,6 @@ class Playlist {
 		e.preventDefault();
 
 		// Make sure there is at least one rip in the playlist
-		console.log(this.#rips);
 		if (this.#rips.length > 0) {
 			let data = new FormData();
 			data.append('name', this.#name);
@@ -339,10 +345,9 @@ class Playlist {
 						} else {
 							claimSection.querySelector('#claim-code').innerText = codeRequest.ClaimCode;
 
-							// Store the claim cookie as a cookie for 60 days. If the user logs in, this cookie will be used to check if they have any unclaimed playlists.
-							// Claim codes expire in 30 days, but in the event the playlist is used but not claimed within 30 days, its lifetime will be extended 30 days from its last use.
+							// Store the claim cookie as a cookie for 30 days. If the user logs in, this cookie will be used to check if they have any unclaimed playlists.
 							let claimCodes = getCookie('claimCodes');
-							setCookie('claimCodes', (claimCodes == null ? '' : (claimCodes + ',')) + codeRequest.ClaimCode, 60);
+							setCookie('claimCodes', (claimCodes == null ? '' : (claimCodes + ',')) + codeRequest.ClaimCode, 30);
 						}
 
 						template.querySelector('#share-code').innerText = codeRequest.ShareCode;
@@ -351,7 +356,7 @@ class Playlist {
 						let functions = {
 							'Click Here to Close': {
 								close: true,
-								function: this.#deleteFromStorage.bind(this)
+								function: this.deleteFromStorage.bind(this)
 							}
 						}
 						let modal = new Modal('codes', 'Playlist Codes', template, null, null, true, false, functions);
@@ -411,6 +416,28 @@ class Playlist {
 		let modal = new Modal('clear', "Confirm Playlist Clear", 'Are you sure you want to clear the playlist?', null, null, null, true, funcs);
 		modal.open();
 	}
+}
+
+/**
+ * Deletes the playlist form local storage and hides the playlist editor.
+ */
+function cancelEdits() {
+	let funcs = {
+		'Cancel my changes!': {
+			function: function () {
+				playlist.deleteFromStorage();
+				if (window.location.search.includes('playlist=')) {
+					window.location = '/rips';
+				}
+			},
+			className: 'btn-bad'
+		},
+		"No, Don't cancel!": {
+			className: 'btn-good'
+		}
+	};
+	let modal = new Modal('cancel-edit', "Are you sure you want to abort all changes?", "<p>Cancelling edits for this playlist will clear them from your session.</p><p>If you have previously saved the playlist, it's last saved state will remain.</p>", null, null, true, true, funcs);
+	modal.open();
 }
 
 /**
@@ -474,27 +501,28 @@ function prepareTable() {
  * Toggles the display of the playlist buttons.
  */
 function togglePlaylistCreator() {
-	let playlistContainer = document.getElementById('playlist-creator');
-	let rows = document.querySelectorAll('#results>tbody>tr,#results>thead>tr');
-	let btnToggle = document.getElementById('playlist-toggle')
-
-	// Set the display of the playlist container and update the text of the "Create Playlist" button 
-	if (playlistContainer.style.display == 'none') {
-		playlistContainer.style.display = null;
-		btnToggle.innerText = 'Hide Playlist Creator';
-	} else {
-		playlistContainer.style.display = 'none';
-		btnToggle.innerText = 'Show Playlist Creator';
-	}
-
-	// Update the visibility of each row.
-	for (let i = 0; i < rows.length; i++) {
-		rows[i].children[0].style.display = playlistContainer.style.display;
-	}
 
 	// If the playlist creator is not initialised, initialise it
 	if (playlist == null) {
 		initPlaylistCreator();
+	} else {
+		let playlistContainer = document.getElementById('playlist-creator');
+		let rows = document.querySelectorAll('#results>tbody>tr,#results>thead>tr');
+		let btnToggle = document.getElementById('playlist-toggle')
+
+		// Set the display of the playlist container and update the text of the "Create Playlist" button 
+		if (playlistContainer.style.display == 'none') {
+			playlistContainer.style.display = null;
+			btnToggle.innerText = 'Hide Playlist Creator';
+		} else {
+			playlistContainer.style.display = 'none';
+			btnToggle.innerText = 'Show Playlist Creator';
+		}
+
+		// Update the visibility of each row.
+		for (let i = 0; i < rows.length; i++) {
+			rows[i].children[0].style.display = playlistContainer.style.display;
+		}
 	}
 }
 
@@ -508,28 +536,41 @@ async function initPlaylistCreator(shareCode = null) {
 	let name;
 	let existingRips;
 	let isPublic = false;
+	let existingCode = localStorage.getItem('playlist-code');
 
-	if (shareCode != null && shareCode != '') {
-		let request = await fetch(`/playlist/getPlaylist?code=${shareCode}`, {
-			method: 'get'
-		});
-		if (request.ok) {
-			// If a string is returned, an error message should be displayed. If a JSON object is returned, parse it and build the playlist object.
-			let response = await request.json();
+	// Only attempt to get the playlist for editing if the code is different to what is stored and is not null.
+	if (shareCode != null && shareCode != '' && shareCode != existingCode) {
+		// check the user is authenticated first.
+		let authenticated = await fetch('/check-auth', { method: 'GET' });
 
-			if (typeof (response) == 'string') {
-				displayNotification(response, NotificationPriority.Error);
-			} else if (response !== null) {
-				name = response.PlaylistName;
-				names = response.RipNames;
-				existingRips = response.RipIDs;
-				isPublic = response.IsPublic;
+		if (authenticated.ok) {
+			authenticated = await authenticated.json();
 
-				playlist = new Playlist(existingRips, names, name, shareCode, isPublic);
-				playlist.saveToStorage();
-				this.window.location = "/rips";
-			} else {
-				displayNotification('Failed to obtain the specified playlist.', NotificationPriority.Error);
+			if (authenticated == true) {
+				let request = await fetch(`/playlist/getPlaylist?code=${shareCode}`, {
+					method: 'get'
+				});
+				if (request.ok) {
+					// If a string is returned, an error message should be displayed. If a JSON object is returned, parse it and build the playlist object.
+					let response = await request.json();
+
+					if (typeof (response) == 'string') {
+						displayNotification(response, NotificationPriority.Error);
+					} else if (response !== null) {
+						name = response.PlaylistName;
+						names = response.RipNames;
+						existingRips = response.RipIDs;
+						isPublic = response.IsPublic;
+
+						playlist = new Playlist(existingRips, names, name, shareCode, isPublic);
+						playlist.saveToStorage();
+						// this.window.location = "/rips";
+						prepareTable();
+						togglePlaylistCreator();
+					} else {
+						displayNotification('Failed to obtain the specified playlist.', NotificationPriority.Error);
+					}
+				}
 			}
 		}
 	} else {
@@ -543,17 +584,36 @@ async function initPlaylistCreator(shareCode = null) {
 		isPublic = localStorage.getItem('playlist-publicity') == 'true';
 
 		playlist = new Playlist(existingRips, names, name, shareCode, isPublic);
-		playlist.saveToStorage();
 
-		prepareTable();
+		if (shareCode != null && shareCode != '') {
+			let authenticated = await fetch('/check-auth', { method: 'GET' });
+
+			if (authenticated.ok) {
+				authenticated = await authenticated.json();
+
+				if (authenticated == true) {
+					playlist.saveToStorage();
+
+					prepareTable();
+					togglePlaylistCreator();
+				} else {
+					displayNotification('You must be logged in to edit a playlist.', NotificationPriority.Error);
+					playlist.deleteFromStorage();
+				}
+			}
+		} else {
+			// playlist = new Playlist(existingRips, names, name, shareCode, isPublic);
+			playlist.saveToStorage();
+
+			prepareTable();
+			togglePlaylistCreator();
+		}
 	}
 }
-
 /**
  * Checks if an existing playlist creator session is open. If it is, resumes it.
  */
 window.addEventListener('load', function () {
-
 	// Check if a playlist is being requested for editing
 	if (window.location.search.includes('playlist=')) {
 		let code = window.location.search.split('=')[1];
@@ -564,6 +624,5 @@ window.addEventListener('load', function () {
 	// Check if a playlist is currently being edited.
 	else if (localStorage.getItem('playlist-rips') !== null) {
 		initPlaylistCreator();
-		togglePlaylistCreator();
 	}
 });

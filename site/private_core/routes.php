@@ -32,8 +32,17 @@ Flight::group('/error', function () {
 });
 
 // Home Page
-Flight::route('/', function () {
-	displayPage('home', 'HomeController', [], 'Home');
+Flight::group('/', function () {
+	Flight::route('/', function () {
+		displayPage('home', 'HomeController', [], 'Home');
+	});
+	// API Request to check auth (for playlist editing)
+	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, '/rips')) {
+		Flight::route('GET check-auth', function () {
+			RipDB\initSession();
+			Flight::json(\RipDB\checkAuth());
+		});
+	}
 });
 
 // Rips Pages

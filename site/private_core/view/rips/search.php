@@ -103,11 +103,14 @@ use RipDB\Model\RipModel as r;
 			<div>
 				<details open>
 					<summary id="rips" style="width:100%">Show Rips
+						<button type="button" class="btn-bad" style="float:right" onclick="playlist.promptClear()">Clear Playlist</button>
 					</summary>
 					<div class="playlist-rips"></div>
 				</details>
 				<button type="submit" style="float:left">Save Playlist</button>
-				<button type="button" class="btn-bad" style="float:right" onclick="playlist.promptClear()">Clear Playlist</button>
+				<?php if (\RipDB\checkAuth()): ?>
+					<button type="button" class="btn-warn" style="float:right" onclick="cancelEdits()">Cancel Edits</button>
+				<?php endif; ?>
 			</div>
 		</form>
 		<div id="playlist-modal-msg" style="display:none;text-align:center">

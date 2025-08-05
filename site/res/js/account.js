@@ -92,8 +92,6 @@ async function checkForUnclaimedPlaylists() {
 		text.innerHTML = '<p>You have created some playlists while not logged in.</p><p>Would you like to save these to your account?</p>';
 		let modal = new Modal('playlist-claim', 'You have claimable playlists!', text, null, null, false, true, functions);
 		modal.open();
-	} else {
-		console.log()
 	}
 }
 
