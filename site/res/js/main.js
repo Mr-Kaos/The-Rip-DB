@@ -396,7 +396,7 @@ class IModal {
 	 * @return {null|String} The validated value or null if invalid.
 	 */
 	#setSize(value, type) {
-		if (value instanceof String) {
+		if (typeof(value) ==  'string') {
 			if (value.endsWith('%')) {
 				let windowHeight = window.innerHeight;
 				try {
@@ -407,7 +407,14 @@ class IModal {
 					console.error(`Invalid CSS ${type} given to modal. Will not set given value.`);
 					value = null;
 				}
+			} else if (isNaN(parseInt(value)) && !value.endsWith('px')) {
+				value = null;
+				console.error(`Invalid CSS ${type} given to modal. Will not set given value.`);
+			} else if (!value.endsWith('px')) {
+				value = value + 'px';
 			}
+		} else if (!isNaN(value)) {
+			value = value + 'px';
 		}
 		return value;
 	}
@@ -471,6 +478,7 @@ class IModal {
 	 * Builds and opens the modal.
 	 */
 	async open() {
+		this.getBG().innerHTML = '';
 		let modalWindow = document.createElement("div");
 		modalWindow.classList.add("modal-window");
 
@@ -527,6 +535,13 @@ class IModal {
 				contentDiv.style.minHeight = '100%';
 				contentDiv.style.maxWidth = '100%';
 				contentDiv.style.maxHeight = '87vh';
+			}
+
+			if (this.#width != null) {
+				contentDiv.style.width = this.#width;
+			}
+			if (this.#height != null) {
+				contentDiv.style.height = this.#height;
 			}
 
 			modalWindow.appendChild(contentDiv);
