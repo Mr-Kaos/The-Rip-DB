@@ -128,12 +128,13 @@ tbody>tr>td {
 	overflow-wrap: anywhere;
 }
 
-tbody>tr:nth-child(even) {
+tbody>tr:nth-child(even),
+.rows>*:nth-child(even) {
 	background: var(--tbl-row-even);
-
 }
 
-tbody>tr:nth-child(odd) {
+tbody>tr:nth-child(odd),
+.rows>*:nth-child(odd) {
 	background: var(--tbl-row-odd);
 
 }

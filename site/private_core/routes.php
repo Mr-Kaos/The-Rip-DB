@@ -222,6 +222,10 @@ Flight::group('/playlist', function () {
 		submitForm('playlist/edit', 'PlaylistController');
 	});
 
+	Flight::route('/view/@id', function ($id) {
+		displayPage('playlist/view', 'PlaylistController', ['id' => $id]);
+	});
+
 	// Async requests:
 	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'account/')) {
 		RipDB\initSession();

@@ -13,7 +13,20 @@ class PlaylistModel extends Model
 	 */
 	public function getPlaylist(int $id): ?array
 	{
-		return $this->db->table(self::TABLE)->eq('PlaylistID', $id)->findOne();
+		return $this->db->table(self::TABLE)
+		->eq('PlaylistID', $id)
+		->join('Accounts', 'AccountID', 'Creator')
+		->findOne();
+	}
+
+	/**
+	 * Gets all details from an array of rip IDs.
+	 * @param array $ids The Rip IDs
+	 */
+	public function getRipDetails(array $ids)
+	{
+		return $this->db->table('Rips')
+		->in('RipID', $ids)->findAll();
 	}
 
 	/**

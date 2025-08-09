@@ -34,6 +34,18 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 	public function performRequest(array $data = []): void
 	{
 		switch ($this->getPage()) {
+			case 'playlist/view':
+				$id = $data['id'] ?? null;
+				if (!empty($id) && is_numeric($id)) {
+					$playlist = $this->model->getPlaylist($id);
+					
+					// If the playlist is not public, check if the user viewing it is the owner
+					if (($playlist['IsPublic'] == 0 && $playlist['Creator'] == $_SESSION[\RipDB\AUTH_USER]) || $playlist['IsPublic'] == 1) {
+						$this->setData('playlist', $playlist);
+						$this->setData('rips', $this->model->getRipDetails(json_decode($playlist['RipIDs'])));
+					}
+				}
+				break;
 		}
 	}
 
