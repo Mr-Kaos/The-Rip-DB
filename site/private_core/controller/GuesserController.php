@@ -29,7 +29,13 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 	 * Performs the GET or POST request by the user.
 	 * Generally a search request.
 	 */
-	public function performRequest(array $data = []): void {}
+	public function performRequest(array $data = []): void
+	{
+		switch ($this->getPage()) {
+			case 'rip-guesser-play':
+				break;
+		}
+	}
 
 	/**
 	 * Handles the GET requests for the game.
@@ -56,6 +62,18 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 				switch ($method) {
 					case 'jokes':
 						$response = $this->model->getJokesWithMetaNames($_GET['q'] ?? null);
+						break;
+				}
+			case 'setup':
+				switch($method) {
+					case 'playlists-more':
+						$response = $this->model->getPlaylists($_GET['page'] ?? 0);
+						break;
+					case 'playlists-search':
+
+						break;
+					case 'playlists-code':
+
 						break;
 				}
 		}
@@ -130,6 +148,7 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		// These validation error messages should never be returned to the user, but in case someone tries to bypass the constraints, they're here.
 		$showAnswerCount = $this->validateBool($data['show-count'] ?? null, 'Invalid value for "Show Answer Count" field.', true);
 		$rounds = $this->validateNumber($data['rounds'] ?? null, 'Invalid number of rounds given.', game\Game::MAX_ROUNDS, 1);
+		$playlists = $this->validateArray($data['playlists'] ?? null, 'validateNumber', [], 'Invalid playlists given.', false);
 		$difficulty = $this->validateFromList($data['difficulty'] ?? null, [game\Difficulty::Beginner->name, game\Difficulty::Standard->name, game\Difficulty::Hard->name], 'Invalid difficulty.');
 		// If the min is greater than the max or vice versa, these will be rectified when creating the settings object.
 		$jokesMin = $this->validateNumber($data['jokes-min'] ?? null, 'You need at least one joke to find in a rip!', game\Settings::MAX_JOKES, game\Settings::MIN_JOKES);
@@ -142,7 +161,7 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 
 		// Ensure that all the parameters are valid. If any is invalid, get the error message.
 		$valid = true;
-		$validated = [$showAnswerCount, $rounds, $difficulty, $jokesMin, $jokesMax, $minLength, $maxLength, $metaJokes, $metas];
+		$validated = [$showAnswerCount, $rounds, $difficulty, $jokesMin, $jokesMax, $minLength, $maxLength, $metaJokes, $metas, $playlists];
 		foreach ($validated as $val) {
 			if ($val instanceof \RipDB\Error) {
 				error_log($val->getMessage());
@@ -153,7 +172,7 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 		if ($valid) {
 			// Convert the difficulty into an enum
 			$difficulty = game\Difficulty::enumByValue($difficulty);
-			$settings = new game\Settings($showAnswerCount, $rounds, $jokesMin, $jokesMax, $minLength, $maxLength, $metaJokes, $metas, $difficulty);
+			$settings = new game\Settings($showAnswerCount, $rounds, $jokesMin, $jokesMax, $minLength, $maxLength, $metaJokes, $metas, $difficulty, $playlists);
 			$gameStarted = $this->model->initGame($settings);
 		}
 

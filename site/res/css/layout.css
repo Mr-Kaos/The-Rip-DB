@@ -205,7 +205,7 @@ button {
 	border-bottom: var(--accent-3) solid 3px;
 	color: var(--text-color-invert);
 	cursor: pointer;
-	transition: 0.3s;
+	transition: linear 0.2s;
 }
 
 a.button:active,
@@ -510,6 +510,7 @@ div.filters>.search-element>input {
 .form-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+	gap: 10px;
 }
 
 /* Playlist Creator */
@@ -615,6 +616,54 @@ h4 {
 	content: '\23ef';
 	border: 3px solid var(--accent-1);
 	border-radius: unset;
+}
+
+.guesser-playlists {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	align-items: flex-start;
+	gap: 7px;
+	width: 100%;
+	flex-wrap: wrap;
+}
+
+.btn-plist input[type=checkbox] {
+	display: none;
+}
+
+.btn-plist label {
+	background: var(--accent-1);
+	display: flex;
+	cursor: pointer;
+	justify-content: space-between;
+	align-items: center;
+	border: solid thin var(--accent-1);
+	border-radius: 5px;
+	padding: 3px;
+	margin-right: unset;
+}
+.btn-plist label>span>strong {
+	display: inline-block;
+	margin-bottom: 7px;
+}
+
+.btn-plist label>a {
+	border: solid thin var(--accent-3);
+	background: var(--accent-2);
+	border-radius: 5px;
+	padding: 5px;
+}
+
+.btn-plist input[type="checkbox"]+label>a:hover {
+	background: var(--accent-3);
+}
+
+.btn-plist input[type="checkbox"]:checked+label {
+	background: var(--accent-3);
+}
+
+.btn-plist input[type="checkbox"]:checked+label>a:hover {
+	background: var(--accent-1);
 }
 
 /* Split container with sidebar */

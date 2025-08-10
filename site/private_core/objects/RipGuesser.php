@@ -271,6 +271,7 @@ class Game
  * @property private int $maxJokes The maximum number of jokes a rip can have to appear in a round.
  * @property private array $metaJokeFilters A list of meta joke IDs a rip must be associated with to appear in a round. Helps to filter rips based on a genre or theme (such as rips featuring a particular artist). Default is no filter (any rip).
  * @property private array $metaFilters A list of meta IDs a rip must be associated with to appear in a round. Similar to $metaJokeFilters, except metas are more broad in scope (i.e. rips featuring 80s music, or rips featuring TV show themes). Default is no filter (any rip).
+ * @property private array $playlists An array of playlist IDs to filter rips by. If this is not null, only rips from the given playlists will be selected for a game's round.
  */
 class Settings
 {
@@ -292,8 +293,9 @@ class Settings
 	public readonly array $metaJokeFilters;
 	public readonly array $metaFilters;
 	public readonly Difficulty $difficulty;
+	public readonly ?array $playlists;
 
-	public function __construct(bool $showAnswerCount = true, int $roundCount = 3, int $minJokes = 1, int $maxJokes = 2, string $minLength = self::MIN_RIP_LENGTH, string $maxLength = self::MAX_RIP_LENGTH, ?array $metaJokeFilters = [], ?array $metaFilters = [], Difficulty $difficulty = Difficulty::Beginner)
+	public function __construct(bool $showAnswerCount = true, int $roundCount = 3, int $minJokes = 1, int $maxJokes = 2, string $minLength = self::MIN_RIP_LENGTH, string $maxLength = self::MAX_RIP_LENGTH, ?array $metaJokeFilters = [], ?array $metaFilters = [], Difficulty $difficulty = Difficulty::Beginner, ?array $playlists = null)
 	{
 		$this->showAnswerCount = $showAnswerCount;
 
@@ -324,6 +326,7 @@ class Settings
 		$this->metaJokeFilters = $metaJokeFilters ?? [];
 		$this->metaFilters = $metaFilters ?? [];
 		$this->difficulty = $difficulty;
+		$this->playlists = $playlists;
 	}
 }
 

@@ -396,7 +396,7 @@ class IModal {
 	 * @return {null|String} The validated value or null if invalid.
 	 */
 	#setSize(value, type) {
-		if (typeof(value) ==  'string') {
+		if (typeof (value) == 'string') {
 			if (value.endsWith('%')) {
 				let windowHeight = window.innerHeight;
 				try {
@@ -721,6 +721,92 @@ class FormModal extends IModal {
 		let firstInput = this.#form.querySelector('input,select,textarea');
 		if (firstInput != null) {
 			firstInput.focus();
+		}
+	}
+}
+
+/**
+ * This type of modal embeds a page within the site into a modal. Any attempt to access a page other than the initial page will redirect back to the initial page.
+ */
+class PageModal extends IModal {
+	#srcPage;
+
+	/**
+	 * Builds the page modal.
+	 * @param {String} id The ID of the modal
+	 * @param {String} title The title name of the modal
+	 * @param {String} text The content to be displayed in a modal.
+	 * @param {String} pageSrc The page to retrieve the form from.
+	 * @param {Number} width The initial width of the modal
+	 * @param {Number} height The initial height of the modal
+	 * @param {Boolean} allowResize Determines if the modal is allowed to be resized.
+	 * @param {Boolean} allowClose Determines if the modal is allowed to be closed. Useful if the user needs to confirm an action with the `functions` parameter.  
+	 */
+	constructor(id, title, pageSrc, width = null, height = null, allowResize = true, allowClose = true) {
+		super(id, title, '', width, height, allowResize, allowClose);
+		this.#srcPage = pageSrc;
+	}
+
+	/**
+	 * Builds the content to be displayed in the modal's content container.
+	 * Performs a fetch request to retrieve the form from the modal's srcPage attribute
+	 */
+	async constructContainer() {
+		let request = await fetch(this.#srcPage, {
+			method: 'GET'
+		});
+
+		return new Promise(async (resolve, reject) => {
+			if (request.ok) {
+				// Get the form from the page
+				let page = await request.text();
+				let parser = new DOMParser();
+				let doc = parser.parseFromString(page, 'text/html');
+
+				// only get the <main> element.
+				let body = doc.querySelector('main');
+				let js = doc.querySelectorAll('script');
+				if (body == undefined) {
+					reject('The specified page does not have a <main> element.');
+				} else {
+					body.style.margin = 0;
+
+					// append any scripts from within the doc to the main page if they are not already added.
+					let allScripts = Array.from(document.querySelectorAll('script[src]'));
+					for (let i = 0; i < js.length; i++) {
+						let exists = false;
+						for (let j = 0; j < allScripts.length; j++) {
+							if (allScripts[j].getAttribute('src') == js[i].getAttribute('src')) {
+								exists = true;
+								break;
+							}
+						}
+
+						if (!exists) {
+							let script = document.createElement('script');
+							script.src = js[i].getAttribute('src');
+							document.body.append(script);
+						}
+					}
+
+					// Add a listener to prevent links from redirecting the page.
+					body.addEventListener('click', this.#preventLinkRedirect)
+					// body
+					resolve(body);
+				}
+			} else reject('Failed to get form');
+		});
+	}
+
+	/**
+	 * Prevents anchor tag whose target is not '_blank' from redirecting the main window.
+	 * @param {Event} e The onclick event in the modal's body
+	 */
+	#preventLinkRedirect(e) {
+		let anchor = e.target;
+
+		if (anchor.getAttribute('target') != '_blank') {
+			e.preventDefault();
 		}
 	}
 }

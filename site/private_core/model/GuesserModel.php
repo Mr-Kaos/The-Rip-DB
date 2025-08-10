@@ -12,6 +12,10 @@ class GuesserModel extends Model
 	const TABLE = 'RipGuesserGame';
 	const SESS_GAME_ID = 'GameSessionID';
 	const SESS_GAME_OBJ = 'GameInstance';
+	/** Defines how many playlists are visible per row in the user-interface. Used to query additional playlists with an offset. */
+	const PLAYLISTS_PER_ROW = 3;
+	/** Defines the number of rows to get per fetch of playlists. Modify this value to increase the number of rows retrieved. */
+	const PLAYLISTS_ROW_BATCH = 3;
 
 	public function __construct()
 	{
@@ -103,19 +107,13 @@ class GuesserModel extends Model
 	public function getRip(game\Settings $settings, array $excludedRips): false|array
 	{
 		$rip = false;
-		$ripID = $this->db->execute("CALL usp_SelectRandomRip(?,?,?,?,?,?,?)", [
-			$settings->minJokes,
-			$settings->maxJokes,
-			$settings->minLength,
-			$settings->maxLength,
-			json_encode($settings->metaJokeFilters),
-			json_encode($settings->metaFilters),
-			json_encode($excludedRips)
-		])->fetch();
+
+		$qry = $this->buildRipQuery($settings, $excludedRips);
+
+		$ripID = $qry->findOneColumn('RipID');
 
 		// If a rip was found, retrieve its data.
 		if ($ripID !== false) {
-			$ripID = $ripID['RipID'];
 			$ripModel = new RipModel();
 
 			$rip = $ripModel->getRip($ripID);
@@ -126,45 +124,67 @@ class GuesserModel extends Model
 
 	/**
 	 * Finds the number of rips with the given filters.
+	 * @param game\Settings The settings object containing filters for rip searching.
 	 * @return int The number of rips that exist with the given filters.
 	 */
 	public function getTotalRipsAvailable(game\Settings $settings): int
 	{
 		$count = 0;
 
-		$jokeSubquery = $this->db->table('RipJokes')
-			->columns('RipID')
-			->groupBy('RipID')
-			->having()->addCondition("COUNT(`JokeID`) >= $settings->minJokes AND COUNT(`JokeID`) <= $settings->maxJokes");
-		$qry = $this->db->table('vw_RipsDetailed')
-			->gte('RipLength', $settings->minLength)
-			->lte('RipLength', $settings->maxLength)
-			->inSubquery('RipID', $jokeSubquery);
-
-
-
-		// If no metas or meta jokes are given
-		if (empty($settings->metaJokeFilters) && empty($settings->metaFilters)) {
-			$count = $qry->count();
-		}
-		// If only meta jokes are given
-		elseif (empty($settings->metaFilters)) {
-			$count = $qry->in('MetaJokeID', $settings->metaJokeFilters)
-				->count();
-		}
-		// If only metas are given
-		elseif (empty($settings->metaJokeFilters)) {
-			$count = $qry->in('MetaID', $settings->metaFilters)
-				->count();
-		}
-		// If metas and meta jokes are given
-		else {
-			$count = $qry->in('MetaJokeID', $settings->metaJokeFilters)
-				->in('MetaID', $settings->metaFilters)
-				->count();
-		}
+		$rips = $this->buildRipQuery($settings)->findAllByColumn('RipID');
+		$count = count($rips);
 
 		return $count;
+	}
+
+	/**
+	 * Builds the query to select a random rip for a rip guesser round.
+	 * @param game\Settings The settings object containing filters for rip searching.
+	 * @param array $excludedRips An array of ripIDs that have already been played in the game's round to prevent being picked again. Only used when called from getRip.
+	 */
+	private function buildRipQuery(game\Settings $settings, array $excludedRips = []): \PicoDb\Table
+	{
+		$qry = $this->db
+			->table('vw_RipsDetailed')
+			->gte('RipLength', $settings->minLength)
+			->lte('RipLength', $settings->maxLength);
+
+		// Apply filters
+
+		// Excluded rips
+		if (!empty($excludedRips)) {
+			$qry = $qry->notIn('RipID', $excludedRips);
+		}
+
+		// Meta jokes
+		if (!empty($settings->metaJokeFilters)) {
+			$qry = $qry->in('MetaJokeID', $settings->metaJokeFilters);
+		}
+		// Metas
+		if (!empty($settings->metaJokeFilters)) {
+			$qry = $qry->in('MetaID', $settings->metaFilters);
+		}
+		// Playlists
+		// If a playlist is used for the game, only select rips from the playlist
+		if (!empty($settings->playlists)) {
+			// Get all the unique Rip IDs from the playlists.
+			// This query is run every new round to ensure that if any rips are deleted/added from the playlist are reflected.
+			$ripIDs = $this->db->table('Playlists')
+				->in('PlaylistID', $settings->playlists)
+				->findAllByColumn('RipIDs');
+
+			$rips = [];
+			foreach ($ripIDs as $ripJSON) {
+				$rips = array_merge($rips, json_decode($ripJSON, true));
+			}
+			$rips = array_filter($rips);
+
+			$qry = $qry->in('RipID', $rips);
+		}
+
+		$qry = $qry->addCondition("RipID IN (SELECT RipID FROM RipJokes GROUP BY RipID HAVING COUNT(JokeID) >= $settings->minJokes AND COUNT(JokeID) <= $settings->maxJokes) GROUP BY RipID ORDER BY RAND()");
+
+		return $qry;
 	}
 
 	/**
@@ -206,5 +226,18 @@ class GuesserModel extends Model
 			}
 		}
 		return $results;
+	}
+
+	/**
+	 * Gets a batch of 3 rows of public playlists from the given offset. 
+	 */
+	public function getPlaylists(int $offset = 0)
+	{
+		$rows = self::PLAYLISTS_PER_ROW * self::PLAYLISTS_ROW_BATCH;
+		return $this->db->table('vw_Playlists')
+			->columns('PlaylistID', 'PlaylistName', 'Username', 'RipCount')
+			->eq('IsPublic', 1)
+			->offset($offset * $rows)->limit($rows)
+			->findAll();
 	}
 }

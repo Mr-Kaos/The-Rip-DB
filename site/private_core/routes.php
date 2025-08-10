@@ -270,6 +270,12 @@ Flight::group('/ripguessr', function () {
 	// Async requests for live game interaction:
 	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'ripguessr/play')) {
 		// Requests here should always be returned as a JSON.
+		// Requests for setup page
+		Flight::route('GET /setup/@request', function ($request) {
+			performAPIRequest('setup', $request, HttpMethod::GET, 'GuesserController');
+		});
+
+		// Requests for gameplay
 		Flight::route('POST /game/@request', function ($request) {
 			performAPIRequest('game', $request, HttpMethod::POST, 'GuesserController');
 		});

@@ -46,9 +46,12 @@ use RipDB\RipGuesser as game;
 		</div>
 	</div>
 	<div id="settings" style="display:none">
-		<h2>Game Settings</h2>
-		<form action="#" onsubmit="game.setSettings(event)">
-			<fieldset>
+		<div style="display:flex;justify-content:space-between;align-items:center">
+			<h2>Game Settings</h2>
+			<button onclick="helpModal.open()" type="button">Help/FAQ</button>
+		</div>
+		<form action="#" onsubmit="game.setSettings(event)" class="form-grid">
+			<fieldset style="grid-column:span 2">
 				<legend>Game Rules</legend>
 				<?= (new o\InputElement('No. of Rounds', o\InputTypes::range, ['name' => 'rounds', 'min' => 1, 'max' => game\Game::MAX_ROUNDS, 'value' => 3]))->buildElement() ?>
 				<div style="display:flex">
@@ -56,7 +59,7 @@ use RipDB\RipGuesser as game;
 					<?= (new o\InputElement('Max. Jokes per Rip', o\InputTypes::number, ['name' => 'jokes-max', 'min' => 1, 'max' => game\Settings::MAX_JOKES, 'value' => 2], null, true))->buildElement() ?>
 				</div>
 			</fieldset>
-			<fieldset>
+			<fieldset style="grid-column:span 2">
 				<legend>Difficulty</legend>
 				<?= (new o\InputElement(game\Difficulty::Beginner->name, o\InputTypes::radio, ['name' => 'difficulty', 'id' => 'difficulty-1', 'value' => game\Difficulty::Beginner->name, 'title' => game\Difficulty::Beginner->value, 'checked' => true]))->buildElement() ?>
 				<?= (new o\InputElement(game\Difficulty::Standard->name, o\InputTypes::radio, ['name' => 'difficulty', 'id' => 'difficulty-2', 'value' => game\Difficulty::Standard->name, 'title' => game\Difficulty::Standard->value]))->buildElement() ?>
@@ -66,7 +69,7 @@ use RipDB\RipGuesser as game;
 				<!-- <?= (new o\InputElement('Show Number of Correct Answers', o\InputTypes::checkbox, ['checked' => true, 'name' => 'show-count', 'title' => "This will show how many answers there are for fields that take multiple values.\nE.g. This will show how many jokes are in the round's rip."]))->buildElement() ?> -->
 				<!-- </details> -->
 			</fieldset>
-			<fieldset style="display:flex;justify-content:space-between">
+			<fieldset style="display:flex;justify-content:space-between;grid-column:span 2">
 				<legend>Filters</legend>
 				<div>
 					<?= (new o\SearchElement('Meta Jokes', '/search/meta-jokes', true, null, ['name' => 'filter-metajokes']))->buildElement() ?>
@@ -77,10 +80,23 @@ use RipDB\RipGuesser as game;
 					<?= (new o\InputElement('Max. Rip Length', o\InputTypes::text, ['name' => 'maxlength', 'pattern' => '([0-9]{2}:[0-9]{2})', 'value' => '03:00', 'placeholder' => '03:00', 'required' => true, 'onchange' => 'validateLength(this)'], null, true))->buildElement() ?>
 				</div>
 			</fieldset>
-			<button id="start-game" type="submit" style="margin: 10px auto;display: block;padding: 10px;font-size: larger;">Play</button>
+			<fieldset style="grid-column:span 2">
+				<legend>Playlists</legend>
+				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-search', 'form' => '', 'placeholder' => 'Search Playlists']))->buildElement(); ?>
+				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-code', 'form' => '', 'placeholder' => 'Find by Playlist Code']))->buildElement(); ?>
+				<a href="/rips?playlist=create" style="float:right"><button type="button" id="show-more">Create Playlist</button></a>
+				<hr>
+				<div id="playlist-selector" class="guesser-playlists"></div>
+				<br>
+				<div class="guesser-playlists">
+					<button type="button" style="grid-column-start:2" onclick="showMorePlaylists(this)">More +</button>
+				</div>
+			</fieldset>
+			<div style="grid-column:span 2">
+				<button id="start-game" type="submit" style="margin: 10px auto;display: block;padding: 10px;font-size: larger;">Play</button>
+			</div>
 		</form>
-		<section>
-			<h3>Help/FAQ</h3>
+		<section id="help" style="display:none">
 			<details class="example">
 				<summary>I keep getting rips with jokes I don't know!</summary>
 				<p>You can specify <strong>meta jokes</strong> (e.g. artists, bands, franchises) to limit what rips will be selected to you.<br>
@@ -95,17 +111,102 @@ use RipDB\RipGuesser as game;
 			<details class="example">
 				<summary>The game appears to be stuck and nothing is loading on-screen.</summary>
 				<p>If you've managed to make this occur, that's not good!<br>
-			To remedy this situation, you can try any of the following:</p>
-			<ul>
-				<li>Clear <strong>this site's</strong> cookies. You may have somehow launched multiple games in one session! (The game's session is stored as a cookie).</li>
-				<li>Try hard-refreshing the page. This is done by pressing <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>r</kbd>, or <kbd>ctrl</kbd> + <kbd>F5</kbd>.</li>
-				<li>Try another browser. Not an ideal solution, but this should start a new game session.</li>
-			</ul>
-			<p>Although this should never happen, if it does, please <strong>submit a bug report on the <a href="https://github.com/Mr-Kaos/The-Rip-DB">project's GitHub</a></strong>.</p>
+					To remedy this situation, you can try any of the following:</p>
+				<ul>
+					<li>Clear <strong>this site's</strong> cookies. You may have somehow launched multiple games in one session! (The game's session is stored as a cookie).</li>
+					<li>Try hard-refreshing the page. This is done by pressing <kbd>ctrl</kbd> + <kbd>shift</kbd> + <kbd>r</kbd>, or <kbd>ctrl</kbd> + <kbd>F5</kbd>.</li>
+					<li>Try another browser. Not an ideal solution, but this should start a new game session.</li>
+				</ul>
+				<p>Although this should never happen, if it does, please <strong>submit a bug report on the <a href="https://github.com/Mr-Kaos/The-Rip-DB">project's GitHub</a></strong>.</p>
 			</details>
 		</section>
 	</div>
 </main>
+<div id="templates" style="display:none">
+	<div class="btn-plist">
+		<input type="checkbox" name="playlists[]">
+		<label>
+			<span>
+				<strong>Unnamed</strong><br>
+				<em data-name="">By Unknown User</em><br>
+				<em data-count="">0 Rips</em>
+			</span>
+			<a href="javascript:showPlaylist(null)">View</a>
+		</label>
+	</div>
+</div>
 <img src="/res/img/loading.gif" style="display:none">
 <script src="https://www.youtube.com/iframe_api" defer></script>
 <script src="/res/js/ripguesser.js" defer></script>
+<script>
+	let clone = document.getElementById('help').cloneNode(true);
+	clone.style.display = null;
+	let helpModal = new Modal('help-modal', 'Help/FAQ', clone, '90%');
+
+	function showPlaylist(id) {
+		if (Number.isInteger(id)) {
+			let modal = new PageModal('playlist-preview', 'Preview Playlist', `/playlist/view/${id}`);
+			modal.open();
+		}
+	}
+
+	let page = 0;
+	let listsPerPage;
+	async function showMorePlaylists(button) {
+		let request = await fetch(`/ripguessr/setup/playlists-more?page=${page}`, {
+			method: 'GET'
+		});
+
+		// If response is ok, build the cells for the next few playlists.
+		if (request.ok) {
+			let data = await request.json();
+			// Set the number of playlists retrieved per page to the amount received from the server.
+			// This allows the constants defined in the server to be used here.
+			if (listsPerPage == null) {
+				listsPerPage = data.length;
+			}
+
+			let playlistContainer = document.getElementById('playlist-selector');
+			let template = document.querySelector('#templates>.btn-plist');
+
+			for (let i = 0; i < data.length; i++) {
+				let plist = template.cloneNode(true);
+				let input = plist.querySelector('input[type=checkbox]');
+				let label = plist.querySelector('label');
+				let name = label.querySelector('strong');
+				let creator = label.querySelector('em[data-name]');
+				let count = label.querySelector('em[data-count');
+
+				name.innerText = data[i].PlaylistName;
+				creator.innerText = 'By ' + data[i].Username;
+				count.innerText = data[i].RipCount + ' Rips';
+
+				// Set input values.
+				input.id = `playlist-${data[i].PlaylistID}`;
+				input.value = data[i].PlaylistID;
+				label.setAttribute('for', `playlist-${data[i].PlaylistID}`);
+
+				playlistContainer.append(plist);
+			}
+
+			if (data.length < listsPerPage) {
+				button.innerText = 'There are no more playlists available.';
+				button.disabled = true;
+			} else {
+				button.disabled = false;
+				console.log(button);
+			}
+
+			page++;
+		}
+	}
+
+	/**
+	 * Searches playlists asynchronously and displays the matching results in the playlists box.
+	 */
+	function searchPlaylists(name) {
+
+	}
+
+	showMorePlaylists(document.getElementById('show-more'));
+</script>
