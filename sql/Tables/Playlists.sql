@@ -4,7 +4,8 @@
 CREATE TABLE Playlists (
 	PlaylistID INT NOT NULL AUTO_INCREMENT,
 	ShareCode char(8),
-	PlaylistName varchar(128),
+	PlaylistName varchar(64),
+	PlaylistDescription varchar(512),
 	RipIDs json NOT NULL,
 	Creator int,
 	IsPublic bit NOT NULL DEFAULT 0 COMMENT 'Determines if this playlist is searchable and visible in the RipGuesser playlists search, or if it is only accessible by its code.',

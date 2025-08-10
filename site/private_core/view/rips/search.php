@@ -93,12 +93,13 @@ use RipDB\Model\RipModel as r;
 			<h2>Playlist Editor</h2>
 			<fieldset>
 				<legend>Playlist Details</legend>
-				<?= (new o\InputElement('Playlist Name', o\InputTypes::text, ['id' => 'playlist-name', 'max-length' => 128, 'required' => true, 'oninput' => 'playlist.updateName(this.value)', 'no-asterisk' => true], null, true))->buildElement() ?>
+				<?= (new o\InputElement('Playlist Name', o\InputTypes::text, ['id' => 'playlist-name', 'max-length' => 64, 'required' => true, 'oninput' => 'playlist.updateName(this.value)', 'no-asterisk' => true], null, true))->buildElement() ?>
 				<?php if (\RipDB\checkAuth()): ?>
 					<div>
 						<?= (new o\InputElement('Public Playlist?', o\InputTypes::checkbox, ['id' => 'playlist-public', 'oninput' => 'playlist.updatePublicity(this.checked)', 'title' => 'Public playlists are searchable by anyone in RipGuessr.']))->buildElement() ?>
 					</div>
 				<?php endif; ?>
+				<?= (new o\InputElement('Description', o\InputTypes::textarea, ['id' => 'playlist-desc', 'max-length' => 512, 'oninput' => 'playlist.updateDesc(this.value)'], null, true))->buildElement() ?>
 			</fieldset>
 			<div>
 				<details open>

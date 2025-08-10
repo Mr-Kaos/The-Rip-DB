@@ -47,5 +47,5 @@ use RipDB\Objects as o;
 		</tfoot>
 	</table>
 <?php else: ?>
-	<p>You have no playlists. Visit the <a href="/rips">Rips page</a> to create some!</p>
+	<p>You have no playlists. Visit the <a href="/rips?playlist=create">Rips page</a> to create some!</p>
 <?php endif; ?>

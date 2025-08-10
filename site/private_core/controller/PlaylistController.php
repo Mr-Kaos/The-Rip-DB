@@ -128,7 +128,8 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 				}
 				$validated['InPlaylistId'] = $playlist['PlaylistID'];
 			case 'playlist/new':
-				$validated['InPlaylistName'] = $this->validateString($_POST['name'], 'The playlist name is not valid.', 128, 1);
+				$validated['InPlaylistName'] = $this->validateString($_POST['name'], 'The playlist name is not valid.', 64, 1);
+				$validated['InPlaylistDesc'] = $this->validateString($_POST['desc'], 'The playlist description is not valid.', 512, 1);
 				// Make sure all rips given exist
 				$rips = $this->validateArray($_POST['rips'], 'validateNumber', [], 'An invalid rip was given.', false);
 				if (is_array($rips)) {

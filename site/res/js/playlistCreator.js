@@ -20,6 +20,7 @@ class Playlist {
 	#rips = [];
 	#names = [];
 	#name;
+	#desc;
 	#form;
 	#shareCode;
 	#public = false;
@@ -163,6 +164,7 @@ class Playlist {
 		localStorage.setItem('playlist-rips', this.#rips);
 		localStorage.setItem('playlist-names', JSON.stringify(this.#names));
 		localStorage.setItem('playlist-name', this.#name ?? '');
+		localStorage.setItem('playlist-desc', this.#desc ?? '');
 		localStorage.setItem('playlist-code', this.#shareCode ?? '');
 		localStorage.setItem('playlist-publicity', this.#public ?? false);
 	}
@@ -177,6 +179,7 @@ class Playlist {
 		localStorage.removeItem('playlist-rips');
 		localStorage.removeItem('playlist-names');
 		localStorage.removeItem('playlist-name');
+		localStorage.removeItem('playlist-desc');
 		localStorage.removeItem('playlist-code');
 		localStorage.removeItem('playlist-publicity');
 		// Hide the playlist creator.
@@ -276,6 +279,15 @@ class Playlist {
 	}
 
 	/**
+	 * Saves the description of the playlist.
+	 * @param {String} desc The description of the playlist.
+	 */
+	updateDesc(desc) {
+		this.#desc = desc;
+		this.saveToStorage();
+	}
+
+	/**
 	 * Sets the publicity status of the playlist.
 	 * @param {Boolean} publicState The publicity state of the playlist.
 	 */
@@ -297,6 +309,7 @@ class Playlist {
 		if (this.#rips.length > 0) {
 			let data = new FormData();
 			data.append('name', this.#name);
+			data.append('desc', this.#desc);
 			data.append('public', this.#public);
 			for (let i = 0; i < this.#rips.length; i++) {
 				data.append('rips[]', this.#rips[i]);
@@ -615,7 +628,10 @@ async function initPlaylistCreator(shareCode = null) {
  */
 window.addEventListener('load', function () {
 	// Check if a playlist is being requested for editing
-	if (window.location.search.includes('playlist=')) {
+	if (window.location.search.includes('playlist=create')) {
+		initPlaylistCreator();
+	}
+	else if (window.location.search.includes('playlist=')) {
 		let code = window.location.search.split('=')[1];
 		// If another GET variable somehow exists, remove it
 		code = code.split('&')[0];

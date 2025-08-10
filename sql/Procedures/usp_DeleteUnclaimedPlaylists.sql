@@ -12,8 +12,12 @@ BEGIN
 		WHERE DATEDIFF(NOW(), Created) > 30
 	);
 
+	-- Only delete playlists that are not in the anonymous playlists table and have no creator. (i.e. delete the playlists that were deleted above.)
 	DELETE FROM Playlists
-	WHERE DATEDIFF(NOW(), Created) > 30;
+	WHERE PlaylistID NOT IN (
+		SELECT PlaylistID 
+		FROM AnonymousPlaylists
+	) AND Creator IS NULL;
 
 	COMMIT;
 END

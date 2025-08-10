@@ -3,7 +3,8 @@
 DROP PROCEDURE IF EXISTS RipDB.usp_InsertPlaylist;
 
 CREATE PROCEDURE RipDB.usp_InsertPlaylist(
-	IN InPlaylistName varchar(128),
+	IN InPlaylistName varchar(64),
+	IN InPlaylistDescription varchar(512),
 	IN Rips json,
 	IN AccountId INT,
 	IN Public INT,
@@ -14,9 +15,9 @@ BEGIN
 	SET CodeChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 	INSERT INTO Playlists
-		(PlaylistName, RipIDs, Creator, IsPublic)
+		(PlaylistName, PlaylistDescription, RipIDs, Creator, IsPublic)
 	VALUES
-		(InPlaylistName, Rips, AccountID, Public);
+		(InPlaylistName, InPlaylistDescription, Rips, AccountID, Public);
 
 	SET NewPlaylistID = LAST_INSERT_ID();
 	SET NewPlaylistCode = CONCAT(
