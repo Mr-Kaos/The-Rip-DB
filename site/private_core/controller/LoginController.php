@@ -44,6 +44,8 @@ class LoginController extends Controller
 
 				if (is_string($result)) {
 					$_SESSION[\RipDB\AUTH_USER] = $loginId;
+				} elseif ($result === false) {
+					$result = '/login';
 				}
 				break;
 			case 'login/new':
