@@ -784,6 +784,199 @@ class GuessInput extends SearchElement {
 	}
 }
 
+class GameSettings {
+	#page = 0;
+	#listsPerPage;
+	#playlistContainer;
+	#search;
+	#btnMore;
+	#selected = [];
+
+	constructor() {
+		this.#playlistContainer = document.getElementById('playlist-selector');
+		this.#search = document.getElementById('playlist-search');
+		this.#btnMore = document.getElementById('show-more');
+	}
+
+	#showPlaylist(id) {
+		if (Number.isInteger(id)) {
+			let modal = new PageModal('playlist-preview', 'Preview Playlist', `/playlist/view/${id}`);
+			modal.open();
+		}
+	}
+
+	showMorePlaylists() {
+		this.#page++;
+		this.getPlaylists();
+	}
+
+	async getPlaylists(shareCode = null) {
+		let query = '/ripguessr/setup/playlists-search?';
+
+		if (shareCode == null) {
+			query += `page=${this.#page}`;
+			if (this.#search.value != null) {
+				query += `&search=${this.#search.value}`;
+			}
+		} else {
+			query += `code=${shareCode}`;
+		}
+
+		let request = await fetch(encodeURI(query), {
+			method: 'GET'
+		});
+
+		// If response is ok, build the cells for the next few playlists.
+		if (request.ok) {
+			let data = await request.json();
+
+			if (typeof (data) == 'string') {
+				let code = document.getElementById('playlist-code');
+				displayErrorMessage(code, data);
+			} else {
+				// Set the number of playlists retrieved per page to the amount received from the server.
+				// This allows the constants defined in the server to be used here.
+				if (this.#listsPerPage == null) {
+					this.#listsPerPage = data.length;
+				}
+
+				for (let i = 0; i < data.length; i++) {
+					this.#buildPlaylistContainer(data[i]);
+				}
+
+				if (data.length < this.#listsPerPage) {
+					this.#btnMore.innerText = 'There are no more playlists available.';
+					this.#btnMore.disabled = true;
+				} else {
+					this.#btnMore.innerText = 'More +';
+					this.#btnMore.disabled = false;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Builds a div element for a selectable playlist record.
+	 * @param {Object} data A JSON object containing the playlist's data
+	 */
+	#buildPlaylistContainer(data) {
+		let template = document.querySelector('#templates>.template-playlist');
+
+		let plist = template.cloneNode(true);
+		let input = plist.querySelector('input[type=checkbox]');
+		let label = plist.querySelector('label');
+		let name = label.querySelector('strong');
+		let creator = label.querySelector('em[data-name]');
+		let count = label.querySelector('em[data-count');
+		let link = label.querySelector('a');
+
+		name.innerText = data.PlaylistName;
+		creator.innerText = 'By ' + data.Username;
+		count.innerText = data.RipCount + ' Rips';
+		link.onclick = e => this.#showPlaylist(data.PlaylistID);
+
+		// Set input values.
+		input.id = `playlist-${data.PlaylistID}`;
+		input.value = data.PlaylistID;
+		input.setAttribute('form', '');
+		label.setAttribute('for', `playlist-${data.PlaylistID}`);
+		input.onchange = e => this.#toggleSelection(data);
+
+		// If the playlist is already selected, select it
+		if (this.#selected.includes(data.PlaylistID)) {
+			input.checked = true;
+		}
+
+		this.#playlistContainer.append(input);
+		this.#playlistContainer.append(label);
+	}
+
+	/**
+	 * Add/removes the selected playlist from the list of selected playlists.
+	 */
+	#toggleSelection(playlist) {
+		let selectionDiv = document.getElementById('selected-playlists');
+
+		// If the playlist already exists, remove it
+		if (this.#selected.includes(playlist.PlaylistID)) {
+			document.getElementById(`sel-${playlist.PlaylistID}`).remove();
+			document.getElementById(`playlist-${playlist.PlaylistID}`).checked = false;
+			let playlistIndex = this.#selected.indexOf(playlist.PlaylistID);
+			this.#selected.splice(playlistIndex, 1);
+
+		}
+		// Else, add it to the list of selected playlists
+		else {
+			let template = document.querySelector('.template-playlist-selected').cloneNode(true);
+			let label = template.querySelector('span');
+			let input = template.querySelector('input');
+			let btnRemove = template.querySelector('a');
+
+			template.id = `sel-${playlist.PlaylistID}`;
+			template.className = 'btn-plist';
+			label.innerText = playlist.PlaylistName;
+			input.value = playlist.PlaylistID;
+			btnRemove.onclick = e => this.#toggleSelection(playlist);
+			// Add listener to remove the playlist if clicked on
+			selectionDiv.append(template);
+
+			this.#selected.push(playlist.PlaylistID);
+		}
+	}
+
+	/**
+	 * Finds playlists by the given name of code.
+	 * If a code is given, it uses that. Else, it uses the search box.
+	 * Searching also resets the page to 0.
+	 * 
+	 * @param {Event} e The keypress event.
+	 */
+	searchPlaylists(e) {
+		let code = document.getElementById('playlist-code');
+		let canSearch = false;
+		this.#page = 0;
+
+		if (e != null) {
+			if (e.key == 'Enter') {
+				canSearch = true;
+			}
+		} else {
+			canSearch = true;
+		}
+
+		if (canSearch) {
+			this.#playlistContainer.innerHTML = '';
+			// If the code is set, use it
+			if (code.value != '') {
+				// validate the code
+				// The length is set dynamically in case a server-side change is made to the length.
+				if (code.value.length != code.getAttribute('maxlength')) {
+					displayErrorMessage(code, `The code must be ${code.getAttribute('maxlength')} characters long!`);
+				} else {
+					displayErrorMessage(code);
+					this.getPlaylists(code.value);
+				}
+			}
+			// Else, use the search
+			else {
+				this.#search.value = this.#search.value.replace('%', '');
+				this.getPlaylists(this.#search.value);
+				displayErrorMessage(code);
+				displayErrorMessage(this.#search);
+				if (this.#search.value != '') {
+					this.#page++;
+				}
+				this.#btnMore.disabled = false;
+				this.#btnMore.innerText = 'More +';
+			}
+		}
+	}
+}
+
+// The game settings object.
+let settings = new GameSettings()
+settings.getPlaylists();
+
 // The main game object. This will only initialise if in the "Play" page for the game.
 let game = null;
 

@@ -200,50 +200,22 @@ function displayErrorMessage(element, message = null, alertType = NotificationPr
 	 * @param {NotificationPriority} alertType Optional. The type of alert to present to the user.
 	 */
 	function appendErrorMessage(element, message, alertType = NotificationPriority.Error) {
-		let associatedFieldset;
-		let msgElement = document.getElementById(element.id + "_MSG");
 		element.classList.add('highlight');
 		clearHighlight(element);
 		element.classList.add(alertType);
 
-		// Make sure the message element being appended does not already exist
-		if (msgElement === null) {
-			msgElement = document.createElement("span");
-			msgElement.id = element.id + "_MSG";
-			msgElement.innerText = message;
-			element.insertAdjacentElement('afterend', msgElement);
-		} else {
-			msgElement.innerText = message;
-		}
-
-		// Disabled as highlighting the whole fieldset felt too distracting. Might remove completely later.
-		// // Find the associated fieldset of the input and style it accordingly.
-		// if ((associatedFieldset = getInputFieldset(element)) !== undefined) {
-		// 	if (alertType == NotificationPriority.Alert || alertType == NotificationPriority.Error || alertType == NotificationPriority.Warning) {
-		// 		associatedFieldset.classList.add('highlight');
-		// 		associatedFieldset.classList.add(alertType);
-		// 		associatedFieldset.classList.remove('clear');
-		// 	} else {
-		// 		clearHighlight(associatedFieldset);
-		// 	}
-		// }
+		element.setCustomValidity(message);
+		element.reportValidity();
 	}
 
 	/**
 	 * Removes an error message from an input element if one exists.
 	 * @param {Element} element 
-	 * @returns {Boolean} True if an error message exists and is removed. Else returns false.
 	 */
 	function removeErrorMessage(element) {
-		let removed = false;
-		let msgElement = document.getElementById(element.id + "_MSG");
-		if (msgElement !== null) {
-			msgElement.remove();
-			removed = true;
-		}
 		clearHighlight(element);
-
-		return removed;
+		element.setCustomValidity('');
+		element.reportValidity();
 	}
 
 	/**

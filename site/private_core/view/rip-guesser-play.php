@@ -82,14 +82,21 @@ use RipDB\RipGuesser as game;
 			</fieldset>
 			<fieldset style="grid-column:span 2">
 				<legend>Playlists</legend>
-				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-search', 'form' => '', 'placeholder' => 'Search Playlists']))->buildElement(); ?>
-				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-code', 'form' => '', 'placeholder' => 'Find by Playlist Code']))->buildElement(); ?>
-				<a href="/rips?playlist=create" style="float:right"><button type="button" id="show-more">Create Playlist</button></a>
-				<hr>
+				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-search', 'form' => '', 'placeholder' => 'Search Playlists', 'oninput' => 'displayErrorMessage(this)', 'onkeypress' => 'settings.searchPlaylists(event)']))->buildElement(); ?>
+				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-code', 'form' => '', 'minlength' => 8, 'maxlength' => 8, 'pattern' => '[0-9a-zA-Z]{8}', 'placeholder' => 'Find by Playlist Code', 'oninput' => 'displayErrorMessage(this)', 'onkeypress' => 'settings.searchPlaylists(event)']))->buildElement(); ?>
+				<button type="button" onclick="settings.searchPlaylists()">Search</button>
+				<a href="/rips?playlist=create" style="float:right"><button type="button">Create Playlist</button></a>
+				<div>
+					<h4>Selected Playlists</h4>
+					<div id="selected-playlists" class="guesser-playlists">
+
+					</div>
+					<hr>
+				</div>
 				<div id="playlist-selector" class="guesser-playlists"></div>
 				<br>
 				<div class="guesser-playlists">
-					<button type="button" style="grid-column-start:2" onclick="showMorePlaylists(this)">More +</button>
+					<button id="show-more" type="button" style="grid-column-start:2" onclick="settings.showMorePlaylists(this)">More +</button>
 				</div>
 			</fieldset>
 			<div style="grid-column:span 2">
@@ -123,16 +130,21 @@ use RipDB\RipGuesser as game;
 	</div>
 </main>
 <div id="templates" style="display:none">
-	<div class="btn-plist">
-		<input type="checkbox" name="playlists[]">
-		<label>
+	<div class="template-playlist">
+		<input type="checkbox"">
+		<label class="btn-plist">
 			<span>
 				<strong>Unnamed</strong><br>
 				<em data-name="">By Unknown User</em><br>
 				<em data-count="">0 Rips</em>
 			</span>
-			<a href="javascript:showPlaylist(null)">View</a>
+			<a href="javascript:void(0)">View</a>
 		</label>
+	</div>
+	<div class="template-playlist-selected">
+		<span></span>
+		<input type="hidden" name="playlists[]">
+		<a href="javascript:void(0)">&times;</a>
 	</div>
 </div>
 <img src="/res/img/loading.gif" style="display:none">
@@ -142,71 +154,4 @@ use RipDB\RipGuesser as game;
 	let clone = document.getElementById('help').cloneNode(true);
 	clone.style.display = null;
 	let helpModal = new Modal('help-modal', 'Help/FAQ', clone, '90%');
-
-	function showPlaylist(id) {
-		if (Number.isInteger(id)) {
-			let modal = new PageModal('playlist-preview', 'Preview Playlist', `/playlist/view/${id}`);
-			modal.open();
-		}
-	}
-
-	let page = 0;
-	let listsPerPage;
-	async function showMorePlaylists(button) {
-		let request = await fetch(`/ripguessr/setup/playlists-more?page=${page}`, {
-			method: 'GET'
-		});
-
-		// If response is ok, build the cells for the next few playlists.
-		if (request.ok) {
-			let data = await request.json();
-			// Set the number of playlists retrieved per page to the amount received from the server.
-			// This allows the constants defined in the server to be used here.
-			if (listsPerPage == null) {
-				listsPerPage = data.length;
-			}
-
-			let playlistContainer = document.getElementById('playlist-selector');
-			let template = document.querySelector('#templates>.btn-plist');
-
-			for (let i = 0; i < data.length; i++) {
-				let plist = template.cloneNode(true);
-				let input = plist.querySelector('input[type=checkbox]');
-				let label = plist.querySelector('label');
-				let name = label.querySelector('strong');
-				let creator = label.querySelector('em[data-name]');
-				let count = label.querySelector('em[data-count');
-
-				name.innerText = data[i].PlaylistName;
-				creator.innerText = 'By ' + data[i].Username;
-				count.innerText = data[i].RipCount + ' Rips';
-
-				// Set input values.
-				input.id = `playlist-${data[i].PlaylistID}`;
-				input.value = data[i].PlaylistID;
-				label.setAttribute('for', `playlist-${data[i].PlaylistID}`);
-
-				playlistContainer.append(plist);
-			}
-
-			if (data.length < listsPerPage) {
-				button.innerText = 'There are no more playlists available.';
-				button.disabled = true;
-			} else {
-				button.disabled = false;
-				console.log(button);
-			}
-
-			page++;
-		}
-	}
-
-	/**
-	 * Searches playlists asynchronously and displays the matching results in the playlists box.
-	 */
-	function searchPlaylists(name) {
-
-	}
-
-	showMorePlaylists(document.getElementById('show-more'));
 </script>

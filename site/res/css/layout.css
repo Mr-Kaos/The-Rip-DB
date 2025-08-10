@@ -627,11 +627,11 @@ h4 {
 	flex-wrap: wrap;
 }
 
-.btn-plist input[type=checkbox] {
+.guesser-playlists input[type=checkbox] {
 	display: none;
 }
 
-.btn-plist label {
+.btn-plist {
 	background: var(--accent-1);
 	display: flex;
 	cursor: pointer;
@@ -642,27 +642,33 @@ h4 {
 	padding: 3px;
 	margin-right: unset;
 }
-.btn-plist label>span>strong {
+
+.btn-plist:hover {
+	filter: brightness(90%);
+}
+
+.btn-plist>span>strong {
 	display: inline-block;
 	margin-bottom: 7px;
 }
 
-.btn-plist label>a {
+.btn-plist>a {
 	border: solid thin var(--accent-3);
 	background: var(--accent-2);
 	border-radius: 5px;
 	padding: 5px;
 }
 
-.btn-plist input[type="checkbox"]+label>a:hover {
+input[type="checkbox"]+label.btn-plist>a:hover,
+.btn-plist>a:hover {
 	background: var(--accent-3);
 }
 
-.btn-plist input[type="checkbox"]:checked+label {
+input[type="checkbox"]:checked+label.btn-plist {
 	background: var(--accent-3);
 }
 
-.btn-plist input[type="checkbox"]:checked+label>a:hover {
+input[type="checkbox"]:checked+label.btn-plist>a:hover {
 	background: var(--accent-1);
 }
 

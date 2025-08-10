@@ -231,13 +231,25 @@ class GuesserModel extends Model
 	/**
 	 * Gets a batch of 3 rows of public playlists from the given offset. 
 	 */
-	public function getPlaylists(int $offset = 0)
+	public function getPlaylists(int $offset = 0, ?string $search = null)
 	{
 		$rows = self::PLAYLISTS_PER_ROW * self::PLAYLISTS_ROW_BATCH;
-		return $this->db->table('vw_Playlists')
+		$qry = $this->db->table('vw_Playlists')
 			->columns('PlaylistID', 'PlaylistName', 'Username', 'RipCount')
 			->eq('IsPublic', 1)
-			->offset($offset * $rows)->limit($rows)
+			->offset($offset * $rows)->limit($rows);
+
+		if (!empty($search)) {
+			$qry = $qry->like('PlaylistName', "%$search%");
+		}
+
+		return $qry->findAll();
+	}
+
+	public function getPlaylistByCode(string $code) {
+		return $this->db->table('vw_Playlists')
+			->columns('PlaylistID', 'PlaylistName', 'Username', 'RipCount')
+			->eq('ShareCode', $code)
 			->findAll();
 	}
 }

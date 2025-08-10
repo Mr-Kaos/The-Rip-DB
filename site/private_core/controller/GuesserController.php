@@ -66,14 +66,19 @@ class GuesserController extends Controller implements \RipDB\Objects\IAsyncHandl
 				}
 			case 'setup':
 				switch($method) {
-					case 'playlists-more':
-						$response = $this->model->getPlaylists($_GET['page'] ?? 0);
-						break;
 					case 'playlists-search':
-
-						break;
-					case 'playlists-code':
-
+						if (!empty($_GET['code'] ?? null)) {
+							if (strlen($_GET['code']) == 8) {
+								$response = $this->model->getPlaylistByCode($_GET['code']);
+								if (empty($response)) {
+									$response = 'No playlist could be found with this code.';
+								}
+							} else {
+								$response = 'Please enter a valid code';
+							}
+						} else {
+							$response = $this->model->getPlaylists($_GET['page'] ?? 0, $_GET['search'] ?? null);
+						}
 						break;
 				}
 		}
