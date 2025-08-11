@@ -14,7 +14,7 @@ async function checkUsername(input) {
 	let pattern = /^(?=.{3,32}$)(?!.*[{}\\|\/;,\[\]^@])[a-zA-Z0-9._+-~]+$/g;
 
 	if (input.value.match(pattern) == null) {
-		displayErrorMessage(input, "This username contains invalid characters.", NotificationPriority.Error);
+		displayInputMessage(input, "This username contains invalid characters.", NotificationPriority.Error);
 	}
 	// Ensure the minimum requirements are met before searching
 	else if (input.value.length >= 3 && input.value.length <= 32 && input.value != og) {
@@ -24,15 +24,15 @@ async function checkUsername(input) {
 
 		if (request.ok) {
 			if (valid = await request.json()) {
-				displayErrorMessage(input, "Username OK!", NotificationPriority.Success);
+				displayInputMessage(input, "Username OK!", NotificationPriority.Success);
 			} else {
-				displayErrorMessage(input, "This username is taken/not allowed.", NotificationPriority.Error);
+				displayInputMessage(input, "This username is taken/not allowed.", NotificationPriority.Error);
 			}
 		}
 	} else if (input.value != og) {
-		displayErrorMessage(input, 'The username must be between 3 and 32 characters!');
+		displayInputMessage(input, 'The username must be between 3 and 32 characters!');
 	} else {
-		displayErrorMessage(input);
+		displayInputMessage(input);
 	}
 
 	return valid;
@@ -57,11 +57,11 @@ function checkPasswordMatch(input, otherInputID) {
 			msg = 'The password must be at least 6 characters!';
 		} else {
 			valid = true;
+			displayInputMessage(password2);
 		}
 	}
 
-	displayErrorMessage(input, msg);
-	displayErrorMessage(password2, msg);
+	displayInputMessage(input, msg);
 
 	btnSubmit.disabled = !valid;
 }

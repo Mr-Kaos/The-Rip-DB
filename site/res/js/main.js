@@ -178,13 +178,13 @@ function displayNotification(message, priority) {
  * @param {String} message The message to append to the specified element.
  * @param {NotificationPriority} alertType The type of alert to display beside the error message.
  */
-function displayErrorMessage(element, message = null, alertType = NotificationPriority.Error) {
+function displayInputMessage(element, message = null, alertType = NotificationPriority.Error) {
 
 	if (element !== null) {
 		if (message == null) {
-			removeErrorMessage(element);
+			removeInputMessage(element);
 		} else {
-			appendErrorMessage(element, message, alertType);
+			showErrorMessage(element, message, alertType);
 		}
 	} else {
 		console.warn('Could not display or hide error message as the target element is null.');
@@ -199,20 +199,42 @@ function displayErrorMessage(element, message = null, alertType = NotificationPr
 	 * @param {String} message The message to be appended next to the element.
 	 * @param {NotificationPriority} alertType Optional. The type of alert to present to the user.
 	 */
-	function appendErrorMessage(element, message, alertType = NotificationPriority.Error) {
+	function showErrorMessage(element, message, alertType = NotificationPriority.Error) {
+		let msgElement = document.getElementById(element.id + "_MSG");
+
+		// Only report input validity if the message is for an error.
+		if (message != '' && alertType == NotificationPriority.Error) {
+			removeInputMessage(element);
+			element.setCustomValidity(message);
+			element.reportValidity();
+		} else {
+			if (msgElement == null) {
+				msgElement = document.createElement("span");
+				msgElement.id = element.id + "_MSG";
+				msgElement.innerText = message;
+				element.insertAdjacentElement('afterend', msgElement);
+			} else {
+				msgElement.innerText = message;
+			}
+			element.setCustomValidity('');
+			element.reportValidity();
+		}
+
 		element.classList.add('highlight');
 		clearHighlight(element);
 		element.classList.add(alertType);
-
-		element.setCustomValidity(message);
-		element.reportValidity();
 	}
 
 	/**
 	 * Removes an error message from an input element if one exists.
 	 * @param {Element} element 
 	 */
-	function removeErrorMessage(element) {
+	function removeInputMessage(element) {
+		let msgElement = document.getElementById(element.id + "_MSG");
+		if (msgElement !== null) {
+			msgElement.remove();
+		}
+
 		clearHighlight(element);
 		element.setCustomValidity('');
 		element.reportValidity();
@@ -227,31 +249,6 @@ function displayErrorMessage(element, message = null, alertType = NotificationPr
 		for (let i = 0; i < notifTypes.length; i++) {
 			element.classList.remove(notifTypes[i]);
 		}
-	}
-
-	/**
-	 * Finds the fieldset that is the parent of the given input element and returns it.
-	 * @param {Element} input The input element to find its fieldset for.
-	 * @returns {Element|null} The fieldset if found. Else null.
-	 */
-	function getInputFieldset(input) {
-		let fieldset = undefined;
-		const MAX_ITERATIONS = 5;
-		let i = 0;
-
-		if (input !== null) {
-			while (i < MAX_ITERATIONS && fieldset == null) {
-				if (input.parentElement !== null) {
-					if (input.parentElement.tagName == 'FIELDSET') {
-						fieldset = input.parentElement;
-					} else {
-						input = input.parentElement;
-					}
-				}
-				i++;
-			}
-		}
-		return fieldset;
 	}
 }
 

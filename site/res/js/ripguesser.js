@@ -832,7 +832,7 @@ class GameSettings {
 
 			if (typeof (data) == 'string') {
 				let code = document.getElementById('playlist-code');
-				displayErrorMessage(code, data);
+				displayInputMessage(code, data);
 			} else {
 				// Set the number of playlists retrieved per page to the amount received from the server.
 				// This allows the constants defined in the server to be used here.
@@ -844,7 +844,7 @@ class GameSettings {
 					this.#buildPlaylistContainer(data[i]);
 				}
 
-				if (data.length < this.#listsPerPage) {
+				if (data.length < this.#listsPerPage || this.#listsPerPage == 0) {
 					this.#btnMore.innerText = 'There are no more playlists available.';
 					this.#btnMore.disabled = true;
 				} else {
@@ -951,9 +951,9 @@ class GameSettings {
 				// validate the code
 				// The length is set dynamically in case a server-side change is made to the length.
 				if (code.value.length != code.getAttribute('maxlength')) {
-					displayErrorMessage(code, `The code must be ${code.getAttribute('maxlength')} characters long!`);
+					displayInputMessage(code, `The code must be ${code.getAttribute('maxlength')} characters long!`);
 				} else {
-					displayErrorMessage(code);
+					displayInputMessage(code);
 					this.getPlaylists(code.value);
 				}
 			}
@@ -961,8 +961,8 @@ class GameSettings {
 			else {
 				this.#search.value = this.#search.value.replace('%', '');
 				this.getPlaylists(this.#search.value);
-				displayErrorMessage(code);
-				displayErrorMessage(this.#search);
+				displayInputMessage(code);
+				displayInputMessage(this.#search);
 				if (this.#search.value != '') {
 					this.#page++;
 				}

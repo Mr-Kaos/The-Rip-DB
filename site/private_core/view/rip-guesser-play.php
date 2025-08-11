@@ -82,8 +82,8 @@ use RipDB\RipGuesser as game;
 			</fieldset>
 			<fieldset style="grid-column:span 2">
 				<legend>Playlists</legend>
-				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-search', 'form' => '', 'placeholder' => 'Search Playlists', 'oninput' => 'displayErrorMessage(this)', 'onkeypress' => 'settings.searchPlaylists(event)']))->buildElement(); ?>
-				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-code', 'form' => '', 'minlength' => 8, 'maxlength' => 8, 'pattern' => '[0-9a-zA-Z]{8}', 'placeholder' => 'Find by Playlist Code', 'oninput' => 'displayErrorMessage(this)', 'onkeypress' => 'settings.searchPlaylists(event)']))->buildElement(); ?>
+				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-search', 'form' => '', 'placeholder' => 'Search Playlists', 'oninput' => 'displayInputMessage(this)', 'onkeypress' => 'settings.searchPlaylists(event)']))->buildElement(); ?>
+				<?= (new o\InputElement(null, o\InputTypes::search, ['name' => 'playlist-code', 'form' => '', 'minlength' => 8, 'maxlength' => 8, 'pattern' => '[0-9a-zA-Z]{8}', 'placeholder' => 'Find by Playlist Code', 'oninput' => 'displayInputMessage(this)', 'onkeypress' => 'settings.searchPlaylists(event)']))->buildElement(); ?>
 				<button type="button" onclick="settings.searchPlaylists()">Search</button>
 				<a href="/rips?playlist=create" style="float:right"><button type="button">Create Playlist</button></a>
 				<div>
