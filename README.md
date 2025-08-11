@@ -70,16 +70,14 @@ Ensure you have the following dependencies too:
 To install and run locally:
 
 1. Clone this repository `git clone https://github.com/Mr-Kaos/The-Rip-DB.git`
-2. Open `sql/deploy.php` and change the database constants to that of your database.  
    > *The password is left blank in this file, so be sure to fill it in!*
-3. In the terminal, navigate to the `sql` directory and run the command `php deploy.php`. This will deploy the database for you.  
-   > **Optional:** When running this command, after the database is deployed, it will prompt to ask if you want to deploy sample data. Type `y` and press enter to insert some sample data.
-4. Open the file `site/private_core/config/db.php` and edit its database constants to suit your database setup.  
+2. Navigate to the file `site/private_core/config/` and copy the file `db-template.php` to `db.php`.  
+3. Edit the file `db.php` and set its database constants to suit your database setup.  
    > *The password is left blank in this file too!*
+4. In the terminal, navigate to the `sql` directory and run the command `php install.php`. This will deploy the database for you.  
+   > **Optional:** When running this command, after the database is deployed, it will prompt to ask if you want to deploy sample data. Type `y` and press enter to insert some sample data.
 5. In the terminal, move into the `site` directory and run `composer update` to download the two PHP dependencies.
 6. Finally, in the same directory in the terminal, use `php -S localhost:8080` to run the site locally.
-
-This is not a perfect fix, but it fixes this issue for the time being.
 
 A more detailed (and automated) guide will be produced as the project progresses.
 
