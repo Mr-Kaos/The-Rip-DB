@@ -1,33 +1,3 @@
-<style>
-  .milestone {
-		border-left: solid green 5px;
-	}
-  .milestone table {
-    width: 70%;
-    margin: 0;
-  }
-  .milestone table td {
-    border-right: solid thin grey;
-    border-bottom: solid thin grey;
-  }
-  .milestone.working,
-  .milestone.working>h4 {
-		border-left: solid yellow 5px;
-	}
-  .milestone.future,
-  .milestone.future>h4  {
-		border-left: solid lightgrey 5px;
-	}
-	.milestone>h4 {
-    padding-left: 10px;
-    padding-top: 10px;
-    margin: 0;
-		border-left: solid green 10px;
-	}
-  .milestone.working>h4 {
-		border-left: solid yellow 10px;
-	}
-</style>
 # The Rip Database Project
 
 This project aims to provide an easy way to catalog and find "[rips](#what-are-rips)" uploaded by all "ripping" channels on YouTube.
@@ -168,6 +138,27 @@ No new features planned.
 </table>
 
 </div>
+
+#### v0.4.0
+
+<table>
+<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
+<tbody>
+<tr><td>
+
+- Playlists
+  - Ability to create and edit playlists
+  - Ability to create playlists without an account
+  - Ability to save "anonymous" playlists to an account later.
+
+</td><td>
+
+- Playlist Support
+  - Ability to play a game using rips from specified playlists
+
+</td></tr>
+</table>
+
 <div class="milestone working">
 
 #### Upcoming Features
@@ -181,6 +172,7 @@ No new features planned.
   - Ability to export data to the channel's wiki
   - (Maybe) Ability to import rip from wiki page
 - Separation of "Mix Names" from rip names
+- YouTube playlist Import
 - API
   - Ability to fetch data via an API  
   *(Could allow for cool new games like Connections or interesting statistical analyses.)*
@@ -193,10 +185,6 @@ No new features planned.
 - Gameplay features
   - Guess Mix Name
   - Thumbnail only (guess rip name and not game)
-- Playlists
-  - Create
-  - Edit (users with accounts)
-  - Play game using playlist
 - Multiplayer sessions
 
 </td></tr>
