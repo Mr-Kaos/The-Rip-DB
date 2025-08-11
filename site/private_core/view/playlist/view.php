@@ -2,6 +2,8 @@
 	<?php if (!empty($playlist)): ?>
 		<h1><?= $playlist['PlaylistName'] ?></h1>
 		<p><strong>Created by:</strong> <?= $playlist['Username'] ?></p>
+		<strong>Playlist Description:</strong>
+		<p><em><?= $playlist['PlaylistDescription'] ?></em></p>
 		<h2>Rips:</h2>
 		<div class="rows">
 			<?php foreach ($rips as $rip): ?>

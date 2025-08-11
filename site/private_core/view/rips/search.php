@@ -98,8 +98,8 @@ use RipDB\Model\RipModel as r;
 					<div>
 						<?= (new o\InputElement('Public Playlist?', o\InputTypes::checkbox, ['id' => 'playlist-public', 'oninput' => 'playlist.updatePublicity(this.checked)', 'title' => 'Public playlists are searchable by anyone in RipGuessr.']))->buildElement() ?>
 					</div>
+					<?= (new o\InputElement('Description', o\InputTypes::textarea, ['id' => 'playlist-desc', 'max-length' => 512, 'oninput' => 'playlist.updateDesc(this.value)'], null, true))->buildElement() ?>
 				<?php endif; ?>
-				<?= (new o\InputElement('Description', o\InputTypes::textarea, ['id' => 'playlist-desc', 'max-length' => 512, 'oninput' => 'playlist.updateDesc(this.value)'], null, true))->buildElement() ?>
 			</fieldset>
 			<div>
 				<details open>

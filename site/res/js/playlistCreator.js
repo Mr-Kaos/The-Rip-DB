@@ -31,7 +31,7 @@ class Playlist {
 	 * @param {String} name The name of the playlist.
 	 * @param {String} shareCode The share code of the playlist. If given, the playlist will be in "edit" mode and will update this playlist.
 	 */
-	constructor(rips = [], names = [], name = 'My Playlist', shareCode = null, isPublic = false) {
+	constructor(rips = [], names = [], name = 'My Playlist', shareCode = null, isPublic = false, description = null) {
 		// Ensure all rips are numbers. If one is not, clear the array.
 		if (Array.isArray(rips)) {
 			for (let i = 0; i < rips.length; i++) {
@@ -60,6 +60,7 @@ class Playlist {
 		this.#rips = rips;
 		this.#name = name;
 		this.#names = names;
+		this.#desc = description;
 		this.#shareCode = shareCode;
 		this.#public = isPublic;
 		this.#form = document.getElementById('playlist-creator');
@@ -201,6 +202,10 @@ class Playlist {
 		let inputPublic = this.#form.querySelector('#playlist-public');
 		if (inputPublic != null) {
 			inputPublic.checked = this.#public;
+		}
+		let inputDesc = this.#form.querySelector('#playlist-desc');
+		if (inputDesc != null) {
+			inputDesc.value = this.#desc;
 		}
 	}
 
@@ -547,6 +552,7 @@ function togglePlaylistCreator() {
 async function initPlaylistCreator(shareCode = null) {
 	let names;
 	let name;
+	let desc;
 	let existingRips;
 	let isPublic = false;
 	let existingCode = localStorage.getItem('playlist-code');
@@ -572,10 +578,11 @@ async function initPlaylistCreator(shareCode = null) {
 					} else if (response !== null) {
 						name = response.PlaylistName;
 						names = response.RipNames;
+						desc = response.PlaylistDescription;
 						existingRips = response.RipIDs;
 						isPublic = response.IsPublic;
 
-						playlist = new Playlist(existingRips, names, name, shareCode, isPublic);
+						playlist = new Playlist(existingRips, names, name, shareCode, isPublic, desc);
 						playlist.saveToStorage();
 						// this.window.location = "/rips";
 						prepareTable();
@@ -593,10 +600,11 @@ async function initPlaylistCreator(shareCode = null) {
 		}
 		names = JSON.parse(localStorage.getItem('playlist-names'));
 		name = localStorage.getItem('playlist-name');
+		desc = localStorage.getItem('playlist-desc');
 		shareCode = localStorage.getItem('playlist-code');
 		isPublic = localStorage.getItem('playlist-publicity') == 'true';
 
-		playlist = new Playlist(existingRips, names, name, shareCode, isPublic);
+		playlist = new Playlist(existingRips, names, name, shareCode, isPublic, desc);
 
 		if (shareCode != null && shareCode != '') {
 			let authenticated = await fetch('/check-auth', { method: 'GET' });
