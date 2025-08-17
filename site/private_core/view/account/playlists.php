@@ -78,3 +78,4 @@ use RipDB\Objects as o;
 		</div>
 	</div>
 </main>
+<script src="/res/js/account.js" defer></script>

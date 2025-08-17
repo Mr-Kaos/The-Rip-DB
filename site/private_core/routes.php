@@ -383,6 +383,9 @@ Flight::group('/search', function () {
 	Flight::route('GET /rip-alt-names', function () {
 		performAPIRequest('search', 'rip-names', HttpMethod::GET);
 	});
+	Flight::route('GET /channels', function () {
+		performAPIRequest('search', 'channels', HttpMethod::GET);
+	});
 	Flight::route('GET /@other', function ($other) {
 		http_response_code(404);
 		die();
