@@ -5,4 +5,6 @@ site/vendor/
 *.code-workspace
 
 # config files
-db.php
+site/private_core/config/db.php
+site/private_core/config/keys.php
+site/private_core/config/api_count.txt

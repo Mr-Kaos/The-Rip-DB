@@ -90,4 +90,18 @@ class AccountModel extends Model implements ResultsetSearch
 
 		return $qry->count();
 	}
+
+	/**
+	 * Gets RipIDs for videos that match a YouTUbe video ID
+	 * @param array $videos An array of YouTube video IDs to find in rips.
+	 * @return array an array of RipIDs that matched he given video IDs.
+	 */
+	public function findRipsByYouTubeID(array $videos): array {
+		$ripIDs = [];
+		if (!empty($videos)) {
+			$ripIDs = $this->db->table('Rips')->in('RipYouTubeID', $videos)->findAllByColumn('RipID');
+		}
+
+		return $ripIDs;
+	}
 }

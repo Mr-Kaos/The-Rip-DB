@@ -327,15 +327,19 @@ Flight::group('/account', function () {
 	});
 
 	Flight::route('/', function () {
-		displayPage('account/edit', 'AccountController', ['subPage' => 'account'], 'Account');
+		displayPage('account/edit', 'AccountController', [], 'Account');
 	});
 
 	Flight::route('/playlists', function () {
-		displayPage('account/edit', 'AccountController', ['subPage' => 'playlists'], 'My Playlists');
+		displayPage('account/playlists', 'AccountController', [], 'My Playlists');
 	});
 
 	Flight::route('POST /playlists/claim', function () {
 		submitForm('playlists/claim', 'AccountController');
+	});
+
+		Flight::route('POST /playlists/import', function () {
+		submitForm('playlists/import', 'AccountController');
 	});
 
 	// Async requests:
