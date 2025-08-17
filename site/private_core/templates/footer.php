@@ -7,7 +7,7 @@ use RipDB\Theme;
 		<span>Contribute or report bugs <a href="https://github.com/Mr-Kaos/The-Rip-DB" target="_blank">on GitHub</a>!</span>
 	</div>
 	<div>
-		<span>Running <a href="https://github.com/Mr-Kaos/The-Rip-DB/releases" target="_blank">Version 0.4.0</a></span>
+		<span>Running <a href="https://github.com/Mr-Kaos/The-Rip-DB/releases" target="_blank">Version 0.4.1</a></span>
 	</div>
 	<div>
 		<form action="/settings/theme">

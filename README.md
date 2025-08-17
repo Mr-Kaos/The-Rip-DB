@@ -51,171 +51,61 @@ To install and run locally:
 
 A more detailed (and automated) guide will be produced as the project progresses.
 
-## Project Features and Plans
+## Project Features, Plans and Versions
 
 The primary goal of this project is to provide a complete and detailed database that allows users to search for a rip based on its contents, i.e. tags. This will also be crowd sourced, meaning anyone can contribute to fill in any gaps of information that this database is missing.
 
-### Release Plan
-
-This project aims to have the following features:
-
-<div class="milestone">
-
-#### v0.1.0
+This project has the following planned features complete:
 
 <table>
 <thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
 <tbody>
 <tr><td>
 
-- Core system design
-- Essential data/pages
-  - Rip pages
-    - Search
-    - Add/Edit
-    - View
-  - Joke Search
-    - Search
-    - Add
+- [X] Core data structure
+  - [X] Rips
+  - [X] Rip categories/metadata
+    - [X] Jokes
+    - [X] Meta Jokes
+    - [X] Metas
+    - [X] Tags
+    - [X] Channels
+    - [X] Games
+  - [ ] Extra Features
+    - [X] Playlists
+    - [X] Accounts
+    - [X] YouTube Playlist Import
+    - [ ] Playlist player
+    - [ ] Wiki links/references
+- [X] Data Search
+  - [X] Search filters
+  - [X] Page sorting
+- [ ] RESTful API
+- [ ] Mobile support (layout)
 
 </td><td>
 
-No features planned.
+- [X] Core game backend/design
+- [X] Complete gameplay loop
+- [ ] Modular Game settings
+  - [ ] Difficulty options
+    - [X] Difficulty presets
+    - [ ] Granular difficulty options
+  - [ ] Rip selection filters
+    - [X] Filter by meta jokes
+    - [X] Filter by metas
+    - [ ] Filter by channel
+    - [X] Filter from playlist
+- [ ] Multiplayer sessions
+- [ ] Mobile support (layout)
 
 </td></tr>
 </table>
 
-#### v0.2.0
+### Note Regarding Version Numbers:
 
-<table>
-<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
-<tbody>
-<tr><td>
-
-- Account framework
-  - Account creation and management
-- Sorting features for search pages
-- Notifications
-
-</td><td>
-
-- Core engine design
-- Core gameplay loop
-
-</td></tr>
-</table>
-
-#### v0.3.0
-
-<table>
-<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
-<tbody>
-<tr><td>
-
-- Pages for all user-manageable components
-  - Meta Jokes
-    - Search
-    - Add/Edit
-  - Metas
-    - Search
-    - Add/Edit
-  - Tags
-    - Search
-    - Add/Edit
-  - Channels
-    - Search
-    - Add/Edit
-  - Games
-    - Search
-    - Add/Edit
-- Dynamic modal forms for easy addition of data
-
-</td><td>
-
-No new features planned.
-
-</td></tr>
-</table>
-
-</div>
-
-#### v0.4.0
-
-<table>
-<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
-<tbody>
-<tr><td>
-
-- Playlists
-  - Ability to create and edit playlists
-  - Ability to create playlists without an account
-  - Ability to save "anonymous" playlists to an account later.
-
-</td><td>
-
-- Playlist Support
-  - Ability to play a game using rips from specified playlists
-
-</td></tr>
-</table>
-
-<div class="milestone working">
-
-#### Upcoming Features
-
-<table>
-<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
-<tbody>
-<tr><td>
-
-- Wiki Integration
-  - Ability to export data to the channel's wiki
-  - (Maybe) Ability to import rip from wiki page
-- Separation of "Mix Names" from rip names
-- YouTube playlist Import
-- API
-  - Ability to fetch data via an API  
-  *(Could allow for cool new games like Connections or interesting statistical analyses.)*
-
-</td><td>
-
-- New game settings
-  - Filter by channel
-  - Filter by game
-- Gameplay features
-  - Guess Mix Name
-  - Thumbnail only (guess rip name and not game)
-- Multiplayer sessions
-
-</td></tr>
-</table>
-
-</div>
-<div class="milestone future">
-
-#### Future Updates and Features
-
-<table>
-<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
-<tbody>
-<tr><td>
-
-- Statistical Visualisations
-  - Graphs and charts of common rips, jokes, games etc.
-  - Relational graphs of jokes and their metas
-- Mobile support
-- YouTube playlist creation
-  - Ability to search for rips using the database to create playlists on YouTube easily.
-
-</td><td>
-
-No new features planned.
-
-</td></tr>
-</table>
-
-</div>
-
+While the project is in its Beta phase, all major new features will be released as a new minor version, with minor additions and bug fixes as the patch number.  
+Once all planned features are complete and functional, Version 1.0.0 will be released.
 
 ## System Design
 
