@@ -183,34 +183,39 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 						$nextPageToken = null;
 						$videos = [];
 
-						if ($this->updateAPICount() < self::YT_API_MAX_DAILY_REQUESTS) {
-							// Fetch the videos
-							$ch = curl_init();
-							curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+						$apiCount = $this->updateAPICount();
+						if ($apiCount !== false) {
+							if ($apiCount < self::YT_API_MAX_DAILY_REQUESTS) {
+								// Fetch the videos
+								$ch = curl_init();
+								curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-							while (!$onLastPage && $loops < $MAX_cURLs) {
-								$apiURL = 'https://www.googleapis.com/youtube/v3/playlistItems?key=' . constant('YouTube_Key') . '&playlistId=' . $listId . '&part=snippet%2C+id&maxResults=50';
-								if ($nextPageToken !== null) {
-									$apiURL .= '&pageToken=' . $nextPageToken;
+								while (!$onLastPage && $loops < $MAX_cURLs) {
+									$apiURL = 'https://www.googleapis.com/youtube/v3/playlistItems?key=' . constant('YouTube_Key') . '&playlistId=' . $listId . '&part=snippet%2C+id&maxResults=50';
+									if ($nextPageToken !== null) {
+										$apiURL .= '&pageToken=' . $nextPageToken;
+									}
+									curl_setopt($ch, CURLOPT_URL, $apiURL);
+									$response = curl_exec($ch);
+									$json = json_decode($response);
+
+									$videos = array_merge($videos, $this->parseYoutubePlaylistJSON($json));
+
+									$nextPageToken = $json->nextPageToken ?? null;
+									if (is_null($nextPageToken)) {
+										$onLastPage = true;
+									}
+
+									$loops++;
 								}
-								curl_setopt($ch, CURLOPT_URL, $apiURL);
-								$response = curl_exec($ch);
-								$json = json_decode($response);
 
-								$videos = array_merge($videos, $this->parseYoutubePlaylistJSON($json));
-
-								$nextPageToken = $json->nextPageToken ?? null;
-								if (is_null($nextPageToken)) {
-									$onLastPage = true;
-								}
-
-								$loops++;
+								$this->updateAPICount($loops);
+							} else {
+								error_log('The site has exceeded the maximum allowed API Request limit of ' . self::YT_API_MAX_DAILY_REQUESTS . '. Please wait for the count to reset.');
+								$result = [new Error('The YouTube API cannot not be used at this time. Please try again later.')];
 							}
-
-							$this->updateAPICount($loops);
 						} else {
-							error_log('The site has exceeded the maximum allowed API Request limit of ' . self::YT_API_MAX_DAILY_REQUESTS . '. Please wait for the count to reset.');
-							$result = [new Error('The YouTube API cannot not be used at this time. Please try again later.')];
+							$result = [new Error('A server error occurred.')];
 						}
 
 						// Filter videos to ones that exist in the database
@@ -270,9 +275,9 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 	 * If request counts are given, the file is written to. If none are given, the file is read from and the count returned.
 	 * If the date the log file was reset is greater than 24 hours, the count and date is reset to the current time.
 	 * @param ?int $additionalRequests The number of requests made to add to the current count. If null, the file will only be read from.
-	 * @return int The current number of requests made.
+	 * @return int|false The current number of requests made. False if the count could not be saved
 	 */
-	private function updateAPICount(?int $additionalRequests = null): int
+	private function updateAPICount(?int $additionalRequests = null): int|false
 	{
 		$countFile = 'private_core/config/api_count.txt';
 		$datetime_format = 'Y-m-d H:i:s';
@@ -281,46 +286,55 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 
 		// Check if the count file exists. If it does not, create it.
 		if (!file_exists($countFile)) {
-			$fh = fopen($countFile, 'w');
-			$lastDay = new DateTime();
-			fwrite($fh, date_format($lastDay, $datetime_format));
-			fwrite($fh, "\n0");
-			fclose($fh);
+			if (($fh = fopen($countFile, 'w')) !== false) {
+				$lastDay = new DateTime();
+				fwrite($fh, date_format($lastDay, $datetime_format));
+				fwrite($fh, "\n0");
+				fclose($fh);
+			} else {
+				$todaysRequestCount = false;
+			}
 		}
 		// If the file exists, get the number of requests performed per day and date stored.
 		else {
-			$fh = fopen($countFile, 'rw');
-			$i = 0;
-			while (($line = fgets($fh)) !== false) {
-				$line = trim($line);
-				if ($i == 0) {
-					$lastDay = DateTime::createFromFormat($datetime_format, $line);
-				} elseif ($i == 1) {
-					$todaysRequestCount = (int)$line;
+			if (($fh = fopen($countFile, 'rw')) !== false) {
+				$i = 0;
+				while (($line = fgets($fh)) !== false) {
+					$line = trim($line);
+					if ($i == 0) {
+						$lastDay = DateTime::createFromFormat($datetime_format, $line);
+					} elseif ($i == 1) {
+						$todaysRequestCount = (int)$line;
+					}
+					$i++;
 				}
-				$i++;
-			}
 
-			// If the date was malformed or not detected, rewrite it
-			if ($lastDay == false) {
-				fwrite($fh, date_format(new DateTime(), $datetime_format));
-				fwrite($fh, "\n$todaysRequestCount");
+				// If the date was malformed or not detected, rewrite it
+				if ($lastDay == false) {
+					fwrite($fh, date_format(new DateTime(), $datetime_format));
+					fwrite($fh, "\n$todaysRequestCount");
+				}
+				// If the date is more than 24 hours ago, reset it to now and reset the count.
+				elseif (date_diff(new DateTime(), $lastDay)->d >= 1) {
+					$lastDay = new DateTime();
+					$todaysRequestCount = 0;
+				}
+				fclose($fh);
+			} else {
+				$todaysRequestCount = false;
 			}
-			// If the date is more than 24 hours ago, reset it to now and reset the count.
-			elseif (date_diff(new DateTime(), $lastDay)->d >= 1) {
-				$lastDay = new DateTime();
-				$todaysRequestCount = 0;
-			}
-			fclose($fh);
 		}
 
 		// If requests are made,
 		if (!empty($additionalRequests)) {
 			$todaysRequestCount += $additionalRequests;
-			$fh = fopen($countFile, 'w');
-			fwrite($fh, date_format($lastDay, $datetime_format));
-			fwrite($fh, "\n" . $todaysRequestCount);
-			fclose($fh);
+			if (($fh = fopen($countFile, 'rw')) !== false) {
+				fwrite($fh, date_format($lastDay, $datetime_format));
+				fwrite($fh, "\n" . $todaysRequestCount);
+				fclose($fh);
+			} else {
+				$todaysRequestCount = false;
+			}
 		}
 
 		return $todaysRequestCount;
