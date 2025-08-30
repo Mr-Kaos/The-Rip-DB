@@ -32,49 +32,32 @@ class RipController extends Controller
 		switch ($this->getPage()) {
 			case 'rips/search':
 				$useAltName = ($_GET['use_secondary'] ?? 0) == 1;
-				$ripCount = $this->model->getCount(
-					$_GET['search'] ?? null,
-					$_GET['tags'] ?? [],
-					$_GET['jokes'] ?? [],
-					$_GET['games'] ?? [],
-					$_GET['rippers'] ?? [],
-					$_GET['genres'] ?? [],
-					$_GET['meta-jokes'] ?? [],
-					$_GET['metas'] ?? [],
-					$_GET['channel'] ?? null,
-					$useAltName
-				);
+				$tags = is_array($_GET['tags'] ?? null) ? $_GET['tags'] : [];
+				$jokes = is_array($_GET['jokes'] ?? null) ? $_GET['jokes'] : [];
+				$games = is_array($_GET['games'] ?? null) ? $_GET['games'] : [];
+				$rippers = is_array($_GET['rippers'] ?? null) ? $_GET['rippers'] : [];
+				$genres = is_array($_GET['genres'] ?? null) ? $_GET['genres'] : [];
+				$metaJokes = is_array($_GET['meta-jokes'] ?? null) ? $_GET['meta-jokes'] : [];
+				$metas = is_array($_GET['metas'] ?? null) ? $_GET['metas'] : [];
+
+				$ripCount = $this->model->getCount($_GET['search'] ?? null, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $_GET['channel'] ?? null, $useAltName);
 				$rowCount = $this->getRowCount();
 				$page = $this->getPageNumber();
 
 				// Get records of rips
 				$rips = [];
 				$offset = $this->getOffset($ripCount, '/rips');
-				$rips = $this->model->search(
-					$rowCount,
-					$offset,
-					$_GET['s'] ?? null,
-					$_GET['search'] ?? null,
-					$_GET['tags'] ?? [],
-					$_GET['jokes'] ?? [],
-					$_GET['games'] ?? [],
-					$_GET['rippers'] ?? [],
-					$_GET['genres'] ?? [],
-					$_GET['meta-jokes'] ?? [],
-					$_GET['metas'] ?? [],
-					$_GET['channel'] ?? null,
-					$useAltName
-				);
+				$rips = $this->model->search($rowCount, $offset, $_GET['s'] ?? null, $_GET['search'] ?? null, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $_GET['channel'] ?? null, $useAltName);
 				$this->setData('results', $rips);
 
 				// Get search filters
-				$this->setData('tags', $this->model->getFilterResults('Tag', $_GET['tags'] ?? []));
-				$this->setData('jokes', $this->model->getFilterResults('Joke', $_GET['jokes'] ?? []));
-				$this->setData('games', $this->model->getFilterResults('Game', $_GET['games'] ?? []));
-				$this->setData('rippers', $this->model->getFilterResults('Ripper', $_GET['rippers'] ?? []));
-				$this->setData('genres', $this->model->getFilterResults('Genre', $_GET['genres'] ?? []));
-				$this->setData('metaJokes', $this->model->getFilterResults('MetaJoke', $_GET['meta-jokes'] ?? []));
-				$this->setData('metas', $this->model->getFilterResults('Meta', $_GET['metas'] ?? []));
+				$this->setData('tags', $this->model->getFilterResults('Tag', $tags));
+				$this->setData('jokes', $this->model->getFilterResults('Joke', $jokes));
+				$this->setData('games', $this->model->getFilterResults('Game', $games));
+				$this->setData('rippers', $this->model->getFilterResults('Ripper', $rippers));
+				$this->setData('genres', $this->model->getFilterResults('Genre', $genres));
+				$this->setData('metaJokes', $this->model->getFilterResults('MetaJoke', $metaJokes));
+				$this->setData('metas', $this->model->getFilterResults('Meta', $metas));
 				$this->setData('channel', $this->model->getFilterResults('Channel', $_GET['channel'] ?? null));
 				$sort = [];
 				foreach ($_GET['s'] ?? [] as $col) {

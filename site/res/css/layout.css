@@ -285,6 +285,24 @@ button[disabled] {
 	display: none;
 }
 
+.input-timestamp {
+	display: flex;
+}
+
+.input-timestamp>div {
+	display: flex;
+	flex-direction: column;
+}
+
+.input-timestamp>div>span {
+	text-align: center;
+	margin: 0;
+	background-color: var(--element-color);
+	border-radius: 3px;
+	cursor: pointer;
+	user-select: none;
+}
+
 summary.filters {
 	user-select: none;
 }
@@ -562,6 +580,19 @@ div.filters>.search-element>input {
 	opacity: 40%;
 }
 
+/* Rip Page */
+
+.rip-container {
+	display: grid;
+	grid-template-columns: 3fr 2fr;
+	gap: 10px;
+}
+
+.rip-embed {
+	width: 100%;
+	min-height: 300px;
+}
+
 /* Rip Guesser Styles */
 
 .grid {
@@ -760,5 +791,13 @@ input[type="checkbox"]:checked+label.btn-plist>a:hover {
 	.sidebar-split {
 		display: grid;
 		grid-template-columns: 1fr 3r;
+	}
+
+	.rip-container {
+		grid-template-columns: 5fr 4fr;
+	}
+
+	.rip-embed {
+		min-height: 200px;
 	}
 }

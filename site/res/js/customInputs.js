@@ -9,6 +9,7 @@
 // Globals for accessing inputs from outside
 let inputTables = [];
 let searchElements = [];
+let timestamps = [];
 
 class CustomElement {
 	#element;
@@ -24,7 +25,8 @@ class CustomElement {
 
 class InputTable extends CustomElement {
 	#rowCount = 0;
-	#body = null
+	#body = null;
+	#template;
 
 	/**
 	 * Constructs a object reference to an InputTable "element"
@@ -32,7 +34,8 @@ class InputTable extends CustomElement {
 	 */
 	constructor(element) {
 		super(element);
-		this.#body = this.getElement().querySelector(`tbody#body_${this.getElement().id}`);
+		this.#body = element.querySelector(`tbody#body_${element.id}`);
+		this.#template = element.querySelector(`thead#temp_${element.id}>tr`);
 
 		// If values are prefilled, do not add an empty row.
 		if (element.getAttribute('data-value')) {
@@ -57,24 +60,20 @@ class InputTable extends CustomElement {
 	 * Adds a row to the InputTable element
 	 */
 	addRow() {
-		let template = this.getElement().querySelector(`thead#temp_${this.getElement().id}>tr`);
 		let removeButtons = this.#body.querySelectorAll(`button[btnRemove]`);
 
-		let clone = template.cloneNode(true);
+		let clone = this.#template.cloneNode(true);
 		clone.style = null;
 
 		// Remove the null form attribute from the template to add the cloned inputs to the form.
 		// Also create a unique ID for each input so the labels are associated correctly.
 		let inputs = clone.querySelectorAll('input,select,textarea,span.search-element');
 		for (let i = 0; i < inputs.length; i++) {
-			// If a search input, construct an instance of it
-			if (inputs[i].className == 'search-element') {
-				searchElements.push(new SearchElement(inputs[i]));
-			} else {
-				let label = inputs[i].parentElement.querySelector(`label[for="${inputs[i].id}"]`);
-				let newId = `${inputs[i].id}_${this.uniqid()}`;
-				inputs[i].removeAttribute('form');
-				inputs[i].id = newId;
+			let label = inputs[i].parentElement.querySelector(`label[for="${inputs[i].id}"]`);
+			let newId = `${inputs[i].id}_${this.uniqid()}`;
+			inputs[i].removeAttribute('form');
+			inputs[i].id = newId;
+			if (label != null) {
 				label.setAttribute('for', newId);
 			}
 		}
@@ -86,6 +85,8 @@ class InputTable extends CustomElement {
 		let removeButton = clone.querySelector('button[btnRemove]');
 		removeButton.disabled = !(this.#rowCount > 0);
 		removeButton.onclick = e => this.removeRow(clone);
+		// If any custom elements exist, initialise them.
+		setupCustomInputs(clone);
 
 		this.#body.append(clone);
 		this.#rowCount++;
@@ -469,6 +470,136 @@ class SearchElement extends CustomElement {
 }
 
 /**
+ * JavaScript wrapper for text inputs that are for timestamps.
+ */
+class TimestampElement extends CustomElement {
+	#secs = 0;
+	#mins = 0;
+	#hours = 0;
+	#inputElement;
+
+	constructor(element) {
+		super(element);
+		this.#inputElement = element.querySelector('input[type=text]');
+		this.#inputElement.setAttribute('maxlength', 8);
+		this.#inputElement.oninput = e => this.#readInput(e);
+
+		let btnUp = element.querySelector('span[up]');
+		let btnDown = element.querySelector('span[down]');
+
+		let interval = null;
+		btnUp.onmousedown = function () {
+			interval = setInterval(this.increment.bind(this), 60);
+		}.bind(this);
+		btnDown.onmousedown = function () {
+			interval = setInterval(this.decrement.bind(this), 60);
+		}.bind(this);
+
+		// Clear the interval if the mouse is released.
+		window.addEventListener('mouseup', function () {
+			clearInterval(interval);
+		});
+
+		// If a value is given, initialise the values.
+		if (this.#inputElement.value != '') {
+			let loadEvent = new Event('input', {
+				bubbles: true
+			});
+			this.#inputElement.dispatchEvent(loadEvent);
+		}
+	}
+
+	/**
+	 * Reads a manual timestamp input and finds its values for hours, minutes and seconds.
+	 * Also validates the input to ensure only valid timestamp characters are given
+	 * @param {Event} e
+	 */
+	#readInput(e) {
+		let value = e.target.value;
+		if (!isNaN(e.data) || e.data == ':' || e.data == undefined) {
+			// Only save the input if the regex is not matched (the regex finds invalid inputs)
+			let pattern = /[0-9]{2}:[0-9]{2}(:[0-9]{2})?/;
+			let matches = pattern.exec(value);
+			if (matches != null) {
+				let split = value.split(':');
+
+				// If timestamp includes hours:
+				if (split.length == 3) {
+					this.#hours = parseInt(split[0]);
+					this.#mins = parseInt(split[1]);
+					this.#secs = parseInt(split[2]);
+				}
+				// If timestamp is only minutes and seconds:
+				else if (split.length == 2) {
+					this.#mins = parseInt(split[0]);
+					this.#secs = parseInt(split[1]);
+				} else {
+					this.#secs = parseInt(split[0]);
+				}
+			}
+		} else {
+			e.target.value = value.substring(0, value.length - 1);
+		}
+	}
+
+	/**
+	 * Increments the time by one second.
+	 */
+	increment() {
+		this.#secs++;
+		if (this.#secs >= 60) {
+			this.#mins++;
+			this.#secs = 0;
+			if (this.#mins >= 60) {
+				this.#hours++;
+				this.#mins = 0;
+				if (this.#hours > 99) {
+					this.#hours = 99;
+				}
+			}
+		}
+		this.setValue();
+	}
+
+	/**
+	 * Decrements the time by one second.
+	 */
+	decrement() {
+		this.#secs--;
+		if (this.#secs < 0) {
+			this.#mins--;
+			if (this.#mins > 0) {
+				this.#secs = 59;
+			} else {
+				this.#secs = 0;
+			}
+			if (this.#mins < 0) {
+				this.#hours--;
+				if (this.#hours > 0) {
+					this.#mins = 59;
+				} else {
+					this.#mins = 0;
+				}
+				if (this.#hours < 0) {
+					this.#hours = 0;
+				}
+			}
+		}
+		this.setValue();
+	}
+
+	/**
+	 * Sets the string value of the timestamp input.
+	 */
+	setValue() {
+		let hrs = this.#hours < 10 ? `0${this.#hours}` : this.#hours;
+		let mins = this.#mins < 10 ? `0${this.#mins}` : this.#mins;
+		let secs = this.#secs < 10 ? `0${this.#secs}` : this.#secs;
+		this.#inputElement.value = `${hrs}:${mins}:${secs}`;
+	}
+}
+
+/**
  * Finds a parent element from the given child based on a specific attribute.
  * @param {Element} child The source element to search for its parent.
  * @param {Object} attributes A list of attributes the required parent element has. The keys must be a valid HTML attribute and the value must correspond to it. An array of values may also be specified if searching for one of multiple potential values.
@@ -521,6 +652,7 @@ function setupCustomInputs(mainElement) {
 	let inputTableElements = mainElement.querySelectorAll('table[InputTable]');
 	let dropdownElements = mainElement.querySelectorAll('select[modal]');
 	let searchInputElements = mainElement.querySelectorAll('span.search-element');
+	let timestampElements = mainElement.querySelectorAll('div.input-timestamp');
 
 	if (inputTableElements.length > 0) {
 		prepareInputTables(inputTableElements);
@@ -532,6 +664,10 @@ function setupCustomInputs(mainElement) {
 
 	if (dropdownElements.length > 0) {
 		prepareDropdownElements(dropdownElements);
+	}
+
+	if (timestampElements.length > 0) {
+		prepareTimestamps(timestampElements);
 	}
 
 	/**
@@ -601,6 +737,13 @@ function setupCustomInputs(mainElement) {
 					}
 				}
 			}
+		}
+	}
+
+	function prepareTimestamps(elements) {
+		// Reverse list so the deepest nodes get configured first.
+		for (let i = 0; i < elements.length; i++) {
+			timestamps.push(new TimestampElement(elements[i]));
 		}
 	}
 }

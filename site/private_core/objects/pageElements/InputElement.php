@@ -34,6 +34,7 @@ enum InputTypes: string
 	case list = 'list';
 	case dropdown = 'dropdown';
 	case custom = 'custom';
+	case timestamp = 'timestamp';
 }
 
 /**
@@ -156,8 +157,6 @@ class InputElement extends PageObject
 			unset($this->attributes['value-alt']);
 		}
 
-		$attributes = $this->buildAttributes($this->attributes);
-
 		if (!$error) {
 			switch ($this->type) {
 				case InputTypes::button:
@@ -165,10 +164,10 @@ class InputElement extends PageObject
 					if (!array_key_exists('type', $this->attributes)) {
 						$type = 'type="button"';
 					}
-					$field .= '<button id="' . $id . '" ' . $type . "$attributes>$this->label</button>";
+					$field .= '<button id="' . $id . '" ' . $type . $this->buildAttributes($this->attributes) . ">$this->label</button>";
 					break;
 				case InputTypes::textarea:
-					$field .= '<textarea id="' . $id . '" ' . $attributes . '>' . $value . '</textarea>';
+					$field .= '<textarea id="' . $id . '" ' . $this->buildAttributes($this->attributes) . '>' . $value . '</textarea>';
 					break;
 				case InputTypes::checkbox:
 					// If an alt value is specified, create the hidden checkbox.
@@ -179,24 +178,31 @@ class InputElement extends PageObject
 						unset($this->attributes['value']);
 						$field .= '<input id="hidden-' . $id . '" type="hidden"' . $this->buildAttributes($this->attributes) . ' value="' . $valueAlt . '">';
 					}
-					$field .= '<input id="' . $id . '" type="' . $this->type->name . '" ' . $value . "$attributes>";
+					$field .= '<input id="' . $id . '" type="' . $this->type->name . '" ' . $value . $this->buildAttributes($this->attributes) . '>';
 					break;
 				case InputTypes::list:
-					$field .= '<input id="hidden-' . $id . '" type="hidden"' . $attributes . ' value="0">' . '<input id="' . $id . '" type="' . $this->type->name . '"' . "$attributes>";
+					$field .= '<input id="hidden-' . $id . '" type="hidden"' . $this->buildAttributes($this->attributes) . ' value="0">' . '<input id="' . $id . '" type="' . $this->type->name . '"' .  $this->buildAttributes($this->attributes) . '>';
 					break;
 				case InputTypes::datetime:
-					$field .= '<input id="' . $id . '" type="datetime"' . $attributes . ">";
+					$field .= '<input id="' . $id . '" type="datetime"' . $this->buildAttributes($this->attributes) . '>';
 					break;
 				case InputTypes::radio:
-					$field .= '<input id="' . $id . '" type="radio"' . $attributes . ">";
+					$field .= '<input id="' . $id . '" type="radio"' . $this->buildAttributes($this->attributes) . ">";
 					break;
 				case InputTypes::range:
 					$initVal = $this->attributes['value'] ?? 0;
 					$script = 'oninput="this.nextElementSibling.innerText = this.value;"';
-					$field .= '<div>' . $this->label . '<input id="' . $id . '" type="' . $this->type->value . '"' . $attributes . $script . '><span id="val_' . $id . '">' . $initVal . '</span></div>';
+					$field .= '<div>' . $this->label . '<input id="' . $id . '" type="' . $this->type->value . '"' . $this->buildAttributes($this->attributes) . $script . '><span id="val_' . $id . '">' . $initVal . '</span></div>';
+					break;
+				case InputTypes::timestamp:
+					$this->attributes['maxlength'] = 8;
+					if (($this->attributes['required'] ?? false) == true && !isset($this->attributes['value'])) {
+						$this->attributes['value'] = '00:00:00';
+					}
+					$field .= '<div class="input-timestamp"><input id="' . $id . '" type="text"' . $this->buildAttributes($this->attributes) . "><div><span up>+</span><span down>-</span></div></div>";
 					break;
 				default:
-					$field .= '<input id="' . $id . '" type="' . $this->type->value . '"' . "$attributes>";
+					$field .= '<input id="' . $id . '" type="' . $this->type->value . '" ' . $this->buildAttributes($this->attributes) . '>';
 			}
 		}
 
