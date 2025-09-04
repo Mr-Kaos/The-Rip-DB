@@ -3,83 +3,105 @@
 		<h2>This rip does not exist.</h2>
 	<?php else: ?>
 		<section id="summary">
-			<h1><?= $rip['RipName'] ?></h1>
+			<h1><?= $rip['RipName'] ?><?= empty($rip['MixName']) ? '' : ' (' . $rip['MixName'] . ')' ?> - <?= $rip['GameName'] ?></h1>
 			<p><?= $rip['RipDescription'] ?></p>
 			<a href="/rips/edit/<?= $rip['RipID']; ?>">Edit Rip</a>
 		</section>
-		<section id="jokes" style="float:left">
-			<?php if (!empty($jokes)): ?>
-				<table>
-					<caption>Jokes In This Rip:</caption>
-					<thead>
-						<tr>
-							<th>Timestamp</th>
-							<th>Joke</th>
-							<th>Comment</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php foreach ($jokes as $joke): ?>
+		<div class="rip-container">
+			<section id="jokes">
+				<?php if (!empty($jokes)): ?>
+					<table style="width:100%">
+						<caption>Jokes In This Rip:</caption>
+						<thead>
 							<tr>
-								<td><?php if (isset($joke['start'])) {
-										if (!empty($rip['RipYouTubeID'])) {
-											echo '<a href="#" onclick="setYouTubeTimestamp(\'' . $joke['start'] . '\')">' . $joke['start'] . ' -> ' . $joke['end'] . '</a>';
-										} else {
-											echo $joke['start'] . ' -> ' . $joke['end'];
-										}
-									} ?>
-								</td>
-								<td><?= $rip['Jokes'][$joke['JokeID']]['JokeName'] ?></td>
-								<td><?= $rip['Jokes'][$joke['JokeID']]['JokeComment'] ?></td>
+								<th>Timestamp</th>
+								<th>Joke</th>
+								<th>Comment</th>
 							</tr>
-						<?php endforeach; ?>
+						</thead>
+						<tbody>
+							<?php foreach ($jokes as $joke): ?>
+								<tr>
+									<td><?php if (isset($joke['start'])) {
+											if (!empty($rip['RipYouTubeID'])) {
+												echo '<a href="#" onclick="setYouTubeTimestamp(\'' . $joke['start'] . '\')">' . $joke['start'] . ' -> ' . $joke['end'] . '</a>';
+											} else {
+												echo $joke['start'] . ' -> ' . $joke['end'];
+											}
+										} ?>
+									</td>
+									<td><a href="/rips?jokes[]=<?= $joke['JokeID'] ?>"><?= $rip['Jokes'][$joke['JokeID']]['JokeName'] ?></a></td>
+									<td><?= $rip['Jokes'][$joke['JokeID']]['JokeComment'] ?></td>
+								</tr>
+							<?php endforeach; ?>
+						</tbody>
+					</table>
+				<?php else: ?>
+					<p>This rip has no jokes documented yet.</p>
+					<p>Why not be the first to <a href="/rips/edit/<?= $rip['RipID']; ?>">add them</a>?</p>
+				<?php endif; ?>
+			</section>
+			<section id="other">
+				<table style="width:100%">
+					<tbody>
+						<tr>
+							<th>Video</th>
+							<td style="text-align:center">
+								<?php if (!empty($rip['RipYouTubeID'])): ?>
+									<iframe class="rip-embed" id="yt-embed" src="https://www.youtube-nocookie.com/embed/<?= $rip['RipYouTubeID']; ?>?vq=240p" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+								<?php endif; ?>
+								<a href="<?= $rip['RipURL'] ?>" target="_blank">YouTube</a>
+							</td>
+						</tr>
+						<tr>
+							<th>Upload Date</th>
+							<td><?= date_format(new DateTime($rip['RipDate']), 'M d, Y') ?></td>
+						</tr>
+						<tr>
+							<th>Channel</th>
+							<td><a href="<?= $rip['ChannelURL'] ?>" target="_blank"><?= $rip['ChannelName'] ?></a></td>
+						</tr>
+						<tr>
+							<th>Length</th>
+							<td><?= $rip['RipLength'] ?></td>
+						</tr>
+						<tr>
+							<th>Game</th>
+							<td><button type="button" onclick="window.location='/rips?games[]=<?= $rip['RipGame'] ?>'"><?= $rip['GameName']  ?></button></td>
+						</tr>
+						<tr>
+							<th>Rippers</th>
+							<td>
+								<?php foreach ($rip['Rippers'] as $ripper): ?>
+									<button type="button" onclick="window.location='/rips?rippers[]=<?= $ripper['RipperID'] ?>'"><?= $ripper['RipperName']  ?></button>
+								<?php endforeach; ?>
+							</td>
+						</tr>
+						<tr>
+							<th>Genres</th>
+							<td>
+								<?php foreach ($rip['Genres'] as $genre): ?>
+									<button type="button" onclick="window.location='/rips?genres[]=<?= $genre['GenreID'] ?>'"><?= $genre['GenreName']  ?></button>
+								<?php endforeach; ?>
+							</td>
+						</tr>
+						<tr>
+							<th>Other Links</th>
+							<td>
+								<ul>
+									<?php if (!empty($rip['RipAlternateURL'])): ?>
+										<li><a href="<?= $rip['RipAlternateURL'] ?>" target="_blank">Album Release</a></li>
+									<?php endif; ?>
+									<?php if (!empty($rip['WikiURL'])): ?>
+										<li><a href="<?= $rip['WikiURL'] ?>">Wiki Page</a></li>
+									<?php endif; ?>
+								</ul>
+							</td>
+						</tr>
 					</tbody>
 				</table>
-			<?php else: ?>
-				<p>This rip has no jokes documented yet.</p>
-				<p>Why not be the first to <a href="/rips/edit/<?= $rip['RipID']; ?>">add them</a>?</p>
-			<?php endif; ?>
-		</section>
-		<section id="other" style="float:right;width:40%">
-			<table>
-				<tbody>
-					<tr>
-						<th>Video/Link</th>
-						<td>
-							<a href="<?= $rip['RipURL'] ?>" target="_blank">YouTube</a>
-							<?php if (!empty($rip['RipYouTubeID'])): ?>
-								<br>
-								<iframe id="yt-embed" width="640" height="360" style="width:fit-content" src="https://www.youtube-nocookie.com/embed/<?= $rip['RipYouTubeID']; ?>?vq=240p" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-							<?php endif; ?>
-						</td>
-					</tr>
-					<tr>
-						<th>Upload Date</th>
-						<td><?= date_format(new DateTime($rip['RipDate']), 'M d, Y') ?></td>
-					</tr>
-					<tr>
-						<th>Rip Channel</th>
-						<td><a href="<?= $rip['ChannelURL'] ?>" target="_blank"><?= $rip['ChannelName'] ?></a></td>
-					</tr>
-					<tr>
-						<th>Length</th>
-						<td><?= $rip['RipLength'] ?></td>
-					</tr>
-					<tr>
-						<th>Game</th>
-						<td><?= $rip['GameName'] ?></td>
-					</tr>
-					<tr>
-						<th>Genres</th>
-						<td>
-							<?php foreach ($rip['Genres'] as $genre): ?>
-								<?= $genre['GenreName'] ?>
-							<?php endforeach; ?>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</section>
+			</section>
+		</div>
 	<?php endif; ?>
 </main>
 <script src="/res/js/rip.js"></script>

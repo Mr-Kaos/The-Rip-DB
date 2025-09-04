@@ -41,7 +41,7 @@ use RipDB\Model\RipModel as r;
 			<?php if (!empty($results)): ?>
 				<?php foreach ($results as $record): ?>
 					<tr rip-id="<?= $record['RipID'] ?>">
-						<td><a href="/rips/<?= $record['RipID'] ?>"><?= $record['RipName'] . ' - ' . $record['GameName'] ?></a></td>
+						<td><a href="/rips/<?= $record['RipID'] ?>"><?= $record['RipName'] . (empty($record['MixName']) ? '' : ' (' . $record['MixName'] . ')') . ' - ' . $record['GameName'] ?></a></td>
 						<td>
 							<?php if (!empty($record['RipAlternateURL'])): ?>
 								<a href="<?= $record['RipAlternateURL']; ?>" target="_blank"><?= $record['RipAlternateName'] ?></a>

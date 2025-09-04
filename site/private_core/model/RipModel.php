@@ -8,7 +8,7 @@ class RipModel extends Model implements ResultsetSearch
 {
 	const TABLE = 'Rips';
 	const VIEW = 'vw_RipsDetailed';
-	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipYouTubeID', 'RipLength', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL'];
+	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipYouTubeID', 'RipLength', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL', 'MixName', 'WikiURL'];
 	const SORT_RipName = 'Name';
 	const SORT_RipAlternateName = 'AltName';
 	const SORT_RipDescription = 'Description';

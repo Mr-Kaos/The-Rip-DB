@@ -28,6 +28,7 @@ DROP PROCEDURE IF EXISTS RipDB.usp_InsertRip;
 
 CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN RipName varchar(1024),
+	IN Mix varchar(256),
 	IN AlternateName varchar(2048),
 	IN Description text,
 	IN UploadDate datetime,
@@ -39,7 +40,8 @@ CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN Channel int,
 	IN Genres json,
 	IN Jokes json,
-	IN Rippers json)
+	IN Rippers json,
+	IN WikiLink varchar(8192))
 BEGIN
 	DECLARE new_RipID int;
 	DECLARE Id int;
@@ -55,9 +57,9 @@ BEGIN
 	START TRANSACTION;
  
 	INSERT INTO Rips
-		(RipName, RipDate, RipAlternateName, RipDescription, RipLength, RipGame, RipURL, RipYouTubeID, RipAlternateURL, RipChannel)
+		(RipName, MixName, RipDate, RipAlternateName, RipDescription, RipLength, RipGame, RipURL, RipYouTubeID, RipAlternateURL, RipChannel, WikiURL)
 	VALUES
-		(RipName, UploadDate, AlternateName, Description, RipLength, Game, URL, YTID, AltURL, Channel);
+		(RipName, Mix, UploadDate, AlternateName, Description, RipLength, Game, URL, YTID, AltURL, Channel, WikiLink);
 
 	SET new_RipID = LAST_INSERT_ID();
 	

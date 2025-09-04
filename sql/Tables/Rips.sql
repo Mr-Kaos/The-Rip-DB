@@ -1,6 +1,7 @@
 CREATE TABLE Rips (
 	RipID int NOT NULL AUTO_INCREMENT,
 	RipName varchar(1024) NOT NULL COMMENT 'Name of rip given on YouTube',
+	MixName varchar(256) DEFAULT NULL,
 	RipDate datetime NOT NULL COMMENT 'Date rip was uploaded',
 	RipAlternateName varchar(2048) DEFAULT NULL COMMENT 'Alternative name for rip (album release name)',
 	RipLength time NOT NULL DEFAULT 0,
@@ -10,6 +11,7 @@ CREATE TABLE Rips (
 	RipAlternateURL varchar(512) DEFAULT NULL COMMENT 'An alternate URL of the rip, typically for the alternate release',
 	RipDescription text DEFAULT NULL,
 	RipChannel int DEFAULT NULL COMMENT 'The YouTube channel that uploaded the rip',
+	WikiURL varchar(8192) DEFAULT NULL,
 	CONSTRAINT Channels_RipChannel_FK FOREIGN KEY (RipChannel) REFERENCES Channels(ChannelID),
 	CONSTRAINT Games_RipGame_FK FOREIGN KEY (RipGame) REFERENCES Games(GameID),
 	CONSTRAINT UQ_RipURL UNIQUE KEY (RipURL),

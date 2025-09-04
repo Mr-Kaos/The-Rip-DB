@@ -12,10 +12,11 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<legend>Rip Information</legend>
 			<div style="display:flex;gap:10px">
 				<?= (new o\InputElement('Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 1024, 'required' => true], null, true))->buildElement() ?>
-				<?= (new o\InputElement('Alternate Name', o\InputTypes::text, ['name' => 'altName', 'maxlength' => 2048], null, true))->buildElement() ?>
+				<?= (new o\InputElement('Mix Name', o\InputTypes::text, ['name' => 'mixName', 'maxlength' => 256], null, true))->buildElement() ?>
 			</div>
-			<?= (new o\InputElement('Upload Date', o\InputTypes::date, ['name' => 'date', 'required' => true], null, true))->buildElement() ?>
-			<?= (new o\InputElement('Rip URL', o\InputTypes::url, ['name' => 'url', 'required' => true, 'style' => 'width:100%'], null, true))->buildElement() ?>
+			<?= (new o\InputElement('Alternate Name', o\InputTypes::text, ['name' => 'altName', 'maxlength' => 2048, 'style' => 'width:100%'], null, true))->buildElement() ?>
+			<?= (new o\InputElement('Upload Date', o\InputTypes::date, ['name' => 'date', 'required' => true, 'value' => date_format(new DateTime(), 'Y-m-d')], null, true))->buildElement() ?>
+			<?= (new o\InputElement('Rip URL', o\InputTypes::url, ['name' => 'url', 'required' => true, 'style' => 'width:100%', 'oninput' => 'getYouTubeID(this.value)'], null, true))->buildElement() ?>
 			<?= (new o\InputElement('YouTube Video ID', o\InputTypes::text, ['name' => 'ytId', 'minlength' => 11, 'maxlength' => 11, 'pattern' => '[A-Za-z0-9_\-]{11}'], null, true))->buildElement() ?>
 			<?= (new o\InputElement('Rip Alternative URL', o\InputTypes::url, ['name' => 'alturl', 'style' => 'width:100%', 'title' => 'URl of an alternative release for the rip, e.g. the album release URL.'], null, true))->buildElement() ?>
 			<?= (new o\DropdownElement('Rip Channel', $channels, ['name' => 'channel', 'required' => true, 'modal' => '/channels/new', 'modal-tgt-id' => 'new-channel', 'modal-value-key' => 'NewChannel'], null, true))->buildElement() ?>
@@ -28,6 +29,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 				<?= (new o\SearchElement('Game', '/search/games', false, null, ['name' => 'game', 'required' => true, 'modal' => '/games/new', 'modal-tgt-id' => 'new-game', 'modal-value-key' => 'NewGame'], null, true))->buildElement() ?>
 				<?= (new o\SearchElement('Genres', '/search/genres', true, null, ['name' => 'genres[]', 'required' => true], null, true))->buildElement(); ?>
 			</div>
+			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'style' => 'width:100%'], null, true))->buildElement() ?>
 		</fieldset>
 		<fieldset style="grid-column:span 2">
 			<legend>Rippers</legend>

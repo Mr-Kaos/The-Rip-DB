@@ -234,6 +234,7 @@ class RipController extends Controller
 			case 'rips/new':
 				// Validate data in order of stored procedure parameters.
 				$validated['Name'] = $this->validateString($_POST['name'], 'The given rip name is invalid.', 1024);
+				$validated['Mix'] = $this->validateString($_POST['mixName'], 'The given mix name is invalid.', 256);
 				$validated['AlternateName'] = $this->validateString($_POST['altName'], 'The given alternate name is invalid.');
 				$validated['Description'] = $this->validateString($_POST['description'], 'The given description is invalid.');
 				$validated['UploadDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
@@ -287,6 +288,7 @@ class RipController extends Controller
 				} else {
 					$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
 				}
+				$validated['WikiLink'] = $this->validateString($_POST['url'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 
 				if ($this->getPage() == 'rips/new') {
 					$result = $this->submitRequest($validated, 'usp_InsertRip', '/rips', 'Rip successfully added!');

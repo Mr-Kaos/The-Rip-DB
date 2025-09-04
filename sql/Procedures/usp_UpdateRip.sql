@@ -5,6 +5,7 @@ DROP PROCEDURE IF EXISTS usp_UpdateRip;
 CREATE PROCEDURE usp_UpdateRip(
 	IN RipIDTarget int,
 	IN Name varchar(1024),
+	IN Mix varchar(256),
 	IN AlternateName varchar(2048),
 	IN Description text,
 	IN UploadDate datetime,
@@ -16,7 +17,8 @@ CREATE PROCEDURE usp_UpdateRip(
 	IN Channel int,
 	IN Genres json,
 	IN Jokes json,
-	IN Rippers json)
+	IN Rippers json,
+	IN WikiLink varchar(8192))
 BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	BEGIN
@@ -26,12 +28,13 @@ BEGIN
 
 	START TRANSACTION;
 
-	-- Check to ensure the speified rip actually exists.
+	-- Check to ensure the specified rip actually exists.
 	IF (SELECT RipID FROM Rips WHERE RipID = RipIDTarget) IS NOT NULL THEN
  
 		-- Update rip record
 		UPDATE Rips SET
 			RipName = Name,
+			MixName = Mix,
 			RipDate = UploadDate,
 			RipAlternateName = AlternateName,
 			RipDescription = Description,
@@ -40,7 +43,8 @@ BEGIN
 			RipURL = URL,
 			RipYouTubeID = YTID,
 			RipAlternateURL = AltURL,
-			RipChannel = Channel
+			RipChannel = Channel,
+			WikiURL = WikiLink
 		WHERE RipID = RipIDTarget;
 	
 		-- RIPPER DATA

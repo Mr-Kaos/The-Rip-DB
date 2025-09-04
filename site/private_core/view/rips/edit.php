@@ -12,8 +12,9 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<legend>Rip Information</legend>
 			<div style="display:flex;gap:10px">
 				<?= (new o\InputElement('Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 1024, 'required' => true, 'value' => $rip['RipName']], null, true))->buildElement() ?>
-				<?= (new o\InputElement('Alternate Name', o\InputTypes::text, ['name' => 'altName', 'maxlength' => 2048, 'value' => $rip['RipAlternateName']], null, true))->buildElement() ?>
+				<?= (new o\InputElement('Mix Name', o\InputTypes::text, ['name' => 'mixName', 'maxlength' => 256, 'required' => true, 'value' => $rip['MixName']], null, true))->buildElement() ?>
 			</div>
+			<?= (new o\InputElement('Alternate Name', o\InputTypes::text, ['name' => 'altName', 'maxlength' => 2048, 'value' => $rip['RipAlternateName']], null, true))->buildElement() ?>
 			<?= (new o\InputElement('Upload Date', o\InputTypes::date, ['name' => 'date', 'required' => true, 'value' => date_format(new DateTime($rip['RipDate']), 'Y-m-d')], null, true))->buildElement() ?>
 			<?= (new o\InputElement('Rip URL', o\InputTypes::url, ['name' => 'url', 'required' => true, 'value' => $rip['RipURL'], 'style' => 'width:100%'], null, true))->buildElement() ?>
 			<?= (new o\InputElement('YouTube Video ID', o\InputTypes::text, ['name' => 'ytId', 'minlength' => 11, 'maxlength' => 11, 'value' => $rip['RipYouTubeID'], 'pattern' => '[A-Za-z0-9_\-]{11}'], null, true))->buildElement() ?>
@@ -28,6 +29,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 				<?= (new o\SearchElement('Game', '/search/games', false, [$rip['RipGame'] => $rip['GameName']], ['name' => 'game', 'required' => true, 'modal' => '/games/new', 'modal-tgt-id' => 'new-game', 'modal-value-key' => 'NewGame'], null, true))->buildElement() ?>
 				<?= (new o\SearchElement('Genres', '/search/genres', true, $rip['Genres'], ['name' => 'genres[]', 'required' => true], null, true))->buildElement(); ?>
 			</div>
+			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'value' => $rip['WikiURL'], 'style' => 'width:100%'], null, true))->buildElement() ?>
 		</fieldset>
 		<fieldset style="grid-column:span 2">
 			<legend>Rippers</legend>
