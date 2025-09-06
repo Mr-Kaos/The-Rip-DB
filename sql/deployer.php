@@ -33,10 +33,12 @@ const TABLES = [
 	'JokeMetas',
 	'JokeTags',
 	'Genres',
+	'Composers',
 	'Rips',
 	'RipJokes',
 	'RipGenres',
 	'RipRippers',
+	'RipComposers',
 	'RipGuesserGame',
 	'RipGuesserUpvotes',
 	'RipJokeFeedback',
@@ -69,6 +71,8 @@ const PROCEDURES = [
 	'usp_UpdateGame',
 	'usp_InsertRipper',
 	'usp_UpdateRipper',
+	'usp_InsertComposer',
+	'usp_UpdateComposer',
 	'usp_PurgeInactiveRipGuesserGames',
 	'usp_NewRipGuesserGame',
 	'usp_PingRipGuesserGame',
@@ -82,7 +86,7 @@ const PROCEDURES = [
 	'usp_InsertPlaylist',
 	'usp_UpdatePlaylist',
 	'usp_DeletePlaylist',
-	'usp_ClaimPlaylists'
+	'usp_ClaimPlaylists',
 ];
 const TRIGGERS = [
 	'b_ins_EnsureSinglePrimaryTag',

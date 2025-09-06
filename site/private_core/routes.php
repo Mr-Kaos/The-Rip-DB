@@ -150,6 +150,25 @@ Flight::group('/tags', function () {
 	});
 });
 
+// Composer Pages
+Flight::group('/composers', function () {
+	Flight::route('/', function () {
+		displayPage('composers/search', 'ComposerController', [], 'Composers');
+	});
+	Flight::route('POST /new', function () {
+		submitForm('composers/new', 'ComposerController');
+	});
+	Flight::route('/new', function () {
+		displayPage('composers/new', 'ComposerController', [], 'New Composer');
+	});
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('composers/edit', 'ComposerController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('composers/edit', 'ComposerController', ['id' => $id], 'Edit Composer');
+	});
+});
+
 // Game Pages
 Flight::group('/games', function () {
 	Flight::route('/', function () {

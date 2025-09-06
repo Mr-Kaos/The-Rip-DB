@@ -21,7 +21,12 @@ if ($in == 'Y' || $in == '') {
 	// NEW TABLES
 	// ----------
 
-	// None made for this version.
+	$files = [
+		'Composers',
+		'RipComposers'
+	];
+
+	deployFiles($pdo, 'Tables', $files);
 
 	// -------------------
 	// TABLE MODIFICATIONS
