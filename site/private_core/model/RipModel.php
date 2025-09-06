@@ -258,84 +258,14 @@ class RipModel extends Model implements ResultsetSearch
 
 	public function getCount(?string $name = null, array $tags = [], array $jokes = [], array $games = [], array $rippers = [], array $genres = [], array $metaJokes = [], array $metas = [], ?int $channel = null, bool $useAltName = false): int
 	{
-		$where = '';
-		$params = [];
+		$qry = $this->generateRipQuery(self::VIEW, $name, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $channel, $useAltName)
+			->columns('RipID')
+			->groupBy('RipID');
 
-		// Apply name filter if name is given.
-		if (!empty($name)) {
-			if ($useAltName) {
-				$where .= ' AND RipAlternateName = ?';
-			} else {
-				$where .= ' AND RipName = ?';
-			}
-			array_push($params, $name);
-		}
+		$count = $this->db->execute('SELECT COUNT(*) cnt FROM (' . $qry->buildSelectQuery() . ')a', $qry->getValues())
+			->fetch(\PDO::FETCH_ASSOC);
 
-		// Apply tag filter if tags are given.
-		if (!empty($tags)) {
-			$temp = array_fill(0, count($tags), '?');
-			$where .= ' AND (`TagID` = ' . implode(' AND `TagID` = ', $temp) . ')';
-			array_push($params, ...$tags);
-		}
-
-		// Apply joke filter if jokes are given.
-		if (!empty($jokes)) {
-			$temp = array_fill(0, count($jokes), '?');
-			$where .= ' AND (`JokeID` = ' . implode(' AND `JokeID` = ', $temp) . ')';
-			array_push($params, ...$jokes);
-		}
-
-		// Apply game filter if games are given.
-		if (!empty($games)) {
-			$temp = array_fill(0, count($games), '?');
-			$where .= ' AND (`RipGame` = ' . implode(' OR `RipGame` = ', $temp) . ')';
-			array_push($params, ...$games);
-		}
-
-		// Apply game filter if rippers are given.
-		if (!empty($rippers)) {
-			$temp = array_fill(0, count($rippers), '?');
-			$where .= ' AND (`RipperID` = ' . implode(' OR `RipperID` = ', $temp) . ')';
-			array_push($params, ...$rippers);
-		}
-
-		// Apply genre filter if genres are given.
-		if (!empty($genres)) {
-			$temp = array_fill(0, count($genres), '?');
-			$where .= ' AND (`GenreID` = ' . implode(' OR `GenreID` = ', $temp) . ')';
-			array_push($params, ...$genres);
-		}
-
-		// Apply meta joke filter if genres are given.
-		if (!empty($metaJokes)) {
-			$temp = array_fill(0, count($metaJokes), '?');
-			$where .= ' AND (`MetaJokeID` = ' . implode(' OR `MetaJokeID` = ', $temp) . ')';
-			array_push($params, ...$metaJokes);
-		}
-
-		// Apply meta filter if genres are given.
-		if (!empty($metas)) {
-			$temp = array_fill(0, count($metas), '?');
-			$where .= ' AND (`MetaID` = ' . implode(' OR `MetaID` = ', $temp) . ')';
-			array_push($params, ...$metas);
-		}
-
-		// Apply channel filter if a channel is given.
-		if (!empty($channel)) {
-			$where .= ' AND (`RipChannel` = ?)';
-			array_push($params, $channel);
-		}
-
-		$qry = "SELECT COUNT(*) AS `count` FROM (SELECT RipID FROM `vw_RipsDetailed` ";
-		if (!empty($where)) {
-			// remove the leading AND
-			$where = substr($where, 4);
-			$qry .= "WHERE $where";
-		}
-		$qry .= ' GROUP BY RipID) a';
-
-		$result = $this->db->execute($qry, $params)->fetch();
-		return $result['count'];
+		return $count['cnt'] ?? 0;
 	}
 
 	public function getRandomRip()
@@ -353,7 +283,15 @@ class RipModel extends Model implements ResultsetSearch
 
 		// Apply name search if name is given.
 		if (!empty($name)) {
-			$qry->ilike($useAltName ? 'RipAlternateName' : 'RipName', "%$name%");
+			if ($useAltName) {
+				$qry->ilike('RipAlternateName', "%$name%");
+			} else {
+				$qry->beginOr()
+					->ilike('RipName', "%$name%")
+					->ilike('GameName', "%$name%")
+					->ilike('MixName', "%$name%")
+					->closeOr();
+			}
 		}
 
 		// Apply tag search if tags are given.
