@@ -405,6 +405,9 @@ Flight::group('/search', function () {
 	Flight::route('GET /channels', function () {
 		performAPIRequest('search', 'channels', HttpMethod::GET);
 	});
+	Flight::route('GET /composers', function () {
+		performAPIRequest('search', 'composers', HttpMethod::GET);
+	});
 	Flight::route('GET /@other', function ($other) {
 		http_response_code(404);
 		die();

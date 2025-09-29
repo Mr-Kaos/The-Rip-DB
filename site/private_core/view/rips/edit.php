@@ -12,7 +12,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<legend>Rip Information</legend>
 			<div style="display:flex;gap:10px">
 				<?= (new o\InputElement('Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 1024, 'required' => true, 'value' => $rip['RipName']], null, true))->buildElement() ?>
-				<?= (new o\InputElement('Mix Name', o\InputTypes::text, ['name' => 'mixName', 'maxlength' => 256, 'required' => true, 'value' => $rip['MixName']], null, true))->buildElement() ?>
+				<?= (new o\InputElement('Mix Name', o\InputTypes::text, ['name' => 'mixName', 'maxlength' => 256, 'value' => $rip['MixName']], null, true))->buildElement() ?>
 			</div>
 			<?= (new o\InputElement('Alternate Name', o\InputTypes::text, ['name' => 'altName', 'maxlength' => 2048, 'value' => $rip['RipAlternateName']], null, true))->buildElement() ?>
 			<?= (new o\InputElement('Upload Date', o\InputTypes::date, ['name' => 'date', 'required' => true, 'value' => date_format(new DateTime($rip['RipDate']), 'Y-m-d')], null, true))->buildElement() ?>
@@ -30,6 +30,10 @@ include_once('private_core/objects/pageElements/InputTable.php');
 				<?= (new o\SearchElement('Genres', '/search/genres', true, $rip['Genres'], ['name' => 'genres[]', 'required' => true], null, true))->buildElement(); ?>
 			</div>
 			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'value' => $rip['WikiURL'], 'style' => 'width:100%'], null, true))->buildElement() ?>
+			<?php
+			$composerList = new o\SearchElement('Composer/Artist', '/search/composers', false, null, ['name' => 'composers[]', 'modal' => '/composers/new', 'modal-tgt-id' => 'new-composer', 'modal-value-key' => 'NewComposer']);
+			?>
+			<?= (new o\InputTable('Composers/Artists', [$composerList], ['value' => $rip['Composers']]))->buildElement() ?>
 		</fieldset>
 		<fieldset style="grid-column:span 2">
 			<legend>Rippers</legend>

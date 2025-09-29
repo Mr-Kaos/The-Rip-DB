@@ -41,6 +41,7 @@ CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN Genres json,
 	IN Jokes json,
 	IN Rippers json,
+	IN Composers json,
 	IN WikiLink varchar(8192))
 BEGIN
 	DECLARE new_RipID int;
@@ -90,6 +91,19 @@ BEGIN
 			(RipID, JokeId, JokeTimestamps, JokeComment)
 		VALUES
 			(new_RipID, Id, extractedValA, extractedValB);
+		
+		SET i = i + 1;
+	END WHILE;
+
+	SET i = 0;
+	-- Create composer associations
+	WHILE i < JSON_LENGTH(Composers) DO
+		SELECT JSON_UNQUOTE(JSON_EXTRACT(Composers, CONCAT('$[', i ,']'))) INTO Id;
+		
+		INSERT INTO RipComposers
+			(RipID, ComposerID)
+		VALUES
+			(new_RipID, Id);
 		
 		SET i = i + 1;
 	END WHILE;

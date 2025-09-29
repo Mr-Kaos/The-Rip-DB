@@ -18,6 +18,7 @@ CREATE PROCEDURE usp_UpdateRip(
 	IN Genres json,
 	IN Jokes json,
 	IN Rippers json,
+	IN Composers json,
 	IN WikiLink varchar(8192))
 BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -78,6 +79,22 @@ BEGIN
 		WHERE JSON_UNQUOTE(k.JokeIDJSON) NOT IN (
 			SELECT JokeID
 			FROM RipJokes
+			WHERE RipID = RipIDTarget
+		);
+
+		-- COMPOSER DATA
+
+		-- Delete all composers so they can be re-inserted again.
+		DELETE FROM RipComposers
+		WHERE RipId = RipIDTarget;
+
+		-- Add new composers
+		INSERT INTO RipComposers (RipID, ComposerID)
+		SELECT RipIDTarget, JSON_UNQUOTE(g.ComposerIDJSON)
+		FROM JSON_TABLE (Composers, '$[*]' COLUMNS(rn FOR ORDINALITY, ComposerIDJSON JSON PATH '$')) g
+		WHERE JSON_UNQUOTE(g.ComposerIDJSON) NOT IN (
+			SELECT ComposerID
+			FROM RipComposers
 			WHERE RipID = RipIDTarget
 		);
 	

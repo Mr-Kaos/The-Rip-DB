@@ -31,6 +31,7 @@ class RipModel extends Model implements ResultsetSearch
 		$ripJokes = $this->getRipJokes($qry);
 		$rippers = $this->getRipRippers($qry);
 		$genres = $this->getRipGenres($qry);
+		$composers = $this->getRipComposers($qry);
 		$rip = $qry->findOne();
 
 		// Apply jokes to rips
@@ -59,6 +60,16 @@ class RipModel extends Model implements ResultsetSearch
 
 			$rip['Genres'][$genre['GenreID']] = $genre;
 		}
+
+		// Apply composers to rips
+		foreach ($composers as $composer) {
+			if (!isset($rip['Composers'])) {
+				$rip['Composers'] = [];
+			}
+
+			$rip['Composers'][$composer['ComposerID']] = $composer;
+		}
+
 		return $rip;
 	}
 
@@ -111,6 +122,16 @@ class RipModel extends Model implements ResultsetSearch
 			return $values->findAllByColumn('GenreID');
 		} else {
 			return $values->columns('GenreID', 'GenreName')->findAll();
+		}
+	}
+	
+	public function getComposers(bool $idOnly = false)
+	{
+		$values = $this->db->table('vw_Composers');
+		if ($idOnly) {
+			return $values->findAllByColumn('ComposerID');
+		} else {
+			return $values->columns('ComposerID', 'ComposerName')->findAll();
 		}
 	}
 
@@ -166,6 +187,15 @@ class RipModel extends Model implements ResultsetSearch
 			->columns('g.RipID, RipGenres.GenreID', 'GenreName')
 			->join('RipGenres', 'GenreID', 'GenreID')
 			->innerJoinSubquery($ripQuery, 'g', 'RipID', 'RipID', 'RipGenres')
+			->findAll();
+	}
+
+	private function getRipComposers($ripQuery)
+	{
+		return $this->db->table('vw_Composers')
+			->columns('g.RipID, RipComposers.ComposerID', 'ComposerName')
+			->join('RipComposers', 'ComposerID', 'ComposerID')
+			->innerJoinSubquery($ripQuery, 'g', 'RipID', 'RipID', 'RipComposers')
 			->findAll();
 	}
 

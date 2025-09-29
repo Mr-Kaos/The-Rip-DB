@@ -54,7 +54,7 @@ class InputTable extends InputElement
 			}
 			$row .= '</td>';
 		}
-		$row .= '<td>' . (new InputElement('Remove', InputTypes::button, ['disabled' => true, 'btnRemove' => '']))->buildElement() . '</td>';
+		$row .= '<td>' . (new InputElement('&times;', InputTypes::button, ['disabled' => true, 'btnRemove' => '']))->buildElement() . '</td>';
 
 		$html .= $row . '</tr></thead><tbody id="body_' . $this->attributes['id'] . '">';
 		// If prefill values are given, prefill the table with the given values
@@ -86,7 +86,7 @@ class InputTable extends InputElement
 						$row .= $col->buildElement();
 						$row .= '</td>';
 					}
-					$row .= '<td>' . (new InputElement('Remove', InputTypes::button, ['disabled' => count($value) <= 1, 'btnRemove' => '']))->buildElement() . '</td></tr>';
+					$row .= '<td>' . (new InputElement('&times;', InputTypes::button, ['disabled' => count($value) <= 1, 'btnRemove' => '']))->buildElement() . '</td></tr>';
 				}
 				$html .= $row;
 			}

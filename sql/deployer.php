@@ -51,7 +51,8 @@ const VIEWS = [
 	'vw_JokesDetailed',
 	'vw_MetaJokesDetailed',
 	'vw_MetasDetailed',
-	'vw_Playlists'
+	'vw_Playlists',
+	'vw_Composers'
 ];
 const PROCEDURES = [
 	'usp_InsertMeta',

@@ -30,6 +30,10 @@ include_once('private_core/objects/pageElements/InputTable.php');
 				<?= (new o\SearchElement('Genres', '/search/genres', true, null, ['name' => 'genres[]', 'required' => true], null, true))->buildElement(); ?>
 			</div>
 			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'style' => 'width:100%'], null, true))->buildElement() ?>
+			<?php
+			$composerList = new o\SearchElement('Composer/Artist', '/search/composers', false, null, ['name' => 'composers[]', 'modal' => '/composers/new', 'modal-tgt-id' => 'new-composer', 'modal-value-key' => 'NewComposer']);
+			?>
+			<?= (new o\InputTable('Composers/Artists', [$composerList]))->buildElement() ?>
 		</fieldset>
 		<fieldset style="grid-column:span 2">
 			<legend>Rippers</legend>

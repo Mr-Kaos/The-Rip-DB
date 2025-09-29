@@ -70,6 +70,14 @@
 							<td><button type="button" onclick="window.location='/rips?games[]=<?= $rip['RipGame'] ?>'"><?= $rip['GameName']  ?></button></td>
 						</tr>
 						<tr>
+							<th>Composers/Artists</th>
+							<td>
+								<?php foreach ($rip['Composers'] as $composer): ?>
+									<button type="button" onclick="window.location='/rips?composers[]=<?= $composer['ComposerID'] ?>'"><?= $composer['ComposerName']  ?></button>
+								<?php endforeach; ?>
+							</td>
+						</tr>
+						<tr>
 							<th>Rippers</th>
 							<td>
 								<?php foreach ($rip['Rippers'] as $ripper): ?>

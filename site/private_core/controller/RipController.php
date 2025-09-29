@@ -134,6 +134,12 @@ class RipController extends Controller
 				$rip['Genres'] = $temp;
 
 				$temp = [];
+				foreach ($rip['Composers'] as $composer) {
+					array_push($temp, ['Composer' => [$composer['ComposerID'] => $composer['ComposerName']]]);
+				}
+				$rip['Composers'] = $temp;
+
+				$temp = [];
 				foreach ($rip['Rippers'] ?? [] as $ripper) {
 					array_push($temp, ['Ripper' => [$ripper['RipperID'] => $ripper['RipperName']], 'Alias' => $ripper['Alias'] ?? null]);
 				}
@@ -288,6 +294,7 @@ class RipController extends Controller
 				} else {
 					$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
 				}
+				$validated['Composers'] = $this->validateArray($_POST['composers'], 'validateFromList', [$this->model->getComposers(true)], 'One or more of the given composers do not exist in the database.');
 				$validated['WikiLink'] = $this->validateString($_POST['url'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 
 				if ($this->getPage() == 'rips/new') {
