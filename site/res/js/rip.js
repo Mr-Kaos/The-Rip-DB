@@ -72,3 +72,198 @@ function getYouTubeID(url) {
 		}
 	}
 }
+
+/**
+ * Object to store a data required for a Wiki Page being exported.
+ */
+class WikiPage {
+	#title;
+	#ripName;
+	#mixName;
+	#altName;
+	#uploadDate;
+	#length;
+	#composers = [];
+	#rippers = [];
+	#jokes = [];
+	#ytID;
+	#platform;
+	#game;
+	#genres = [];
+
+	#linkRippers = false;
+	#linkJokes = false;
+	#linkComposers = false;
+
+	// Boolean flags
+	#addLinksToJokes = false;
+
+	/**
+	 * 
+	 * @param {String} ripName The name of the rip
+	 * @param {String} uploadDate The date the the rip was uploaded
+	 * @param {String} length The duration of the rip
+	 * @param {String} ytId The ID of the rip's YouTube video
+	 * @param {String} game The name of the game the rip is for
+	 * @param {String} platform The name of the platform the rip is for
+	 * @param {Array[Object]} jokes An array of objects detailing jokes. Each joke must have the following keys: `Time` and `Joke`. Optionally the `Comment` key can be specified.
+	 * @param {Array} rippers An array of ripper names.
+	 * @param {Array} composers An array of composer names.
+	 * @param {String} mixName The rip's mix name.
+	 * @param {String} altName The rip's alternate (album release) name.
+	 */
+	constructor(ripName, uploadDate, length, ytId, game, platform, jokes, rippers = [], composers = [], genres = [], mixName = null, altName = null) {
+		this.#ripName = ripName;
+		this.#mixName = mixName;
+		this.#altName = altName;
+		this.#uploadDate = uploadDate;
+		if (length.substring(0, 3) == "00:") {
+			length = length.substring(3);
+		}
+		this.#length = length;
+		this.#rippers = Array.isArray(rippers) ? rippers : rippers.split(';');;
+		this.#jokes = Array.isArray(jokes) ? jokes : jokes.split(';');;
+		this.#composers = Array.isArray(composers) ? composers : composers.split(';');
+		this.#ytID = ytId;
+		this.#platform = platform;
+		this.#game = game;
+	}
+
+	/**
+	 * Reads the source of a Wiki page and parses it into a rip.
+	 */
+	static wikiSourceToRip() {
+
+	}
+
+	/**
+	 * Generates the source for the wiki page.
+	 * @return {String} The generated source.
+	 */
+	generate() {
+		let pageSource = "";
+
+		pageSource += this.#buildMetadataSource();
+		pageSource += this.#buildOverviewSource();
+		pageSource += this.#buildJokesSource();
+
+		return pageSource
+	}
+
+	/**
+	 * Opens a modal that displays the generated source for the wiki page.
+	 */
+	displaySource() {
+		let source = this.generate();
+		let sourceContainer = document.createElement('textarea');
+		sourceContainer.style.width = "95%";
+		sourceContainer.style.height = "90%";
+		sourceContainer.style.margin = "auto";
+		sourceContainer.style.display = null;
+		sourceContainer.value = source;
+		let funcs = {
+			'Copy Source': {
+				function: function () {
+					sourceContainer.select();
+					sourceContainer.setSelectionRange(0, 99999);
+
+					if (window.getSelection) {
+						var range = document.createRange();
+						range.selectNode(sourceContainer);
+						window.getSelection().removeAllRanges();
+						window.getSelection().addRange(range);
+					}
+
+					navigator.clipboard.writeText(sourceContainer.value);
+				},
+				close: false
+			}
+		}
+
+		let modal = new Modal("WikiSourcePreview", "Wiki Page Generator", sourceContainer, "50%", '50%', true, TransformStreamDefaultController, funcs);
+		modal.open();
+	}
+
+	/**
+	 * Builds the metadata content for the right-hand panel of a wiki page.
+	 */
+	#buildMetadataSource() {
+		let source = `{{Rip 
+|image= 
+|link= ${this.#ytID}
+|playlist= 
+|playlist id= 
+|upload= ${this.#uploadDate}
+|length= ${this.#length}
+|author= ${this.#rippers.join(", ")}
+|album= 
+|track= ${this.#altName ?? ''}
+|music= ${this.#ripName} ${(this.#mixName == null) ? '(' + this.#mixName + ')' : ''}
+|composer= ${this.#composers.join(", ")}
+|platform= ${this.#platform}
+|catchphrase= 
+}}\n\n`
+		return source;
+	}
+
+	/**
+	 * Builds the overview section of the wiki page.
+	 */
+	#buildOverviewSource() {
+		let source = `"'''${this.#ripName} ${this.#mixName} - ${this.#game}'''" is a high quality rip of ${this.#ripName} from ${this.#game}.\n\n`;
+
+		return source;
+	}
+
+	/**
+	 * Builds the jokes section of the wiki page.
+	 * @param {String} tableClass The CSS classname to use for the wiki's table. Defaults to "wiki-table".
+	 */
+	#buildJokesSource(tableClass = "wiki-table") {
+		let source = "==Jokes==\n";
+
+		if (this.#jokes.length > 0) {
+			source = `==Jokes==\n{| class="${tableClass}"\n!Time\n!Joke\n`;
+
+			for (let i = 0; i < this.#jokes.length; i++) {
+				source += `|-\n|${(this.#jokes[i]?.Time ?? "??:??")}\n|${this.#jokes[i]?.Joke}\n`;
+			}
+			source += `|}`;
+		} else {
+			source += "This rip needs to be documented!\n";
+		}
+
+		return source;
+	}
+}
+
+/**
+ * Generates the source for a wiki page and displays it to the user.
+ */
+function generateWikiPage() {
+	let jokesSource = document.getElementById("data-Jokes");
+	let jokes = [];
+	// Parse jokes form the table. (might need to find a way to determine if the joke has a wiki page so the links can be generated for it)
+	for (let i = 0; i < jokesSource.childElementCount; i++) {
+		jokes.push({
+			'Time': jokesSource.children[i].children[0].innerText == "" ? null : jokesSource.children[i].children[0].innerText,
+			'Joke': jokesSource.children[i].children[1].innerText == "" ? null : jokesSource.children[i].children[1].innerText,
+			'Comment': jokesSource.children[i].children[2].innerText == "" ? null : jokesSource.children[i].children[2].innerText
+		});
+	}
+
+	let wiki = new WikiPage(
+		document.getElementById('data-RipName')?.innerText,
+		document.getElementById('data-UploadDate')?.innerText,
+		document.getElementById('data-Length')?.innerText,
+		document.getElementById('data-YouTubeID')?.innerText,
+		document.getElementById('data-Game')?.innerText,
+		document.getElementById('data-Platform')?.innerText,
+		jokes,
+		document.getElementById('data-Composers')?.innerText,
+		document.getElementById('data-Genres')?.innerText,
+		document.getElementById('data-MixName')?.innerText,
+		document.getElementById('data-AltName')?.innerText
+	);
+	wiki.displaySource();
+}

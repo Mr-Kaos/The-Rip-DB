@@ -108,6 +108,7 @@
 					</tbody>
 				</table>
 				<hr>
+				<button type="button" onclick="generateWikiPage()">Generate Wiki Page</button>
 			</section>
 		</div>
 	<?php endif; ?>
