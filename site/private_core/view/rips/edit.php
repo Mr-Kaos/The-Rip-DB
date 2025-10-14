@@ -27,7 +27,6 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<?= (new o\InputElement('Description', o\InputTypes::textarea, ['name' => 'description', 'maxlength' => 9999, 'value' => $rip['RipDescription'], 'style' => 'width:90%;max-width:100%'], null, true))->buildElement() ?>
 			<div style="display:flex;gap:10px">
 				<?= (new o\SearchElement('Game', '/search/games', false, [$rip['RipGame'] => $rip['GameName']], ['name' => 'game', 'required' => true, 'modal' => '/games/new', 'modal-tgt-id' => 'new-game', 'modal-value-key' => 'NewGame'], null, true))->buildElement() ?>
-				<?= (new o\SearchElement('Genres', '/search/genres', true, $rip['Genres'], ['name' => 'genres[]', 'required' => true], null, true))->buildElement(); ?>
 			</div>
 			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'value' => $rip['WikiURL'], 'style' => 'width:100%'], null, true))->buildElement() ?>
 			<?php
@@ -49,10 +48,12 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<p>Enter each joke that is featured in this rip below. If the same joke appears multiple times, at different timestamps, please add it for each occurrence.</p>
 			<?php
 			$jokeList = new o\SearchElement('Joke', '/search/jokes', false, null, ['name' => 'jokes[]', 'required' => true, 'modal' => '/jokes/new', 'modal-tgt-id' => 'new-joke', 'modal-value-key' => 'InJokeName']);
-			$start = new o\InputElement('Start', o\InputTypes::timestamp, ['name' => 'jokeStart[]', 'pattern' => '(?:[0-9]{0,2}:?)([0-9]{2}:[0-9]{2})', 'placeholder' => '--:--:--'], null, true);
-			$end = new o\InputElement('End', o\InputTypes::timestamp, ['name' => 'jokeEnd[]', 'pattern' => '(?:[0-9]{0,2}:?)([0-9]{2}:[0-9]{2})', 'placeholder' => '--:--:--'], null, true);
+			$start = new o\InputElement('Start', o\InputTypes::timestamp, ['name' => 'jokeStart[]', 'pattern' => '(?:[0-9]{0,2}:?)([0-9]{2}:[0-9]{2})', 'placeholder' => '--:--:--', 'style' => 'width:60px'], null, true);
+			$end = new o\InputElement('End', o\InputTypes::timestamp, ['name' => 'jokeEnd[]', 'pattern' => '(?:[0-9]{0,2}:?)([0-9]{2}:[0-9]{2})', 'placeholder' => '--:--:--', 'style' => 'width:60px'], null, true);
+			$comment = (new o\InputElement('Notes', o\InputTypes::text, ['name' => 'comment[]', 'maxlength' => 1024], null, true));
+			$genre = (new o\SearchElement('Genre', '/search/genres', false, null, ['name' => 'genres[]'], null, true));
 			?>
-			<?= (new o\InputTable('Jokes', [$jokeList, $start, $end], ['value' => $rip['Jokes']]))->buildElement() ?>
+			<?= (new o\InputTable('Jokes', [$jokeList, $start, $end, $genre, $comment], ['value' => $rip['Jokes']]))->buildElement() ?>
 		</fieldset>
 		<div>
 			<button type="submit">Update Rip</button>

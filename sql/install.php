@@ -63,5 +63,5 @@ if ($in == 'Y' || $in == '') {
 		deployFiles($pdo, 'Scripts', ['Sample_data']);
 	}
 } else {
-	echo 'Aborting.';
+	echo "Aborting.\n";
 }

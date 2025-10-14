@@ -15,9 +15,6 @@ BEGIN
 
 	-- Delete associations to the rip first
 
-	DELETE FROM RipGenres
-	WHERE RipID = RipID;
-
 	DELETE FROM RipJokes
 	WHERE RipID = RipID;
  

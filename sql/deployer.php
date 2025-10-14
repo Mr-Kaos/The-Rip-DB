@@ -36,7 +36,6 @@ const TABLES = [
 	'Composers',
 	'Rips',
 	'RipJokes',
-	'RipGenres',
 	'RipRippers',
 	'RipComposers',
 	'RipGuesserGame',

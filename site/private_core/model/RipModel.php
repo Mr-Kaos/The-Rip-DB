@@ -30,43 +30,24 @@ class RipModel extends Model implements ResultsetSearch
 		// Get jokes and rips from the resultset of rips.
 		$ripJokes = $this->getRipJokes($qry);
 		$rippers = $this->getRipRippers($qry);
-		$genres = $this->getRipGenres($qry);
 		$composers = $this->getRipComposers($qry);
 		$rip = $qry->findOne();
 
 		// Apply jokes to rips
+		$rip['Jokes'] = [];
 		foreach ($ripJokes as $joke) {
-			if (!isset($rip['Jokes'])) {
-				$rip['Jokes'] = [];
-			}
-
 			$rip['Jokes'][$joke['JokeID']] = $joke;
 		}
 
 		// Apply rippers to rips
+		$rip['Rippers'] = [];
 		foreach ($rippers as $ripper) {
-			if (!isset($rip['Rippers'])) {
-				$rip['Rippers'] = [];
-			}
-
 			$rip['Rippers'][$ripper['RipperID']] = $ripper;
 		}
 
-		// Apply genres to rips
-		foreach ($genres as $genre) {
-			if (!isset($rip['Genres'])) {
-				$rip['Genres'] = [];
-			}
-
-			$rip['Genres'][$genre['GenreID']] = $genre;
-		}
-
 		// Apply composers to rips
+		$rip['Composers'] = [];
 		foreach ($composers as $composer) {
-			if (!isset($rip['Composers'])) {
-				$rip['Composers'] = [];
-			}
-
 			$rip['Composers'][$composer['ComposerID']] = $composer;
 		}
 
@@ -124,7 +105,7 @@ class RipModel extends Model implements ResultsetSearch
 			return $values->columns('GenreID', 'GenreName')->findAll();
 		}
 	}
-	
+
 	public function getComposers(bool $idOnly = false)
 	{
 		$values = $this->db->table('vw_Composers');
@@ -142,8 +123,9 @@ class RipModel extends Model implements ResultsetSearch
 	private function getRipJokes($ripQuery)
 	{
 		$qry = $this->db->table('Jokes')
-			->columns('r.RipID, RipJokes.JokeID', 'JokeName', 'JokeTimestamps', 'JokeComment')
+			->columns('r.RipID, RipJokes.JokeID', 'JokeName', 'JokeTimestamps', 'JokeComment', 'GenreName', 'Genres.GenreID')
 			->join('RipJokes', 'JokeID', 'JokeID')
+			->join('Genres', 'GenreID', 'GenreID', 'RipJokes')
 			->innerJoinSubquery($ripQuery, 'r', 'RipID', 'RipID', 'RipJokes');
 
 		$tags = $this->getJokeTags($qry);
@@ -181,14 +163,14 @@ class RipModel extends Model implements ResultsetSearch
 			->findAll();
 	}
 
-	private function getRipGenres($ripQuery)
-	{
-		return $this->db->table('Genres')
-			->columns('g.RipID, RipGenres.GenreID', 'GenreName')
-			->join('RipGenres', 'GenreID', 'GenreID')
-			->innerJoinSubquery($ripQuery, 'g', 'RipID', 'RipID', 'RipGenres')
-			->findAll();
-	}
+	// private function getRipGenres($ripQuery)
+	// {
+	// 	return $this->db->table('Genres')
+	// 		->columns('g.RipID, RipGenres.GenreID', 'GenreName')
+	// 		->join('RipGenres', 'GenreID', 'GenreID')
+	// 		->innerJoinSubquery($ripQuery, 'g', 'RipID', 'RipID', 'RipGenres')
+	// 		->findAll();
+	// }
 
 	private function getRipComposers($ripQuery)
 	{
@@ -248,7 +230,6 @@ class RipModel extends Model implements ResultsetSearch
 		// Get jokes and rips from the resultset of rips.
 		$ripJokes = $this->getRipJokes($qry);
 		$rippers = $this->getRipRippers($qry);
-		$genres = $this->getRipGenres($qry);
 
 		// Apply jokes to rips
 		foreach ($ripJokes as $joke) {
@@ -256,9 +237,13 @@ class RipModel extends Model implements ResultsetSearch
 
 			if (!isset($rips[$ripId]['Jokes'])) {
 				$rips[$ripId]['Jokes'] = [];
+				$rips[$ripId]['Genres'] = [];
 			}
 
 			$rips[$ripId]['Jokes'][$joke['JokeID']] = $joke;
+			if (!empty($joke['GenreID'])) {
+				$rips[$ripId]['Genres'][$joke['GenreID']] = ["GenreID" => $joke['GenreID'], "GenreName" => $joke['GenreName']];
+			}
 		}
 
 		// Apply rippers to rips
@@ -273,15 +258,15 @@ class RipModel extends Model implements ResultsetSearch
 		}
 
 		// Apply genres to rips
-		foreach ($genres as $genre) {
-			$ripId = $genre['RipID'];
+		// foreach ($genres as $genre) {
+		// 	$ripId = $genre['RipID'];
 
-			if (!isset($rips[$ripId]['Genres'])) {
-				$rips[$ripId]['Genres'] = [];
-			}
+		// 	if (!isset($rips[$ripId]['Genres'])) {
+		// 		$rips[$ripId]['Genres'] = [];
+		// 	}
 
-			$rips[$ripId]['Genres'][$genre['GenreID']] = $genre;
-		}
+		// 	$rips[$ripId]['Genres'][$genre['GenreID']] = $genre;
+		// }
 
 		return $rips;
 	}

@@ -32,14 +32,88 @@ if ($in == 'Y' || $in == '') {
 	// TABLE MODIFICATIONS
 	// -------------------
 
-	// None made for this version.
+	// Add new columns
+	$pdo->exec('ALTER TABLE RipDB.Rips ADD WikiURL varchar(8192) DEFAULT NULL;');
+	$pdo->exec('ALTER TABLE RipDB.Rips ADD MixName varchar(256) DEFAULT NULL;');
+	$pdo->exec('ALTER TABLE RipDB.RipJokes ADD GenreID int DEFAULT NULL;');
 
-	// --------------------------
-	// DROPPED OBJECTS AND ALTERS
-	// --------------------------
+	// Transferring genres to new genres relation
+	$pdo->exec("UPDATE RipJokes rj
+JOIN (
+	SELECT r.RipID, g.GenreID, JokeID
+	FROM (
+		SELECT r.RipID, COUNT(JokeID) AS Jokes
+		FROM Rips r
+		JOIN RipJokes j ON j.RipID = r.RipID
+		GROUP BY r.RipID 
+	) r
+	JOIN RipGenres g ON g.RipID = r.RipID
+	JOIN RipJokes j ON j.RipID = r.RipID
+	WHERE Jokes = 1
+) a
+SET rj.GenreID = a.GenreID 
+WHERE rj.RipID = a.RipID AND rj.JokeID = a.JokeID;");
 
-	$pdo->exec('ALTER TABLE RipDB.Rips ADD WikiURL varchar(8192) DEFAULT NULL NULL;');
-	$pdo->exec('ALTER TABLE RipDB.Rips ADD MixName varchar(256) DEFAULT NULL NULL;');
+
+	// Delete the transferred genres
+	$pdo->exec("DELETE RipGenres
+FROM RipDB.RipGenres
+JOIN (SELECT r.RipID as rip, g.GenreID as genre, JokeID
+	FROM (
+		SELECT r.RipID, COUNT(JokeID) AS Jokes
+		FROM Rips r
+		JOIN RipJokes j ON j.RipID = r.RipID
+		GROUP BY r.RipID 
+	) r
+	JOIN RipGenres g ON g.RipID = r.RipID
+	JOIN RipJokes j ON j.RipID = r.RipID
+	WHERE Jokes = 1
+) a ON GenreID = a.Genre AND RipID = a.rip;");
+
+	// Move the rest of the genres to the first joke in the associated rip to keep their data
+	$data = $pdo->query("SELECT r.RipID, g.GenreID, JokeID, ROW_NUMBER() OVER (PARTITION BY RipID, GenreID ORDER BY RipID) AS row_num -- , COUNT(JokeID)
+FROM (
+	SELECT r.RipID, COUNT(JokeID) AS Jokes
+	FROM Rips r
+	JOIN RipJokes j ON j.RipID = r.RipID
+	GROUP BY r.RipID
+) r
+JOIN RipGenres g ON g.RipID = r.RipID
+JOIN RipJokes j ON j.RipID = r.RipID
+WHERE Jokes > 1
+GROUP BY RipID, GenreID, JokeId;", PDO::FETCH_ASSOC);
+
+	$lastId = null;
+	$lastGenreId = null;
+	$updateData = null;
+	$rowNum = 1;
+	$parsedGenre = true;
+	foreach ($data as $row) {
+		// If parsing a new rip
+		if ($row["RipID"] != $lastId) {
+			$lastId = $row["RipID"];
+			$rowNum = 0;
+		}
+		
+		// Parsing a new genre from the same rip
+		if ($row["GenreID"] !== $lastGenreId) {
+			$rowNum++;
+			$parsedGenre = false;
+			$lastGenreId = $row["GenreID"];
+		}
+
+		// If the genre's joke has not been parsed, update the RipJoke record
+		if (!$parsedGenre && $row['row_num'] == $rowNum) {
+			$pdo->exec("UPDATE RipJokes SET GenreID = " . $row["GenreID"] . " WHERE RipID = " . $row["RipID"] . " AND JokeID = " . $row['JokeID']);
+			$parsedGenre = true;
+		}
+	}
+
+	// Adding table constraints
+	$pdo->exec('ALTER TABLE RipDB.RipJokes ADD CONSTRAINT RipJokes_Genres_FK FOREIGN KEY (GenreID) REFERENCES RipDB.Genres(GenreID);');
+
+	// DROP unused tables
+	$pdo->exec('DROP TABLE RipDB.RipGenres;');
 
 	// Update all rips that contain a mix name to move them into the designated column. THis may not be 100% accurate, but should grab the majority of mix names.
 	$pdo->exec("UPDATE Rips SET

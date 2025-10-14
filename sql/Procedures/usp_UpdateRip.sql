@@ -15,7 +15,6 @@ CREATE PROCEDURE usp_UpdateRip(
 	IN AltURL varchar(512),
 	IN Game int,
 	IN Channel int,
-	IN Genres json,
 	IN Jokes json,
 	IN Rippers json,
 	IN Composers json,
@@ -72,10 +71,10 @@ BEGIN
 		WHERE RipId = RipIDTarget;
 		
 		-- Add new Jokes
-		INSERT INTO RipJokes (RipId, JokeID, JokeTimestamps, JokeComment)
-		SELECT RipIDTarget, JSON_UNQUOTE(k.JokeIDJSON), JSON_UNQUOTE(Timestamps), JSON_UNQUOTE(Comment)
+		INSERT INTO RipJokes (RipId, JokeID, JokeTimestamps, JokeComment, GenreID)
+		SELECT RipIDTarget, JSON_UNQUOTE(k.JokeIDJSON), JSON_UNQUOTE(Timestamps), JSON_UNQUOTE(Comment), JSON_UNQUOTE(Genre)
 		FROM JSON_TABLE (json_keys(Jokes), '$[*]' COLUMNS(rn FOR ORDINALITY, JokeIDJSON JSON PATH '$')) k
-		JOIN JSON_TABLE(Jokes, '$.*' COLUMNS (rn FOR ORDINALITY, Timestamps JSON PATH '$.timestamps', Comment JSON PATH '$.comment')) v ON v.rn = k.rn
+		JOIN JSON_TABLE(Jokes, '$.*' COLUMNS (rn FOR ORDINALITY, Timestamps JSON PATH '$.timestamps', Comment JSON PATH '$.comment', Genre JSON PATH '$.genre')) v ON v.rn = k.rn
 		WHERE JSON_UNQUOTE(k.JokeIDJSON) NOT IN (
 			SELECT JokeID
 			FROM RipJokes
@@ -95,22 +94,6 @@ BEGIN
 		WHERE JSON_UNQUOTE(g.ComposerIDJSON) NOT IN (
 			SELECT ComposerID
 			FROM RipComposers
-			WHERE RipID = RipIDTarget
-		);
-	
-		-- GENRE DATA
-		
-		-- Delete all genres so they can be re-inserted again.
-		DELETE FROM RipGenres
-		WHERE RipId = RipIDTarget;
-	
-		-- Add new Genres
-		INSERT INTO RipGenres (RipID, GenreID)
-		SELECT RipIDTarget, JSON_UNQUOTE(g.GenreIDJSON)
-		FROM JSON_TABLE (Genres, '$[*]' COLUMNS(rn FOR ORDINALITY, GenreIDJSON JSON PATH '$')) g
-		WHERE JSON_UNQUOTE(g.GenreIDJSON) NOT IN (
-			SELECT GenreID
-			FROM RipGenres
 			WHERE RipID = RipIDTarget
 		);
 	END IF;

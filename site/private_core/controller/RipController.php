@@ -126,13 +126,7 @@ class RipController extends Controller
 					$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
 				}
 
-				// Modify rippers, genres and jokes to only contain necessary data to prefill the input table elements
-				$temp = [];
-				foreach ($rip['Genres'] as $genre) {
-					$temp[$genre['GenreID']] = $genre['GenreName'];
-				}
-				$rip['Genres'] = $temp;
-
+				// Modify rippers and jokes to only contain necessary data to prefill the input table elements
 				$temp = [];
 				foreach ($rip['Composers'] as $composer) {
 					array_push($temp, ['Composer' => [$composer['ComposerID'] => $composer['ComposerName']]]);
@@ -146,14 +140,21 @@ class RipController extends Controller
 				$rip['Rippers'] = $temp;
 
 				$temp = [];
+
 				foreach ($rip['Jokes'] ?? [] as $joke) {
 					$timestamps = json_decode($joke['JokeTimestamps'], true);
 					if (!empty($timestamps)) {
 						foreach ($timestamps as $timestamp) {
-							array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => $this->formatTimestamp($timestamp['start'] ?? null), 'End' => $this->formatTimestamp($timestamp['end'] ?? null)]);
+							array_push($temp, [
+								'Joke' => [$joke['JokeID'] => $joke['JokeName']],
+								'Start' => $this->formatTimestamp($timestamp['start'] ?? null),
+								'End' => $this->formatTimestamp($timestamp['end'] ?? null),
+								'Genre' => [$joke['GenreID'] => $joke['GenreName']],
+								'Notes' => $joke['JokeComment']
+							]);
 						}
 					} else {
-						array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => null, 'End' => null]);
+						array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => null, 'End' => null, 'Genre' => [$joke['GenreID'] => $joke['GenreName']], 'Notes' => $joke['JokeComment']]);
 					}
 				}
 				$rip['Jokes'] = $temp;
@@ -250,11 +251,12 @@ class RipController extends Controller
 				$validated['AltURL'] = $this->validateString($_POST['alturl'], 'The given alternate URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 				$validated['Game'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
 				$validated['Channel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
-				$validated['Genres'] = $this->validateArray($_POST['genres'], 'validateFromList', [$this->model->getGenres(true)], 'One or more of the given genres do not exist in the database.');
 
 				$jokes = $this->validateArray($_POST['jokes'], 'validateFromList', [$this->model->getJokes(true)], 'One or more of the given jokes do not exist in the database.', false);
 				$starts = $this->validateArray($_POST['jokeStart'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);
 				$ends = $this->validateArray($_POST['jokeEnd'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);
+				$genres = $this->validateArray($_POST['genres'] ?? [], 'validateFromList',  [$this->model->getGenres(true)], 'One or more genres for a joke does not exist!', false);
+				$comments = $this->validateArray($_POST['comment'] ?? [], 'validateString', ['Comment is too long', 1024], 'One or more comments for a joke are too long!', false);
 				if ($jokes instanceof Error) {
 					$validated['Jokes'] = $jokes;
 				} elseif ($starts instanceof Error) {
@@ -267,7 +269,11 @@ class RipController extends Controller
 					for ($i = 0; $i < count($jokes); $i++) {
 						$jokeId = $jokes[$i];
 						if (!is_array($validated['Jokes'][$jokeId] ?? null)) {
-							$validated['Jokes'][$jokeId] = ['timestamps' => [], 'comment' => null];
+							$validated['Jokes'][$jokeId] = [
+								'timestamps' => [],
+								'comment' => $comments[$i] ?? null,
+								'genre' => $genres[$i] ?? null
+							];
 						}
 
 						$timestamp = [];
@@ -282,7 +288,7 @@ class RipController extends Controller
 							array_push($validated['Jokes'][$jokeId]['timestamps'], ['start' => $starts[$i], 'end' => $ends[$i]]);
 						}
 					}
-					$validated['Jokes'] = json_encode($validated['Jokes']);
+					$validated['Jokes'] = json_encode($validated['Jokes'], JSON_NUMERIC_CHECK);
 				}
 
 				$rippers = $this->validateArray($_POST['rippers'], 'validateFromList', [$this->model->getRippers(true)], 'One or more of the given rippers do not exist in the database.', false);
@@ -294,7 +300,7 @@ class RipController extends Controller
 				} else {
 					$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
 				}
-				$validated['Composers'] = $this->validateArray($_POST['composers'], 'validateFromList', [$this->model->getComposers(true)], 'One or more of the given composers do not exist in the database.');
+				$validated['Composers'] = $this->validateArray($_POST['composers'] ?? [], 'validateFromList', [$this->model->getComposers(true)], 'One or more of the given composers do not exist in the database.');
 				$validated['WikiLink'] = $this->validateString($_POST['url'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 
 				if ($this->getPage() == 'rips/new') {

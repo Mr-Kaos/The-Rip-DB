@@ -38,7 +38,6 @@ CREATE PROCEDURE RipDB.usp_InsertRip(
 	IN AltURL varchar(2048),
 	IN Game int,
 	IN Channel int,
-	IN Genres json,
 	IN Jokes json,
 	IN Rippers json,
 	IN Composers json,
@@ -46,7 +45,7 @@ CREATE PROCEDURE RipDB.usp_InsertRip(
 BEGIN
 	DECLARE new_RipID int;
 	DECLARE Id int;
-	DECLARE extractedValA, extractedValB varchar(256);
+	DECLARE extractedValA, extractedValB, extractedValC varchar(256);
 	DECLARE i int DEFAULT 0;
 
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -85,12 +84,14 @@ BEGIN
 				(SELECT JSON_KEYS(Jokes) a), CONCAT('$[', i ,']'))) INTO Id;
 		SELECT JSON_UNQUOTE(JSON_EXTRACT(Jokes, CONCAT('$."', id ,'".timestamps'))) INTO extractedValA;
 		SELECT JSON_UNQUOTE(JSON_EXTRACT(Jokes, CONCAT('$."', id ,'".comment'))) INTO extractedValB;
+		SELECT JSON_UNQUOTE(JSON_EXTRACT(Jokes, CONCAT('$."', id ,'".genre'))) INTO extractedValC;
 		SET extractedValB = (SELECT NULLIF(extractedValB, 'null')); 
+		SET extractedValC = (SELECT NULLIF(extractedValC, 'null')); 
 	
 		INSERT INTO RipJokes
-			(RipID, JokeId, JokeTimestamps, JokeComment)
+			(RipID, JokeId, JokeTimestamps, JokeComment, GenreID)
 		VALUES
-			(new_RipID, Id, extractedValA, extractedValB);
+			(new_RipID, Id, extractedValA, extractedValB, extractedValC);
 		
 		SET i = i + 1;
 	END WHILE;
@@ -102,19 +103,6 @@ BEGIN
 		
 		INSERT INTO RipComposers
 			(RipID, ComposerID)
-		VALUES
-			(new_RipID, Id);
-		
-		SET i = i + 1;
-	END WHILE;
-
-	SET i = 0;
-	-- Create Rip Genre associations
-	WHILE i < JSON_LENGTH(Genres) DO
-		SELECT JSON_UNQUOTE(JSON_EXTRACT(Genres, CONCAT('$[', i ,']'))) INTO Id;
-		
-		INSERT INTO RipGenres
-			(RipID, GenreID)
 		VALUES
 			(new_RipID, Id);
 		

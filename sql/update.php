@@ -39,5 +39,5 @@ if ($in == 'Y') {
 	// ------
 	deployFiles($pdo, 'Triggers', TRIGGERS);
 } else {
-	echo 'Aborting.';
+	echo "Aborting.\n";
 }
