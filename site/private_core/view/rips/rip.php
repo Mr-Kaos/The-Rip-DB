@@ -73,7 +73,7 @@
 						</tr>
 						<tr>
 							<th>Platform</th>
-							<td><button id="data-Platform" type="button" onclick="window.location='/rips?platforms[]=<?= $rip['RipPlatform'] ?>'"><?= $rip['GameName']  ?></button></td>
+							<td><?= implode(', ', $rip['Platforms']) ?></td>
 						</tr>
 						<tr>
 							<th>Composers/Artists</th>
@@ -89,7 +89,9 @@
 						<tr>
 							<th>Rippers</th>
 							<td>
-								<?php foreach ($rip['Rippers'] as $ripper): ?>
+								<?php $rippers = [];
+								foreach ($rip['Rippers'] as $ripper): ?>
+									<?php array_push($rippers, $ripper['RipperName']) ?>
 									<button type="button" onclick="window.location='/rips?rippers[]=<?= $ripper['RipperID'] ?>'"><?= $ripper['RipperName']  ?></button>
 								<?php endforeach; ?>
 							</td>
@@ -123,7 +125,8 @@
 	<option id="data-Game"><?= $rip['GameName'] ?></option>
 	<option id="data-RipName"><?= $rip['RipName'] ?></option>
 	<option id="data-MixName"><?= $rip['MixName'] ?></option>
-	<option id="data-Composers"><?= implode("; ", $composers) ?></option>
-	<option id="data-Platform"></option>
+	<option id="data-Rippers"><?= implode(";", $rippers) ?></option>
+	<option id="data-Composers"><?= implode(";", $composers) ?></option>
+	<option id="data-Platforms"><?= implode(";", $rip['Platforms']) ?></option>
 </datalist>
 <script src="/res/js/rip.js"></script>

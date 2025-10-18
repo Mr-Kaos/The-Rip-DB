@@ -87,7 +87,7 @@ class WikiPage {
 	#rippers = [];
 	#jokes = [];
 	#ytID;
-	#platform;
+	#platforms;
 	#game;
 	#genres = [];
 
@@ -105,16 +105,16 @@ class WikiPage {
 	 * @param {String} length The duration of the rip
 	 * @param {String} ytId The ID of the rip's YouTube video
 	 * @param {String} game The name of the game the rip is for
-	 * @param {String} platform The name of the platform the rip is for
+	 * @param {Array} platforms The name of the platforms the rip is for
 	 * @param {Array[Object]} jokes An array of objects detailing jokes. Each joke must have the following keys: `Time` and `Joke`. Optionally the `Comment` key can be specified.
 	 * @param {Array} rippers An array of ripper names.
 	 * @param {Array} composers An array of composer names.
 	 * @param {String} mixName The rip's mix name.
 	 * @param {String} altName The rip's alternate (album release) name.
 	 */
-	constructor(ripName, uploadDate, length, ytId, game, platform, jokes, rippers = [], composers = [], genres = [], mixName = null, altName = null) {
+	constructor(ripName, uploadDate, length, ytId, game, jokes, platforms = [], rippers = [], composers = [], genres = [], mixName = null, altName = null) {
 		this.#ripName = ripName;
-		this.#mixName = mixName;
+		this.#mixName = (mixName == "") ? null : mixName;
 		this.#altName = altName;
 		this.#uploadDate = uploadDate;
 		if (length.substring(0, 3) == "00:") {
@@ -125,7 +125,7 @@ class WikiPage {
 		this.#jokes = Array.isArray(jokes) ? jokes : jokes.split(';');;
 		this.#composers = Array.isArray(composers) ? composers : composers.split(';');
 		this.#ytID = ytId;
-		this.#platform = platform;
+		this.#platforms =  Array.isArray(platforms) ? platforms : platforms.split(';');
 		this.#game = game;
 	}
 
@@ -188,6 +188,7 @@ class WikiPage {
 	 * Builds the metadata content for the right-hand panel of a wiki page.
 	 */
 	#buildMetadataSource() {
+		console.log(this.#mixName);
 		let source = `{{Rip 
 |image= 
 |link= ${this.#ytID}
@@ -198,9 +199,9 @@ class WikiPage {
 |author= ${this.#rippers.join(", ")}
 |album= 
 |track= ${this.#altName ?? ''}
-|music= ${this.#ripName} ${(this.#mixName == null) ? '(' + this.#mixName + ')' : ''}
+|music= ${this.#ripName} ${(this.#mixName != null) ? '(' + this.#mixName + ')' : ''}
 |composer= ${this.#composers.join(", ")}
-|platform= ${this.#platform}
+|platform= ${this.#platforms.join(", ")}
 |catchphrase= 
 }}\n\n`
 		return source;
@@ -210,7 +211,7 @@ class WikiPage {
 	 * Builds the overview section of the wiki page.
 	 */
 	#buildOverviewSource() {
-		let source = `"'''${this.#ripName} ${this.#mixName} - ${this.#game}'''" is a high quality rip of ${this.#ripName} from ${this.#game}.\n\n`;
+		let source = `"'''${this.#ripName}${(this.#mixName != null) ? ' (' + this.#mixName + ')' : ''} - ${this.#game}'''" is a high quality rip of ${this.#ripName} from ${this.#game}.\n\n`;
 
 		return source;
 	}
@@ -258,8 +259,9 @@ function generateWikiPage() {
 		document.getElementById('data-Length')?.innerText,
 		document.getElementById('data-YouTubeID')?.innerText,
 		document.getElementById('data-Game')?.innerText,
-		document.getElementById('data-Platform')?.innerText,
 		jokes,
+		document.getElementById('data-Platforms')?.innerText,
+		document.getElementById('data-Rippers')?.innerText,
 		document.getElementById('data-Composers')?.innerText,
 		document.getElementById('data-Genres')?.innerText,
 		document.getElementById('data-MixName')?.innerText,

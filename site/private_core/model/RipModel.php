@@ -33,6 +33,7 @@ class RipModel extends Model implements ResultsetSearch
 		$composers = $this->getRipComposers($qry);
 		$rip = $qry->findOne();
 
+
 		// Apply jokes to rips
 		$rip['Jokes'] = [];
 		foreach ($ripJokes as $joke) {
@@ -50,6 +51,9 @@ class RipModel extends Model implements ResultsetSearch
 		foreach ($composers as $composer) {
 			$rip['Composers'][$composer['ComposerID']] = $composer;
 		}
+
+		// Apply game platforms to rip
+		$rip['Platforms'] = $this->getRipPlatforms($rip['RipGame']);
 
 		return $rip;
 	}
@@ -163,14 +167,19 @@ class RipModel extends Model implements ResultsetSearch
 			->findAll();
 	}
 
-	// private function getRipGenres($ripQuery)
-	// {
-	// 	return $this->db->table('Genres')
-	// 		->columns('g.RipID, RipGenres.GenreID', 'GenreName')
-	// 		->join('RipGenres', 'GenreID', 'GenreID')
-	// 		->innerJoinSubquery($ripQuery, 'g', 'RipID', 'RipID', 'RipGenres')
-	// 		->findAll();
-	// }
+	private function getRipPlatforms($gameID): array {
+		$gameRows = $this->db->table('vw_GamesDetailed')
+			->eq('GameID', $gameID)
+			->findAll();
+
+		$gameData = [];
+		foreach ($gameRows as $row) {
+			if (!empty($row['PlatformID'])) {
+				$gameData[$row['PlatformID']] = $row['PlatformName'];
+			}
+		}
+		return $gameData;
+	}
 
 	private function getRipComposers($ripQuery)
 	{
