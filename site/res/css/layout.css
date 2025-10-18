@@ -365,6 +365,21 @@ div.filters>.search-element>input {
 	cursor: pointer;
 }
 
+h1.split-heading {
+	display: flex;
+}
+
+h1.split-heading a {
+	width: 50%;
+	color: var(--text-color);
+}
+
+h1.split-heading a.inactive {
+	font-size: medium;
+	text-decoration: underline;
+	margin-top: auto;
+}
+
 .btn-good {
 	background: var(--color-good);
 	color: var(--text-color);

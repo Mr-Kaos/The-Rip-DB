@@ -32,8 +32,8 @@ const TABLES = [
 	'MetaJokes',
 	'JokeMetas',
 	'JokeTags',
-	'Genres',
 	'Composers',
+	'Platforms',
 	'Rips',
 	'RipJokes',
 	'RipRippers',
@@ -51,7 +51,8 @@ const VIEWS = [
 	'vw_MetaJokesDetailed',
 	'vw_MetasDetailed',
 	'vw_Playlists',
-	'vw_Composers'
+	'vw_Composers',
+	'vw_GamesDetailed'
 ];
 const PROCEDURES = [
 	'usp_InsertMeta',
@@ -69,6 +70,8 @@ const PROCEDURES = [
 	'usp_UpdateChannel',
 	'usp_InsertGame',
 	'usp_UpdateGame',
+	'usp_InsertPlatform',
+	'usp_UpdatePlatform',
 	'usp_InsertRipper',
 	'usp_UpdateRipper',
 	'usp_InsertComposer',

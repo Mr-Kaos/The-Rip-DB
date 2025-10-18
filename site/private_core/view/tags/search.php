@@ -3,8 +3,7 @@
 use RipDB\Objects as o;
 ?>
 <main>
-	<?php include('private_core/templates/header-tag-metas.php') ?>
-	<h1>Tags</h1>
+	<h1 class="split-heading"><a>Tags</a><a class="inactive" href="/meta-jokes">Meta Jokes</a><a class="inactive" href="/metas">Metas</a></h1>
 	<p>This page just shows what tags exist in the database.</p>
 	<div>
 		<form id="table_search" method="GET">
@@ -32,7 +31,7 @@ use RipDB\Objects as o;
 				<?php endforeach; ?>
 			<?php else: ?>
 				<tr>
-					<td colspan="3" style="text-align: center;padding:10px 0px;" ;>No tags were found with the given criteria.</td>
+					<td colspan="3" style="text-align: center;padding:10px 0px;">No tags were found with the given criteria.</td>
 				</tr>
 			<?php endif; ?>
 		</tbody>

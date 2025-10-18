@@ -7,7 +7,7 @@
 			<li><a href="/jokes">Jokes</a></li>
 			<li><a href="/rippers">Rippers</a></li>
 			<li><a href="/channels">Channels</a></li>
-			<li><a href="/games">Games</a></li>
+			<li><a href="/games">Games & Platforms</a></li>
 			<li><a href="/composers">Composers</a></li>
 			<li><a href="/tags">Tags & Metas</a></li>
 		</ul>

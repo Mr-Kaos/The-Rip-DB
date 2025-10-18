@@ -3,8 +3,7 @@
 use RipDB\Objects as o;
 ?>
 <main>
-	<?php include('private_core/templates/header-tag-metas.php') ?>
-	<h1>Meta Jokes</h1>
+	<h1 class="split-heading"><a>Meta Jokes</a><a class="inactive" href="/metas">Metas</a><a class="inactive" href="/tags">Tags</a></h1>
 	<p>This page shows the meta jokes that jokes are categorised within.</p>
 	<form id="table_search" style="display:inline" method="GET">
 		<?= (new o\InputElement('Search', o\InputTypes::button, ['type' => 'submit']))->buildElement() ?>

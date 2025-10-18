@@ -7,9 +7,10 @@ require('Model.php');
 class GameModel extends Model implements ResultsetSearch
 {
 	const TABLE = 'Games';
+	const VIEW = 'vw_GamesDetailed';
 	const COLUMNS = ['GameID', 'GameName', 'IsFake'];
 
-	public function search(int $count, int $offset, ?array $sort, ?string $name = null): array
+	public function search(int $count, int $offset, ?array $sort, ?string $name = null, ?array $platforms = null): array
 	{
 		$qry = $this->db->table(self::TABLE)
 			->select('GameID, GameName, IsFake, COUNT(RipID) RipCount')
@@ -42,6 +43,11 @@ class GameModel extends Model implements ResultsetSearch
 		return $qry->findAllByColumn('GameName');
 	}
 
+	public function getAllPlatforms()
+	{
+		return $this->db->table('Platforms')->findAllByColumn('PlatformID');
+	}
+
 	/**
 	 * Retrieves the data for the specified game.
 	 * @param int $id The ID of the game to retrieve.
@@ -49,7 +55,21 @@ class GameModel extends Model implements ResultsetSearch
 	 */
 	public function getGame(int $id): ?array
 	{
-		return $this->db->table(self::TABLE)->eq('GameID', $id)->findOne();
+		$gameRows = $this->db->table(self::VIEW)
+			->eq('GameID', $id)
+			->findAll();
+
+		$gameData = $gameRows[0];
+		unset($gameData['PlatformID']);
+		unset($gameData['PlatformName']);
+		$gameData['Platforms'] = [];
+
+		foreach ($gameRows as $row) {
+			if (!empty($row['PlatformID'])) {
+				$gameData['Platforms'][$row['PlatformID']] = $row['PlatformName'];
+			}
+		}
+		return $gameData;
 	}
 
 	public function getCount(): int

@@ -1,10 +1,11 @@
--- Stored procedure for inserting tags into the database easily.
+-- Stored procedure for inserting games into the database easily.
 
 DROP PROCEDURE IF EXISTS usp_InsertGame;
 
 CREATE PROCEDURE usp_InsertGame(
 	IN NewGame varchar(256),
 	IN NewDescription text,
+	IN Platforms json,
 	IN FakeGame int,
 	OUT GameIDOut int)
 BEGIN
@@ -15,6 +16,12 @@ BEGIN
 			(NewGame, NewDescription, FakeGame);
 
 		SET GameIDOut = LAST_INSERT_ID();
+
+		IF Platforms IS NOT NULL THEN
+			INSERT INTO GamePlatforms (PlatformID, GameID)
+			SELECT PlatformID, GameIDOut
+			FROM JSON_TABLE (Platforms, '$[*]' COLUMNS(rn FOR ORDINALITY, PlatformID JSON PATH '$')) k;
+		END IF;
 	ELSE
 		SELECT GameID INTO GameIDOut FROM Games WHERE GameName = NewGame;
 	END IF;

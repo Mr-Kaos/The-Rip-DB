@@ -79,6 +79,7 @@ class GameController extends Controller
 			case 'games/new':
 				$validated['NewGame'] = $this->validateFromList($_POST['name'], $this->model->getAllGameNames(), 'This game already exists.', true);
 				$validated['NewDescription'] = $this->validateString($_POST['description']);
+				$validated['Platforms'] = $this->validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.');
 				$validated['FakeGame'] = $this->validateBool($_POST['isFake'] ?? false);
 
 				$gameId = 0;
@@ -88,6 +89,7 @@ class GameController extends Controller
 				$validated['GameID'] = $this->validateNumber($extraData['id']);
 				$validated['NewGame'] = $this->validateFromList($_POST['name'], $this->model->getAllGameNames((int)$extraData['id']), 'This game already exists.', true);
 				$validated['NewDescription'] = $this->validateString($_POST['description']);
+				$validated['Platforms'] = $this->validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.');
 				$validated['FakeGame'] = $this->validateBool($_POST['isFake'] ?? false);
 
 				$result = $this->submitRequest($validated, 'usp_UpdateGame', '/games', 'Game successfully updated!');

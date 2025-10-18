@@ -72,6 +72,10 @@
 							<td><button id="data-GameName" type="button" onclick="window.location='/rips?games[]=<?= $rip['RipGame'] ?>'"><?= $rip['GameName']  ?></button></td>
 						</tr>
 						<tr>
+							<th>Platform</th>
+							<td><button id="data-Platform" type="button" onclick="window.location='/rips?platforms[]=<?= $rip['RipPlatform'] ?>'"><?= $rip['GameName']  ?></button></td>
+						</tr>
+						<tr>
 							<th>Composers/Artists</th>
 							<td>
 								<?php $composers = [];

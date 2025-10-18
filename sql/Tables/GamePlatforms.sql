@@ -1,0 +1,11 @@
+CREATE TABLE GamePlatforms (
+	PlatformID INT NOT NULL,
+	GameID int NOT NULL,
+	CONSTRAINT PK_RipGenres PRIMARY KEY (PlatformID, GameID),
+	CONSTRAINT GamePlatforms_Platform_FK FOREIGN KEY (PlatformID) REFERENCES Platforms(PlatformID),
+	CONSTRAINT GamePlatforms_Game_FK FOREIGN KEY (GameID) REFERENCES Games(GameID)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci
+AUTO_INCREMENT=1;

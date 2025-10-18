@@ -188,6 +188,25 @@ Flight::group('/games', function () {
 	});
 });
 
+// Platform Pages
+Flight::group('/platforms', function () {
+	Flight::route('/', function () {
+		displayPage('platforms/search', 'PlatformController', [], 'Game Platforms');
+	});
+	Flight::route('POST /new', function () {
+		submitForm('platforms/new', 'PlatformController');
+	});
+	Flight::route('/new', function () {
+		displayPage('platforms/new', 'PlatformController', [], 'New Platform');
+	});
+	Flight::route('POST /edit/@id', function ($id) {
+		submitForm('platforms/edit', 'PlatformController', ['id' => $id]);
+	});
+	Flight::route('/edit/@id', function ($id) {
+		displayPage('platforms/edit', 'PlatformController', ['id' => $id], 'Edit Platform');
+	});
+});
+
 // Channel Pages
 Flight::group('/channels', function () {
 	Flight::route('/', function () {
@@ -407,6 +426,9 @@ Flight::group('/search', function () {
 	});
 	Flight::route('GET /composers', function () {
 		performAPIRequest('search', 'composers', HttpMethod::GET);
+	});
+	Flight::route('GET /platforms', function () {
+		performAPIRequest('search', 'platforms', HttpMethod::GET);
 	});
 	Flight::route('GET /@other', function ($other) {
 		http_response_code(404);

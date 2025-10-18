@@ -23,7 +23,9 @@ if ($in == 'Y' || $in == '') {
 
 	$files = [
 		'Composers',
-		'RipComposers'
+		'RipComposers',
+		'Platforms',
+		'GamePlatforms'
 	];
 
 	deployFiles($pdo, 'Tables', $files);
@@ -36,6 +38,7 @@ if ($in == 'Y' || $in == '') {
 	$pdo->exec('ALTER TABLE RipDB.Rips ADD WikiURL varchar(8192) DEFAULT NULL;');
 	$pdo->exec('ALTER TABLE RipDB.Rips ADD MixName varchar(256) DEFAULT NULL;');
 	$pdo->exec('ALTER TABLE RipDB.RipJokes ADD GenreID int DEFAULT NULL;');
+	$pdo->exec('ALTER TABLE RipDB.Channels ADD WikiURL varchar(1024) DEFAULT NULL;');
 
 	// Transferring genres to new genres relation
 	$pdo->exec("UPDATE RipJokes rj

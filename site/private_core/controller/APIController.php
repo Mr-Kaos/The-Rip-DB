@@ -94,6 +94,9 @@ class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 			case 'composers':
 				$result = $this->model->getRecords('vw_Composers', 'ComposerID', 'ComposerName', $search, $rand);
 				break;
+			case 'platforms':
+				$result = $this->model->getRecords('Platforms', 'PlatformID', 'PlatformName', $search, $rand);
+				break;
 			case 'rip-names':
 				$result = $this->model->getRecords('Rips', 'RipID', 'RipName', $search, $rand);
 				break;
