@@ -112,6 +112,7 @@ class RipController extends Controller
 					}
 
 					$this->setData('rip', $rip);
+					$this->setData('hasWiki', $this->model->channelHasWiki($rip['RipChannel']));
 					if ($rip !== null) {
 						$this->setPageTitle($rip['RipName']);
 					} else {

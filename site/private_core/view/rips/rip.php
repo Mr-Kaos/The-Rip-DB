@@ -113,8 +113,10 @@
 						<?php endif; ?>
 					</tbody>
 				</table>
-				<hr>
-				<button type="button" onclick="generateWikiPage()">Generate Wiki Page</button>
+				<?php if ($hasWiki): ?>
+					<hr>
+					<button type="button" onclick="generateWikiPage()">Generate Wiki Page</button>
+				<?php endif; ?>
 			</section>
 		</div>
 	<?php endif; ?>

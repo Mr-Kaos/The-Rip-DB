@@ -8,7 +8,7 @@ class RipModel extends Model implements ResultsetSearch
 {
 	const TABLE = 'Rips';
 	const VIEW = 'vw_RipsDetailed';
-	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipYouTubeID', 'RipLength', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL', 'MixName', 'WikiURL'];
+	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipYouTubeID', 'RipLength', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL', 'MixName', 'Rips.WikiURL'];
 	const SORT_RipName = 'Name';
 	const SORT_RipAlternateName = 'AltName';
 	const SORT_RipDescription = 'Description';
@@ -21,7 +21,8 @@ class RipModel extends Model implements ResultsetSearch
 	 */
 	public function getRip(int $id)
 	{
-		$qry = $this->db->table(self::TABLE)
+		$qry = $this->db
+			->table(self::TABLE)
 			->columns(...self::COLUMNS)
 			->eq('RipID', $id)
 			->join('Games', 'GameID', 'RipGame')
@@ -121,6 +122,17 @@ class RipModel extends Model implements ResultsetSearch
 	}
 
 	/**
+	 * Returns a boolean indicating if the channel associated to the rip has a wiki or not.
+	 */
+	public function channelHasWiki(int $channelId): bool
+	{
+		return $this->db->table('Channels')
+			->eq('ChannelID', $channelId)
+			->notNull('WikiURL')
+			->exists();
+	}
+
+	/**
 	 * Finds all jokes that are contained in the given resultset of rips.
 	 * @return A 2D array where each key is the ID of the joke and the values are the columns from the Jokes Table, along with its tags.
 	 */
@@ -167,7 +179,8 @@ class RipModel extends Model implements ResultsetSearch
 			->findAll();
 	}
 
-	private function getRipPlatforms($gameID): array {
+	private function getRipPlatforms($gameID): array
+	{
 		$gameRows = $this->db->table('vw_GamesDetailed')
 			->eq('GameID', $gameID)
 			->findAll();

@@ -5,6 +5,8 @@ CREATE TABLE Channels (
 	ChannelName varchar(256) CHARACTER SET utf8mb4 NOT NULL,
 	ChannelDescription text COMMENT 'Describes information about the channel',
 	ChannelURL varchar(512) CHARACTER SET utf8mb4,
+	WikiURL varchar(1024),
+	IsActive bit DEFAULT 1,
 	PRIMARY KEY (ChannelID),
 	UNIQUE KEY UQ_ChannelName (ChannelName)
 )
