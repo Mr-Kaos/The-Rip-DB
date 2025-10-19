@@ -4,7 +4,7 @@ CREATE VIEW vw_RipsDetailed AS
 SELECT r.RipID, r.RipName, r.RipDate, r.RipAlternateName, r.RipLength,
 r.RipGame, g.GameName, r.RipURL, r.RipAlternateURL, r.RipYouTubeID, r.RipDescription,
 r.RipChannel, c.ChannelName, c.ChannelURL, j.JokeID, j.JokeName, ri.RipperID, ri.RipperName,
-t.TagID, t.TagName, ge.GenreID, ge.GenreName, mj.MetaJokeID, m.MetaID, MixName, r.WikiURL
+t.TagID, t.TagName, ge.GenreID, ge.GenreName, mj.MetaJokeID, m.MetaID, MixName, r.WikiURL AS RipWikiURL, c.WikiURL AS ChannelWikiURL
 FROM Rips r
 LEFT JOIN RipJokes rj ON rj.RipID = r.RipID
 LEFT JOIN Jokes j ON j.JokeID = rj.JokeID

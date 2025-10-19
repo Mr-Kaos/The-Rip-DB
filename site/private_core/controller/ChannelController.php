@@ -81,7 +81,7 @@ class ChannelController extends Controller
 				$validated['InDescription'] = $this->validateString($_POST['description']);
 				$validated['InURL'] = $this->validateString($_POST['url'] ?? false, 'The URL must be a valid YouTube URL!', 512, 16, '/^https:\/{2}[w]{0,3}[youtube.com][a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}.*$/');
 				$validated['InActive'] = $this->validateBool($_POST['active'] ?? false);
-				$validated['InWikiURL'] = $this->validateString($_POST['wiki-url'] ?? null, 'The wiki URL must be a valid URL!', 1024, 16, '/^https:\/{2}.*$/');
+				$validated['InWikiURL'] = $this->validateString($_POST['wiki-url'] ?? null, 'The wiki URL must be a valid URL!', 1024, 0, '/^https:\/{2}.*$/');
 
 				$channelId = 0;
 				$result = $this->submitRequest($validated, 'usp_InsertChannel', '/channels', 'Channel successfully added!', $channelId);
@@ -90,7 +90,7 @@ class ChannelController extends Controller
 				$validated['InChannelID'] = $this->validateNumber($extraData['id']);
 				$validated['InChannel'] = $this->validateFromList($_POST['name'], $this->model->getAllChannelNames((int)$extraData['id']), 'This channel already exists.', true);
 				$validated['InDescription'] = $this->validateString($_POST['description']);
-				$validated['InURL'] = $this->validateString($_POST['url'] ?? false);
+				$validated['InURL'] = $this->validateString($_POST['url'] ?? false, 'The URL must be a valid YouTube URL!', 512, 0, '/^https:\/{2}[w]{0,3}[youtube.com][a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}.*$/');
 				$validated['InActive'] = $this->validateBool($_POST['active'] ?? false, 'The channel must be either active or inactive.', true);
 				$validated['InWikiURL'] = $this->validateString($_POST['wiki-url'] ?? null, 'The wiki URL must be a valid URL!', 1024, 0, '/^https:\/{2}.*$/');
 

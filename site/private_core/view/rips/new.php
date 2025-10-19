@@ -30,7 +30,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			</div>
 			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'style' => 'width:100%'], null, true))->buildElement() ?>
 			<?php
-			$composerList = new o\SearchElement('Composer/Artist', '/search/composers', false, null, ['name' => 'composers[]', 'modal' => '/composers/new', 'modal-tgt-id' => 'new-composer', 'modal-value-key' => 'NewComposer']);
+			$composerList = new o\SearchElement('Composer/Artist', '/search/composers', false, null, ['name' => 'composers[]', 'modal' => '/composers/new', 'modal-tgt-id' => 'new-composer', 'modal-value-key' => 'FirstName']);
 			?>
 			<?= (new o\InputTable('Composers/Artists', [$composerList]))->buildElement() ?>
 		</fieldset>

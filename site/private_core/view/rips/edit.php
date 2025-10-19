@@ -19,7 +19,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<?= (new o\InputElement('Rip URL', o\InputTypes::url, ['name' => 'url', 'required' => true, 'value' => $rip['RipURL'], 'style' => 'width:100%'], null, true))->buildElement() ?>
 			<?= (new o\InputElement('YouTube Video ID', o\InputTypes::text, ['name' => 'ytId', 'minlength' => 11, 'maxlength' => 11, 'value' => $rip['RipYouTubeID'], 'pattern' => '[A-Za-z0-9_\-]{11}'], null, true))->buildElement() ?>
 			<?= (new o\InputElement('Rip Alternative URL', o\InputTypes::url, ['name' => 'alturl', 'value' => $rip['RipAlternateURL'], 'style' => 'width:100%', 'title' => 'URl of an alternative release for the rip, e.g. the album release URL.'], null, true))->buildElement() ?>
-			<?= (new o\DropdownElement('Rip Channel', $channels, ['name' => 'channel', 'required' => true, 'selected' => $rip['RipChannel'], 'modal' => '/channels/new', 'modal-tgt-id' => 'new-channel', 'modal-value-key' => 'NewChannel'], null, true))->buildElement() ?>
+			<?= (new o\DropdownElement('Rip Channel', $channels, ['name' => 'channel', 'required' => true, 'selected' => $rip['RipChannel'], 'modal' => '/channels/new', 'modal-tgt-id' => 'new-channel', 'modal-value-key' => 'InChannel'], null, true))->buildElement() ?>
 		</fieldset>
 		<fieldset>
 			<legend>Rip Metadata</legend>
@@ -28,9 +28,9 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<div style="display:flex;gap:10px">
 				<?= (new o\SearchElement('Game', '/search/games', false, [$rip['RipGame'] => $rip['GameName']], ['name' => 'game', 'required' => true, 'modal' => '/games/new', 'modal-tgt-id' => 'new-game', 'modal-value-key' => 'NewGame'], null, true))->buildElement() ?>
 			</div>
-			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'value' => $rip['WikiURL'], 'style' => 'width:100%'], null, true))->buildElement() ?>
+			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'value' => $rip['RipWikiURL'], 'style' => 'width:100%'], null, true))->buildElement() ?>
 			<?php
-			$composerList = new o\SearchElement('Composer/Artist', '/search/composers', false, null, ['name' => 'composers[]', 'modal' => '/composers/new', 'modal-tgt-id' => 'new-composer', 'modal-value-key' => 'NewComposer']);
+			$composerList = new o\SearchElement('Composer/Artist', '/search/composers', false, null, ['name' => 'composers[]', 'modal' => '/composers/new', 'modal-tgt-id' => 'new-composer', 'modal-value-key' => 'FirstName']);
 			?>
 			<?= (new o\InputTable('Composers/Artists', [$composerList], ['value' => $rip['Composers']]))->buildElement() ?>
 		</fieldset>

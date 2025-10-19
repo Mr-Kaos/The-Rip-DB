@@ -23,13 +23,18 @@ enum HttpMethod
 	case DELETE;
 }
 
-// Error page
-Flight::group('/error', function () {
+register_shutdown_function('onError');
+
+function onError()
+{
 	Flight::route('/@code', function ($code) {
 		displayPage('error', 'ErrorController', ['error' => $code], 'Oh No!');
 		http_response_code(500);
 	});
-});
+}
+
+// Error page
+Flight::group('/error', 'onError');
 
 // Home Page
 Flight::group('/', function () {
@@ -376,7 +381,7 @@ Flight::group('/account', function () {
 		submitForm('playlists/claim', 'AccountController');
 	});
 
-		Flight::route('POST /playlists/import', function () {
+	Flight::route('POST /playlists/import', function () {
 		submitForm('playlists/import', 'AccountController');
 	});
 

@@ -8,7 +8,7 @@ class RipModel extends Model implements ResultsetSearch
 {
 	const TABLE = 'Rips';
 	const VIEW = 'vw_RipsDetailed';
-	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipYouTubeID', 'RipLength', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL', 'MixName', 'Rips.WikiURL'];
+	const COLUMNS = ['RipID', 'RipName', 'RipAlternateName', 'RipDescription', 'RipDate', 'RipURL', 'RipAlternateURL', 'RipYouTubeID', 'RipLength', 'RipGame', 'GameName', 'RipChannel', 'ChannelName', 'ChannelURL', 'MixName', 'RipWikiURL', 'ChannelWikiURL'];
 	const SORT_RipName = 'Name';
 	const SORT_RipAlternateName = 'AltName';
 	const SORT_RipDescription = 'Description';
@@ -22,11 +22,9 @@ class RipModel extends Model implements ResultsetSearch
 	public function getRip(int $id)
 	{
 		$qry = $this->db
-			->table(self::TABLE)
+			->table(self::VIEW)
 			->columns(...self::COLUMNS)
-			->eq('RipID', $id)
-			->join('Games', 'GameID', 'RipGame')
-			->join('Channels', 'ChannelID', 'RipChannel');
+			->eq('RipID', $id);
 
 		// Get jokes and rips from the resultset of rips.
 		$ripJokes = $this->getRipJokes($qry);

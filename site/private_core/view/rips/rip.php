@@ -96,7 +96,7 @@
 								<?php endforeach; ?>
 							</td>
 						</tr>
-						<?php if (!empty($rip['RipAlternateURL'] || !empty($rip['WikiURL']))) : ?>
+						<?php if (!empty($rip['RipAlternateURL']) || !empty($rip['RipWikiURL'])) : ?>
 							<tr>
 								<th>Other Links</th>
 								<td>
@@ -104,8 +104,8 @@
 										<?php if (!empty($rip['RipAlternateURL'])): ?>
 											<li><a href="<?= $rip['RipAlternateURL'] ?>" target="_blank">Album Release</a></li>
 										<?php endif; ?>
-										<?php if (!empty($rip['WikiURL'])): ?>
-											<li><a href="<?= $rip['WikiURL'] ?>">Wiki Page</a></li>
+										<?php if (!empty($rip['RipWikiURL'])): ?>
+											<li><a href="<?= $rip['RipWikiURL'] ?>" target="_blank">Wiki Page</a></li>
 										<?php endif; ?>
 									</ul>
 								</td>

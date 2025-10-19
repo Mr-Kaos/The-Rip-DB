@@ -3,7 +3,6 @@
 use RipDB\Objects as o;
 ?>
 <main>
-	<?php include('private_core/templates/header-composer-metas.php') ?>
 	<h1>Composers</h1>
 	<p>This page just shows what composers exist in the database.</p>
 	<div>
