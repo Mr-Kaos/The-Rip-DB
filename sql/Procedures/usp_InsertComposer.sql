@@ -9,7 +9,7 @@ CREATE PROCEDURE RipDB.usp_InsertComposer(
 	IN LastNameAlt varchar(256),
 	OUT ComposerIDOut INT)
 BEGIN
-	INSERT INTO Composers
+	INSERT IGNORE INTO Composers
 		(ComposerFirstName, ComposerLastName, ComposerFirstNameAlt, ComposerLastNameAlt)
 	VALUES
 		(FirstName, LastName, FirstNameAlt, LastNameAlt);

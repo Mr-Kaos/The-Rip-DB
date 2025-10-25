@@ -73,7 +73,11 @@
 						</tr>
 						<tr>
 							<th>Platform</th>
-							<td><?= implode(', ', $rip['Platforms']) ?></td>
+							<?php if (empty($rip['Platforms'])): ?>
+								<td><i>Unknown platform</i></td>
+							<?php else: ?>
+								<td><?= implode(', ', $rip['Platforms']) ?></td>
+							<?php endif; ?>
 						</tr>
 						<tr>
 							<th>Composers/Artists</th>
