@@ -34,6 +34,8 @@ const TABLES = [
 	'JokeTags',
 	'Composers',
 	'Platforms',
+	'GamePlatforms',
+	'Genres',
 	'Rips',
 	'RipJokes',
 	'RipRippers',

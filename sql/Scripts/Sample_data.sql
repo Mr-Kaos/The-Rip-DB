@@ -36,12 +36,12 @@ CALL usp_InsertJoke('Inspector Gadget', 'Theme song of the TV show "Inspector Ga
 CALL usp_InsertJoke('Star Wars (Main Title)', 'Main title theme of Star Wars by John Williams.', 1, null, '[21,24]', @out);
 CALL usp_InsertJoke('All Star', 'Song by music artist "Smash Mouth".', 1, null, '[23]', @out);
 CALL usp_InsertJoke('Bonetrousle', 'Song from the game Undertale.', 1, null, '[14,18,34]', @out); -- 10
-CALL usp_InsertJoke('On The Floor', 'Song by IceJJFish.', 1, null, '[6]', @out);
+CALL usp_InsertJoke('On The Floor', 'Song by IceJJFish.', 1, null, null, @out);
 CALL usp_InsertJoke('Donald Duck', 'Disney character', 4, null, '[24]', @out);
 CALL usp_InsertJoke('Temmie Village', 'Song from the game Undertale.', 1, null, '[14,18,34]', @out);
 CALL usp_InsertJoke('Snow halation', 'Song from the Love Live! franchise.', 1, null, '[25]', @out);
 CALL usp_InsertJoke('YTP4LIFE CRYING', '', 3, null, null, @out); -- 15
-CALL usp_InsertJoke('Title Theme & Ending', 'The NES rendition of "Meet the Flintstones" that plays during the title screen and ending of The Flintstones: The Rescue of Dino & Hoppy. The name is unofficial.', 1, '[2]', '[14,15]', @out);
+CALL usp_InsertJoke('Title Theme & Ending', 'The NES rendition of "Meet the Flintstones" that plays during the title screen and ending of The Flintstones: The Rescue of Dino & Hoppy. The name is unofficial.', 1, null, '[14,15]', @out);
 CALL usp_InsertJoke('Wake Me Up When September Ends', 'Song by Green Day', 1, null, '[26,5]', @out);
 CALL usp_InsertJoke('Pledge of Demon', 'Song from Yakuza 0', 1, null, '[14]', @out);
 CALL usp_InsertJoke('Rock My Emotions', '', 1, '[3]', null, @out);
@@ -55,7 +55,7 @@ CALL usp_InsertJoke('Beware the Forest''s Mushrooms', '', 1, null, '[14]', @out)
 CALL usp_InsertJoke('In the Hall of the Mountain King', '', 1, null, '[11]', @out);
 CALL usp_InsertJoke('OMNI FIX YOUR PASSWORD', '', 6, null, null, @out);
 CALL usp_InsertJoke('Temporary Secretary', '', 1, null, '[31]', @out);
-CALL usp_InsertJoke('Deez Nuts!', '', 3, '[6]', null, @out); -- 30
+CALL usp_InsertJoke('Deez Nuts!', '', 3, null, null, @out); -- 30
 CALL usp_InsertJoke('Deez Nuts! [Trap Remix]', '', 1, '[3]', null, @out);
 CALL usp_InsertJoke('Bonfire', '', 1, null, null, @out);
 CALL usp_InsertJoke('Harlem Shake', '', 1, '[3,6]', null, @out);
@@ -83,6 +83,40 @@ VALUES
 	('Super Mario 64', ''), -- 15
 	('Cave Story', '');
 
+-- Platforms
+INSERT INTO Platforms
+	(PlatformName)
+VALUES
+	('Game Boy Advance'),
+	('Nintendo 64'),
+	('PC'),
+	('Nintendo Game Cube'),
+	('Nintendo DS'), -- 5
+	('Nintendo 3DS'),
+	('Nintendo Wii U'),
+	('Nintendo Switch');
+
+INSERT INTO GamePlatforms
+	(GameID, PlatformID)
+VALUES
+	(1, 1),
+	(2, 2),
+	(3, 3),
+	(3, 8),
+	(4, 4),
+	(5, 5),
+	(6, 7),
+	(7, 6),
+	(8, 5),
+	(9, 6),
+	(10, 1),
+	(11, 3),
+	(12, 5),
+	(14, 3),
+	(14, 8),
+	(15, 3),
+	(15, 8);
+
 -- Rippers
 INSERT INTO Rippers
 	(RipperName)
@@ -102,55 +136,55 @@ VALUES
 
 -- Rips
 -- Parameters: Rip Name, Alt Name, Description, upload date, length, URL, YouTube ID, alternate (album) URL, game, channel, genres, jokes, rippers 
-CALL usp_InsertRip('Battle! (Wild Pokémon)', 'A Wild Fred Flintstone Appeared!', null, '2016-01-09', '0102', 'https://www.youtube.com/watch?v=vJsjd8alc8Y', 'vJsjd8alc8Y', null, 1, 1, '[1]',
- '{"2": {"timestamps":[{"start":"00:00:12","end":"00:01:01"}],"comment":null}, "1": {"timestamps":[{"start":"00:00:12","end":"00:01:02"}],"comment":"Visual edit"}, "3": {"timestamps":[{"start":"00:01:01","end":"00:01:02"}],"comment":null}}', '{"1":null}');
-CALL usp_InsertRip('Route 110', null, null, '2016-06-09', '0031', 'https://www.youtube.com/watch?v=hRKTKaOtP0I', 'hRKTKaOtP0I', null, 1, 1, '[1]',
- '{"4": {"timestamps":[{"start":"00:00:00","end":"00:00:31"}],"comment":null}}', '{"2":null}');
-CALL usp_InsertRip('Gerudo Valley', 'Gerudo Countdown', null, '2016-01-11', '0146', 'https://www.youtube.com/watch?v=zdFPVzFgl68', 'zdFPVzFgl68', null, 2, 1, '[1]',
- '{"5": {"timestamps":[{"start":"00:00:00","end":"00:01:46"}],"comment":null}}', '{"1":null}');
-CALL usp_InsertRip('MEGALOVANIA', 'Descending MEGALOVANIA', null, '2016-01-12', '0137', 'https://www.youtube.com/watch?v=Q9wDLSrLeUE', 'Q9wDLSrLeUE', null, 3, 1, '[7]',
- '{"6": {"timestamps":[{"start":"00:00:00","end":"00:01:37"}],"comment":null}}', '{"2":null}');
-CALL usp_InsertRip('Once Upon A Time', null, null, '2016-01-13', '0127', 'https://www.youtube.com/watch?v=2_yoDiuwSwE', '2_yoDiuwSwE', null, 3, 1, '[1]',
- '{"8": {"timestamps":[{"start":"00:00:00","end":"00:01:27"}],"comment":null}}', '{"2":null}');
-CALL usp_InsertRip('Lost Woods', null, null, '2016-01-14', '0106', 'https://www.youtube.com/watch?v=da5kSUVbaI4', 'da5kSUVbaI4', null, 2, 1, '[1]',
- '{"2": {"timestamps":[{"start":"00:00:02","end":"00:01:06"}],"comment":null}}', '{"1":null}');
-CALL usp_InsertRip('A Secret Course', null, null, '2016-01-14', '0131', 'https://www.youtube.com/watch?v=ZTga1rjryhE', 'ZTga1rjryhE', null, 3, 1, '[1]',
- '{"9": {"timestamps":[{"start":"00:00:07","end":"00:01:31"}],"comment":null}}', '{"1":null}');
-CALL usp_InsertRip('Secret Course', 'Super Mario Shrekshine: All Secret Course', null, '2016-01-15', '0130', 'https://www.youtube.com/watch?v=ryZvC68xE_s', 'ryZvC68xE_s', null, 4, 1, '[1]',
- '{"9": {"timestamps":[{"start":"00:00:06","end":"00:01:30"}],"comment":null}}', '{"1":null}');
-CALL usp_InsertRip('Luigi''s Mansion', null, null, '2016-01-17', '0131', 'https://www.youtube.com/watch?v=p7RsftFX9ak', 'p7RsftFX9ak', null, 5, 1, '[1]',
- '{"10": {"timestamps":[{"start":"00:00:00","end":"00:01:31"}],"comment":null}}', '{"2":null}');
-CALL usp_InsertRip('Uncontrollable', null, null, '2016-01-18', '0349', 'https://www.youtube.com/watch?v=pTeXKobmqWk', 'pTeXKobmqWk', null, 6, 1, '[1]',
- '{"3": {"timestamps":[{"start":"00:00:28","end":"00:03:49"}],"comment":null}}', '{"3":"null"}');
-CALL usp_InsertRip('Map (Day)', 'On the Island', null, '2016-01-18', '0053', 'https://www.youtube.com/watch?v=XhG9rWtjcGQ', 'XhG9rWtjcGQ', null, 7, 1, '[1]',
- '{"11": {"timestamps":[{"start":"00:00:00","end":"00:00:53"}],"comment":null}}', '{"4":"Chief Keef 2"}');
-CALL usp_InsertRip('Uncontrollable (Alternate Mix)', null, null, '2016-01-19', '0345', 'https://www.youtube.com/watch?v=6nRC_dlsJ1I', '6nRC_dlsJ1I', null, 6, 1, '[1]',
- '{"12": {"timestamps":[{"start":"00:00:00","end":"00:03:45"}],"comment":null}}', '{"5":null}');
-CALL usp_InsertRip('Overworld Theme (Original Mix)', null, null, '2016-01-19', '0128', 'https://www.youtube.com/watch?v=Ct3Z7LEoOPM', 'Ct3Z7LEoOPM', null, 8, 1, '[1]',
- '{"13": {"timestamps":[{"start":"00:00:12","end":"00:01:28"}],"comment":null}}', '{"2":null}');
-CALL usp_InsertRip('Hopes and Dreams', null, null, '2016-01-20', '0301', 'https://www.youtube.com/watch?v=Bhs3Q7-kLHs', 'Bhs3Q7-kLHs', null, 3, 1, '[1]',
- '{"14": {"timestamps":[{"start":"00:00:11","end":"00:03:01"}],"comment":null}}', '{"6":null}');
-CALL usp_InsertRip('The key we''ve lost', 'The channel ytp4life lost', null, '2016-01-20', '0611', 'https://www.youtube.com/watch?v=SezWmzgp6uQ', 'SezWmzgp6uQ', null, 6, 1, '[1]',
- '{"15": {"timestamps":[{"start":"00:00:00","end":"00:06:11"}],"comment":null}}', '{"3":null}');
-CALL usp_InsertRip('MEGALOVANIA (Beta Mix)', 'Grand Dadlovania', null, '2016-01-28', '0049', 'https://www.youtube.com/watch?v=4wXW_ex5Nvs', '4wXW_ex5Nvs', null, 3, 1, '[1]',
- '{"6": {"timestamps":[{"start":"00:00:07","end":"00:00:39"}],"comment":null}}', '{"1":null}');
-CALL usp_InsertRip('Last Goodbye (Alternate Mix)', 'Everlasting Goodbye', null, '2016-01-29', '0049', 'https://www.youtube.com/watch?v=rSuYr0dR2gw', 'rSuYr0dR2gw', null, 3, 1, '[2]',
- '{"16": {"timestamps":[{"start":"00:00:05","end":"00:00:49"}],"comment":null}}', '{"2":null}');
-CALL usp_InsertRip('Last Goodbye (Beta Mix)', null, null, '2016-01-29', '0215', 'https://www.youtube.com/watch?v=gIEbix3m68g', 'gIEbix3m68g', null, 3, 1, '[7]',
- '{"7": {"timestamps":[{"start":"00:00:00","end":"00:02:15"}],"comment":null}}', '{"5":null}');
-CALL usp_InsertRip('My Room (Naturale)', null, null, '2016-01-31', '0308', 'https://www.youtube.com/watch?v=yS80Lx9d6ug', 'yS80Lx9d6ug', null, 9, 1, '[2]',
- '{"17": {"timestamps":[{"start":"00:00:00","end":"00:03:08"}],"comment":null}}', '{"7":null}');
-CALL usp_InsertRip('Mini-Porky''s Entrance', null, null, '2020-05-01', '0007', 'https://www.youtube.com/watch?v=34frOL0BvlM', '34frOL0BvlM', null, 10, 2, '[6]',
- '{"2": {"timestamps":[{"start":"00:00:00","end":"00:00:07"}],"comment":null}}', '{}');
-CALL usp_InsertRip('Triage at Dawn', 'Pledge of Combine', null, '2020-05-01', '0048', 'https://www.youtube.com/watch?v=KYhfEHui8-w', 'KYhfEHui8-w', null, 11, 2, '[6]',
- '{"2": {"timestamps":[{"start":"00:00:06","end":"00:00:48"}],"comment":null}}', '{"8":null}');
-CALL usp_InsertRip('Final Boss', null, null, '2020-05-01', '0245', 'https://www.youtube.com/watch?v=SazKKPNJ1mw', 'SazKKPNJ1mw', null, 12, 2, '[2,6]',
- '{"19": {"timestamps":[{"start":"00:00:00","end":"00:00:11"},{"start":"00:00:57","end":"00:01:10"}],"comment":null},"20": {"timestamps":[{"start":"00:00:11","end":"00:00:28"}],"comment":null},"21": {"timestamps":[{"start":"00:00:11","end":"00:00:28"},{"start":"00:00:57","end":"00:01:20"}],"comment":null},"23": {"timestamps":[{"start":"00:00:28","end":"00:00:40"}],"comment":null},"2": {"timestamps":[{"start":"00:00:40","end":"00:00:51"}],"comment":null},"24": {"timestamps":[{"start":"00:00:51","end":"00:00:57"}],"comment":null}}', '{}');
-CALL usp_InsertRip('Password', 'SiIvagunner Gets Fucking HACKED (Real)', null, '2020-05-01', '0024', 'https://www.youtube.com/watch?v=_4eCEPjKP14', '_4eCEPjKP14', null, 13, 2, '[14]',
- '{"28": {"timestamps":[{"start":"00:00:00","end":"00:00:24"}],"comment":null},"29": {"timestamps":[{"start":"00:00:09","end":"00:00:16"}],"comment":null}}', '{"9":null}');
-CALL usp_InsertRip('AUDlO_lNTRONOlSE (Beta Mix)', null, null, '2020-05-01', '0012', 'https://www.youtube.com/watch?v=sUNlS5Olh5c', 'sUNlS5Olh5c', null, 14, 2, '[1]',
- '{"30": {"timestamps":[{"start":"00:00:00","end":"00:00:12"}],"comment":null}}', '{"10":null, "11":null}');
-CALL usp_InsertRip('Slider (DN Version)', null, null, '2020-05-01', '0337', 'https://www.youtube.com/watch?v=zvSnueCaCjg', 'zvSnueCaCjg', null, 15, 2, '[2,13,14]',
- '{"29": {"timestamps":[{"start":"00:00:00","end":"00:03:33"}],"comment":null},"30": {"timestamps":[{"start":"00:03:33","end":"00:03:37"}],"comment":null},"32": {"timestamps":[{"start":"00:01:12","end":"00:01:35"}],"comment":"Vocals are used in place of those from Deez Nuts! [Trap Remix]."},"33": {"timestamps":[{"start":"00:02:28","end":"00:03:33"}],"comment":null},"34": {"timestamps":[{"start":"00:03:11","end":"00:03:33"}],"comment":"Pitch shifted"}}', '{"12":null}');
-CALL usp_InsertRip('White', null, null, '2020-05-01', '0325', 'https://www.youtube.com/watch?v=6s4nh5cpk_0', '6s4nh5cpk_0', null, 16, 2, '[6]',
- '{"35": {"timestamps":[{"start":"00:00:00","end":"00:03:25"}],"comment":null}}', '{"8":null}');
+CALL usp_InsertRip('Battle! (Wild Pokémon)', null, 'A Wild Fred Flintstone Appeared!', null, '2016-01-09', '0102', 'https://www.youtube.com/watch?v=vJsjd8alc8Y', 'vJsjd8alc8Y', null, 1, 1,
+ '{"2": {"timestamps":[{"start":"00:00:12","end":"00:01:01"}],"comment":null}, "1": {"timestamps":[{"start":"00:00:12","end":"00:01:02"}],"comment":"Visual edit"}, "3": {"timestamps":[{"start":"00:01:01","end":"00:01:02"}],"comment":null}}', '{"1":null}', null, null);
+CALL usp_InsertRip('Route 110', null, null, null, '2016-06-09', '0031', 'https://www.youtube.com/watch?v=hRKTKaOtP0I', 'hRKTKaOtP0I', null, 1, 1,
+ '{"4": {"timestamps":[{"start":"00:00:00","end":"00:00:31"}],"comment":null}}', '{"2":null}', null, null);
+CALL usp_InsertRip('Gerudo Valley', null, 'Gerudo Countdown', null, '2016-01-11', '0146', 'https://www.youtube.com/watch?v=zdFPVzFgl68', 'zdFPVzFgl68', null, 2, 1,
+ '{"5": {"timestamps":[{"start":"00:00:00","end":"00:01:46"}],"comment":null}}', '{"1":null}', null, null);
+CALL usp_InsertRip('MEGALOVANIA', null, 'Descending MEGALOVANIA', null, '2016-01-12', '0137', 'https://www.youtube.com/watch?v=Q9wDLSrLeUE', 'Q9wDLSrLeUE', null, 3, 1,
+ '{"6": {"timestamps":[{"start":"00:00:00","end":"00:01:37"}],"comment":null}}', '{"2":null}', null, null);
+CALL usp_InsertRip('Once Upon A Time', null, null, null, '2016-01-13', '0127', 'https://www.youtube.com/watch?v=2_yoDiuwSwE', '2_yoDiuwSwE', null, 3, 1,
+ '{"8": {"timestamps":[{"start":"00:00:00","end":"00:01:27"}],"comment":null}}', '{"2":null}', null, null);
+CALL usp_InsertRip('Lost Woods', null, null, null, '2016-01-14', '0106', 'https://www.youtube.com/watch?v=da5kSUVbaI4', 'da5kSUVbaI4', null, 2, 1,
+ '{"2": {"timestamps":[{"start":"00:00:02","end":"00:01:06"}],"comment":null}}', '{"1":null}', null, null);
+CALL usp_InsertRip('A Secret Course', null, null, null, '2016-01-14', '0131', 'https://www.youtube.com/watch?v=ZTga1rjryhE', 'ZTga1rjryhE', null, 3, 1,
+ '{"9": {"timestamps":[{"start":"00:00:07","end":"00:01:31"}],"comment":null}}', '{"1":null}', null, null);
+CALL usp_InsertRip('Secret Course', null, 'Super Mario Shrekshine: All Secret Course', null, '2016-01-15', '0130', 'https://www.youtube.com/watch?v=ryZvC68xE_s', 'ryZvC68xE_s', null, 4, 1,
+ '{"9": {"timestamps":[{"start":"00:00:06","end":"00:01:30"}],"comment":null}}', '{"1":null}', null, null);
+CALL usp_InsertRip('Luigi''s Mansion', null, null, null, '2016-01-17', '0131', 'https://www.youtube.com/watch?v=p7RsftFX9ak', 'p7RsftFX9ak', null, 5, 1,
+ '{"10": {"timestamps":[{"start":"00:00:00","end":"00:01:31"}],"comment":null}}', '{"2":null}', null, null);
+CALL usp_InsertRip('Uncontrollable', null, null, null, '2016-01-18', '0349', 'https://www.youtube.com/watch?v=pTeXKobmqWk', 'pTeXKobmqWk', null, 6, 1,
+ '{"3": {"timestamps":[{"start":"00:00:28","end":"00:03:49"}],"comment":null}}', '{"3":"null"}', null, null);
+CALL usp_InsertRip('Map (Day)', null, 'On the Island', null, '2016-01-18', '0053', 'https://www.youtube.com/watch?v=XhG9rWtjcGQ', 'XhG9rWtjcGQ', null, 7, 1,
+ '{"11": {"timestamps":[{"start":"00:00:00","end":"00:00:53"}],"comment":null}}', '{"4":"Chief Keef 2"}', null, null);
+CALL usp_InsertRip('Uncontrollable', 'Alternate Mix', null, null, '2016-01-19', '0345', 'https://www.youtube.com/watch?v=6nRC_dlsJ1I', '6nRC_dlsJ1I', null, 6, 1,
+ '{"12": {"timestamps":[{"start":"00:00:00","end":"00:03:45"}],"comment":null}}', '{"5":null}', null, null);
+CALL usp_InsertRip('Overworld Theme', 'Original Mix', null, null, '2016-01-19', '0128', 'https://www.youtube.com/watch?v=Ct3Z7LEoOPM', 'Ct3Z7LEoOPM', null, 8, 1,
+ '{"13": {"timestamps":[{"start":"00:00:12","end":"00:01:28"}],"comment":null}}', '{"2":null}', null, null);
+CALL usp_InsertRip('Hopes and Dreams', null, null, null, '2016-01-20', '0301', 'https://www.youtube.com/watch?v=Bhs3Q7-kLHs', 'Bhs3Q7-kLHs', null, 3, 1,
+ '{"14": {"timestamps":[{"start":"00:00:11","end":"00:03:01"}],"comment":null}}', '{"6":null}', null, null);
+CALL usp_InsertRip('The key we''ve lost', null, 'The channel ytp4life lost', null, '2016-01-20', '0611', 'https://www.youtube.com/watch?v=SezWmzgp6uQ', 'SezWmzgp6uQ', null, 6, 1,
+ '{"15": {"timestamps":[{"start":"00:00:00","end":"00:06:11"}],"comment":null}}', '{"3":null}', null, null);
+CALL usp_InsertRip('MEGALOVANIA', 'Beta Mix', 'Grand Dadlovania', null, '2016-01-28', '0049', 'https://www.youtube.com/watch?v=4wXW_ex5Nvs', '4wXW_ex5Nvs', null, 3, 1,
+ '{"6": {"timestamps":[{"start":"00:00:07","end":"00:00:39"}],"comment":null}}', '{"1":null}', null, null);
+CALL usp_InsertRip('Last Goodbye', 'Alternate Mix', 'Everlasting Goodbye', null, '2016-01-29', '0049', 'https://www.youtube.com/watch?v=rSuYr0dR2gw', 'rSuYr0dR2gw', null, 3, 1,
+ '{"16": {"timestamps":[{"start":"00:00:05","end":"00:00:49"}],"comment":null}}', '{"2":null}', null, null);
+CALL usp_InsertRip('Last Goodbye', 'Beta Mix', null, null, '2016-01-29', '0215', 'https://www.youtube.com/watch?v=gIEbix3m68g', 'gIEbix3m68g', null, 3, 1,
+ '{"7": {"timestamps":[{"start":"00:00:00","end":"00:02:15"}],"comment":null}}', '{"5":null}', null, null);
+CALL usp_InsertRip('My Room (Naturale)', null, null, null, '2016-01-31', '0308', 'https://www.youtube.com/watch?v=yS80Lx9d6ug', 'yS80Lx9d6ug', null, 9, 1,
+ '{"17": {"timestamps":[{"start":"00:00:00","end":"00:03:08"}],"comment":null}}', '{"7":null}', null, null);
+CALL usp_InsertRip('Mini-Porky''s Entrance', null, null, null, '2020-05-01', '0007', 'https://www.youtube.com/watch?v=34frOL0BvlM', '34frOL0BvlM', null, 10, 2,
+ '{"2": {"timestamps":[{"start":"00:00:00","end":"00:00:07"}],"comment":null}}', '{}', null, null);
+CALL usp_InsertRip('Triage at Dawn', null, 'Pledge of Combine', null, '2020-05-01', '0048', 'https://www.youtube.com/watch?v=KYhfEHui8-w', 'KYhfEHui8-w', null, 11, 2,
+ '{"2": {"timestamps":[{"start":"00:00:06","end":"00:00:48"}],"comment":null}}', '{"8":null}', null, null);
+CALL usp_InsertRip('Final Boss', null, null, null, '2020-05-01', '0245', 'https://www.youtube.com/watch?v=SazKKPNJ1mw', 'SazKKPNJ1mw', null, 12, 2,
+ '{"19": {"timestamps":[{"start":"00:00:00","end":"00:00:11"},{"start":"00:00:57","end":"00:01:10"}],"comment":null},"20": {"timestamps":[{"start":"00:00:11","end":"00:00:28"}],"comment":null},"21": {"timestamps":[{"start":"00:00:11","end":"00:00:28"},{"start":"00:00:57","end":"00:01:20"}],"comment":null},"23": {"timestamps":[{"start":"00:00:28","end":"00:00:40"}],"comment":null},"2": {"timestamps":[{"start":"00:00:40","end":"00:00:51"}],"comment":null},"24": {"timestamps":[{"start":"00:00:51","end":"00:00:57"}],"comment":null}}', '{}', null, null);
+CALL usp_InsertRip('Password', null, 'SiIvagunner Gets Fucking HACKED (Real)', null, '2020-05-01', '0024', 'https://www.youtube.com/watch?v=_4eCEPjKP14', '_4eCEPjKP14', null, 13, 2,
+ '{"28": {"timestamps":[{"start":"00:00:00","end":"00:00:24"}],"comment":null},"29": {"timestamps":[{"start":"00:00:09","end":"00:00:16"}],"comment":null}}', '{"9":null}', null, null);
+CALL usp_InsertRip('AUDlO_lNTRONOlSE', 'Beta Mix', null, null, '2020-05-01', '0012', 'https://www.youtube.com/watch?v=sUNlS5Olh5c', 'sUNlS5Olh5c', null, 14, 2,
+ '{"30": {"timestamps":[{"start":"00:00:00","end":"00:00:12"}],"comment":null}}', '{"10":null, "11":null}', null, null);
+CALL usp_InsertRip('Slider', 'DN Version', null, null, '2020-05-01', '0337', 'https://www.youtube.com/watch?v=zvSnueCaCjg', 'zvSnueCaCjg', null, 15, 2,
+ '{"29": {"timestamps":[{"start":"00:00:00","end":"00:03:33"}],"comment":null},"30": {"timestamps":[{"start":"00:03:33","end":"00:03:37"}],"comment":null},"32": {"timestamps":[{"start":"00:01:12","end":"00:01:35"}],"comment":"Vocals are used in place of those from Deez Nuts! [Trap Remix]."},"33": {"timestamps":[{"start":"00:02:28","end":"00:03:33"}],"comment":null},"34": {"timestamps":[{"start":"00:03:11","end":"00:03:33"}],"comment":"Pitch shifted"}}', '{"12":null}', null, null);
+CALL usp_InsertRip('White', null, null, null, '2020-05-01', '0325', 'https://www.youtube.com/watch?v=6s4nh5cpk_0', '6s4nh5cpk_0', null, 16, 2,
+ '{"35": {"timestamps":[{"start":"00:00:00","end":"00:03:25"}],"comment":null}}', '{"8":null}', null, null);
