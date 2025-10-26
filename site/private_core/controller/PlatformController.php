@@ -43,6 +43,7 @@ class PlatformController extends Controller
 					$_GET['search'] ?? null,
 				);
 
+				$this->cleanseDatabaseDataForOutput($platforms);
 				$this->setData('results', $platforms);
 
 				// Pagination values
@@ -67,6 +68,8 @@ class PlatformController extends Controller
 					\RipDB\addNotification('The specified platform does not exist.', \RipDB\NotificationPriority::Warning);
 					die();
 				}
+				$this->cleanseDatabaseDataForOutput($platform);
+
 				$this->setData('platform', $platform);
 				break;
 		}
@@ -95,7 +98,7 @@ class PlatformController extends Controller
 				$result = [new \RipDB\Error('Invalid form submission.')];
 				break;
 		}
-		
+
 		return $result;
 	}
 }

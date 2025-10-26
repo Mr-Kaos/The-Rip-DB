@@ -47,6 +47,7 @@ class JokeController extends Controller
 					$_GET['metajokes'] ?? [],
 				);
 
+				$this->cleanseDatabaseDataForOutput($jokes);
 				$this->setData('results', $jokes);
 
 				// Pagination values
@@ -84,6 +85,8 @@ class JokeController extends Controller
 					\Flight::redirect('/jokes');
 					die();
 				}
+				$this->cleanseDatabaseDataForOutput($joke);
+
 				$this->setData('joke', $joke);
 				break;
 		}

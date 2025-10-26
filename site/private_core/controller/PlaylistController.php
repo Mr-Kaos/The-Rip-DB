@@ -38,7 +38,7 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 				$id = $data['id'] ?? null;
 				if (!empty($id) && is_numeric($id)) {
 					$playlist = $this->model->getPlaylist($id);
-					
+
 					// If the playlist is not public, check if the user viewing it is the owner
 					if (($playlist['IsPublic'] == 0 && $playlist['Creator'] == $_SESSION[\RipDB\AUTH_USER]) || $playlist['IsPublic'] == 1) {
 						$this->setData('playlist', $playlist);
@@ -64,6 +64,7 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 					if (empty($result)) {
 						$result = 'The specified playlist does not exist.';
 					}
+					$this->cleanseDatabaseDataForOutput($result);
 				} else {
 					$result = 'You must be logged in to edit a playlist.';
 				}
@@ -176,7 +177,7 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 					$validated['AccountID'] = $_SESSION[AUTH_USER];
 
 					$result = $this->submitRequest($validated, 'usp_DeletePlaylist', '', 'Playlists successfully deleted!');
-				}else {
+				} else {
 					$result = [new \RipDB\Error('The playlist does not exist.')];
 				}
 

@@ -48,6 +48,7 @@ class RipController extends Controller
 				$rips = [];
 				$offset = $this->getOffset($ripCount, '/rips');
 				$rips = $this->model->search($rowCount, $offset, $_GET['s'] ?? null, $_GET['search'] ?? null, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $_GET['channel'] ?? null, $useAltName);
+				$this->cleanseDatabaseDataForOutput($rips);
 				$this->setData('results', $rips);
 
 				// Get search filters
@@ -111,6 +112,7 @@ class RipController extends Controller
 						$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
 					}
 
+					$this->cleanseDatabaseDataForOutput($rip);
 					$this->setData('rip', $rip);
 					$this->setData('hasWiki', $this->model->channelHasWiki($rip['RipChannel']));
 					if ($rip !== null) {
@@ -159,6 +161,7 @@ class RipController extends Controller
 					}
 				}
 				$rip['Jokes'] = $temp;
+				$this->cleanseDatabaseDataForOutput($rip);
 				$this->setData('rip', $rip);
 			case 'rips/new':
 				$this->setData('rippers', $this->model->getRippers());

@@ -43,6 +43,7 @@ class GameController extends Controller
 					$_GET['search'] ?? null,
 				);
 
+				$this->cleanseDatabaseDataForOutput($records);
 				$this->setData('results', $records);
 
 				// Pagination values
@@ -67,6 +68,7 @@ class GameController extends Controller
 					\Flight::redirect('/games');
 					die();
 				}
+				$this->cleanseDatabaseDataForOutput($game);
 				$this->setData('game', $game);
 				break;
 		}

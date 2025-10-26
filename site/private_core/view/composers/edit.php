@@ -1,5 +1,4 @@
 <?php
-
 use RipDB\Objects as o;
 ?>
 <main>
@@ -16,8 +15,8 @@ use RipDB\Objects as o;
 		<fieldset>
 			<legend>Alternate Name Spelling</legend>
 			<p>Use this section for an alternate spelling of the composer's name, such as in their native language.</p>
-			<?= (new o\InputElement('First Name', o\InputTypes::text, ['name' => 'first-name-alt', 'maxlength' => 128, 'value' => $composer['ComposerFirstNameAlt']]))->buildElement() ?>
-			<?= (new o\InputElement('Last Name', o\InputTypes::text, ['name' => 'last-name-alt', 'maxlength' => 128, 'value' => $composer['ComposerLastNameAlt']]))->buildElement() ?>
+			<?= (new o\InputElement('First Name', o\InputTypes::text, ['name' => 'first-name-alt', 'maxlength' => 256, 'value' => $composer['ComposerFirstNameAlt']]))->buildElement() ?>
+			<?= (new o\InputElement('Last Name', o\InputTypes::text, ['name' => 'last-name-alt', 'maxlength' => 256, 'value' => $composer['ComposerLastNameAlt']]))->buildElement() ?>
 		</fieldset>
 		<button type="submit">Update Composer</button>
 	</form>

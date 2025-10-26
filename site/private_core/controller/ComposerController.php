@@ -43,6 +43,7 @@ class ComposerController extends Controller
 					$_GET['search'] ?? null,
 				);
 
+				$this->cleanseDatabaseDataForOutput($composers);
 				$this->setData('results', $composers);
 
 				// Pagination values
@@ -67,6 +68,8 @@ class ComposerController extends Controller
 					\RipDB\addNotification('The specified composer does not exist.', \RipDB\NotificationPriority::Warning);
 					die();
 				}
+				$this->cleanseDatabaseDataForOutput($composer);
+
 				$this->setData('composer', $composer);
 
 				break;

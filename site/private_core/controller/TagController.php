@@ -67,6 +67,7 @@ class TagController extends Controller
 					\RipDB\addNotification('The specified tag does not exist.', \RipDB\NotificationPriority::Warning);
 					die();
 				}
+				$this->cleanseDatabaseDataForOutput($tag);
 				$this->setData('tag', $tag);
 
 				break;

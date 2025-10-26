@@ -43,6 +43,7 @@ class ChannelController extends Controller
 					$_GET['search'] ?? null,
 				);
 
+				$this->cleanseDatabaseDataForOutput($records);
 				$this->setData('results', $records);
 
 				// Pagination values
@@ -67,6 +68,7 @@ class ChannelController extends Controller
 					\Flight::redirect('/channels');
 					die();
 				}
+				$this->cleanseDatabaseDataForOutput($channel);
 				$this->setData('channel', $channel);
 				break;
 		}

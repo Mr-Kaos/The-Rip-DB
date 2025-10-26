@@ -67,6 +67,7 @@ class RipperController extends Controller
 					\Flight::redirect('/rippers');
 					die();
 				}
+				$this->cleanseDatabaseDataForOutput($ripper);
 				$this->setData('ripper', $ripper);
 				break;
 		}

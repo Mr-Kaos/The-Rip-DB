@@ -318,4 +318,19 @@ trait DataValidator
 
 		return $validated;
 	}
+
+	/**
+	 * Cleanses the given array to ensure it is safe for outputting to the client.
+	 * @param array $data the data from the database to cleanse.
+	 */
+	protected function cleanseDatabaseDataForOutput(array &$data): void
+	{
+		foreach ($data as &$var) {
+			if (is_array($var)) {
+				$this->cleanseDatabaseDataForOutput($var);
+			} else {
+				$var = htmlspecialchars($var);
+			}
+		}
+	}
 }
