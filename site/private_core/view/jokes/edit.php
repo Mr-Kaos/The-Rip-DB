@@ -6,16 +6,22 @@ include_once('private_core/objects/pageElements/InputTable.php');
 ?>
 <main>
 	<h1>Edit Joke</h1>
-	<form id="new-joke" method="POST">
-		<fieldset>
+	<form id="edit-joke" method="POST" class="form-grid">
+		<fieldset style="grid-column:span 2">
 			<legend>Joke Information</legend>
-			<?= (new o\InputElement('Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 1024, 'required' => true, 'value' => $joke['JokeName']], null, true))->buildElement() ?>
-			<?= (new o\InputElement('Description', o\InputTypes::textarea, ['name' => 'description', 'required' => true, 'maxlength' => 9999, 'value' => $joke['JokeDescription']], null, true))->buildElement() ?>
+			<div class="form-grid">
+    			<div>
+         			<?= (new o\InputElement('Name', o\InputTypes::text, ['name' => 'name', 'maxlength' => 1024, 'required' => true, 'value' => $joke['JokeName']], null, true))->buildElement() ?>
+         			<?= (new o\InputElement('Description', o\InputTypes::textarea, ['name' => 'description', 'maxlength' => 9999, 'value' => $joke['JokeDescription']], null, true))->buildElement() ?>
+    			</div>
+    			<?php $altName = new o\InputElement('Alternate Name', o\InputTypes::text, ['name' => 'alt_names[]', 'max-length' => 512, 'style' => 'width:90%'], null, true); ?>
+    			<?= (new o\InputTable('Alternate Names', [$altName], ['value' => $joke['AltNames'] ?? null]))->buildElement() ?>
+			</div>
 		</fieldset>
 		<fieldset>
 			<legend>Joke Tags</legend>
 			<?= (new o\SearchElement('Primary Tag', '/search/tags', false, $joke['PrimaryTagID'] ?? null, ['name' => 'primary', 'required' => true, 'modal' => '/tags/new', 'modal-tgt-id' => 'new-tag', 'modal-value-key' => 'InTagName']))->buildElement(); ?>
-			<?php $tagList = new o\SearchElement('Tag', '/search/tags', false, null, ['name' => 'tags[]', 'required' => true, 'modal' => '/tags/new', 'modal-tgt-id' => 'new-tag', 'modal-value-key' => 'InTagName']); ?>
+			<?php $tagList = new o\SearchElement('Tag', '/search/tags', false, null, ['name' => 'tags[]', 'modal' => '/tags/new', 'modal-tgt-id' => 'new-tag', 'modal-value-key' => 'InTagName']); ?>
 			<?= (new o\InputTable('Tags', [$tagList], ['value' => $joke['OtherTags']]))->buildElement() ?>
 		</fieldset>
 		<fieldset>
@@ -26,6 +32,8 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			?>
 			<?= (new o\InputTable('Meta Jokes', [$tagList], ['value' => $joke['MetaJokes'] ?? null]))->buildElement() ?>
 		</fieldset>
-		<button type="submit">Submit Joke</button>
+		<div>
+		    <button type="submit">Submit Joke</button>
+		</div>
 	</form>
 </main>

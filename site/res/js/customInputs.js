@@ -1,7 +1,7 @@
 /**
  * Custom HTML elements
  * Author: Mr Kaos
- * 
+ *
  * Provides objects and handlers for custom page objects.
  */
 "use strict";
@@ -37,7 +37,7 @@ class InputTable extends CustomElement {
 		this.#body = element.querySelector(`tbody#body_${element.id}`);
 		this.#template = element.querySelector(`thead#temp_${element.id}>tr`);
 
-		// If values are prefilled, do not add an empty row.
+		// If values are prefilled and they are not null, do not add an empty row.
 		if (element.getAttribute('data-value')) {
 			this.#rowCount = element.querySelectorAll('tbody>tr').length;
 		}
@@ -94,7 +94,7 @@ class InputTable extends CustomElement {
 
 	/**
 	 * Finds the InputTable with the given id and adds a row to it.
-	 * @param {Element} id 
+	 * @param {Element} id
 	 */
 	static addRow(id) {
 		for (let i = 0; i < inputTables.length; i++) {
@@ -193,7 +193,7 @@ class SearchElement extends CustomElement {
 
 		/**
 		 * Allows moving the selected option with the keyboard
-		 * @param {KeyboardEvent} event 
+		 * @param {KeyboardEvent} event
 		 */
 		window.addEventListener('keydown', function (event) {
 			if (this.isOpen()) {
@@ -603,7 +603,7 @@ class TimestampElement extends CustomElement {
  * Finds a parent element from the given child based on a specific attribute.
  * @param {Element} child The source element to search for its parent.
  * @param {Object} attributes A list of attributes the required parent element has. The keys must be a valid HTML attribute and the value must correspond to it. An array of values may also be specified if searching for one of multiple potential values.
- * @param {Number} depth The maximum number of loops to perform before the loop terminates. Absolute maximum is 64. 
+ * @param {Number} depth The maximum number of loops to perform before the loop terminates. Absolute maximum is 64.
  */
 function findParentElement(child, attributes, depth = 32) {
 	let loops = 0;
@@ -672,7 +672,7 @@ function setupCustomInputs(mainElement) {
 
 	/**
 	 * Prepares any InputTable elements on the page.
-	 * @param {NodeListOf<Element>} elements 
+	 * @param {NodeListOf<Element>} elements
 	 */
 	function prepareInputTables(elements) {
 		// Reverse list so the deepest nodes get configured first.
@@ -685,7 +685,7 @@ function setupCustomInputs(mainElement) {
 
 	/**
 	 * Prepares search input elements on the page and creates a window event listener to ensure only one is open at a time.
-	 * @param {NodeListOf<Element>} elements 
+	 * @param {NodeListOf<Element>} elements
 	 */
 	function prepareSearchElements(elements) {
 		for (let i = 0; i < elements.length; i++) {
@@ -711,7 +711,7 @@ function setupCustomInputs(mainElement) {
 
 	/**
 	 * Checks any dropdown (select) elements on the page if they require a modal to add new items.
-	 * @param {NodeListOf<HTMLSelectElement>} elements 
+	 * @param {NodeListOf<HTMLSelectElement>} elements
 	 */
 	function prepareDropdownElements(elements) {
 		for (let i = 0; i < elements.length; i++) {

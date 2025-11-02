@@ -32,6 +32,7 @@ const TABLES = [
 	'MetaJokes',
 	'JokeMetas',
 	'JokeTags',
+	'AlternateJokeNames',
 	'Composers',
 	'Platforms',
 	'GamePlatforms',

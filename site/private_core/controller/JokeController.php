@@ -111,6 +111,8 @@ class JokeController extends Controller
 				$existingMetas = $this->model->getMetaJokes();
 				$validated['MetasJSON'] = $this->validateArray($_POST['metas'] ?? null, 'validateFromList', [$existingMetas], 'One or more of the given meta tags do not exist in the database.');
 
+				$validated['AlternateJokeNames'] = $this->validateArray($_POST['alt_names'] ?? null, 'validateString', [512], 'One or more of the alternate names are not valid.');
+
 				switch ($this->getPage()) {
 					case 'jokes/new':
 						$jokeId = 0;

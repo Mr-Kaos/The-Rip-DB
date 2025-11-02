@@ -67,14 +67,21 @@ class JokeModel extends Model implements ResultsetSearch
 		return $this->db->table(self::TABLE)->count();
 	}
 
-	public function getTags()
+	public function getTags(): array
 	{
 		return $this->db->table('Tags')->findAllByColumn('TagID');
 	}
 
-	public function getMetaJokes()
+	public function getMetaJokes(): array
 	{
 		return $this->db->table('MetaJokes')->findAllByColumn('MetaJokeID');
+	}
+
+	public function getAltNames(int $jokeID): array
+	{
+        return $this->db->table('AlternateJokeNames')
+            ->columns('JokeName')
+            ->eq('JokeID', $jokeID)->findAll();
 	}
 
 	public function getJoke(int $id): array
@@ -108,16 +115,19 @@ class JokeModel extends Model implements ResultsetSearch
 			}
 		}
 
+		// Get alternate names
+		$joke['AltNames'] = $this->getAltNames($id);
+
 		return $joke;
 	}
 
 	/**
 	 * Associates tags, meta jokes and metas to the given joke record.
-	 * 
-	 * The joke record should be retrieved from vw_JokesDetailed or the Jokes table.  
+	 *
+	 * The joke record should be retrieved from vw_JokesDetailed or the Jokes table.
 	 * Passing the same joke through here multiple times will clear the previous associations made.
-	 * 
-	 * @param array &$joke A reference to the joke record to be associated with the additional data.
+	 *
+	 * @param array $joke A reference to the joke record to be associated with the additional data.
 	 * @param ?array $associatedData An array of rows from vw_JokesDetailed that are associated to the given joke.
 	 */
 	private function groupJokeAssociateData(array &$joke, ?array $associatedData): void

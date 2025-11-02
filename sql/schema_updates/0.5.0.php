@@ -49,13 +49,13 @@ JOIN (
 		SELECT r.RipID, COUNT(JokeID) AS Jokes
 		FROM Rips r
 		JOIN RipJokes j ON j.RipID = r.RipID
-		GROUP BY r.RipID 
+		GROUP BY r.RipID
 	) r
 	JOIN RipGenres g ON g.RipID = r.RipID
 	JOIN RipJokes j ON j.RipID = r.RipID
 	WHERE Jokes = 1
 ) a
-SET rj.GenreID = a.GenreID 
+SET rj.GenreID = a.GenreID
 WHERE rj.RipID = a.RipID AND rj.JokeID = a.JokeID;");
 
 
@@ -67,7 +67,7 @@ JOIN (SELECT r.RipID as rip, g.GenreID as genre, JokeID
 		SELECT r.RipID, COUNT(JokeID) AS Jokes
 		FROM Rips r
 		JOIN RipJokes j ON j.RipID = r.RipID
-		GROUP BY r.RipID 
+		GROUP BY r.RipID
 	) r
 	JOIN RipGenres g ON g.RipID = r.RipID
 	JOIN RipJokes j ON j.RipID = r.RipID
@@ -98,7 +98,7 @@ GROUP BY RipID, GenreID, JokeId;", PDO::FETCH_ASSOC);
 			$lastId = $row["RipID"];
 			$rowNum = 0;
 		}
-		
+
 		// Parsing a new genre from the same rip
 		if ($row["GenreID"] !== $lastGenreId) {
 			$rowNum++;

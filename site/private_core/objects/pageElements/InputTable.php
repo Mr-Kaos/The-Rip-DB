@@ -4,10 +4,10 @@ namespace RipDB\Objects;
 
 /**
  * InputTable class
- * 
+ *
  * An InputTable is a table that can have more rows added to it.
  * Each column must be defined when constructing it, and can be an array of HTML strings or InputElements.
- * 
+ *
  */
 class InputTable extends InputElement
 {
@@ -30,7 +30,7 @@ class InputTable extends InputElement
 
 	/**
 	 * Builds the multi element and the input element.
-	 * 
+	 *
 	 * JavaScript will apply event listeners to the various buttons on the table.
 	 */
 	public function buildElement(): string
@@ -39,7 +39,7 @@ class InputTable extends InputElement
 		unset($this->attributes['value']);
 		$attributes = $this->buildAttributes($this->attributes);
 
-		$html = '<table ' . (!is_null($value) ? 'data-value="true"' : '') . $attributes . '><caption>' . $this->label . '</caption><thead id="temp_' . $this->attributes['id'] . '" style="display:none">';
+		$html = '<table ' . (!empty($value) ? 'data-value="true"' : '') . $attributes . '><caption>' . $this->label . '</caption><thead id="temp_' . $this->attributes['id'] . '" style="display:none">';
 		$row = '<tr>';
 		foreach ($this->columnTemplates as $col) {
 			$row .= '<td>';

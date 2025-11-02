@@ -8,12 +8,13 @@ CREATE PROCEDURE RipDB.usp_UpdateJoke(
 	IN InJokeDescription text,
 	IN PrimaryTag int,
 	IN TagsJSON json,
-	IN MetasJSON json)
+	IN MetasJSON json,
+	IN AlternateNamesJSON json)
 BEGIN
 	DECLARE new_TagId, MetaId int;
 	DECLARE Tag varchar(128);
 	DECLARE i INT DEFAULT 0;
-	
+
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	BEGIN
 		ROLLBACK;
@@ -59,7 +60,18 @@ BEGIN
 		WHERE JSON_UNQUOTE(k.MetaJokeID) IN (
 			SELECT MetaJokeID
 			FROM MetaJokes
-		);		
+		);
+
+		-- Alternate joke names.
+		IF AlternateNamesJSON IS NOT NULL THEN
+		    DELETE FROM AlternateJokeNames
+			WHERE JokeID = InJokeID;
+
+            INSERT INTO AlternateJokeNames (JokeID, JokeName)
+    		SELECT InJokeID, JSON_UNQUOTE(JokeName)
+    		FROM JSON_TABLE (AlternateNamesJSON, '$[*]' COLUMNS(rn FOR ORDINALITY, JokeName JSON PATH '$')) k
+            WHERE JokeName IS NOT NULL;
+		END IF;
 	END IF;
 
 	COMMIT;
