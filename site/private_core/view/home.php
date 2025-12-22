@@ -19,6 +19,6 @@ use RipDB\Objects as o;
 		<h2>RipGuessr</h2>
 		<p>A <i>grand</i> new game, where you listen to randomly chosen rips and identify their jokes!</p>
 		
-		<a href="/ripguessr">Play RipGuessr</a>
+		<a href="http://ripguessr.ripdb.net">Play RipGuessr</a>
 	</section>
 </main>

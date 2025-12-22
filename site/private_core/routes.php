@@ -292,47 +292,12 @@ Flight::group('/playlist', function () {
 	}
 });
 
-const RIP_GUESSER_HEAD = 'head_ripguesser.php';
-
-// Rip Guesser Page
+// Rip Guesser Page (redirect to dedicated site)
 Flight::group('/ripguessr', function () {
 	Flight::route('/', function () {
-		displayPage('rip-guesser', 'GuesserController', [], 'Rip Guessr', RIP_GUESSER_HEAD);
+		Flight::redirect('http://ripguessr.ripdb.net');
 	});
-	// The play page should not have any GET tags or subpages.
-	Flight::route('/play', function () {
-		if (count($_GET) > 0) {
-			Flight::redirect('/ripguessr/play');
-		}
-		displayPage('rip-guesser-play', 'GuesserController', [], 'Rip Guessr', RIP_GUESSER_HEAD);
-	});
-	Flight::route('/play/@any', function ($any) {
-		Flight::redirect('/ripguessr/play');
-	});
-
-	// Async requests for live game interaction:
-	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'ripguessr/play')) {
-		// Requests here should always be returned as a JSON.
-		// Requests for setup page
-		Flight::route('GET /setup/@request', function ($request) {
-			performAPIRequest('setup', $request, HttpMethod::GET, 'GuesserController');
-		});
-
-		// Requests for gameplay
-		Flight::route('POST /game/@request', function ($request) {
-			performAPIRequest('game', $request, HttpMethod::POST, 'GuesserController');
-		});
-		Flight::route('GET /game/@request', function ($request) {
-			performAPIRequest('game', $request, HttpMethod::GET, 'GuesserController');
-		});
-		Flight::route('DELETE /game/@request', function ($request) {
-			performAPIRequest('game', $request, HttpMethod::DELETE, 'GuesserController');
-		});
-		Flight::route('GET /search/@request', function ($request) {
-			performAPIRequest('search', $request, HttpMethod::GET, 'GuesserController');
-		});
-	}
-});
+});	
 
 // Settings Requests
 Flight::route('GET /settings/theme', function () {

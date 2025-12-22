@@ -1,8 +1,8 @@
 sql/.dbeaver
 *.project
-site/vendor/
 *.log
 *.code-workspace
+*vendor/
 
 # config files
 site/private_core/config/db.php

@@ -14,7 +14,7 @@ See [the releases page](https://github.com/Mr-Kaos/The-Rip-DB/releases) for stab
 
 ## Aim of the Project
 
-The goal of this project is to provide a complete and detailed database of all rips that exist publicly on the internet. Each rip will be given appropriate tags and attributes, to help fid rips by their contents, such as the songs used, jokes and references within the rip or other meta information related to the rip.
+The goal of this project is to provide a complete and detailed database of all rips that exist publicly on the internet. Each rip will be given appropriate tags and attributes, to help find rips by their contents, such as the songs used, jokes and references within the rip or other meta information related to the rip.
 
 Ultimately, if someone wanted to find rips that contain certain songs or references, they would be able to do it here.
 
@@ -57,11 +57,6 @@ The primary goal of this project is to provide a complete and detailed database 
 
 This project has the following planned features complete:
 
-<table>
-<thead><tr><th>RipDB</th><th>RipGuessr</th></tr></thead>
-<tbody>
-<tr><td>
-
 - [X] Core data structure
   - [X] Rips
   - [X] Rip categories/metadata
@@ -82,25 +77,6 @@ This project has the following planned features complete:
   - [X] Page sorting
 - [ ] RESTful API
 - [ ] Mobile support (layout)
-
-</td><td>
-
-- [X] Core game backend/design
-- [X] Complete gameplay loop
-- [ ] Modular Game settings
-  - [ ] Difficulty options
-    - [X] Difficulty presets
-    - [ ] Granular difficulty options
-  - [ ] Rip selection filters
-    - [X] Filter by meta jokes
-    - [X] Filter by metas
-    - [ ] Filter by channel
-    - [X] Filter from playlist
-- [ ] Multiplayer sessions
-- [ ] Mobile support (layout)
-
-</td></tr>
-</table>
 
 ### Note Regarding Version Numbers:
 
