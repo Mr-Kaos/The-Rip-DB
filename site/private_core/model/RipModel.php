@@ -322,9 +322,8 @@ class RipModel extends Model implements ResultsetSearch
 				$qry->ilike('RipAlternateName', "%$name%");
 			} else {
 				$qry->beginOr()
-					->ilike('RipName', "%$name%")
+					->ilike('FullRipName', "%$name%")
 					->ilike('GameName', "%$name%")
-					->ilike('MixName', "%$name%")
 					->closeOr();
 			}
 		}

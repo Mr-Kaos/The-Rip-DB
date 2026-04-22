@@ -1,7 +1,8 @@
 DROP VIEW IF EXISTS vw_RipsDetailed;
 
 CREATE VIEW vw_RipsDetailed AS
-SELECT r.RipID, r.RipName, r.RipDate, r.RipAlternateName, r.RipLength,
+SELECT r.RipID, r.RipName, CONCAT(r.RipName, IF(r.MixName IS NULL, '', CONCAT(' (', MixName, ')'))) AS FullRipName,
+r.RipDate, r.RipAlternateName, r.RipLength,
 r.RipGame, g.GameName, r.RipURL, r.RipAlternateURL, r.RipYouTubeID, r.RipDescription,
 r.RipChannel, c.ChannelName, c.ChannelURL, j.JokeID, j.JokeName, ri.RipperID, ri.RipperName,
 t.TagID, t.TagName, ge.GenreID, ge.GenreName, mj.MetaJokeID, m.MetaID, MixName, r.WikiURL AS RipWikiURL, c.WikiURL AS ChannelWikiURL
