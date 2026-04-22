@@ -102,16 +102,16 @@ class JokeController extends Controller
 				$validated['InJokeID'] = DataValidator::validateNumber($extraData['id']);
 			case 'jokes/new':
 				$validated['InJokeName'] = DataValidator::validateString($_POST['name'], 'The given joke name is invalid.', 128);
-				$validated['InJokeDescription'] = DataValidator::validateString($_POST['description'], 'The given description is invalid.', null, 1);
+				$validated['InJokeDescription'] = DataValidator::validateString($_POST['description'], 'The given description is invalid.', null);
 
 				$existingTags = $this->model->getTags();
 				$validated['PrimaryTag'] = DataValidator::validateFromList(intval($_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
-				$validated['TagsJSON'] = DataValidator::validateArray($_POST['tags'] ?? null, 'validateFromList', [$existingTags], 'One or more of the given tags do not exist in the database.');
+				$validated['TagsJSON'] = DataValidator::validateArray($_POST['tags'] ?? null, 'validateFromList', [$existingTags], 'One or more of the given tags do not exist in the database.', true);
 
 				$existingMetas = $this->model->getMetaJokes();
-				$validated['MetasJSON'] = DataValidator::validateArray($_POST['metas'] ?? null, 'validateFromList', [$existingMetas], 'One or more of the given meta tags do not exist in the database.');
+				$validated['MetasJSON'] = DataValidator::validateArray($_POST['metas'] ?? null, 'validateFromList', [$existingMetas], 'One or more of the given meta tags do not exist in the database.', true);
 
-				$validated['AlternateJokeNames'] = DataValidator::validateArray($_POST['alt_names'] ?? null, 'validateString', [512], 'One or more of the alternate names are not valid.');
+				$validated['AlternateJokeNames'] = DataValidator::validateArray($_POST['alt_names'] ?? null, 'validateString', [512], 'One or more of the alternate names are not valid.', true);
 
 				switch ($this->getPage()) {
 					case 'jokes/new':

@@ -81,7 +81,7 @@ class GameController extends Controller
 			case 'games/new':
 				$validated['NewGame'] = DataValidator::validateFromList($_POST['name'], $this->model->getAllGameNames(), 'This game already exists.', true);
 				$validated['NewDescription'] = DataValidator::validateString($_POST['description']);
-				$validated['Platforms'] = DataValidator::validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.');
+				$validated['Platforms'] = DataValidator::validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.', true);
 				$validated['FakeGame'] = DataValidator::validateBool($_POST['isFake'] ?? false);
 
 				$gameId = 0;
@@ -91,7 +91,7 @@ class GameController extends Controller
 				$validated['GameID'] = DataValidator::validateNumber($extraData['id']);
 				$validated['NewGame'] = DataValidator::validateFromList($_POST['name'], $this->model->getAllGameNames((int)$extraData['id']), 'This game already exists.', true);
 				$validated['NewDescription'] = DataValidator::validateString($_POST['description']);
-				$validated['Platforms'] = DataValidator::validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.');
+				$validated['Platforms'] = DataValidator::validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.', true);
 				$validated['FakeGame'] = DataValidator::validateBool($_POST['isFake'] ?? false);
 
 				$result = $this->submitRequest($validated, 'usp_UpdateGame', '/games', 'Game successfully updated!');
