@@ -88,7 +88,7 @@ class DataValidator
 								$validated .= $match;
 							}
 
-							$validated = htmlspecialchars($validated);
+							// $validated = htmlspecialchars($validated);
 						}
 
 						if (empty($validated)) {
@@ -96,7 +96,7 @@ class DataValidator
 						}
 					}
 				} else {
-					$validated = htmlspecialchars($validated);
+					// $validated = htmlspecialchars($validated);
 				}
 			}
 		} elseif ($minLength > 0) {

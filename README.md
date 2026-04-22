@@ -11,6 +11,7 @@ See [the releases page](https://github.com/Mr-Kaos/The-Rip-DB/releases) for stab
 - [Local Setup/Install](#local-setupinstall)
 - [Project Features and Plans](#project-features-and-plans)
 - [System Design](#system-design)
+- [Contribution and Help]()
 
 ## Aim of the Project
 
@@ -31,7 +32,7 @@ If you want to set this database up locally (with or without sample data), follo
 
 Ensure you have the following dependencies too:
 
-- PHP 8.1 or newer (Tested with PHP 8.3.2)
+- PHP 8.3 or newer (Tested with PHP 8.3.2)
 - Composer for PHP
   - FlightPHP
   - PicoDB (>= 6.0.1)
@@ -116,3 +117,20 @@ In case you are unfamiliar with rips, the term "Rips" generally refers to a bait
 Some of the most notable channels that upload rips are [SiIvaGunner](https://www.youtube.com/@SiIvaGunner), [TimmyTurnersGrandDad](https://www.youtube.com/@TimmyTurnersGrandDad) and [Mysikt](https://www.youtube.com/@Mysikt).
 
 There are other channels that have popped up over the years who also make rips, but often with less quality control and just to upload "joke" videos. While these may not be in the same spirit as traditional rips, these still aim to be cataloged.
+
+## Contributing to This Project
+
+Want to contribute to this project? Awesome!
+
+Currently the following are in need of work/assistance:
+
+- Bug testing and finding
+  - Test form submissions (editing and creating records)
+  - Test user interface features (modals and dialogs)
+- Data cleanup
+  - The data in the database was imported from an old analysis of the SiIvaGunner and TimmyTurnersGrandDad wikis (around July 2025).  
+  The data analysed was not perfect, and the analysis itself had many errors which have come through into the database. If you find any weird names or values, please correct them!
+- Feature Requests
+  - If you think something on the site could be improved, please suggest it!
+
+Reporting bugs or suggesting feedback can be done through the Issues section of this GitHub repository.
