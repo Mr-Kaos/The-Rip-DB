@@ -305,7 +305,7 @@ class RipController extends Controller
 					$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
 				}
 				$validated['Composers'] = DataValidator::validateArray($_POST['composers'] ?? [], 'validateFromList', [$this->model->getComposers(true)], 'One or more of the given composers do not exist in the database.', true);
-				$validated['WikiLink'] = DataValidator::validateString($_POST['wikiUrl'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
+				$validated['WikiLink'] = DataValidator::validateString($_POST['wikiUrl'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=\(\)]*)/');
 
 				if ($this->getPage() == 'rips/new') {
 					$result = $this->submitRequest($validated, 'usp_InsertRip', '/rips', 'Rip successfully added!');

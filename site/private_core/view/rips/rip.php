@@ -16,8 +16,8 @@
 							<tr>
 								<th>Timestamp</th>
 								<th>Joke</th>
-								<th>Comment</th>
 								<th>Genre</th>
+								<th>Comment</th>
 							</tr>
 						</thead>
 						<tbody id="data-Jokes">
@@ -32,8 +32,8 @@
 										} ?>
 									</td>
 									<td><a href="/rips?jokes[]=<?= $joke['JokeID'] ?>"><?= $rip['Jokes'][$joke['JokeID']]['JokeName'] ?></a></td>
-									<td><?= $rip['Jokes'][$joke['JokeID']]['JokeComment'] ?></td>
 									<td><a href="/rips?genres[]=<?= $rip['Jokes'][$joke['JokeID']]['GenreID'] ?>"><?= $rip['Jokes'][$joke['JokeID']]['GenreName'] ?></a></td>
+									<td><?= $rip['Jokes'][$joke['JokeID']]['JokeComment'] ?></td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
