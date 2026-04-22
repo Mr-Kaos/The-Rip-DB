@@ -12,7 +12,7 @@
 			<li><a href="/tags">Tags & Metas</a></li>
 		</ul>
 	</div>
-	<a href="https://ripguessr.ripdb.net">RipGuessr</a>
+	<a href="https://<?= constant('SITE_RIP-GUESSER') ?>">RipGuessr</a>
 	<a href="/help">Help / FAQ</a>
 	<?php if (RipDB\checkAuth()) : ?>
 		<a href="/account">Account</a>

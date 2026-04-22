@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This script updates the database schema from version 0.3.0 -> 0.4.0
+ * This script updates the database schema from version 0.4.0 -> 0.5.0
  */
 
 require_once(__DIR__ . '/../deployer.php');

@@ -10,6 +10,7 @@ use RipDB\Theme;
 
 $uri = explode('?', $_SERVER['REQUEST_URI'])[0];
 require_once('private_core/config/themes.php');
+require_once('private_core/config/sites.php');
 require_once('private_core/objects/SessionManager.php');
 
 /**
@@ -295,7 +296,7 @@ Flight::group('/playlist', function () {
 // Rip Guesser Page (redirect to dedicated site)
 Flight::group('/ripguessr', function () {
 	Flight::route('/', function () {
-		Flight::redirect('http://ripguessr.ripdb.net');
+		Flight::redirect('http://' . constant('SITE_RIP-GUESSER'));
 	});
 });	
 

@@ -41,9 +41,6 @@ const TABLES = [
 	'RipJokes',
 	'RipRippers',
 	'RipComposers',
-	'RipGuesserGame',
-	'RipGuesserUpvotes',
-	'RipJokeFeedback',
 	'Accounts',
 	'Playlists',
 	'AnonymousPlaylists'
@@ -79,10 +76,6 @@ const PROCEDURES = [
 	'usp_UpdateRipper',
 	'usp_InsertComposer',
 	'usp_UpdateComposer',
-	'usp_PurgeInactiveRipGuesserGames',
-	'usp_NewRipGuesserGame',
-	'usp_PingRipGuesserGame',
-	'usp_InsertRipFeedback',
 	'usp_InsertLogin',
 	'usp_SelectLogin',
 	'usp_DeleteAccount',
@@ -93,6 +86,7 @@ const PROCEDURES = [
 	'usp_UpdatePlaylist',
 	'usp_DeletePlaylist',
 	'usp_ClaimPlaylists',
+	'usp_GenerateUniqueCode'
 ];
 const TRIGGERS = [
 	'b_ins_EnsureSinglePrimaryTag',
