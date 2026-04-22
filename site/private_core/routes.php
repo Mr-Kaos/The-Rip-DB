@@ -300,14 +300,6 @@ Flight::group('/ripguessr', function () {
 	});
 });	
 
-// Settings Requests
-Flight::route('GET /settings/theme', function () {
-	$theme = Theme::tryFrom($_GET['theme'] ?? null) ?? Theme::Light;
-	setcookie('theme', $theme->value, 0, '/');
-	header('location:' . $_SERVER['HTTP_REFERER']);
-	die();
-});
-
 // Login requests
 Flight::group('/login', function () {
 	Flight::route('POST /', function () {

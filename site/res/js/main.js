@@ -10,6 +10,19 @@ if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').match
 	}
 }
 
+/**
+ * Changes the active theme of the site.
+ * @param {String} theme The name of the theme to change to.
+ */
+function changeTheme(theme) {
+	document.cookie = `theme=${theme};expires=Session;Path=/`;
+	let activeStyle = document.querySelector('link[rel="stylesheet"][id^="theme_"');
+	activeStyle.setAttribute("rel", "stylesheet alternate")
+
+	let newStyle = document.getElementById(`theme_${theme}`);
+	newStyle.setAttribute("rel", "stylesheet");
+}
+
 function getCookie(name) {
 	let cookie = null;
 	name = name + "=";

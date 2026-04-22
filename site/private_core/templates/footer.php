@@ -11,7 +11,7 @@ use RipDB\Theme;
 	</div>
 	<div>
 		<form action="/settings/theme">
-			<?= (new o\DropdownElement('Theme', Theme::getThemes(), ['name' => 'theme', 'selected' => $_COOKIE['theme'] ?? '', 'onchange' => 'submit()', 'style' => 'background:var(--accent-2)', 'required' => true, 'no-asterisk' => true]))->buildElement(); ?>
+			<?= (new o\DropdownElement('Theme', Theme::getThemes(), ['name' => 'theme', 'selected' => $_COOKIE['theme'] ?? '', 'onchange' => 'changeTheme(this.value)', 'style' => 'background:var(--accent-2)', 'required' => true, 'no-asterisk' => true]))->buildElement(); ?>
 		</form>
 	</div>
 </footer>
