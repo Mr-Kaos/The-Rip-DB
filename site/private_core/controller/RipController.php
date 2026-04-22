@@ -4,6 +4,7 @@ namespace RipDB\Controller;
 
 use RipDB\Model as m;
 use RipDB\Error;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/RipModel.php');
@@ -15,7 +16,6 @@ require_once('private_core/objects/pageElements/Paginator.php');
  */
 class RipController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -48,7 +48,7 @@ class RipController extends Controller
 				$rips = [];
 				$offset = $this->getOffset($ripCount, '/rips');
 				$rips = $this->model->search($rowCount, $offset, $_GET['s'] ?? null, $_GET['search'] ?? null, $tags, $jokes, $games, $rippers, $genres, $metaJokes, $metas, $_GET['channel'] ?? null, $useAltName);
-				$this->cleanseDatabaseDataForOutput($rips);
+				DataValidator::cleanseDatabaseDataForOutput($rips);
 				$this->setData('results', $rips);
 
 				// Get search filters
@@ -112,7 +112,7 @@ class RipController extends Controller
 						$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
 					}
 
-					$this->cleanseDatabaseDataForOutput($rip);
+					DataValidator::cleanseDatabaseDataForOutput($rip);
 					$this->setData('rip', $rip);
 					$this->setData('hasWiki', $this->model->channelHasWiki($rip['RipChannel']));
 					if ($rip !== null) {
@@ -161,7 +161,7 @@ class RipController extends Controller
 					}
 				}
 				$rip['Jokes'] = $temp;
-				$this->cleanseDatabaseDataForOutput($rip);
+				DataValidator::cleanseDatabaseDataForOutput($rip);
 				$this->setData('rip', $rip);
 			case 'rips/new':
 				$this->setData('rippers', $this->model->getRippers());
@@ -241,26 +241,26 @@ class RipController extends Controller
 		switch ($this->getPage()) {
 			case 'rips/edit':
 				// The rip ID is validated in the stored procedure to ensure it exists.
-				$validated['RipIDTarget'] = $this->validateNumber($extraData['id'], 'The given Rip ID is invalid.', null, 1);
+				$validated['RipIDTarget'] = DataValidator::validateNumber($extraData['id'], 'The given Rip ID is invalid.', null, 1);
 			case 'rips/new':
 				// Validate data in order of stored procedure parameters.
-				$validated['Name'] = $this->validateString($_POST['name'], 'The given rip name is invalid.', 1024);
-				$validated['Mix'] = $this->validateString($_POST['mixName'], 'The given mix name is invalid.', 256);
-				$validated['AlternateName'] = $this->validateString($_POST['altName'], 'The given alternate name is invalid.');
-				$validated['Description'] = $this->validateString($_POST['description'], 'The given description is invalid.');
-				$validated['UploadDate'] = $this->validateDateInput($_POST['date'], 'The given rip date is invalid.');
-				$validated['Length'] = $this->validateTimestamp($_POST['length'] ?? null);
-				$validated['URL'] = $this->validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
-				$validated['YTID'] = $this->validateString($_POST['ytId'], 'The given youTube ID is invalid.', null, null, '/[A-Za-z0-9_-]{11}/');;
-				$validated['AltURL'] = $this->validateString($_POST['alturl'], 'The given alternate URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
-				$validated['Game'] = $this->validateFromList($_POST['game'], $this->model->getGames(true));
-				$validated['Channel'] = $this->validateFromList($_POST['channel'], $this->model->getChannels(true));
+				$validated['Name'] = DataValidator::validateString($_POST['name'], 'The given rip name is invalid.', 1024);
+				$validated['Mix'] = DataValidator::validateString($_POST['mixName'], 'The given mix name is invalid.', 256);
+				$validated['AlternateName'] = DataValidator::validateString($_POST['altName'], 'The given alternate name is invalid.');
+				$validated['Description'] = DataValidator::validateString($_POST['description'], 'The given description is invalid.');
+				$validated['UploadDate'] = DataValidator::validateDateInput($_POST['date'], 'The given rip date is invalid.');
+				$validated['Length'] = DataValidator::validateTimestamp($_POST['length'] ?? null);
+				$validated['URL'] = DataValidator::validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
+				$validated['YTID'] = DataValidator::validateString($_POST['ytId'], 'The given youTube ID is invalid.', null, null, '/[A-Za-z0-9_-]{11}/');;
+				$validated['AltURL'] = DataValidator::validateString($_POST['alturl'], 'The given alternate URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
+				$validated['Game'] = DataValidator::validateFromList($_POST['game'], $this->model->getGames(true));
+				$validated['Channel'] = DataValidator::validateFromList($_POST['channel'], $this->model->getChannels(true));
 
-				$jokes = $this->validateArray($_POST['jokes'], 'validateFromList', [$this->model->getJokes(true)], 'One or more of the given jokes do not exist in the database.', false);
-				$starts = $this->validateArray($_POST['jokeStart'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);
-				$ends = $this->validateArray($_POST['jokeEnd'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);
-				$genres = $this->validateArray($_POST['genres'] ?? [], 'validateFromList',  [$this->model->getGenres(true)], 'One or more genres for a joke does not exist!', false);
-				$comments = $this->validateArray($_POST['comment'] ?? [], 'validateString', ['Comment is too long', 1024], 'One or more comments for a joke are too long!', false);
+				$jokes = DataValidator::validateArray($_POST['jokes'], 'validateFromList', [$this->model->getJokes(true)], 'One or more of the given jokes do not exist in the database.', false);
+				$starts = DataValidator::validateArray($_POST['jokeStart'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);
+				$ends = DataValidator::validateArray($_POST['jokeEnd'], 'validateTimestamp', [], 'One of the given timestamps are invalid', false);
+				$genres = DataValidator::validateArray($_POST['genres'] ?? [], 'validateFromList',  [$this->model->getGenres(true)], 'One or more genres for a joke does not exist!', false);
+				$comments = DataValidator::validateArray($_POST['comment'] ?? [], 'validateString', ['Comment is too long', 1024], 'One or more comments for a joke are too long!', false);
 				if ($jokes instanceof Error) {
 					$validated['Jokes'] = $jokes;
 				} elseif ($starts instanceof Error) {
@@ -295,8 +295,8 @@ class RipController extends Controller
 					$validated['Jokes'] = json_encode($validated['Jokes'], JSON_NUMERIC_CHECK);
 				}
 
-				$rippers = $this->validateArray($_POST['rippers'], 'validateFromList', [$this->model->getRippers(true)], 'One or more of the given rippers do not exist in the database.', false);
-				$aliases = $this->validateArray($_POST['aliases'], 'validateString', [], 'One of the given given alias names is invalid.', false);
+				$rippers = DataValidator::validateArray($_POST['rippers'], 'validateFromList', [$this->model->getRippers(true)], 'One or more of the given rippers do not exist in the database.', false);
+				$aliases = DataValidator::validateArray($_POST['aliases'], 'validateString', [], 'One of the given given alias names is invalid.', false);
 				if ($rippers instanceof Error) {
 					$validated['Rippers'] = $rippers;
 				} elseif ($aliases instanceof Error) {
@@ -304,8 +304,8 @@ class RipController extends Controller
 				} else {
 					$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
 				}
-				$validated['Composers'] = $this->validateArray($_POST['composers'] ?? [], 'validateFromList', [$this->model->getComposers(true)], 'One or more of the given composers do not exist in the database.');
-				$validated['WikiLink'] = $this->validateString($_POST['url'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
+				$validated['Composers'] = DataValidator::validateArray($_POST['composers'] ?? [], 'validateFromList', [$this->model->getComposers(true)], 'One or more of the given composers do not exist in the database.');
+				$validated['WikiLink'] = DataValidator::validateString($_POST['url'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 
 				if ($this->getPage() == 'rips/new') {
 					$result = $this->submitRequest($validated, 'usp_InsertRip', '/rips', 'Rip successfully added!');

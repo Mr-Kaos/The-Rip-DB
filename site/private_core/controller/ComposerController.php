@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/ComposerModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class ComposerController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -43,7 +43,7 @@ class ComposerController extends Controller
 					$_GET['search'] ?? null,
 				);
 
-				$this->cleanseDatabaseDataForOutput($composers);
+				DataValidator::cleanseDatabaseDataForOutput($composers);
 				$this->setData('results', $composers);
 
 				// Pagination values
@@ -68,7 +68,7 @@ class ComposerController extends Controller
 					\RipDB\addNotification('The specified composer does not exist.', \RipDB\NotificationPriority::Warning);
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($composer);
+				DataValidator::cleanseDatabaseDataForOutput($composer);
 
 				$this->setData('composer', $composer);
 
@@ -84,12 +84,12 @@ class ComposerController extends Controller
 		$result = [];
 		switch ($this->getPage()) {
 			case 'composers/edit':
-				$validated['InComposerID'] = $this->validateNumber($extraData['id']);
+				$validated['InComposerID'] = DataValidator::validateNumber($extraData['id']);
 			case 'composers/new':
-				$validated['FirstName'] = $this->validateString($_POST['first-name'], 'The first name is invalid.', 256, 1);
-				$validated['LastName'] = $this->validateString($_POST['last-name'], 'The last name is invalid.', 256);
-				$validated['FirstNameAlt'] = $this->validateString($_POST['first-name-alt'], 'The alt first name is invalid.', 256);
-				$validated['LastNameAlt'] = $this->validateString($_POST['last-name-alt'], 'The alt last name is invalid.', 256);
+				$validated['FirstName'] = DataValidator::validateString($_POST['first-name'], 'The first name is invalid.', 256, 1);
+				$validated['LastName'] = DataValidator::validateString($_POST['last-name'], 'The last name is invalid.', 256);
+				$validated['FirstNameAlt'] = DataValidator::validateString($_POST['first-name-alt'], 'The alt first name is invalid.', 256);
+				$validated['LastNameAlt'] = DataValidator::validateString($_POST['last-name-alt'], 'The alt last name is invalid.', 256);
 
 				if ($this->getPage() == 'composers/new') {
 					$newComposer = 0;

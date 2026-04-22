@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/GameModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class GameController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -43,7 +43,7 @@ class GameController extends Controller
 					$_GET['search'] ?? null,
 				);
 
-				$this->cleanseDatabaseDataForOutput($records);
+				DataValidator::cleanseDatabaseDataForOutput($records);
 				$this->setData('results', $records);
 
 				// Pagination values
@@ -68,7 +68,7 @@ class GameController extends Controller
 					\Flight::redirect('/games');
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($game);
+				DataValidator::cleanseDatabaseDataForOutput($game);
 				$this->setData('game', $game);
 				break;
 		}
@@ -79,20 +79,20 @@ class GameController extends Controller
 		$result = [];
 		switch ($this->getPage()) {
 			case 'games/new':
-				$validated['NewGame'] = $this->validateFromList($_POST['name'], $this->model->getAllGameNames(), 'This game already exists.', true);
-				$validated['NewDescription'] = $this->validateString($_POST['description']);
-				$validated['Platforms'] = $this->validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.');
-				$validated['FakeGame'] = $this->validateBool($_POST['isFake'] ?? false);
+				$validated['NewGame'] = DataValidator::validateFromList($_POST['name'], $this->model->getAllGameNames(), 'This game already exists.', true);
+				$validated['NewDescription'] = DataValidator::validateString($_POST['description']);
+				$validated['Platforms'] = DataValidator::validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.');
+				$validated['FakeGame'] = DataValidator::validateBool($_POST['isFake'] ?? false);
 
 				$gameId = 0;
 				$result = $this->submitRequest($validated, 'usp_InsertGame', '/games', 'Game successfully added!', $gameId);
 				break;
 			case 'games/edit':
-				$validated['GameID'] = $this->validateNumber($extraData['id']);
-				$validated['NewGame'] = $this->validateFromList($_POST['name'], $this->model->getAllGameNames((int)$extraData['id']), 'This game already exists.', true);
-				$validated['NewDescription'] = $this->validateString($_POST['description']);
-				$validated['Platforms'] = $this->validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.');
-				$validated['FakeGame'] = $this->validateBool($_POST['isFake'] ?? false);
+				$validated['GameID'] = DataValidator::validateNumber($extraData['id']);
+				$validated['NewGame'] = DataValidator::validateFromList($_POST['name'], $this->model->getAllGameNames((int)$extraData['id']), 'This game already exists.', true);
+				$validated['NewDescription'] = DataValidator::validateString($_POST['description']);
+				$validated['Platforms'] = DataValidator::validateArray($_POST['platform'], 'validateFromList', [$this->model->getAllPlatforms()], 'One of the platforms given does not exist in the database.');
+				$validated['FakeGame'] = DataValidator::validateBool($_POST['isFake'] ?? false);
 
 				$result = $this->submitRequest($validated, 'usp_UpdateGame', '/games', 'Game successfully updated!');
 				break;

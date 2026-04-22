@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/MetaModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class MetaController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -45,7 +45,7 @@ class MetaController extends Controller
 					$_GET['metas'] ?? [],
 				);
 
-				$this->cleanseDatabaseDataForOutput($records);
+				DataValidator::cleanseDatabaseDataForOutput($records);
 				$this->setData('results', $records);
 
 				// Pagination values
@@ -81,7 +81,7 @@ class MetaController extends Controller
 					\Flight::redirect('/meta-jokes');
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($meta);
+				DataValidator::cleanseDatabaseDataForOutput($meta);
 				$this->setData('meta', $meta);
 				break;
 		}
@@ -94,9 +94,9 @@ class MetaController extends Controller
 		// Validate data in order of stored procedure parameters.
 		switch ($this->getPage()) {
 			case 'metas/edit':
-				$validated['InMetaID'] = $this->validateNumber($extraData['id']);
+				$validated['InMetaID'] = DataValidator::validateNumber($extraData['id']);
 			case 'metas/new':
-				$validated['InName'] = $this->validateString($_POST['name'], 'The given name is invalid.', 128);
+				$validated['InName'] = DataValidator::validateString($_POST['name'], 'The given name is invalid.', 128);
 
 				switch ($this->getPage()) {
 					case 'metas/new':

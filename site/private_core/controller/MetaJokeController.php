@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/MetaJokeModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class MetaJokeController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -45,7 +45,7 @@ class MetaJokeController extends Controller
 					$_GET['metas'] ?? [],
 				);
 
-				$this->cleanseDatabaseDataForOutput($records);
+				DataValidator::cleanseDatabaseDataForOutput($records);
 				$this->setData('results', $records);
 
 				// Pagination values
@@ -81,7 +81,7 @@ class MetaJokeController extends Controller
 					\Flight::redirect('/meta-jokes');
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($metaJoke);
+				DataValidator::cleanseDatabaseDataForOutput($metaJoke);
 				$this->setData('metaJoke', $metaJoke);
 				break;
 		}
@@ -94,11 +94,11 @@ class MetaJokeController extends Controller
 		// Validate data in order of stored procedure parameters.
 		switch ($this->getPage()) {
 			case 'meta-jokes/edit':
-				$validated['InJokeID'] = $this->validateNumber($extraData['id']);
+				$validated['InJokeID'] = DataValidator::validateNumber($extraData['id']);
 			case 'meta-jokes/new':
-				$validated['InName'] = $this->validateString($_POST['name'], 'The given name is invalid.', 128);
-				$validated['InDescription'] = $this->validateString($_POST['description'], 'The given description is invalid.', null, 1);
-				$validated['InMetaID'] = $this->validateFromList($_POST['meta'], $this->model->getMetas(), 'The given meta does not exist in the database.');
+				$validated['InName'] = DataValidator::validateString($_POST['name'], 'The given name is invalid.', 128);
+				$validated['InDescription'] = DataValidator::validateString($_POST['description'], 'The given description is invalid.', null, 1);
+				$validated['InMetaID'] = DataValidator::validateFromList($_POST['meta'], $this->model->getMetas(), 'The given meta does not exist in the database.');
 
 				switch ($this->getPage()) {
 					case 'meta-jokes/new':

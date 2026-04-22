@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/RipperModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class RipperController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -67,7 +67,7 @@ class RipperController extends Controller
 					\Flight::redirect('/rippers');
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($ripper);
+				DataValidator::cleanseDatabaseDataForOutput($ripper);
 				$this->setData('ripper', $ripper);
 				break;
 		}
@@ -78,16 +78,16 @@ class RipperController extends Controller
 		$result = [];
 		switch ($this->getPage()) {
 			case 'rippers/new':
-				$name = $this->validateString($_POST['name'], 'The ripper name is invalid.', 256);
-				$validated['NewRipper'] = $this->validateFromList($name, $this->model->getAllRipperNames(), 'This ripper already exists.', true);
+				$name = DataValidator::validateString($_POST['name'], 'The ripper name is invalid.', 256);
+				$validated['NewRipper'] = DataValidator::validateFromList($name, $this->model->getAllRipperNames(), 'This ripper already exists.', true);
 
 				$ripperId = 0;
 				$result = $this->submitRequest($validated, 'usp_InsertRipper', '/rippers', 'Ripper successfully added!', $ripperId);
 				break;
 			case 'rippers/edit':
-				$validated['InRipperID'] = $this->validateNumber($extraData['id']);
-				$name = $this->validateString($_POST['name']);
-				$validated['InRipperName'] = $this->validateFromList($name, $this->model->getAllRipperNames((int)$extraData['id']), 'This ripper already exists.', true);
+				$validated['InRipperID'] = DataValidator::validateNumber($extraData['id']);
+				$name = DataValidator::validateString($_POST['name']);
+				$validated['InRipperName'] = DataValidator::validateFromList($name, $this->model->getAllRipperNames((int)$extraData['id']), 'This ripper already exists.', true);
 
 				$result = $this->submitRequest($validated, 'usp_UpdateRipper', '/rippers', 'Ripper successfully updated!');
 				break;

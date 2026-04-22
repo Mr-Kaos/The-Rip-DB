@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/ChannelModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class ChannelController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -43,7 +43,7 @@ class ChannelController extends Controller
 					$_GET['search'] ?? null,
 				);
 
-				$this->cleanseDatabaseDataForOutput($records);
+				DataValidator::cleanseDatabaseDataForOutput($records);
 				$this->setData('results', $records);
 
 				// Pagination values
@@ -68,7 +68,7 @@ class ChannelController extends Controller
 					\Flight::redirect('/channels');
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($channel);
+				DataValidator::cleanseDatabaseDataForOutput($channel);
 				$this->setData('channel', $channel);
 				break;
 		}
@@ -79,22 +79,22 @@ class ChannelController extends Controller
 		$result = [];
 		switch ($this->getPage()) {
 			case 'channels/new':
-				$validated['InChannel'] = $this->validateFromList($_POST['name'], $this->model->getAllChannelNames(), 'This channel already exists.', true);
-				$validated['InDescription'] = $this->validateString($_POST['description']);
-				$validated['InURL'] = $this->validateString($_POST['url'] ?? false, 'The URL must be a valid YouTube URL!', 512, 16, '/^https:\/{2}[w]{0,3}[youtube.com][a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}.*$/');
-				$validated['InActive'] = $this->validateBool($_POST['active'] ?? false);
-				$validated['InWikiURL'] = $this->validateString($_POST['wiki-url'] ?? null, 'The wiki URL must be a valid URL!', 1024, 0, '/^https:\/{2}.*$/');
+				$validated['InChannel'] = DataValidator::validateFromList($_POST['name'], $this->model->getAllChannelNames(), 'This channel already exists.', true);
+				$validated['InDescription'] = DataValidator::validateString($_POST['description']);
+				$validated['InURL'] = DataValidator::validateString($_POST['url'] ?? false, 'The URL must be a valid YouTube URL!', 512, 16, '/^https:\/{2}[w]{0,3}[youtube.com][a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}.*$/');
+				$validated['InActive'] = DataValidator::validateBool($_POST['active'] ?? false);
+				$validated['InWikiURL'] = DataValidator::validateString($_POST['wiki-url'] ?? null, 'The wiki URL must be a valid URL!', 1024, 0, '/^https:\/{2}.*$/');
 
 				$channelId = 0;
 				$result = $this->submitRequest($validated, 'usp_InsertChannel', '/channels', 'Channel successfully added!', $channelId);
 				break;
 			case 'channels/edit':
-				$validated['InChannelID'] = $this->validateNumber($extraData['id']);
-				$validated['InChannel'] = $this->validateFromList($_POST['name'], $this->model->getAllChannelNames((int)$extraData['id']), 'This channel already exists.', true);
-				$validated['InDescription'] = $this->validateString($_POST['description']);
-				$validated['InURL'] = $this->validateString($_POST['url'] ?? false, 'The URL must be a valid YouTube URL!', 512, 0, '/^https:\/{2}[w]{0,3}[youtube.com][a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}.*$/');
-				$validated['InActive'] = $this->validateBool($_POST['active'] ?? false, 'The channel must be either active or inactive.', true);
-				$validated['InWikiURL'] = $this->validateString($_POST['wiki-url'] ?? null, 'The wiki URL must be a valid URL!', 1024, 0, '/^https:\/{2}.*$/');
+				$validated['InChannelID'] = DataValidator::validateNumber($extraData['id']);
+				$validated['InChannel'] = DataValidator::validateFromList($_POST['name'], $this->model->getAllChannelNames((int)$extraData['id']), 'This channel already exists.', true);
+				$validated['InDescription'] = DataValidator::validateString($_POST['description']);
+				$validated['InURL'] = DataValidator::validateString($_POST['url'] ?? false, 'The URL must be a valid YouTube URL!', 512, 0, '/^https:\/{2}[w]{0,3}[youtube.com][a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}.*$/');
+				$validated['InActive'] = DataValidator::validateBool($_POST['active'] ?? false, 'The channel must be either active or inactive.', true);
+				$validated['InWikiURL'] = DataValidator::validateString($_POST['wiki-url'] ?? null, 'The wiki URL must be a valid URL!', 1024, 0, '/^https:\/{2}.*$/');
 
 				$result = $this->submitRequest($validated, 'usp_UpdateChannel', '/channels', 'Channel successfully updated!');
 				break;

@@ -2,6 +2,7 @@
 
 namespace RipDB\Controller;
 
+use RipDB\DataValidator;
 use RipDB\Model as m;
 
 require_once('Controller.php');
@@ -13,7 +14,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class LoginController extends Controller
 {
-	use \RipDB\DataValidator;
 	const USERNAME_REGEX = '^(?=.{3,32}$)(?!.*[{}\\|\/;,\[\]^@])[a-zA-Z0-9._+-~]+$';
 	public function __construct(string $page)
 	{
@@ -37,8 +37,8 @@ class LoginController extends Controller
 
 		switch ($this->getPage()) {
 			case 'login/login';
-				$validated['InUsername'] = $this->validateString($_POST['username'], 'The given username is invalid', 32, 3, '/' . self::USERNAME_REGEX . '/');
-				$validated['InPassword'] = $this->validateString($_POST['password'], 'The given password is invalid.', 64, 6);
+				$validated['InUsername'] = DataValidator::validateString($_POST['username'], 'The given username is invalid', 32, 3, '/' . self::USERNAME_REGEX . '/');
+				$validated['InPassword'] = DataValidator::validateString($_POST['password'], 'The given password is invalid.', 64, 6);
 
 				$result = $this->submitRequest($validated, 'usp_SelectLogin', '/', 'Successfully logged in!', $loginId);
 
@@ -51,8 +51,8 @@ class LoginController extends Controller
 			case 'login/new':
 				if (!empty($_POST['password'] ?? null) && !empty($_POST['password2'] ?? null)) {
 					if ($_POST['password'] == $_POST['password2']) {
-						$validated['NewUsername'] = $this->validateString($_POST['username'], 'The given username is not valid', 32, 3, '/' . self::USERNAME_REGEX . '/');
-						$validated['NewPassword'] = $this->validateString($_POST['password'], 'The given password is not valid.', 64, 6);
+						$validated['NewUsername'] = DataValidator::validateString($_POST['username'], 'The given username is not valid', 32, 3, '/' . self::USERNAME_REGEX . '/');
+						$validated['NewPassword'] = DataValidator::validateString($_POST['password'], 'The given password is not valid.', 64, 6);
 
 						$result = $this->submitRequest($validated, 'usp_InsertLogin', '/', 'Successfully created account!', $loginId);
 

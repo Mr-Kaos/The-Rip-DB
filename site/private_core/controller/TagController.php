@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/TagModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class TagController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -67,7 +67,7 @@ class TagController extends Controller
 					\RipDB\addNotification('The specified tag does not exist.', \RipDB\NotificationPriority::Warning);
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($tag);
+				DataValidator::cleanseDatabaseDataForOutput($tag);
 				$this->setData('tag', $tag);
 
 				break;
@@ -82,9 +82,9 @@ class TagController extends Controller
 		$result = [];
 		switch ($this->getPage()) {
 			case 'tags/edit':
-				$validated['InTagID'] = $this->validateNumber($extraData['id']);
+				$validated['InTagID'] = DataValidator::validateNumber($extraData['id']);
 			case 'tags/new':
-				$validated['InTagName'] = $this->validateFromList($_POST['name'], $this->model->getAllTagNames($extraData['id'] ?? null), 'The given value is already taken', true);
+				$validated['InTagName'] = DataValidator::validateFromList($_POST['name'], $this->model->getAllTagNames($extraData['id'] ?? null), 'The given value is already taken', true);
 
 				if ($this->getPage() == 'tags/new') {
 					$newTag = 0;

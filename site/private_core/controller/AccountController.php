@@ -5,6 +5,7 @@ namespace RipDB\Controller;
 use DateTime;
 use RipDB\Error;
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/AccountModel.php');
@@ -18,7 +19,6 @@ require_once('private_core/objects/pageElements/Paginator.php');
  */
 class AccountController extends Controller implements \RipDB\Objects\IAsyncHandler
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	/** The maximum number of API requests that can be made to the YouTube API per day. */
@@ -123,16 +123,16 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 				switch ($_GET['mode']) {
 					case 'username':
 						$validated['InAccountId'] = $_SESSION[\RipDB\AUTH_USER];
-						$validated['NewUsername'] = $this->validateString($_POST['username'], 'The given username is invalid', 32, 3, '/' . LoginController::USERNAME_REGEX . '/');
-						$validated['InPassword'] = $this->validateString($_POST['password'], 'The given password is invalid.', 64, 6);
+						$validated['NewUsername'] = DataValidator::validateString($_POST['username'], 'The given username is invalid', 32, 3, '/' . LoginController::USERNAME_REGEX . '/');
+						$validated['InPassword'] = DataValidator::validateString($_POST['password'], 'The given password is invalid.', 64, 6);
 
 						$result = $this->submitRequest($validated, 'usp_UpdateAccountUsername', '/account', 'Successfully updated username!');
 						break;
 					case 'password':
 						$validated['InAccountId'] = $_SESSION[\RipDB\AUTH_USER];
-						$validated['OldPassword'] = $this->validateString($_POST['password'], 'The given password is invalid.', 64, 6);
-						$newPass = $this->validateString($_POST['password-new'], 'The given password is invalid.', 64, 6);
-						$newPass2 = $this->validateString($_POST['password-new2'], 'The given password is invalid.', 64, 6);
+						$validated['OldPassword'] = DataValidator::validateString($_POST['password'], 'The given password is invalid.', 64, 6);
+						$newPass = DataValidator::validateString($_POST['password-new'], 'The given password is invalid.', 64, 6);
+						$newPass2 = DataValidator::validateString($_POST['password-new2'], 'The given password is invalid.', 64, 6);
 
 						if ($newPass == $newPass2 && !($newPass instanceof Error || $newPass2 instanceof Error)) {
 							$validated['NewPassword'] = $newPass;
@@ -144,8 +144,8 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 						break;
 					case 'delete':
 						$validated['InAccountId'] = $_SESSION[\RipDB\AUTH_USER];
-						$pass = $this->validateString($_POST['password-check'], 'The given password is invalid.', 64, 6);
-						$pass2 = $this->validateString($_POST['password-check2'], 'The given password is invalid.', 64, 6);
+						$pass = DataValidator::validateString($_POST['password-check'], 'The given password is invalid.', 64, 6);
+						$pass2 = DataValidator::validateString($_POST['password-check2'], 'The given password is invalid.', 64, 6);
 
 						if ($pass == $pass2 && !($pass instanceof Error || $pass2 instanceof Error)) {
 							$validated['InPassword'] = $pass;
@@ -171,7 +171,7 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 				include_once('private_core/config/keys.php');
 
 				if (defined('YouTube_Key') && constant('YouTube_Key') !== null) {
-					$url = $this->validateString($_POST['playlist_url'], 'Invalid Playlist URL.', null, null, '/https:\/\/.*youtu.*\?.*list=([a-zA-Z_\-0-9]{34}).*/');
+					$url = DataValidator::validateString($_POST['playlist_url'], 'Invalid Playlist URL.', null, null, '/https:\/\/.*youtu.*\?.*list=([a-zA-Z_\-0-9]{34}).*/');
 
 					if (!$url instanceof Error) {
 						preg_match('/https:\/\/.*youtu.*\?.*list=([a-zA-Z_\-0-9]{34}).*/', $url, $matches);

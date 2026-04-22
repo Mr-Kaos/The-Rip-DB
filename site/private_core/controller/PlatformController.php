@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/PlatformModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class PlatformController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -43,7 +43,7 @@ class PlatformController extends Controller
 					$_GET['search'] ?? null,
 				);
 
-				$this->cleanseDatabaseDataForOutput($platforms);
+				DataValidator::cleanseDatabaseDataForOutput($platforms);
 				$this->setData('results', $platforms);
 
 				// Pagination values
@@ -68,7 +68,7 @@ class PlatformController extends Controller
 					\RipDB\addNotification('The specified platform does not exist.', \RipDB\NotificationPriority::Warning);
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($platform);
+				DataValidator::cleanseDatabaseDataForOutput($platform);
 
 				$this->setData('platform', $platform);
 				break;
@@ -83,9 +83,9 @@ class PlatformController extends Controller
 		$result = [];
 		switch ($this->getPage()) {
 			case 'platforms/edit':
-				$validated['InPlatformID'] = $this->validateNumber($extraData['id']);
+				$validated['InPlatformID'] = DataValidator::validateNumber($extraData['id']);
 			case 'platforms/new':
-				$validated['InPlatformName'] = $this->validateFromList($_POST['name'], $this->model->getAllPlatformNames($extraData['id'] ?? null), 'The given value is already taken', true);
+				$validated['InPlatformName'] = DataValidator::validateFromList($_POST['name'], $this->model->getAllPlatformNames($extraData['id'] ?? null), 'The given value is already taken', true);
 
 				if ($this->getPage() == 'platforms/new') {
 					$newPlatform = 0;

@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 use const RipDB\AUTH_USER;
 
@@ -19,7 +20,6 @@ require_once('private_core/objects/IAsyncHandler.php');
  */
 class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHandler
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -64,7 +64,7 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 					if (empty($result)) {
 						$result = 'The specified playlist does not exist.';
 					}
-					$this->cleanseDatabaseDataForOutput($result);
+					DataValidator::cleanseDatabaseDataForOutput($result);
 				} else {
 					$result = 'You must be logged in to edit a playlist.';
 				}
@@ -129,10 +129,10 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 				}
 				$validated['InPlaylistId'] = $playlist['PlaylistID'];
 			case 'playlist/new':
-				$validated['InPlaylistName'] = $this->validateString($_POST['name'], 'The playlist name is not valid.', 64, 1);
-				$validated['InPlaylistDesc'] = $this->validateString($_POST['desc'], 'The playlist description is not valid.', 512, 1);
+				$validated['InPlaylistName'] = DataValidator::validateString($_POST['name'], 'The playlist name is not valid.', 64, 1);
+				$validated['InPlaylistDesc'] = DataValidator::validateString($_POST['desc'], 'The playlist description is not valid.', 512, 1);
 				// Make sure all rips given exist
-				$rips = $this->validateArray($_POST['rips'], 'validateNumber', [], 'An invalid rip was given.', false);
+				$rips = DataValidator::validateArray($_POST['rips'], 'validateNumber', [], 'An invalid rip was given.', false);
 				if (is_array($rips)) {
 					$validated['Rips'] = json_encode($this->model->getValidRips($rips), JSON_NUMERIC_CHECK);
 				} else {
@@ -148,7 +148,7 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 					$public = false;
 				}
 				$validated['AccountID'] = $accountId;
-				$validated['Public'] = $this->validateBool($public);
+				$validated['Public'] = DataValidator::validateBool($public);
 
 				if ($this->getPage() == 'playlist/new') {
 					$playlistId = 0;

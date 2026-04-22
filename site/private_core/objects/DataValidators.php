@@ -44,7 +44,7 @@ class Error
 /**
  * This trait defines various data validation functions to prevent bad data from being sent to the database.
  */
-trait DataValidator
+class DataValidator
 {
 	/**
 	 * Validates a string input. Ensures no invalid HTML characters exist.
@@ -52,9 +52,10 @@ trait DataValidator
 	 * @param ?int $minLength The minimum length allowed for the string. Optional. If the string is shorter than this length, False is returned.
 	 * @param ?int $maxLength The maximum length allowed for the string. Optional. If the string is longer than this length, it is trimmed.
 	 * @param ?string $regex A regular expression to validate the string against. Optional. If any match(es) are found, it will omit any part of the string that is not matched.
+	 * @param bool $invertRegex If true, if any of the regex is matched, the input will be invalidated.
 	 * @return string|Error|null The validated string, or if the validation fails, an Error. If an empty or null input is given, it is returned.
 	 */
-	protected function validateString(?string $input, string $errorMessage = 'The given value is not valid.', ?int $maxLength = null, ?int $minLength = null, ?string $regex = null): Error|string|null
+	public static function validateString(?string $input, string $errorMessage = 'The given value is not valid.', ?int $maxLength = null, ?int $minLength = null, ?string $regex = null, bool $invertRegex = false): Error|string|null
 	{
 		$validated = $input;
 
@@ -75,16 +76,22 @@ trait DataValidator
 						$matches = $matches[0];
 					}
 
-					if (empty($matches)) {
+					if ($invertRegex && !empty($matches)) {
+						$validated = new Error($errorMessage . ' The given value contains invalid characters.');
+					} elseif (!$invertRegex && empty($matches)) {
 						$validated = new Error($errorMessage . ' The given value does not match the required pattern.');
 					} else {
-						foreach ($matches as $match) {
-							$validated .= $match;
+						if ($invertRegex) {
+							$validated = $input;
+						} else {
+							foreach ($matches as $match) {
+								$validated .= $match;
+							}
+
+							$validated = htmlspecialchars($validated);
 						}
 
-						$validated = htmlspecialchars($validated);
-
-						if ($validated == "") {
+						if (empty($validated)) {
 							$validated = null;
 						}
 					}
@@ -108,7 +115,7 @@ trait DataValidator
 	 * @param int $max The maximum allowed value for the input, optional. If the value of $input is greater than this value, it will be validated to this value.
 	 * @return false|int Error if the given value is not numeric, an int if the value is numeric.
 	 */
-	protected function validateNumber(mixed $input, string $errorMessage = 'The given value is not numeric.', ?int $max = null, ?int $min = null): Error|int|float|null
+	public static function validateNumber(mixed $input, string $errorMessage = 'The given value is not numeric.', ?int $max = null, ?int $min = null): Error|int|float|null
 	{
 		$validated = new Error($errorMessage);
 
@@ -137,7 +144,7 @@ trait DataValidator
 	 * pass true in the second parameter.
 	 * @param ?string $input The input to validate for boolean.
 	 */
-	protected function validateBool(?string $input, string $errorMessage = 'Supplied value is not a boolean.', bool $returnAsBool = false): Error|bool|int
+	public static function validateBool(?string $input, string $errorMessage = 'Supplied value is not a boolean.', bool $returnAsBool = false): Error|bool|int
 	{
 		$validated = new Error($errorMessage);
 		if ($input === 'on' || $input == 1 || $input === 'true') {
@@ -158,7 +165,7 @@ trait DataValidator
 	 * @param ?string $input The input to validate for date.
 	 * 
 	 */
-	protected function validateDateInput(?string $input, string $errorMessage = 'Given value is not a date.'): Error|string
+	public static function validateDateInput(?string $input, string $errorMessage = 'Given value is not a date.'): Error|string
 	{
 		$validated = new Error($errorMessage);;
 		if ($input) {
@@ -185,16 +192,16 @@ trait DataValidator
 	 * @param ?string $minTimestamp A timestamp dictating the minimum allowed length. (e.g. 00:20 for 20 seconds.)
 	 * @return Error|string|null If valid, the timestamp without colons is returned.
 	 */
-	protected function validateTimestamp(?string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.', ?string $maxTimestamp = null, ?string $minTimestamp = null): Error|string|null
+	public static function validateTimestamp(?string $time, string $errorMessage = 'Supplied timestamp is not formatted correctly.', ?string $maxTimestamp = null, ?string $minTimestamp = null): Error|string|null
 	{
 		$validated = new Error($errorMessage);
 
 		if (!empty($time)) {
 			if ($maxTimestamp !== null) {
-				$maxTimestamp = $this->validateTimestamp($maxTimestamp, 'max validate invalid');
+				$maxTimestamp = DataValidator::validateTimestamp($maxTimestamp, 'max validate invalid');
 			}
 			if ($minTimestamp !== null) {
-				$minTimestamp = $this->validateTimestamp($minTimestamp, 'min validate invalid');
+				$minTimestamp = DataValidator::validateTimestamp($minTimestamp, 'min validate invalid');
 			}
 
 			// Validate each segment of the timestamp
@@ -254,24 +261,24 @@ trait DataValidator
 	/**
 	 * Validates the data in the given array by validating each value with the given function.
 	 * @param array|string|null $data The array with the to validate. Must be a 1-dimensional array. If a string or null is passed, it is assumed that there are no values in the array (i.e. an empty string)
-	 * @param $func The name of a function within the DataValidators trait to use in validating each value in the array. This function must be static and specify the class it belongs to. If the lass is omitted, it is assumed to be part of the DataValidators trait.
+	 * @param string $func The name of a function within the DataValidators trait to use in validating each value in the array. This function must be static and specify the class it belongs to. If the lass is omitted, it is assumed to be part of the DataValidators trait.
 	 * @param array $params An array of parameters to pass into the validator function specified by $func. By default, the $data given is passed as the first parameter in this function.
-	 * @param bool $outputAsJSONArray Determines if the function should return a JSON array of the validated array or just return an array. By default a JSON array is returned for use in Stored Procedures.
+	 * @param bool $outputAsJSONArray Determines if the function should return a JSON array of the validated array or just return an array.
 	 * @return array The validated array values.
 	 * @return string The validated array as a JSON array. Only returns as string if $outputAsJSONArray is set to true.
 	 * @return false If validation fails in any of the given values, Error is returned.
 	 */
-	protected function validateArray(array|string|null $data, $func, array $params = [], string $errorMessage = 'The given list contains an invalid value.', bool $outputAsJSONArray = true): array|string|Error
+	public static function validateArray(array|string|null $data, string $func, array $params = [], string $errorMessage = 'The given list contains an invalid value.', bool $outputAsJSONArray = false): array|string|Error
 	{
 		$result = [];
+
+		if (!str_contains($func, 'RipDB\DataValidator::')) {
+			$func = 'RipDB\DataValidator::' . $func;
+		}
 
 		if (!empty($data)) {
 			foreach ($data as $val) {
 				$funcParams = array_merge([$val], $params);
-				// CHeck if class was specified for function. If not, assume it is part of the DataValidators trait.
-				if (!str_contains($func, '::')) {
-					$func = "self::$func";
-				}
 				$out = call_user_func_array($func, $funcParams);
 				if (!$out instanceof Error) {
 					array_push($result, $out);
@@ -299,7 +306,7 @@ trait DataValidator
 	 * 	E.g. if searching for the word "plan" in a list of words, if the list contains "plant" or "airplane", the keyword is considered found.
 	 * @return string|array|false If the value exists in the list, it returns it. If it does not, false is returned. Note that the value from the list is returned, and not the given $value.
 	 */
-	protected function validateFromList(string|array|null $value, array $list, string $errorMessage = 'The given value does not exist in the list.', bool $validIfNotExists = false): string|array|Error
+	public static function validateFromList(string|array|null $value, array $list, string $errorMessage = 'The given value does not exist in the list.', bool $validIfNotExists = false): string|array|Error
 	{
 		$validated = new Error($errorMessage);
 
@@ -323,11 +330,11 @@ trait DataValidator
 	 * Cleanses the given array to ensure it is safe for outputting to the client.
 	 * @param array $data the data from the database to cleanse.
 	 */
-	protected function cleanseDatabaseDataForOutput(array &$data): void
+	public static function cleanseDatabaseDataForOutput(array &$data): void
 	{
 		foreach ($data as &$var) {
 			if (is_array($var)) {
-				$this->cleanseDatabaseDataForOutput($var);
+				DataValidator::cleanseDatabaseDataForOutput($var);
 			} else {
 				$var = htmlspecialchars($var);
 			}

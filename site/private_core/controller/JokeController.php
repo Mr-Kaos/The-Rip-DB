@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/JokeModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class JokeController extends Controller
 {
-	use \RipDB\DataValidator;
 	use \Paginator;
 
 	public function __construct(string $page)
@@ -47,7 +47,7 @@ class JokeController extends Controller
 					$_GET['metajokes'] ?? [],
 				);
 
-				$this->cleanseDatabaseDataForOutput($jokes);
+				DataValidator::cleanseDatabaseDataForOutput($jokes);
 				$this->setData('results', $jokes);
 
 				// Pagination values
@@ -85,7 +85,7 @@ class JokeController extends Controller
 					\Flight::redirect('/jokes');
 					die();
 				}
-				$this->cleanseDatabaseDataForOutput($joke);
+				DataValidator::cleanseDatabaseDataForOutput($joke);
 
 				$this->setData('joke', $joke);
 				break;
@@ -99,19 +99,19 @@ class JokeController extends Controller
 		// Validate data in order of stored procedure parameters.
 		switch ($this->getPage()) {
 			case 'jokes/edit':
-				$validated['InJokeID'] = $this->validateNumber($extraData['id']);
+				$validated['InJokeID'] = DataValidator::validateNumber($extraData['id']);
 			case 'jokes/new':
-				$validated['InJokeName'] = $this->validateString($_POST['name'], 'The given joke name is invalid.', 128);
-				$validated['InJokeDescription'] = $this->validateString($_POST['description'], 'The given description is invalid.', null, 1);
+				$validated['InJokeName'] = DataValidator::validateString($_POST['name'], 'The given joke name is invalid.', 128);
+				$validated['InJokeDescription'] = DataValidator::validateString($_POST['description'], 'The given description is invalid.', null, 1);
 
 				$existingTags = $this->model->getTags();
-				$validated['PrimaryTag'] = $this->validateFromList(intval($_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
-				$validated['TagsJSON'] = $this->validateArray($_POST['tags'] ?? null, 'validateFromList', [$existingTags], 'One or more of the given tags do not exist in the database.');
+				$validated['PrimaryTag'] = DataValidator::validateFromList(intval($_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
+				$validated['TagsJSON'] = DataValidator::validateArray($_POST['tags'] ?? null, 'validateFromList', [$existingTags], 'One or more of the given tags do not exist in the database.');
 
 				$existingMetas = $this->model->getMetaJokes();
-				$validated['MetasJSON'] = $this->validateArray($_POST['metas'] ?? null, 'validateFromList', [$existingMetas], 'One or more of the given meta tags do not exist in the database.');
+				$validated['MetasJSON'] = DataValidator::validateArray($_POST['metas'] ?? null, 'validateFromList', [$existingMetas], 'One or more of the given meta tags do not exist in the database.');
 
-				$validated['AlternateJokeNames'] = $this->validateArray($_POST['alt_names'] ?? null, 'validateString', [512], 'One or more of the alternate names are not valid.');
+				$validated['AlternateJokeNames'] = DataValidator::validateArray($_POST['alt_names'] ?? null, 'validateString', [512], 'One or more of the alternate names are not valid.');
 
 				switch ($this->getPage()) {
 					case 'jokes/new':

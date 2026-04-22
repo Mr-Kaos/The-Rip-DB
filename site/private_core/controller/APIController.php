@@ -3,6 +3,7 @@
 namespace RipDB\Controller;
 
 use RipDB\Model as m;
+use RipDB\DataValidator;
 
 require_once('Controller.php');
 require_once('private_core/model/APIModel.php');
@@ -14,7 +15,6 @@ require_once('private_core/objects/DataValidators.php');
  */
 class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 {
-	use \RipDB\DataValidator;
 	public function __construct(string $page)
 	{
 		parent::__construct($page, new m\APIModel());
@@ -103,7 +103,7 @@ class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 				$result = $this->model->getRecords('Rips', 'RipID', 'RipName', $search, $rand);
 				break;
 		}
-		$this->cleanseDatabaseDataForOutput($result);
+		DataValidator::cleanseDatabaseDataForOutput($result);
 		return $result;
 	}
 }
