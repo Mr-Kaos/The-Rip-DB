@@ -7,4 +7,5 @@ sql/.dbeaver
 # config files
 site/private_core/config/db.php
 site/private_core/config/keys.php
+site/private_core/config/sites.php
 site/private_core/config/api_count.txt

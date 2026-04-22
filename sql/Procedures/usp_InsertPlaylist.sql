@@ -12,7 +12,16 @@ CREATE PROCEDURE RipDB.usp_InsertPlaylist(
 BEGIN
 	DECLARE NewPlaylistCode CHAR(8);
 	DECLARE CodeChars CHAR(36);
+
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN
+		ROLLBACK;
+		RESIGNAL;
+	END;
+
 	SET CodeChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+	START TRANSACTION;
 
 	INSERT INTO Playlists
 		(PlaylistName, PlaylistDescription, RipIDs, Creator, IsPublic)
@@ -20,16 +29,7 @@ BEGIN
 		(InPlaylistName, InPlaylistDescription, Rips, AccountID, Public);
 
 	SET NewPlaylistID = LAST_INSERT_ID();
-	SET NewPlaylistCode = CONCAT(
-			substring(CodeChars, rand(@seed:=round(rand()*4294967296))*36+1, 1),
-			substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-			substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-			substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-			substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-			substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-			substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-			substring(CodeChars, rand(@seed)*36+1, 1)
-		);
+	CALL usp_GenerateUniqueCode(8, 0, NewPlaylistCode);
 
 	UPDATE Playlists SET
 		ShareCode = NewPlaylistCode
@@ -37,19 +37,12 @@ BEGIN
 
 	-- If the account given was null, create a unique code for them to save to retrieve the playlist.
 	IF AccountId IS NULL THEN
+		CALL usp_GenerateUniqueCode(8, NewPlaylistCode);
+
 		INSERT INTO AnonymousPlaylists
 			(PlaylistID, ClaimCode)
 		VALUES
-			(NewPlaylistID, CONCAT(
-				substring(CodeChars, rand(@seed:=round(rand()*4294967296))*36+1, 1),
-				substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-				substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-				substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-				substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-				substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-				substring(CodeChars, rand(@seed:=round(rand(@seed)*4294967296))*36+1, 1),
-				substring(CodeChars, rand(@seed)*36+1, 1)
-			));
+			(NewPlaylistID, NewPlaylistCode);
 	END IF;
 
 	CALL usp_DeleteUnclaimedPlaylists;
