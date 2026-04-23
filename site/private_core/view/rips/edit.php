@@ -38,7 +38,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<legend>Rippers</legend>
 			<p>If a rip features multiple rippers, put the main ripper credited first and all others after.</p>
 			<?php
-			$ripperList = new o\SearchElement('Ripper', '/search/rippers', false, null, ['name' => 'rippers[]', 'required' => true, 'modal' => '/rippers/new', 'modal-tgt-id' => 'new-ripper', 'modal-value-key' => 'NewRipper']);
+			$ripperList = new o\SearchElement('Ripper', '/search/rippers', false, null, ['name' => 'rippers[]', 'modal' => '/rippers/new', 'modal-tgt-id' => 'new-ripper', 'modal-value-key' => 'NewRipper']);
 			$ripperAlias = new o\InputElement('Alias Name', o\InputTypes::text, ['name' => 'aliases[]', 'tooltip' => "If the artist of the song is not the ripper's official name, enter it here."], null, true);
 			?>
 			<?= (new o\InputTable('Rippers', [$ripperList, $ripperAlias], ['value' => $rip['Rippers']]))->buildElement() ?>

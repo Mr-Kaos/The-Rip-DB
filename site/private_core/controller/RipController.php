@@ -295,14 +295,16 @@ class RipController extends Controller
 					$validated['Jokes'] = json_encode($validated['Jokes'], JSON_NUMERIC_CHECK);
 				}
 
-				$rippers = DataValidator::validateArray($_POST['rippers'], 'validateFromList', [$this->model->getRippers(true)], 'One or more of the given rippers do not exist in the database.', false);
-				$aliases = DataValidator::validateArray($_POST['aliases'], 'validateString', [], 'One of the given given alias names is invalid.', false);
+				$rippers = DataValidator::validateArray($_POST['rippers'] ?? [], 'validateFromList', [$this->model->getRippers(true)], 'One or more of the given rippers do not exist in the database.', false);
+				$aliases = DataValidator::validateArray($_POST['aliases'] ?? [], 'validateString', [], 'One of the given given alias names is invalid.', false);
 				if ($rippers instanceof Error) {
 					$validated['Rippers'] = $rippers;
 				} elseif ($aliases instanceof Error) {
 					$validated['Rippers'] = $aliases;
-				} else {
+				} elseif (!empty($rippers)) {
 					$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
+				} else {
+					$validated['Rippers'] = null;
 				}
 				$validated['Composers'] = DataValidator::validateArray($_POST['composers'] ?? [], 'validateFromList', [$this->model->getComposers(true)], 'One or more of the given composers do not exist in the database.', true);
 				$validated['WikiLink'] = DataValidator::validateString($_POST['wikiUrl'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=\(\)]*)/');
