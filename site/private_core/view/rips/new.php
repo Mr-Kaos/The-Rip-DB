@@ -6,7 +6,10 @@ include_once('private_core/objects/pageElements/InputTable.php');
 ?>
 <main>
 	<h1>Add A New Rip</h1>
+	<div style="display: flex;justify-content: space-between">
 	<p>Fill in this form to add a new rip to the database.</p>
+		<button type="button" onclick="importFromWiki()">Import from Wiki page source</button>
+	</div>
 	<form id="new-rip" method="POST" class="form-grid">
 		<fieldset>
 			<legend>Rip Information</legend>
