@@ -85,27 +85,25 @@ class AccountController extends Controller implements \RipDB\Objects\IAsyncHandl
 	}
 
 
-	public function get(string $method, ?string $methodGroup = null): mixed
+	public function get(string $method, ?array $data = null): mixed
 	{
 		$result = null;
-		switch ($methodGroup) {
-			case 'check':
-				if ($method == 'user') {
-					$result = $this->model->checkValidUsername($_GET['username'] ?? null);
-				}
+		switch ($method) {
+			case 'user':
+				$result = $this->model->checkValidUsername($_GET['username'] ?? null);
 				break;
 		}
 		return $result;
 	}
-	public function post(string $method, ?string $methodGroup = null): mixed
+	public function post(string $method, ?array $data = null): mixed
 	{
 		return null;
 	}
-	public function put(string $method, ?string $methodGroup = null): mixed
+	public function put(string $method, ?array $data = null): mixed
 	{
 		return null;
 	}
-	public function delete(string $method, ?string $methodGroup = null): mixed
+	public function delete(string $method, ?array $data = null): mixed
 	{
 		return null;
 	}

@@ -1,25 +1,64 @@
 /**
  * Custom HTML elements
  * Author: Mr Kaos
- *
+ * 
  * Provides objects and handlers for custom page objects.
  */
 "use strict";
 
 // Globals for accessing inputs from outside
-let inputTables = [];
-let searchElements = [];
-let timestamps = [];
+const inputTables = [];
+const searchElements = [];
+const timestamps = [];
+
+/**
+ * Finds a custom element based on the given ID and type.  
+ * IMPORTANT: This should only be run after the document has fully loaded to ensure the input collections have elements.
+ * @param {String} id The ID of the custom component to find.
+ * @param {class} type The definition of the custom element (classname) to find.
+ * @returns {CustomElement|null} The found custom element.Null if not found.
+ */
+function getInputById(id, type) {
+	let input = null;
+
+	let items = [];
+	switch (type) {
+		case InputTable:
+			items = inputTables;
+			break;
+		case SearchElement:
+			items = searchElements;
+			break;
+		case TimestampElement:
+			items = timestamps;
+			break;
+	}
+
+	for (let i = 0; i < items.length; i++) {
+		if (items[i].getId() == id) {
+			input = items[i];
+			break;
+		}
+	}
+
+	return input;
+}
 
 class CustomElement {
 	#element;
+	#id;
 
 	constructor(element) {
 		this.#element = element;
+		this.#id = element.id;
 	}
 
 	getElement() {
 		return this.#element;
+	}
+
+	getId() {
+		return this.#id;
 	}
 }
 
@@ -37,7 +76,7 @@ class InputTable extends CustomElement {
 		this.#body = element.querySelector(`tbody#body_${element.id}`);
 		this.#template = element.querySelector(`thead#temp_${element.id}>tr`);
 
-		// If values are prefilled and they are not null, do not add an empty row.
+		// If values are prefilled, do not add an empty row.
 		if (element.getAttribute('data-value')) {
 			this.#rowCount = element.querySelectorAll('tbody>tr').length;
 		}
@@ -58,10 +97,11 @@ class InputTable extends CustomElement {
 
 	/**
 	 * Adds a row to the InputTable element
+	 * @return {Node} THe added row.
 	 */
 	addRow() {
 		let removeButtons = this.#body.querySelectorAll(`button[btnRemove]`);
-
+		let newId = this.uniqid();
 		let clone = this.#template.cloneNode(true);
 		clone.style = null;
 
@@ -70,11 +110,11 @@ class InputTable extends CustomElement {
 		let inputs = clone.querySelectorAll('input,select,textarea,span.search-element');
 		for (let i = 0; i < inputs.length; i++) {
 			let label = inputs[i].parentElement.querySelector(`label[for="${inputs[i].id}"]`);
-			let newId = `${inputs[i].id}_${this.uniqid()}`;
+			let inputId = `${inputs[i].id}_${newId}`;
 			inputs[i].removeAttribute('form');
-			inputs[i].id = newId;
+			inputs[i].id = inputId;
 			if (label != null) {
-				label.setAttribute('for', newId);
+				label.setAttribute('for', inputId);
 			}
 		}
 
@@ -87,14 +127,15 @@ class InputTable extends CustomElement {
 		removeButton.onclick = e => this.removeRow(clone);
 		// If any custom elements exist, initialise them.
 		setupCustomInputs(clone);
+		clone.id = newId;
 
-		this.#body.append(clone);
 		this.#rowCount++;
+		return this.#body.appendChild(clone);
 	}
 
 	/**
 	 * Finds the InputTable with the given id and adds a row to it.
-	 * @param {Element} id
+	 * @param {Element} id 
 	 */
 	static addRow(id) {
 		for (let i = 0; i < inputTables.length; i++) {
@@ -156,6 +197,8 @@ class SearchElement extends CustomElement {
 	#highlighted = -1;
 	#hasSearched = false; // Set to true once a search has been made.
 	canAdd = true;
+	#onSet = null;
+	onSetOption = null
 
 	constructor(element, allowRand = true) {
 		super(element);
@@ -192,7 +235,7 @@ class SearchElement extends CustomElement {
 
 		/**
 		 * Allows moving the selected option with the keyboard
-		 * @param {KeyboardEvent} event
+		 * @param {KeyboardEvent} event 
 		 */
 		window.addEventListener('keydown', function (event) {
 			if (this.isOpen()) {
@@ -288,6 +331,10 @@ class SearchElement extends CustomElement {
 		return this.#value;
 	}
 
+	getSelectionText() {
+		return this.#optionsDiv.querySelector(`span[value="${this.#value}"]`)?.innerText;
+	}
+
 	isOpen() {
 		return this.#open;
 	}
@@ -298,6 +345,11 @@ class SearchElement extends CustomElement {
 
 	getSearchElement() {
 		return this.#searchElement;
+	}
+
+	clearSelection() {
+		let option = this.getElement().querySelector(`.pill[value="${this.#value}"]`);
+		this.#unsetOption(option);
 	}
 
 	/**
@@ -330,6 +382,13 @@ class SearchElement extends CustomElement {
 		if (this.canAdd) {
 			if (this.#init) {
 				url += `?q=${input}`;
+
+				if (this.#inputElement.hasAttribute("extraSearchParams")) {
+					let params = this.#inputElement.getAttribute("extraSearchParams").split(',');
+					for (let i = 0; i < params.length; i++) {
+						url += `&q${i + 1}=${params[i]}`
+					}
+				}
 			}
 			let response = await fetch(url);
 
@@ -361,20 +420,20 @@ class SearchElement extends CustomElement {
 							}
 							if (!noAdd) {
 								let option = document.createElement('span');
-								option.innerText = data[i].NAME;
+								option.innerHTML = data[i].NAME;
 								option.setAttribute('value', data[i].ID);
 								option.onclick = e => this.#setOption(e.target);
 								options.append(option);
 							}
 						}
 
-						this.#hasSearched = true;
 					} else if (this.#hasSearched && data != null && input != '') {
-						options.innerHTML = '<i>No results found</i>';
+						options.innerHTML = `<i>${this.#inputElement.getAttribute("MsgNoResults")}</i>`;
 					}
 					if (!this.isOpen()) {
 						this.toggleDisplay(true);
 					}
+					this.#hasSearched = true;
 				});
 				this.#resetHighlight();
 			}
@@ -382,44 +441,67 @@ class SearchElement extends CustomElement {
 	}
 
 	/**
-	 * Sets the value of the SearchElement to the value the user selected.
-	 * If the input allows multiple selections, they are added to a separate container.
-	 * @param {HTMLSpanElement} option The option the user selected
+	 * Adds a pill with the given name and value. If the input does not allow for multiple options, the previous one is overwritten.
+	 * @param {String} name The displayed name of the added pill.
+	 * @param {String|Number} value The value of the pill being added.
 	 */
-	#setOption(option) {
-		// Only add the element if adding is allowed
-		if (this.canAdd && option != undefined) {
-			let clone = option.cloneNode(true);
+	addPill(name, value) {
+		// Only add the option if adding is allowed
+		if (this.canAdd) {
+			let pill = document.createElement('span');
+
 			let input = document.createElement('input');
 			input.hidden = true;
-			input.value = option.getAttribute('value');
+			input.value = value
 			input.name = this.getElement().getAttribute('name');
 			let btnRemove = document.createElement('button');
 			btnRemove.innerHTML = '&times;';
 			btnRemove.type = 'button';
-			btnRemove.onclick = e => this.#unsetOption(clone);
-			clone.className = 'pill';
-			clone.appendChild(input);
-			clone.appendChild(btnRemove);
+			btnRemove.onclick = e => this.#unsetOption(pill);
+			pill.className = 'pill';
+			pill.innerText = name;
+			pill.appendChild(input);
+			pill.appendChild(btnRemove);
 
 			if (this.#multi) {
 				let selectionDiv = this.getElement().querySelector('.selected');
-				selectionDiv.appendChild(clone);
-				this.#value.push(parseInt(option.getAttribute('value')));
+				selectionDiv.appendChild(pill);
+				this.#value.push(value);
 			} else {
 				this.#searchElement.style.display = 'none';
-				this.getElement().append(clone);
-				this.#value = parseInt(option.getAttribute('value'));
+				this.getElement().append(pill);
+				this.#value = value;
 			}
+
 			// Remove the required attribute (if it was set) so the form can be submitted.
 			this.#searchElement.required = false;
-			option.style.display = "none";
+			// pill.style.display = "none";
 			this.toggleDisplay();
 
 			// Add event dispatcher for setting an option.
-			option.dispatchEvent(new CustomEvent('setOption', {
+			pill.dispatchEvent(new CustomEvent('setOption', {
 				bubbles: true
 			}));
+
+			// Add event dispatch for `object.onSetOption = function()`.
+			if (this.onSetOption != null) {
+				addEventListener("#setOption", this.onSetOption.bind(this), { once: true });
+			}
+			pill.dispatchEvent(new CustomEvent('#setOption', {
+				bubbles: true
+			}));
+		}
+	}
+
+	/**
+	 * Sets the value of the SearchElement to the value the user selected.
+	 * If the input allows multiple selections, they are added to a separate container.  
+	 * This event can be listened by using `addEventListener('setOption', object)`.
+	 * @param {HTMLSpanElement} option The option the user selected
+	 */
+	#setOption(option) {
+		if (option != undefined) {
+			this.addPill(option.innerText, option.getAttribute('value'));
 		}
 	}
 
@@ -428,34 +510,36 @@ class SearchElement extends CustomElement {
 	 * @param {HTMLSpanElement} option The option to remove from the element's selection.
 	 */
 	#unsetOption(option) {
-		let optionVal = parseInt(option.getAttribute('value'));
+		if (option != null) {
+			let optionVal = parseInt(option?.getAttribute('value'));
 
-		if (this.#multi) {
-			this.#value.splice(this.#value.indexOf(optionVal), 1);
-			// If all values are removed and the input is required, set the required attribute back.
-			if (this.#value.length <= 0 && this.#required) {
-				this.#searchElement.required = true;
+			if (this.#multi) {
+				this.#value.splice(this.#value.indexOf(optionVal), 1);
+				// If all values are removed and the input is required, set the required attribute back.
+				if (this.#value.length <= 0 && this.#required) {
+					this.#searchElement.required = true;
+				}
+			} else {
+				this.#value = null;
+				this.#searchElement.removeAttribute('style');
+				if (this.#required) {
+					this.#searchElement.required = true;
+				}
 			}
-		} else {
-			this.#value = null;
-			this.#searchElement.removeAttribute('style');
-			if (this.#required) {
-				this.#searchElement.required = true;
+
+			// Re-display the option in the list
+			let options = this.getOptionsDiv();
+			let opt = options.querySelector(`span.pill[value="${optionVal}"]`);
+			if (opt != null) {
+				opt.style.display = 'unset';
 			}
-		}
 
-		// Re-display the option in the list
-		let options = this.getOptionsDiv();
-		let opt = options.querySelector(`span[value="${optionVal}"]`);
-		if (opt != null) {
-			opt.style.display = 'unset';
+			// Add event dispatcher for unsetting an option.
+			option.dispatchEvent(new CustomEvent('unsetOption', {
+				bubbles: true
+			}));
+			option.remove();
 		}
-
-		// Add event dispatcher for unsetting an option.
-		option.dispatchEvent(new CustomEvent('unsetOption', {
-			bubbles: true
-		}));
-		option.remove();
 	}
 
 	#resetHighlight() {
@@ -477,8 +561,9 @@ class TimestampElement extends CustomElement {
 	#inputElement;
 
 	constructor(element) {
-		super(element);
-		this.#inputElement = element.querySelector('input[type=text]');
+		let input = element.querySelector('input[type=text]');
+		super(input);
+		this.#inputElement = input;
 		this.#inputElement.setAttribute('maxlength', 8);
 		this.#inputElement.oninput = e => this.#readInput(e);
 
@@ -515,28 +600,33 @@ class TimestampElement extends CustomElement {
 	#readInput(e) {
 		let value = e.target.value;
 		if (!isNaN(e.data) || e.data == ':' || e.data == undefined) {
-			// Only save the input if the regex is not matched (the regex finds invalid inputs)
-			let pattern = /[0-9]{2}:[0-9]{2}(:[0-9]{2})?/;
-			let matches = pattern.exec(value);
-			if (matches != null) {
-				let split = value.split(':');
-
-				// If timestamp includes hours:
-				if (split.length == 3) {
-					this.#hours = parseInt(split[0]);
-					this.#mins = parseInt(split[1]);
-					this.#secs = parseInt(split[2]);
-				}
-				// If timestamp is only minutes and seconds:
-				else if (split.length == 2) {
-					this.#mins = parseInt(split[0]);
-					this.#secs = parseInt(split[1]);
-				} else {
-					this.#secs = parseInt(split[0]);
-				}
-			}
+			this.#parseInput(value);
 		} else {
 			e.target.value = value.substring(0, value.length - 1);
+		}
+	}
+
+	#parseInput(input) {
+		// Only save the input if the regex is not matched (the regex finds invalid inputs)
+		let pattern = /[0-9]{1,2}:[0-9]{1,2}(:[0-9]{2})?/;
+		let matches = pattern.exec(input);
+
+		if (matches != null) {
+			let split = input.split(':');
+
+			// If timestamp includes hours:
+			if (split.length == 3) {
+				this.#hours = parseInt(split[0]);
+				this.#mins = parseInt(split[1]);
+				this.#secs = parseInt(split[2]);
+			}
+			// If timestamp is only minutes and seconds:
+			else if (split.length == 2) {
+				this.#mins = parseInt(split[0]);
+				this.#secs = parseInt(split[1]);
+			} else {
+				this.#secs = parseInt(split[0]);
+			}
 		}
 	}
 
@@ -589,11 +679,19 @@ class TimestampElement extends CustomElement {
 	/**
 	 * Sets the string value of the timestamp input.
 	 */
-	setValue() {
+	setValue(input = null) {
+		if (input != null) {
+
+			this.#parseInput(input);
+		}
 		let hrs = this.#hours < 10 ? `0${this.#hours}` : this.#hours;
 		let mins = this.#mins < 10 ? `0${this.#mins}` : this.#mins;
 		let secs = this.#secs < 10 ? `0${this.#secs}` : this.#secs;
 		this.#inputElement.value = `${hrs}:${mins}:${secs}`;
+	}
+
+	getValue() {
+		return this.#inputElement.value;
 	}
 }
 
@@ -601,7 +699,7 @@ class TimestampElement extends CustomElement {
  * Finds a parent element from the given child based on a specific attribute.
  * @param {Element} child The source element to search for its parent.
  * @param {Object} attributes A list of attributes the required parent element has. The keys must be a valid HTML attribute and the value must correspond to it. An array of values may also be specified if searching for one of multiple potential values.
- * @param {Number} depth The maximum number of loops to perform before the loop terminates. Absolute maximum is 64.
+ * @param {Number} depth The maximum number of loops to perform before the loop terminates. Absolute maximum is 64. 
  */
 function findParentElement(child, attributes, depth = 32) {
 	let loops = 0;
@@ -664,13 +762,14 @@ function setupCustomInputs(mainElement) {
 		prepareDropdownElements(dropdownElements);
 	}
 
-	if (timestampElements.length > 0) {
-		prepareTimestamps(timestampElements);
+	// Reverse list so the deepest nodes get configured first.
+	for (let i = 0; i < timestampElements.length; i++) {
+		timestamps.push(new TimestampElement(timestampElements[i]));
 	}
 
 	/**
 	 * Prepares any InputTable elements on the page.
-	 * @param {NodeListOf<Element>} elements
+	 * @param {NodeListOf<Element>} elements 
 	 */
 	function prepareInputTables(elements) {
 		// Reverse list so the deepest nodes get configured first.
@@ -683,7 +782,7 @@ function setupCustomInputs(mainElement) {
 
 	/**
 	 * Prepares search input elements on the page and creates a window event listener to ensure only one is open at a time.
-	 * @param {NodeListOf<Element>} elements
+	 * @param {NodeListOf<Element>} elements 
 	 */
 	function prepareSearchElements(elements) {
 		for (let i = 0; i < elements.length; i++) {
@@ -709,7 +808,7 @@ function setupCustomInputs(mainElement) {
 
 	/**
 	 * Checks any dropdown (select) elements on the page if they require a modal to add new items.
-	 * @param {NodeListOf<HTMLSelectElement>} elements
+	 * @param {NodeListOf<HTMLSelectElement>} elements 
 	 */
 	function prepareDropdownElements(elements) {
 		for (let i = 0; i < elements.length; i++) {
@@ -735,13 +834,6 @@ function setupCustomInputs(mainElement) {
 					}
 				}
 			}
-		}
-	}
-
-	function prepareTimestamps(elements) {
-		// Reverse list so the deepest nodes get configured first.
-		for (let i = 0; i < elements.length; i++) {
-			timestamps.push(new TimestampElement(elements[i]));
 		}
 	}
 }

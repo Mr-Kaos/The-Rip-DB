@@ -12,17 +12,17 @@ interface IAsyncHandler
 	/**
 	 * Used for GET requests
 	 */
-	function get(string $method, ?string $methodGroup = null): mixed;
+	function get(string $method, ?array $data = null): mixed;
 	/**
 	 * Used for POST requests
 	 */
-	function post(string $method, ?string $methodGroup = null): mixed;
+	function post(string $method, ?array $data = null): mixed;
 	/**
 	 * Used for PUT requests
 	 */
-	function put(string $method, ?string $methodGroup = null): mixed;
+	function put(string $method, ?array $data = null): mixed;
 	/**
 	 * Used for DELETE requests
 	 */
-	function delete(string $method, ?string $methodGroup = null): mixed;
+	function delete(string $method, ?array $data = null): mixed;
 }

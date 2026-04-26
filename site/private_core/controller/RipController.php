@@ -10,11 +10,12 @@ require_once('Controller.php');
 require_once('private_core/model/RipModel.php');
 require_once('private_core/objects/DataValidators.php');
 require_once('private_core/objects/pageElements/Paginator.php');
+require_once('private_core/objects/IAsyncHandler.php');
 
 /**
  * @property \RipDB\Model\RipModel $model
  */
-class RipController extends Controller
+class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 {
 	use \Paginator;
 
@@ -107,15 +108,15 @@ class RipController extends Controller
 					die();
 				} else {
 					$rip = null;
-					if (is_numeric($data['id'])) {
+					if (!empty($data['id']) && is_numeric($data['id'])) {
 						$rip = $this->model->getRip($data['id']);
 						$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
-					}
 
-					DataValidator::cleanseDatabaseDataForOutput($rip);
-					$this->setData('rip', $rip);
-					$this->setData('hasWiki', $this->model->channelHasWiki($rip['RipChannel']));
-					if ($rip !== null) {
+						DataValidator::cleanseDatabaseDataForOutput($rip);
+						$this->setData('rip', $rip);
+						$this->setData('hasWiki', $this->model->channelHasWiki($rip['RipChannel']));
+					}
+					if (isset($rip)) {
 						$this->setPageTitle($rip['RipName']);
 					} else {
 						$this->setPageTitle('Rip not found');
@@ -228,6 +229,42 @@ class RipController extends Controller
 		return $formatted;
 	}
 
+	public function get(string $method, ?array $data = null): mixed
+	{
+		$result = null;
+
+		switch ($method) {
+			case 'find-jokes':
+				$result = $this->model->findJokesByName($_GET['j'] ?? []);
+				break;
+			case 'find-game':
+				$result = $this->model->findGamesByName($_GET['game'] ?? []);
+				break;
+			case 'find-composers':
+				$result = $this->model->findComposersByName($_GET['c'] ?? []);
+				break;
+			case 'find-rippers':
+				$result = $this->model->findRippersByName($_GET['r'] ?? []);
+				break;
+			default:
+				break;
+		}
+
+		return $result;
+	}
+	public function post(string $method, ?array $data = null): mixed
+	{
+		return null;
+	}
+	public function put(string $method, ?array $data = null): mixed
+	{
+		return null;
+	}
+	public function delete(string $method, ?array $data = null): mixed
+	{
+		return null;
+	}
+
 	/**
 	 * Handles the submission of the new rip form.
 	 * @return Error|string Returns an Error if an error occurred, or a string of a URI to redirect to upon completion.
@@ -297,12 +334,18 @@ class RipController extends Controller
 
 				$rippers = DataValidator::validateArray($_POST['rippers'] ?? [], 'validateFromList', [$this->model->getRippers(true)], 'One or more of the given rippers do not exist in the database.', false);
 				$aliases = DataValidator::validateArray($_POST['aliases'] ?? [], 'validateString', [], 'One of the given given alias names is invalid.', false);
+
 				if ($rippers instanceof Error) {
 					$validated['Rippers'] = $rippers;
 				} elseif ($aliases instanceof Error) {
 					$validated['Rippers'] = $aliases;
 				} elseif (!empty($rippers)) {
-					$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
+					// Make sure both the rippers and aliases have a matching number of values
+					if (count($rippers) == count($aliases)) {
+						$validated['Rippers'] = json_encode(array_combine($rippers, $aliases), JSON_NUMERIC_CHECK);
+					} else {
+						$validated['Rippers'] = new Error('The number of rippers and aliases is not the same.');
+					}
 				} else {
 					$validated['Rippers'] = null;
 				}

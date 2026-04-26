@@ -75,6 +75,23 @@ Flight::group('/rips', function () {
 		displayPage('rips/edit', 'RipController', ['id' => $id], 'Edit Rip');
 	});
 
+	// Async requests. Filter requests to those from this server.
+	// echo "<pre>" . print_r($_SERVER, true) . "</pre>";
+	if (preg_match('/^http[s]?:\/\/' . $_SERVER['HTTP_HOST'] . '\/rips/', $_SERVER['HTTP_REFERER'] ?? null)) {
+		Flight::route('GET /find-jokes', function () {
+			performAPIRequest('find-jokes', HttpMethod::GET, 'RipController');
+		});
+		Flight::route('GET /find-game', function () {
+			performAPIRequest('find-game', HttpMethod::GET, 'RipController');
+		});
+		Flight::route('GET /find-composers', function () {
+			performAPIRequest('find-composers', HttpMethod::GET, 'RipController');
+		});
+		Flight::route('GET /find-rippers', function () {
+			performAPIRequest('find-rippers', HttpMethod::GET, 'RipController');
+		});
+	}
+
 	Flight::route('/@id', function ($id) {
 		displayPage('rips/rip', 'RipController', ['id' => $id], 'View Rip');
 	});
@@ -274,21 +291,21 @@ Flight::group('/playlist', function () {
 	if (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'account/')) {
 		RipDB\initSession();
 		Flight::route('GET /checkUnclaimed', function () {
-			performAPIRequest('checkUnclaimed', '', HttpMethod::GET, 'PlaylistController');
+			performAPIRequest('checkUnclaimed', HttpMethod::GET, 'PlaylistController');
 		});
 		Flight::route('POST /claim', function () {
-			performAPIRequest('claimPlaylists', 'claim', HttpMethod::POST, 'PlaylistController');
+			performAPIRequest('claimPlaylists',  HttpMethod::POST, 'PlaylistController');
 		});
 		Flight::route('POST /delete', function () {
-			performAPIRequest('delete', 'delete', HttpMethod::POST, 'PlaylistController');
+			performAPIRequest('delete', HttpMethod::POST, 'PlaylistController');
 		});
 	} elseif (str_contains($_SERVER['HTTP_REFERER'] ?? null, 'rips')) {
 		Flight::route('GET /getNewPlaylist', function () {
-			performAPIRequest('getNewPlaylist', '', HttpMethod::GET, 'PlaylistController');
+			performAPIRequest('getNewPlaylist', HttpMethod::GET, 'PlaylistController');
 		});
 		Flight::route('GET /getPlaylist', function () {
 			RipDB\initSession();
-			performAPIRequest('getPlaylist', '', HttpMethod::GET, 'PlaylistController');
+			performAPIRequest('getPlaylist', HttpMethod::GET, 'PlaylistController');
 		});
 	}
 });
@@ -298,7 +315,7 @@ Flight::group('/ripguessr', function () {
 	Flight::route('/', function () {
 		Flight::redirect('http://' . constant('SITE_RIP-GUESSER'));
 	});
-});	
+});
 
 // Login requests
 Flight::group('/login', function () {
@@ -346,7 +363,7 @@ Flight::group('/account', function () {
 	// Async requests:
 	if (str_ends_with($_SERVER['HTTP_REFERER'] ?? null, '/account') || str_ends_with($_SERVER['HTTP_REFERER'] ?? null, '/login/new')) {
 		Flight::route('GET /check-username', function () {
-			performAPIRequest('check', 'user', HttpMethod::GET, 'AccountController');
+			performAPIRequest('user', HttpMethod::GET, 'AccountController');
 		});
 	}
 });
@@ -355,43 +372,43 @@ Flight::group('/account', function () {
 Flight::group('/search', function () {
 
 	Flight::route('GET /tags', function () {
-		performAPIRequest('search', 'tags', HttpMethod::GET);
+		performAPIRequest('tags', HttpMethod::GET);
 	});
 	Flight::route('GET /jokes', function () {
-		performAPIRequest('search', 'jokes', HttpMethod::GET);
+		performAPIRequest('jokes', HttpMethod::GET);
 	});
 	Flight::route('GET /meta-jokes', function () {
-		performAPIRequest('search', 'meta-jokes', HttpMethod::GET);
+		performAPIRequest('meta-jokes', HttpMethod::GET);
 	});
 	Flight::route('GET /metas', function () {
-		performAPIRequest('search', 'metas', HttpMethod::GET);
+		performAPIRequest('metas', HttpMethod::GET);
 	});
 	Flight::route('GET /games', function () {
-		performAPIRequest('search', 'games', HttpMethod::GET);
+		performAPIRequest('games', HttpMethod::GET);
 	});
 	Flight::route('GET /rippers', function () {
-		performAPIRequest('search', 'rippers', HttpMethod::GET);
+		performAPIRequest('rippers', HttpMethod::GET);
 	});
 	Flight::route('GET /genres', function () {
-		performAPIRequest('search', 'genres', HttpMethod::GET);
+		performAPIRequest('genres', HttpMethod::GET);
 	});
 	Flight::route('GET /rippers', function () {
-		performAPIRequest('search', 'rippers', HttpMethod::GET);
+		performAPIRequest('rippers', HttpMethod::GET);
 	});
 	Flight::route('GET /rip-names', function () {
-		performAPIRequest('search', 'rip-names', HttpMethod::GET);
+		performAPIRequest('rip-names', HttpMethod::GET);
 	});
 	Flight::route('GET /rip-alt-names', function () {
-		performAPIRequest('search', 'rip-names', HttpMethod::GET);
+		performAPIRequest('rip-names', HttpMethod::GET);
 	});
 	Flight::route('GET /channels', function () {
-		performAPIRequest('search', 'channels', HttpMethod::GET);
+		performAPIRequest('channels', HttpMethod::GET);
 	});
 	Flight::route('GET /composers', function () {
-		performAPIRequest('search', 'composers', HttpMethod::GET);
+		performAPIRequest('composers', HttpMethod::GET);
 	});
 	Flight::route('GET /platforms', function () {
-		performAPIRequest('search', 'platforms', HttpMethod::GET);
+		performAPIRequest('platforms', HttpMethod::GET);
 	});
 	Flight::route('GET /@other', function ($other) {
 		http_response_code(404);
@@ -447,9 +464,9 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
  * @param string $controllerName The name of the Controller the API request will use. Defaults to "APIController.
  * @param array $data Any extra data for the request. This is in addition to the body data being sent.
  */
-function performAPIRequest(?string $functionGroup, string $function, HttpMethod $method, string $controllerName = 'APIController', array $data = [])
+function performAPIRequest(string $function, HttpMethod $method, string $controllerName = 'APIController', array $data = [])
 {
-	require_once("private_core/controller/$controllerName.php");
+	require_once "private_core/controller/$controllerName.php";
 	$controllerName = "\RipDB\\Controller\\$controllerName";
 	$controller = new $controllerName($function);
 
@@ -458,16 +475,16 @@ function performAPIRequest(?string $functionGroup, string $function, HttpMethod 
 
 		switch ($method) {
 			case HttpMethod::GET:
-				$response = $controller->get($function, $functionGroup);
+				$response = $controller->get($function, $data);
 				break;
 			case HttpMethod::POST:
-				$response = $controller->post($function, $functionGroup);
+				$response = $controller->post($function, $data);
 				break;
 			case HttpMethod::PUT:
-				$response = $controller->put($function, $functionGroup);
+				$response = $controller->put($function, $data);
 				break;
 			case HttpMethod::DELETE:
-				$response = $controller->delete($function, $functionGroup);
+				$response = $controller->delete($function, $data);
 				break;
 		}
 		Flight::json($response);

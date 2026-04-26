@@ -7,7 +7,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 <main>
 	<h1>Add A New Rip</h1>
 	<div style="display: flex;justify-content: space-between">
-	<p>Fill in this form to add a new rip to the database.</p>
+		<p>Fill in this form to add a new rip to the database.</p>
 		<button type="button" onclick="importFromWiki()">Import from Wiki page source</button>
 	</div>
 	<form id="new-rip" method="POST" class="form-grid">
@@ -21,7 +21,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<?= (new o\InputElement('Upload Date', o\InputTypes::date, ['name' => 'date', 'required' => true, 'value' => date_format(new DateTime(), 'Y-m-d')], null, true))->buildElement() ?>
 			<?= (new o\InputElement('Rip URL', o\InputTypes::url, ['name' => 'url', 'required' => true, 'style' => 'width:100%', 'oninput' => 'getYouTubeID(this.value)'], null, true))->buildElement() ?>
 			<?= (new o\InputElement('YouTube Video ID', o\InputTypes::text, ['name' => 'ytId', 'minlength' => 11, 'maxlength' => 11, 'pattern' => '[A-Za-z0-9_\-]{11}'], null, true))->buildElement() ?>
-			<?= (new o\InputElement('Rip Alternative URL', o\InputTypes::url, ['name' => 'alturl', 'style' => 'width:100%', 'title' => 'URl of an alternative release for the rip, e.g. the album release URL.'], null, true))->buildElement() ?>
+			<?= (new o\InputElement('Rip Alternative URL', o\InputTypes::url, ['name' => 'alturl', 'style' => 'width:100%', 'title' => 'URL of an alternative release for the rip, e.g. the album release URL.'], null, true))->buildElement() ?>
 			<?= (new o\DropdownElement('Rip Channel', $channels, ['name' => 'channel', 'required' => true, 'modal' => '/channels/new', 'modal-tgt-id' => 'new-channel', 'modal-value-key' => 'NewChannel'], null, true))->buildElement() ?>
 		</fieldset>
 		<fieldset>
@@ -32,10 +32,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 				<?= (new o\SearchElement('Game', '/search/games', false, null, ['name' => 'game', 'required' => true, 'modal' => '/games/new', 'modal-tgt-id' => 'new-game', 'modal-value-key' => 'NewGame'], null, true))->buildElement() ?>
 			</div>
 			<?= (new o\InputElement('Wiki URL', o\InputTypes::url, ['name' => 'wikiUrl', 'style' => 'width:100%'], null, true))->buildElement() ?>
-			<?php
-			$composerList = new o\SearchElement('Composer/Artist', '/search/composers', false, null, ['name' => 'composers[]', 'modal' => '/composers/new', 'modal-tgt-id' => 'new-composer', 'modal-value-key' => 'FirstName']);
-			?>
-			<?= (new o\InputTable('Composers/Artists', [$composerList]))->buildElement() ?>
+			<?= (new o\SearchElement('Composers', '/search/composers', true, null, ['name' => 'composers[]'], null, true))->buildElement(); ?>
 		</fieldset>
 		<fieldset style="grid-column:span 2">
 			<legend>Rippers</legend>
@@ -44,7 +41,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			$ripperList = new o\SearchElement('Ripper', '/search/rippers', false, null, ['name' => 'rippers[]', 'modal' => '/rippers/new', 'modal-tgt-id' => 'new-ripper', 'modal-value-key' => 'NewRipper']);
 			$ripperAlias = new o\InputElement('Alias Name', o\InputTypes::text, ['name' => 'aliases[]', 'tooltip' => "If the artist of the song is not the ripper's official name, enter it here."], null, true);
 			?>
-			<?= (new o\InputTable('Rippers', [$ripperList, $ripperAlias]))->buildElement() ?>
+			<?= (new o\InputTable('Rippers', [$ripperList, $ripperAlias], ['id' => 'rippers']))->buildElement() ?>
 		</fieldset>
 		<fieldset style="grid-column:span 2">
 			<legend>Rip Jokes</legend>
@@ -56,11 +53,15 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			$comment = (new o\InputElement('Notes', o\InputTypes::text, ['name' => 'comment[]', 'maxlength' => 1024], null, true));
 			$genre = (new o\SearchElement('Genre', '/search/genres', false, null, ['name' => 'genres[]'], null, true));
 			?>
-			<?= (new o\InputTable('Jokes', [$jokeList, $start, $end, $genre, $comment]))->buildElement() ?>
+			<?= (new o\InputTable('Jokes', [$jokeList, $start, $end, $genre, $comment], ['id' => 'jokes']))->buildElement() ?>
 		</fieldset>
 		<div>
 			<button type="submit">Submit Rip</button>
 		</div>
 	</form>
 </main>
+<button type="button" onclick="parseWikiContent()">DEBUG PARSE</button>
+<div id="template-import" style="display:unset">
+	<?= (new o\InputElement('Wiki Source', o\InputTypes::textarea, ['name' => 'wiki_source', 'style' => 'width:calc(100% - 12px);min-height:50px;height:150px;resize:vertical;', 'placeholder' => 'Paste wiki page source code here'], null, true))->buildElement() ?>
+</div>
 <script src="/res/js/rip.js"></script>

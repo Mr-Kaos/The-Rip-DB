@@ -479,6 +479,29 @@ h1.split-heading a.inactive {
 	font-weight: bold;
 }
 
+.tooltip {
+	display: inline-block;
+	border-bottom: 1px dotted var(--text-color);
+	cursor: help;
+	margin-left: 5px;
+}
+
+.tooltip>span {
+	visibility: hidden;
+	background-color: var(--text-color);
+	color: var(--text-color-invert);
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px;
+	position: absolute;
+	z-index: 1;
+}
+
+.tooltip:hover>span {
+	visibility: visible;
+}
+
+
 /*Modal Styles*/
 .modal-bg {
 	position: fixed;

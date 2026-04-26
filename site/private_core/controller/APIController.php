@@ -26,37 +26,7 @@ class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 	 */
 	public function performRequest(array $data = []): void {}
 
-	public function get(string $method, ?string $methodGroup = null): mixed
-	{
-		$result = null;
-
-		switch ($methodGroup) {
-			case 'search':
-				$result = $this->dropdownSearch($method);
-				break;
-			default:
-				break;
-		}
-
-		return $result;
-	}
-	public function post(string $method, ?string $methodGroup = null): mixed
-	{
-		return null;
-	}
-	public function put(string $method, ?string $methodGroup = null): mixed
-	{
-		return null;
-	}
-	public function delete(string $method, ?string $methodGroup = null): mixed
-	{
-		return null;
-	}
-
-	/**
-	 * 
-	 */
-	private function dropdownSearch($method): array
+	public function get(string $method, ?array $data = null): mixed
 	{
 		$rand = false;
 		$search = '';
@@ -68,6 +38,7 @@ class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 			$rand = true;
 		}
 		$result = [];
+
 		switch ($method) {
 			case 'tags':
 				$result = $this->model->getRecords('Tags', 'TagID', 'TagName', $search, $rand);
@@ -104,6 +75,19 @@ class APIController extends Controller implements \RipDB\Objects\IAsyncHandler
 				break;
 		}
 		DataValidator::cleanseDatabaseDataForOutput($result);
+
 		return $result;
+	}
+	public function post(string $method, ?array $data = null): mixed
+	{
+		return null;
+	}
+	public function put(string $method, ?array $data = null): mixed
+	{
+		return null;
+	}
+	public function delete(string $method, ?array $data = null): mixed
+	{
+		return null;
 	}
 }

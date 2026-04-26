@@ -124,33 +124,59 @@ function generateWikiPage() {
 	wiki.displaySource();
 }
 
-function parseWikiContent(input) {
+async function parseWikiContent(input) {
 	let wikiSource = input ?? document.querySelector('#wiki_source').value;
 	let inputName = document.getElementById('name');
 	let inputMixName = document.getElementById('mixName');
 	let inputAltName = document.getElementById('altName');
 	let inputURL = document.getElementById('url');
+	let inputDate = document.getElementById('date');
 	let inputYTID = document.getElementById('ytId');
 	let inputAltURL = document.getElementById('alturl');
-	let inputLength = document.getElementById('length');
+	let inputLength = getInputById('length', TimestampElement);
 	let inputDescription = document.getElementById('description');
-	let inputGame = document.getElementById('game');
+	let inputGame = getInputById('search_game', SearchElement);;
 	let inputWikiURL = document.getElementById('wikiUrl');
-	// let inputRippers = document.getElementById('name');
-	// let inputJokes = document.getElementById('name');
+	let inputRippers = getInputById('rippers', InputTable);
+	let inputJokes = getInputById('jokes', InputTable);
+	let inputComposers = getInputById('search_composers[]', SearchElement);
 
-	let wikiPage = WikiPage.fromSource(wikiSource);
+	let wikiPage = await WikiPage.fromSource(wikiSource);
 	if (wikiPage != undefined) {
 		inputName.value = wikiPage.ripName ?? '';
 		inputMixName.value = wikiPage.mixName ?? '';
 		inputAltName.value = wikiPage.altName ?? '';
 		inputURL.value = wikiPage.url ?? '';
+		inputDate.value = wikiPage.uploadDate ?? null;
 		inputYTID.value = wikiPage.ytID ?? '';
 		inputAltURL.value = wikiPage.altURL ?? '';
-		inputLength.value = wikiPage.length ?? '';
+		inputLength.setValue(wikiPage.length ?? '');
 		inputDescription.value = wikiPage.description ?? '';
-		// inputGame.value = wikiPage.ripName;
-		inputWikiURL.value = wikiPage.ripName ?? '';
+		inputGame.addPill(wikiPage.game.Name, wikiPage.game.ID);
+		inputWikiURL.value = wikiPage.wikiURL ?? '';
+
+		// composers
+		for (let i = 0; i < wikiPage.composers.length; i++) {
+			if (wikiPage.composers[i]?.ID != null) {
+				inputComposers.addPill(wikiPage.composers[i].Name, wikiPage.composers[i].ID);
+			}
+		}
+		// jokes
+		for (let i = 0; i < wikiPage.jokes.length; i++) {
+			if (wikiPage.jokes[i]?.ID != null) {
+				let row = inputJokes.addRow();
+				let jokeInput = getInputById(`search_jokes[]_${row.id}`, SearchElement);
+				jokeInput.addPill(wikiPage.jokes[i].Name, wikiPage.jokes[i].ID);
+			}
+		}
+		// rippers
+		for (let i = 0; i < wikiPage.rippers.length; i++) {
+			if (wikiPage.rippers[i]?.ID != null) {
+				let row = inputRippers.addRow();
+				let ripperInput = getInputById(`search_rippers[]_${row.id}`, SearchElement);
+				ripperInput.addPill(wikiPage.rippers[i].Name, wikiPage.rippers[i].ID);
+			}
+		}
 	}
 }
 
@@ -164,6 +190,7 @@ class WikiPage {
 	altName;
 	url;
 	altURL;
+	wikiURL;
 	description;
 	uploadDate;
 	length;
@@ -189,16 +216,16 @@ class WikiPage {
 	 * @param {String} uploadDate The date the the rip was uploaded
 	 * @param {String} length The duration of the rip
 	 * @param {String} ytId The ID of the rip's YouTube video
-	 * @param {String} game The name of the game the rip is for
+	 * @param {Object} game The name and IF of the game the rip is for. Must have two keys: ID and Name.
 	 * @param {Array} platforms The name of the platforms the rip is for
-	 * @param {Array[Object]} jokes An array of objects detailing jokes. Each joke should have the following keys: `Time` and `Joke`. Optionally the `Comment` key can be specified.
+	 * @param {Array[Object]} jokes An array of objects detailing jokes. Each joke must have the key "Name" can have the following keys: `ID`, `Time`, `Joke` and `Comment`.
 	 * @param {Array} rippers An array of ripper names.
 	 * @param {Array} composers An array of composer names.
 	 * @param {String} mixName The rip's mix name.
 	 * @param {String} altName The rip's alternate (album release) name.
 	 * @param {String} altURL The rip's alternate (album release) URL.
 	 */
-	constructor(ripName, uploadDate, length, url, ytId, game, jokes = [], platforms = [], rippers = [], composers = [], genres = [], mixName = null, altURL = null, altName = null, description = null) {
+	constructor(ripName, uploadDate, length, url, ytId, game, jokes = [], platforms = [], rippers = [], composers = [], genres = [], mixName = null, altURL = null, altName = null, description = null, wikiURL = null) {
 		function cleanseArray(items) {
 			if (items != null) {
 				items = Array.isArray(items) ? items : items?.split(';');
@@ -224,24 +251,29 @@ class WikiPage {
 		// for (let i = 0; i < rippers.length; i++) {
 		// 	rippers[i] = rippers[i].trim();
 		// }
-		this.rippers = cleanseArray(rippers);
-		this.jokes = cleanseArray(jokes);
-		this.composers = cleanseArray(composers);
+		// this.rippers = cleanseArray(rippers);
+		this.rippers = rippers;
+		// this.jokes = cleanseArray(jokes);
+		this.jokes = jokes;
+		// this.composers = cleanseArray(composers);
+		this.composers = composers;
 		this.ytID = ytId?.trim();
 		this.platforms = cleanseArray(platforms);
-		this.game = game?.trim();
+		this.game = game;
+		this.wikiURL = wikiURL?.trim();
 	}
 
 	/**
 	 * Creates a WikiPage object from a wiki page's source.
+	 * This iterates line by line through a pasted wiki page's source code (edit mode) and extracts its information.
 	 * @param {String} source The wiki page's source containing the data for the rip.
 	 * @return {WikiPage} A new wiki page.
 	 */
-	static fromSource(source) {
+	static async fromSource(source) {
 		let lines = source?.split("\n");
 
 		// Parsing flags
-		let inHeading = false;
+		let inHeading = true;
 		let inJokes = false;
 
 		// cached regex expressions
@@ -258,7 +290,7 @@ class WikiPage {
 		var regexDescription = new RegExp(/catchphrase.*=(.*)/i);
 		var regexRipperCleanse = new RegExp(/<ref\b[^>]*>(.*?)<\/ref>/ig); // Used to remove all refs in a ripper line
 		var regexRipperLinked = new RegExp(/(?:\[\[)?((?:[^[]|)*?)(?:\]\])/ig); // Finds rippers enclosed between a pair of two square braces
-		var regexRipper = new RegExp(/author\s*=\s*(?:\[\[)?(.+?)(?:\]\])?\s?(?=\s*<ref>|$)/ig); // Used to see if the line is a rippers line and matches any rippers that exist after "author=".
+		var regexRipper = new RegExp(/author\s*=\s*(?:\[\[)?(.+?)(?:\]\])?\s?(?=\s*<ref>|$)/i); // Used to see if the line is a rippers line and matches any rippers that exist after "author=".
 		var regexComposers = new RegExp(/composer\s*=\s*(?:\[\[)?(.+?)(?:\]\])?\s?(?=\s*<ref>|$)/i);
 		var regexAltTrack = new RegExp(/track=\s*"\[(http[^\s]+)\s+(.+?)\]"/i);
 
@@ -273,15 +305,53 @@ class WikiPage {
 		let ytId = null;
 		let game = null;
 		let jokes = [];
+		let parsedJokes = [];
 		let platforms = [];
 		let rippers = [];
-		let composers = null;
+		let parsedRippers = [];
+		let composers = [];
+		let parsedComposers = [];
 		let genres = null;
 		let mixName = null;
 		let altName = null;
 		let altURL = null;
 		let url = null;
 		let desc = null;
+
+		/**
+		 * Parses a date string in the format of Month Day, Year, where the month is the full name of the month.
+		 * @param {String} dateString The date from the parsed wiki page.
+		 * @returns The date in the format of Y-m-d. Null if the date is invalid.
+		 */
+		function parseDateString(dateString) {
+			let date = null;
+			if (dateString != null) {
+				let matches = dateString.match(/(\w+) (\d+),? (\d+)/).map(x => x.trim());
+				const inMonth = matches[1];
+				const inDay = matches[2];
+				const inYear = matches[3];
+				const monthMap = {
+					jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+					jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11,
+					january: 0, february: 1, march: 2, april: 3, may: 4, june: 5,
+					july: 6, august: 7, september: 8, october: 9, november: 10, december: 11
+				};
+
+				let month = monthMap[inMonth.toLowerCase()];
+				let day = parseInt(inDay, 10);
+				let year = parseInt(inYear, 10);
+				let dateObj = new Date(year, month, day, 12, 0);
+
+				if (!isNaN(dateObj.getTime())) {
+					year = dateObj.getFullYear();
+					month = String(dateObj.getMonth() + 1).padStart(2, '0');
+					day = String(dateObj.getDate()).padStart(2, '0');
+					date = `${year}-${month}-${day}`;
+				}
+			}
+
+			return date;
+		}
 
 		for (let i = 0; i < lines.length; i++) {
 			if (!inJokes && lines[i].trim().startsWith('{{')) {
@@ -308,7 +378,7 @@ class WikiPage {
 				} else if (regexRipName.test(lines[i])) {
 					ripName = (lines[i].match(regexRipName)[1] ?? null);
 				} else if (regexUpload.test(lines[i])) {
-					uploadDate = (lines[i].match(regexUpload)[1] ?? null);
+					uploadDate = parseDateString(lines[i].match(regexUpload)[1] ?? null);
 				} else if (regexLength.test(lines[i])) {
 					length = (lines[i].match(regexLength)[1] ?? null);
 				} else if (regexRipper.test(lines[i])) {
@@ -317,18 +387,18 @@ class WikiPage {
 					let ripperMatches = [...cleansed.matchAll(regexRipperLinked)];
 					if (ripperMatches.length > 0) {
 						for (let i = 0; i < ripperMatches.length; i++) {
-							rippers.push(ripperMatches[i][1]);
+							parsedRippers.push(ripperMatches[i][1]);
 						}
 					} else {
 						let ripper = cleansed.match(regexRipper);
-						rippers.push(ripper[1]);
+						parsedRippers.push(ripper[1]);
 					}
 				} else if (regexAltTrack.test(lines[i])) {
 					let matches = lines[i].match(regexAltTrack);
 					altURL = (matches[1] ?? null);
 					altName = (matches[2] ?? null);
 				} else if (regexComposers.test(lines[i])) {
-					composers = (lines[i].match(regexComposers)[1] ?? null);
+					parsedComposers = (lines[i].match(regexComposers)[1] ?? null)?.split(',');
 				} else if (regexPlatform.test(lines[i])) {
 					platforms = (lines[i].match(regexPlatform)[1] ?? '').split(',');
 				} else if (regexDescription.test(lines[i])) {
@@ -338,27 +408,117 @@ class WikiPage {
 				// Find jokes that contain links first. Any links found will be removed from the string after
 				let matches = [...lines[i].matchAll(regexJokeFromLink)];
 				for (let i = 0; i < matches.length; i++) {
-					jokes.push(matches[i][1]);
+					parsedJokes.push(matches[i][1]);
 				}
 				lines[i] = lines[i].replaceAll(regexJokeFromLink, '');
 				matches = [...lines[i].matchAll(regexJokeFrom)];
 				for (let i = 0; i < matches.length; i++) {
-					jokes.push(matches[i][1]);
+					parsedJokes.push(matches[i][1]);
 				}
 				matches = [...lines[i].matchAll(regexJokeTo)];
 				for (let i = 0; i < matches.length; i++) {
-					jokes.push(matches[i][1]);
+					parsedJokes.push(matches[i][1]);
 				}
 
-				jokes = [...new Set(jokes)];
+				parsedJokes = [...new Set(parsedJokes)];
 			} else {
 				// console.log("Neither...", lines[i]);
 			}
 		}
 
-		console.log(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers?.split(','), genres, mixName, altURL, altName, desc);
+		// Find Game in database
+		if (game != null) {
+			let url = `/rips/find-game?game=${game}`;
 
-		return new WikiPage(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers?.split(','), genres, mixName, altURL, altName, desc);
+			let request = await fetch(url);
+			if (request.ok) {
+				let response = await request.json();
+				if (response?.length > 1) {
+					console.warn("A game needs to be chosen from this list!", response);
+				} else {
+					game = response;
+				}
+			}
+		}
+
+		// Find Jokes in the Database
+		if (parsedJokes.length > 0) {
+			let url = `/rips/find-jokes?`;
+			for (let i = 0; i < parsedJokes.length; i++) {
+				url += `j[]=${encodeURI(parsedJokes[i])}&`;
+			}
+
+			let request = await fetch(url, {
+				method: 'GET'
+			});
+			if (request.ok) {
+				let response = await request.json();
+				// Parse each joke in the returned response. If a joke ID is given, add it to the jokes table input. Else, mark is for manual addition to the database.
+				for (let jokeName in response) {
+					// console.log(jokeName, response[jokeName]);
+					if (typeof (response[jokeName]) == 'number') {
+						jokes.push({ Name: jokeName, ID: response[jokeName] })
+					} else {
+						console.warn("NEED TO ADD JOKE TO DB:", jokeName);
+						// jokes.push({ Name: jokeName, ...response[jokeName] })
+					}
+				}
+			}
+		}
+
+		// Find Jokes in the Database
+		if (parsedRippers.length > 0) {
+			let url = `/rips/find-rippers?`;
+			for (let i = 0; i < parsedRippers.length; i++) {
+				url += `r[]=${encodeURI(parsedRippers[i])}&`;
+			}
+
+			let request = await fetch(url, {
+				method: 'GET'
+			});
+			if (request.ok) {
+				let response = await request.json();
+				// Parse each ripper in the returned response. If a ripper ID is given, add it to the ripper table input. Else, mark is for manual addition to the database.
+				for (let ripper in response) {
+					// console.log(ripper, response[ripper]);
+					if (typeof (response[ripper]) == 'number') {
+						rippers.push({ Name: ripper, ID: response[ripper] })
+					} else {
+						console.warn("NEED TO ADD RIPPER TO DB:", ripper);
+						// ripper.push({ Name: ripper, ...response[ripper] })
+					}
+				}
+			}
+		}
+
+		// Find Composers in the Database
+		if (parsedComposers.length > 0) {
+			let url = `/rips/find-composers?`;
+			for (let i = 0; i < parsedComposers.length; i++) {
+				url += `c[]=${encodeURI(parsedComposers[i])}&`;
+			}
+
+			let request = await fetch(url, {
+				method: 'GET'
+			});
+			if (request.ok) {
+				let response = await request.json();
+				// Parse each composer in the returned response. If a composer ID is given, add it to the composers table input. Else, mark is for manual addition to the database.
+				for (let name in response) {
+					// console.log(name, response[name]);
+					if (typeof (response[name]) == 'number') {
+						composers.push({ Name: name, ID: response[name] })
+					} else {
+						console.warn("NEED TO ADD COMPOSER TO DB:", name);
+						// composers.push({ Name: name, ...response[name] })
+					}
+				}
+			}
+		}
+
+		// console.log(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, genres, mixName, altURL, altName, desc);
+
+		return new WikiPage(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, genres, mixName, altURL, altName, desc);
 	}
 
 	/**

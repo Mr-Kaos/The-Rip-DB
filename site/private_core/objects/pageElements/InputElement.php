@@ -106,7 +106,7 @@ class InputElement extends PageObject
 	protected function buildLabel(bool $required = false): string
 	{
 		$label = '';
-		if ($this->type !== InputTypes::hidden) {
+		if ($this->type !== InputTypes::hidden && !empty($this->label)) {
 			// Apply additional attributes to label, if necessary
 			if (!array_key_exists('for', $this->labelAttributes) && array_key_exists('id', $this->attributes)) {
 				$this->labelAttributes['for'] = $this->attributes['id'];
@@ -128,9 +128,14 @@ class InputElement extends PageObject
 				}
 				$this->labelAttributes['class'] .= ' required';
 			}
+			// If there is a title or tooltip, display a tooltip icon
+			$tooltip = '';
+			if (!empty($this->attributes['tooltip'] ?? null) || !empty($this->attributes['title'] ?? null)) {
+				$tooltip = '<div class="tooltip">?<span>' . ($this->attributes['tooltip'] ?? ($this->attributes['title'] ?? null)) . '</span></div>';
+			}
 			$attributes = $this->buildAttributes($this->labelAttributes);
 			$label = '<label' . $attributes . '>';
-			$label .= $this->label . '</label>';
+			$label .= $this->label . $tooltip . '</label>' ;
 		}
 		return $label;
 	}
@@ -191,11 +196,12 @@ class InputElement extends PageObject
 					break;
 				case InputTypes::range:
 					$initVal = $this->attributes['value'] ?? 0;
-					$script = 'oninput="this.nextElementSibling.innerText = this.value;"';
+					$script = ' oninput="this.nextElementSibling.innerText = this.value;"';
 					$field .= '<div>' . $this->label . '<input id="' . $id . '" type="' . $this->type->value . '"' . $this->buildAttributes($this->attributes) . $script . '><span id="val_' . $id . '">' . $initVal . '</span></div>';
 					break;
 				case InputTypes::timestamp:
 					$this->attributes['maxlength'] = 8;
+					$this->attributes['pattern'] = '(([0-9]{2}:)?[0-9]{2}:[0-9]{2})';
 					if (($this->attributes['required'] ?? false) == true && !isset($this->attributes['value'])) {
 						$this->attributes['value'] = '00:00:00';
 					}

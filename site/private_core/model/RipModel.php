@@ -386,4 +386,166 @@ class RipModel extends Model implements ResultsetSearch
 
 		return $qry;
 	}
+
+	/**
+	 * Finds all jokes that contain or match the given strings.
+	 */
+	public function findJokesByName(array $names): array
+	{
+		$results = [];
+		$qry = $this->db->table('Jokes')
+			->columns('JokeID ID', 'JokeName Name')
+			->beginOr();
+
+		// Lowercase all searched joke names.
+		foreach ($names as $key => &$name) {
+			$name = strtolower(trim($name));
+			if (!empty($name)) {
+				$qry->ilike('JokeName', "%$name%");
+			} else {
+				unset($names[$key]);
+			}
+		}
+
+		// If all the names are empty, do not query.
+		if (!empty($names)) {
+			$matches = $qry->closeOr()->findAll();
+
+			$results = array_combine($names, array_fill(0, count($names), []));
+
+			foreach ($matches as $joke) {
+				// Exact match
+				if (($idx = array_search(strtolower($joke['Name']), $names)) !== false) {
+					// Replace the searched name with the actual joke name (not lowercased)
+					unset($results[$names[$idx]]);
+					$results[$joke['Name']] = $joke['ID'];
+					unset($names[$idx]);
+				} else {
+					foreach ($names as $name) {
+						if (str_contains(strtolower($joke['Name']), $name)) {
+							array_push($results[$name], $joke);
+						}
+					}
+				}
+			}
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Finds a game or games that match the given string.
+	 * First attempts to find an exact match, if none was found, finds all games that contain the given text.
+	 */
+	public function findGamesByName(string $name): array
+	{
+		$results = [];
+		$results = $this->db->table("Games")
+			->columns('GameID ID', 'GameName Name')
+			->ilike('GameName', "$name")
+			->findOne();
+
+		if (empty($results)) {
+			$results = $this->db->table("Games")
+				->columns('GameID ID', 'GameName Name')
+				->ilike('GameName', "%$name%")
+				->findAll();
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Finds composers with the given names.
+	 */
+	public function findComposersByName(array $names)
+	{
+		$results = [];
+		$qry = $this->db->table('vw_Composers')
+			->columns('ComposerID ID', 'ComposerName Name');
+
+		// Lowercase all searched composer names.
+		$qry->beginOr();
+		foreach ($names as $key => &$name) {
+			$name = strtolower(trim($name));
+			if (!empty($name)) {
+				$qry->ilike('ComposerName', "%$name%");
+				$qry->ilike('AltName', "%$name%");
+			} else {
+				unset($names[$key]);
+			}
+		}
+		$qry->closeOr();
+
+		// If all the names are empty, do not query.
+		if (!empty($names)) {
+			$matches = $qry->findAll();
+
+			$results = array_combine($names, array_fill(0, count($names), []));
+
+			foreach ($matches as $composer) {
+				// Exact match
+				if (($idx = array_search(strtolower($composer['Name']), $names)) !== false) {
+					// Replace the searched name with the actual composer name (not lowercased)
+					unset($results[$names[$idx]]);
+					$results[$composer['Name']] = $composer['ID'];
+					unset($names[$idx]);
+				} else {
+					foreach ($names as $name) {
+						if (str_contains(strtolower($composer['Name']), $name)) {
+							array_push($results[$name], $composer);
+						}
+					}
+				}
+			}
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Finds rippers with the given names.
+	 */
+	public function findRippersByName(array $names)
+	{
+		$results = [];
+		$qry = $this->db->table('Rippers')
+			->columns('RipperID ID', 'RipperName Name')
+			->beginOr();
+
+		// Lowercase all searched ripper names.
+		foreach ($names as $key => &$name) {
+			$name = strtolower(trim($name));
+			if (!empty($name)) {
+				$qry->ilike('RipperName', "%$name%");
+			} else {
+				unset($names[$key]);
+			}
+		}
+
+		// If all the names are empty, do not query.
+		if (!empty($names)) {
+			$matches = $qry->closeOr()->findAll();
+
+			$results = array_combine($names, array_fill(0, count($names), []));
+
+			foreach ($matches as $ripper) {
+				// Exact match
+				if (($idx = array_search(strtolower($ripper['Name']), $names)) !== false) {
+					// Replace the searched name with the actual ripper name (not lowercased)
+					unset($results[$names[$idx]]);
+					$results[$ripper['Name']] = $ripper['ID'];
+					unset($names[$idx]);
+				} else {
+					foreach ($names as $name) {
+						if (str_contains(strtolower($ripper['Name']), $name)) {
+							array_push($results[$name], $ripper);
+						}
+					}
+				}
+			}
+		}
+
+		return $results;
+	}
 }

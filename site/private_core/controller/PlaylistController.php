@@ -49,11 +49,11 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 		}
 	}
 
-	public function get(string $method, ?string $methodGroup = null): mixed
+	public function get(string $method, ?array $data = null): mixed
 	{
 		$result = null;
 
-		switch ($methodGroup) {
+		switch ($method) {
 			case 'getNewPlaylist':
 				$result = $this->model->getNewPlaylist($_GET['id'] ?? 0, $_GET['name'] ?? '');
 				break;
@@ -82,11 +82,11 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 
 		return $result;
 	}
-	public function post(string $method, ?string $methodGroup = null): mixed
+	public function post(string $method, ?array $data = null): mixed
 	{
 		$result = null;
 
-		switch ($methodGroup) {
+		switch ($method) {
 			case 'claimPlaylists':
 			case 'delete':
 				// If an array is returned (i.e. an error), return the error messages.
@@ -105,11 +105,11 @@ class PlaylistController extends Controller implements \RipDB\Objects\IAsyncHand
 
 		return $result;
 	}
-	public function put(string $method, ?string $methodGroup = null): mixed
+	public function put(string $method, ?array $data = null): mixed
 	{
 		return null;
 	}
-	public function delete(string $method, ?string $methodGroup = null): mixed
+	public function delete(string $method, ?array $data = null): mixed
 	{
 		return null;
 	}
