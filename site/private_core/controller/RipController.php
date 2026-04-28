@@ -235,20 +235,21 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 
 		switch ($method) {
 			case 'find-jokes':
-				$result = $this->model->findJokesByName($_GET['j'] ?? []);
+				$result = $this->model->findJokesByName($_GET['p'] ?? []);
 				break;
 			case 'find-game':
 				$result = $this->model->findGamesByName($_GET['game'] ?? []);
 				break;
 			case 'find-composers':
-				$result = $this->model->findComposersByName($_GET['c'] ?? []);
+				$result = $this->model->findComposersByName($_GET['p'] ?? []);
 				break;
 			case 'find-rippers':
-				$result = $this->model->findRippersByName($_GET['r'] ?? []);
+				$result = $this->model->findRippersByName($_GET['p'] ?? []);
 				break;
 			default:
 				break;
 		}
+		error_log('A:' . print_r($result, true));
 
 		return $result;
 	}

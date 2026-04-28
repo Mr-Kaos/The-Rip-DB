@@ -173,7 +173,11 @@ async function parseWikiContent(input) {
 			if (wikiPage.jokes[i]?.ID != null) {
 				let row = inputJokes.addRow();
 				let jokeInput = getInputById(`search_jokes[]_${row.id}`, SearchElement);
+				let jokeStartTime = getInputById(`jokeStart[]_${row.id}`, TimestampElement);
+				let jokeGenre = getInputById(`genres[]_${row.id}`, SearchElement);
+
 				jokeInput.addPill(wikiPage.jokes[i].Name, wikiPage.jokes[i].ID);
+				jokeStartTime.setValue(wikiPage.jokes[i].StartTime);
 			}
 		}
 		// rippers
@@ -225,7 +229,7 @@ class WikiPage {
 	 * @param {String} url The URL of the rip's YouTube video
 	 * @param {String} ytId The ID of the rip's YouTube video
 	 * @param {Object} game The name and IF of the game the rip is for. Must have two keys: ID and Name.
-	 * @param {Array[Object]} jokes An array of objects detailing jokes. Each joke must have the key "Name" can have the following keys: `ID`, `Time`, `Joke` and `Comment`.
+	 * @param {Array[Object]} jokes An array of objects detailing jokes. Each joke must have the key "Name" can have the following keys: `ID`, `StartTime`, `EndTime`, `GenreName`, `GenreID`, `Name` and `Comment`.
 	 * @param {Array} platforms An array of platform names the rip is on.
 	 * @param {Array} rippers An array of ripper names.
 	 * @param {Array} composers An array of composer names.
@@ -285,10 +289,15 @@ class WikiPage {
 		// Parsing flags
 		let inHeading = true;
 		let inJokes = false;
+		let inTable = false;
+		let tableHeaders = [];
+		let tableColIndex = 0;
 
 		// cached regex expressions
 		var regexJokes = new RegExp(/^.*==.joke.*==/i);
 		var regexTitle = new RegExp(/^.*==.*==/i);
+		var regexTableHead = new RegExp(/!\s?(.*)/);
+
 		var regexLink = new RegExp(/link.*=?.([A-Za-z0-9_\-]{11})/i);
 		var regexRipNameBraces = new RegExp(/music\s*=\s*(.*?)\s*\(([^)]+)\)\s*$/i);
 		var regexRipName = new RegExp(/music\s*=\s*(.*)/i);
@@ -303,10 +312,12 @@ class WikiPage {
 		var regexRipper = new RegExp(/author\s*=\s*(?:\[\[)?(.+?)(?:\]\])?\s?(?=\s*<ref>|$)/i); // Used to see if the line is a rippers line and matches any rippers that exist after "author=".
 		var regexComposers = new RegExp(/composer\s*=\s*(?:\[\[)?(.+?)(?:\]\])?\s?(?=\s*<ref>|$)/i);
 		var regexAltTrack = new RegExp(/track=\s*"\[(http[^\s]+)\s+(.+?)\]"/i);
+		// var regexTime = /[0-9]{1,2}:[0-9]{1,2}(:[0-9]{2})?/;
 
 		var regexJokeFrom = new RegExp(/"([^"]*)"(?:\s+)?(?:by|from)/ig); // Finds all names of songs or references enclosed by quotes and followed by "by" or "from".
 		var regexJokeFromLink = new RegExp(/"\[(?:http[^\s]+)\s+(.+?)\]"(?:\s+)?(?:by|from)/ig); // Finds all names of songs or references that are a link and are enclosed by quotes and followed by "by" or "from".
 		var regexJokeTo = new RegExp(/(?:\s+)?(?:to|with|of)\s?"(?:\[\[)?((?:[^[]|)*?)(?:\]\])?"/ig); // Finds all names of songs or references that come after "to", e.g. "melody changes to "joke"".
+		var regexJokeTable = new RegExp(/(?:"[\[]{2}|")(.+?)(?:[\]]{2}"|")"?(?:\s?\((.+?)\))?/i); // 
 
 		// initialiser variables
 		let ripName = null;
@@ -316,6 +327,9 @@ class WikiPage {
 		let game = null;
 		let jokes = [];
 		let parsedJokes = [];
+		let parsedJokeTimes = [];
+		let parsedJokeSources = [];
+		let parsedJokeGenres = [];
 		let platforms = [];
 		let rippers = [];
 		let parsedRippers = [];
@@ -362,9 +376,35 @@ class WikiPage {
 			return date;
 		}
 
+		/**
+		 * Parses a joke table cell.
+		 * @param {string} columnType The name of the column
+		 * @param {string} data The column data to check
+		 * @returns 
+		 */
+		function parseTableData(columnType, data) {
+			columnType = columnType.toLowerCase();
+			if (columnType.includes('joke')) {
+				console.log(data);
+				let matches = data.match(regexJokeTable);
+
+				parsedJokes.push(matches != null ? matches[1] : null);
+				parsedJokeGenres.push(matches != null ? matches[2] ?? null : null);
+			} else if (columnType.includes('source')) {
+				parsedJokeSources.push(data);
+			} else if (columnType.includes('time')) {
+				parsedJokeTimes.push(data);
+			}
+		}
+
+		// Parse each line one at a time
 		for (let i = 0; i < lines.length; i++) {
 			if (!inJokes && lines[i].trim().startsWith('{{')) {
 				inHeading = true;
+			} else if (lines[i].trim().startsWith('{|')) {
+				inTable = true;
+			} else if (lines[i].trim().startsWith('|}')) {
+				inTable = false;
 			} else if (lines[i].trim().startsWith('}}')) {
 				inHeading = false;
 			} else if (regexJokes.test(lines[i])) {
@@ -414,22 +454,48 @@ class WikiPage {
 					desc = (lines[i].match(regexDescription)[1] ?? '');
 				}
 			} else if (inJokes) {
-				// Find jokes that contain links first. Any links found will be removed from the string after
-				let matches = [...lines[i].matchAll(regexJokeFromLink)];
-				for (let i = 0; i < matches.length; i++) {
-					parsedJokes.push(matches[i][1]);
+				if (inTable) {
+					// Get headings
+					if (regexTableHead.test(lines[i])) {
+						tableHeaders.push(lines[i].match(regexTableHead)[1]);
+					}
+					// ignore captions
+					else if (lines[i].trim().startsWith('|+')) { }
+					// reset row
+					else if (lines[i].trim().startsWith('|-')) {
+						tableColIndex = 0;
+					}
+					// Table data
+					else if (lines[i].trim().startsWith('|')) {
+						// Check if there are multiple columns in the line
+						if (lines[i].trim().includes('||')) {
+							let cols = lines[i].trim().substring(1).trim().split('||');
+							for (let j = 0; j < cols.length; j++) {
+								parseTableData(tableHeaders[j], cols[j]);
+							}
+						} else {
+							parseTableData(tableHeaders[tableColIndex], lines[i].trim().substring(1));
+							tableColIndex++;
+						}
+					}
+				} else {
+					// Find jokes that contain links first. Any links found will be removed from the string after
+					let matches = [...lines[i].matchAll(regexJokeFromLink)];
+					for (let i = 0; i < matches.length; i++) {
+						parsedJokes.push(matches[i][1]);
+					}
+					lines[i] = lines[i].replaceAll(regexJokeFromLink, '');
+					matches = [...lines[i].matchAll(regexJokeFrom)];
+					for (let i = 0; i < matches.length; i++) {
+						parsedJokes.push(matches[i][1]);
+					}
+					matches = [...lines[i].matchAll(regexJokeTo)];
+					for (let i = 0; i < matches.length; i++) {
+						parsedJokes.push(matches[i][1]);
+					}
+					// Clear any duplicates
+					parsedJokes = [...new Set(parsedJokes)];
 				}
-				lines[i] = lines[i].replaceAll(regexJokeFromLink, '');
-				matches = [...lines[i].matchAll(regexJokeFrom)];
-				for (let i = 0; i < matches.length; i++) {
-					parsedJokes.push(matches[i][1]);
-				}
-				matches = [...lines[i].matchAll(regexJokeTo)];
-				for (let i = 0; i < matches.length; i++) {
-					parsedJokes.push(matches[i][1]);
-				}
-
-				parsedJokes = [...new Set(parsedJokes)];
 			} else {
 				// console.log("Neither...", lines[i]);
 			}
@@ -450,78 +516,52 @@ class WikiPage {
 			}
 		}
 
-		// Find Jokes in the Database
-		if (parsedJokes.length > 0) {
-			let url = `/rips/find-jokes?`;
-			for (let i = 0; i < parsedJokes.length; i++) {
-				url += `j[]=${encodeURI(parsedJokes[i])}&`;
-			}
+		async function findDBKeyPairs(items, url, outputList) {
+			// Find Jokes in the Database
+			if (items.length > 0) {
+				url = `${url}?`;
+				for (let i = 0; i < items.length; i++) {
+					url += `p[]=${encodeURI(items[i])}&`;
+				}
 
-			let request = await fetch(url, {
-				method: 'GET'
-			});
-			if (request.ok) {
-				let response = await request.json();
-				// Parse each joke in the returned response. If a joke ID is given, add it to the jokes table input. Else, mark is for manual addition to the database.
-				for (let jokeName in response) {
-					// console.log(jokeName, response[jokeName]);
-					if (typeof (response[jokeName]) == 'number') {
-						jokes.push({ Name: jokeName, ID: response[jokeName] })
-					} else {
-						console.warn("NEED TO ADD JOKE TO DB:", jokeName);
-						// jokes.push({ Name: jokeName, ...response[jokeName] })
+				let request = await fetch(url, {
+					method: 'GET'
+				});
+				if (request.ok) {
+					let response = await request.json();
+					// Parse each joke in the returned response. If a joke ID is given, add it to the jokes table input. Else, mark is for manual addition to the database.
+					for (let name in response) {
+						if (typeof (response[name]) == 'number') {
+							outputList.push({ Name: name, ID: response[name] })
+						} else {
+							console.warn("NEED TO ADD JOKE TO DB:", name);
+							// jokes.push({ Name: name, ...response[name] })
+						}
 					}
 				}
 			}
 		}
 
-		// Find Jokes in the Database
-		if (parsedRippers.length > 0) {
-			let url = `/rips/find-rippers?`;
-			for (let i = 0; i < parsedRippers.length; i++) {
-				url += `r[]=${encodeURI(parsedRippers[i])}&`;
-			}
+		let jokeIDs = [];
+		await findDBKeyPairs(parsedJokes, '/rips/find-jokes', jokeIDs);
+		await findDBKeyPairs(parsedRippers, '/rips/find-rippers', rippers);
+		await findDBKeyPairs(parsedComposers, '/rips/find-composers', composers);
 
-			let request = await fetch(url, {
-				method: 'GET'
-			});
-			if (request.ok) {
-				let response = await request.json();
-				// Parse each ripper in the returned response. If a ripper ID is given, add it to the ripper table input. Else, mark is for manual addition to the database.
-				for (let ripper in response) {
-					// console.log(ripper, response[ripper]);
-					if (typeof (response[ripper]) == 'number') {
-						rippers.push({ Name: ripper, ID: response[ripper] })
-					} else {
-						console.warn("NEED TO ADD RIPPER TO DB:", ripper);
-						// ripper.push({ Name: ripper, ...response[ripper] })
+		// Create jokes object and group with any timestamps
+		for (let i = 0; i < parsedJokes.length; i++) {
+			if (parsedJokes[i] != null && parsedJokes[i] != '') {
+				let id = null;
+				for (let joke in jokeIDs) {
+					if (jokeIDs[joke].Name.toLowerCase() == parsedJokes[i]?.toLowerCase()) {
+						id = jokeIDs[joke]['ID'];
+						break;
 					}
 				}
-			}
-		}
-
-		// Find Composers in the Database
-		if (parsedComposers.length > 0) {
-			let url = `/rips/find-composers?`;
-			for (let i = 0; i < parsedComposers.length; i++) {
-				url += `c[]=${encodeURI(parsedComposers[i])}&`;
-			}
-
-			let request = await fetch(url, {
-				method: 'GET'
-			});
-			if (request.ok) {
-				let response = await request.json();
-				// Parse each composer in the returned response. If a composer ID is given, add it to the composers table input. Else, mark is for manual addition to the database.
-				for (let name in response) {
-					// console.log(name, response[name]);
-					if (typeof (response[name]) == 'number') {
-						composers.push({ Name: name, ID: response[name] })
-					} else {
-						console.warn("NEED TO ADD COMPOSER TO DB:", name);
-						// composers.push({ Name: name, ...response[name] })
-					}
-				}
+				jokes.push({
+					'Name': parsedJokes[i],
+					'StartTime': parsedJokeTimes[i],
+					'ID': id
+				});
 			}
 		}
 

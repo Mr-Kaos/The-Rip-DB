@@ -681,7 +681,6 @@ class TimestampElement extends CustomElement {
 	 */
 	setValue(input = null) {
 		if (input != null) {
-
 			this.#parseInput(input);
 		}
 		let hrs = this.#hours < 10 ? `0${this.#hours}` : this.#hours;
