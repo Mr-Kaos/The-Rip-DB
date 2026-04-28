@@ -4,11 +4,17 @@
 	<?php else: ?>
 		<section id="summary">
 			<h1 id="title"><?= $rip['RipName'] ?><?= empty($rip['MixName']) ? '' : ' (' . $rip['MixName'] . ')' ?> - <?= $rip['GameName'] ?></h1>
-			<p><?= $rip['RipDescription'] ?></p>
 			<a href="/rips/edit/<?= $rip['RipID']; ?>">Edit Rip</a>
 		</section>
 		<div class="rip-container">
 			<section id="jokes">
+				<h3>Rip Description</h3>
+				<?php if (empty($rip['RipDescription'])): ?>
+					<p><em>No description exists for this rip.</em></p>
+				<?php else: ?>
+					<p id="data-Sescription"><?= $rip['RipDescription'] ?></p>
+				<?php endif; ?>
+				<h3>Jokes</h3>
 				<?php if (!empty($jokes)): ?>
 					<table style="width:100%">
 						<caption>Jokes In This Rip:</caption>
@@ -52,7 +58,7 @@
 								<?php if (!empty($rip['RipYouTubeID'])): ?>
 									<iframe class="rip-embed" id="yt-embed" src="https://www.youtube-nocookie.com/embed/<?= $rip['RipYouTubeID']; ?>?vq=240p" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 								<?php endif; ?>
-								<a href="<?= $rip['RipURL'] ?>" target="_blank">YouTube</a>
+								<a id="data-ytURL" href="<?= $rip['RipURL'] ?>" target="_blank">YouTube</a>
 							</td>
 						</tr>
 						<tr>
@@ -106,10 +112,10 @@
 								<td>
 									<ul>
 										<?php if (!empty($rip['RipAlternateURL'])): ?>
-											<li><a href="<?= $rip['RipAlternateURL'] ?>" target="_blank">Album Release</a></li>
+											<li id="data-AltURL"><a href="<?= $rip['RipAlternateURL'] ?>" target="_blank">Album Release</a></li>
 										<?php endif; ?>
 										<?php if (!empty($rip['RipWikiURL'])): ?>
-											<li><a href="<?= $rip['RipWikiURL'] ?>" target="_blank">Wiki Page</a></li>
+											<li id="data-WikiURL"><a href="<?= $rip['RipWikiURL'] ?>" target="_blank">Wiki Page</a></li>
 										<?php endif; ?>
 									</ul>
 								</td>

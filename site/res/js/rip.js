@@ -111,19 +111,26 @@ function generateWikiPage() {
 		document.getElementById('data-RipName')?.innerText,
 		document.getElementById('data-UploadDate')?.innerText,
 		document.getElementById('data-Length')?.innerText,
+		document.getElementById('data-ytURL')?.innerText,
 		document.getElementById('data-YouTubeID')?.innerText,
 		document.getElementById('data-Game')?.innerText,
 		jokes,
-		document.getElementById('data-Platforms')?.innerText,
-		document.getElementById('data-Rippers')?.innerText,
-		document.getElementById('data-Composers')?.innerText,
-		document.getElementById('data-Genres')?.innerText,
+		document.getElementById('data-Platforms')?.innerText.split(';'),
+		document.getElementById('data-Rippers')?.innerText.split(';'),
+		document.getElementById('data-Composers')?.innerText.split(';'),
 		document.getElementById('data-MixName')?.innerText,
-		document.getElementById('data-AltName')?.innerText
+		document.getElementById('data-AltURL')?.href,
+		document.getElementById('data-AltName')?.innerText,
+		document.getElementById('data-Description')?.innerText,
+		document.getElementById('data-WikiURL')?.href
 	);
 	wiki.displaySource();
 }
 
+/**
+ * Parses A wiki's source content and loads it into the rip edit page's respective fields.
+ * @param {string} input The input wiki source content to parse and place into inputs on the edit page.
+ */
 async function parseWikiContent(input) {
 	let wikiSource = input ?? document.querySelector('#wiki_source').value;
 	let inputName = document.getElementById('name');
@@ -215,17 +222,20 @@ class WikiPage {
 	 * @param {String} ripName The name of the rip
 	 * @param {String} uploadDate The date the the rip was uploaded
 	 * @param {String} length The duration of the rip
+	 * @param {String} url The URL of the rip's YouTube video
 	 * @param {String} ytId The ID of the rip's YouTube video
 	 * @param {Object} game The name and IF of the game the rip is for. Must have two keys: ID and Name.
-	 * @param {Array} platforms The name of the platforms the rip is for
 	 * @param {Array[Object]} jokes An array of objects detailing jokes. Each joke must have the key "Name" can have the following keys: `ID`, `Time`, `Joke` and `Comment`.
+	 * @param {Array} platforms An array of platform names the rip is on.
 	 * @param {Array} rippers An array of ripper names.
 	 * @param {Array} composers An array of composer names.
 	 * @param {String} mixName The rip's mix name.
-	 * @param {String} altName The rip's alternate (album release) name.
 	 * @param {String} altURL The rip's alternate (album release) URL.
+	 * @param {String} altName The rip's alternate (album release) name.
+	 * @param {String} description The description of the rip.
+	 * @param {String} wikiURL The URL of the rip's wiki page.
 	 */
-	constructor(ripName, uploadDate, length, url, ytId, game, jokes = [], platforms = [], rippers = [], composers = [], genres = [], mixName = null, altURL = null, altName = null, description = null, wikiURL = null) {
+	constructor(ripName, uploadDate, length, url, ytId, game, jokes = [], platforms = [], rippers = [], composers = [], mixName = null, altURL = null, altName = null, description = null, wikiURL = null) {
 		function cleanseArray(items) {
 			if (items != null) {
 				items = Array.isArray(items) ? items : items?.split(';');
@@ -311,7 +321,6 @@ class WikiPage {
 		let parsedRippers = [];
 		let composers = [];
 		let parsedComposers = [];
-		let genres = null;
 		let mixName = null;
 		let altName = null;
 		let altURL = null;
@@ -516,9 +525,9 @@ class WikiPage {
 			}
 		}
 
-		// console.log(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, genres, mixName, altURL, altName, desc);
+		// console.log(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, mixName, altURL, altName, desc);
 
-		return new WikiPage(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, genres, mixName, altURL, altName, desc);
+		return new WikiPage(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, mixName, altURL, altName, desc);
 	}
 
 	/**
@@ -528,8 +537,6 @@ class WikiPage {
 	static async wikiSourceToRip(url) {
 		url = URL.parse(url);
 		if (url != null) {
-			console.log(url);
-
 			// Validate the url
 			if (!url.search.includes('action=edit')) {
 				if (!url.search.includes('?')) {
@@ -540,11 +547,6 @@ class WikiPage {
 
 			let data = new FormData();
 			data.append('url', url.href);
-
-			// let response = await fetch('/rips/import', {
-			// 	body: data,
-			// 	method: 'POST'
-			// });
 
 			let response = await fetch(url.href);
 
@@ -573,7 +575,7 @@ class WikiPage {
 	 * Opens a modal that displays the generated source for the wiki page.
 	 */
 	displaySource() {
-		let source = this.generate();
+		let source = this.toSource();
 		let sourceContainer = document.createElement('textarea');
 		sourceContainer.style.width = "95%";
 		sourceContainer.style.height = "90%";
@@ -607,7 +609,6 @@ class WikiPage {
 	 * Builds the metadata content for the right-hand panel of a wiki page.
 	 */
 	#buildMetadataSource() {
-		console.log(this.mixName);
 		let source = `{{Rip
 |image=
 |link= ${this.ytID}
@@ -615,7 +616,7 @@ class WikiPage {
 |playlist id=
 |upload= ${this.uploadDate}
 |length= ${this.length}
-|author= ${this.rippers.join(", ")}
+|author= ${this.rippers?.join(", ")}
 |album=
 |track= ${this.altName ?? ''}
 |music= ${this.ripName} ${(this.mixName != null) ? '(' + this.mixName + ')' : ''}
