@@ -164,6 +164,17 @@ class InputTable extends CustomElement {
 	}
 
 	/**
+	 * Clears all rows from the table
+	 */
+	clear() {
+		let rows = this.#body.querySelectorAll('tr');
+
+		for (let i = 0; i < rows.length; i++) {
+			this.removeRow(rows[i]);
+		}
+	}
+
+	/**
 	 * Code obtained from https://stackoverflow.com/questions/4872380/uniqid-in-javascript-jquery
 	 * Generates a unique id. used to ensure that a nested InputTable has a unique id if its parent table creates a new row.
 	 */

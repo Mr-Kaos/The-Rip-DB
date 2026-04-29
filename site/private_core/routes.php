@@ -90,6 +90,9 @@ Flight::group('/rips', function () {
 		Flight::route('GET /find-rippers', function () {
 			performAPIRequest('find-rippers', HttpMethod::GET, 'RipController');
 		});
+		Flight::route('GET /find-genres', function () {
+			performAPIRequest('find-genres', HttpMethod::GET, 'RipController');
+		});
 	}
 
 	Flight::route('/@id', function ($id) {

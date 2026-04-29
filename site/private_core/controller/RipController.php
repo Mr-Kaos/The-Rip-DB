@@ -246,6 +246,9 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 			case 'find-rippers':
 				$result = $this->model->findRippersByName($_GET['p'] ?? []);
 				break;
+			case 'find-genres':
+				$result = $this->model->getGenresForImport();
+				break;
 			default:
 				break;
 		}

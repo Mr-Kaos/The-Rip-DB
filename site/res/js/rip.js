@@ -169,18 +169,23 @@ async function parseWikiContent(input) {
 			}
 		}
 		// jokes
+		inputJokes.clear();
 		for (let i = 0; i < wikiPage.jokes.length; i++) {
 			if (wikiPage.jokes[i]?.ID != null) {
 				let row = inputJokes.addRow();
 				let jokeInput = getInputById(`search_jokes[]_${row.id}`, SearchElement);
 				let jokeStartTime = getInputById(`jokeStart[]_${row.id}`, TimestampElement);
-				let jokeGenre = getInputById(`genres[]_${row.id}`, SearchElement);
+				let jokeGenre = getInputById(`search_genres[]_${row.id}`, SearchElement);
 
 				jokeInput.addPill(wikiPage.jokes[i].Name, wikiPage.jokes[i].ID);
 				jokeStartTime.setValue(wikiPage.jokes[i].StartTime);
+				if (wikiPage.jokes[i].GenreName != undefined) {
+					jokeGenre.addPill(wikiPage.jokes[i].GenreName, wikiPage.jokes[i].GenreID);
+				}
 			}
 		}
 		// rippers
+		inputRippers.clear();
 		for (let i = 0; i < wikiPage.rippers.length; i++) {
 			if (wikiPage.rippers[i]?.ID != null) {
 				let row = inputRippers.addRow();
@@ -317,7 +322,7 @@ class WikiPage {
 		var regexJokeFrom = new RegExp(/"([^"]*)"(?:\s+)?(?:by|from)/ig); // Finds all names of songs or references enclosed by quotes and followed by "by" or "from".
 		var regexJokeFromLink = new RegExp(/"\[(?:http[^\s]+)\s+(.+?)\]"(?:\s+)?(?:by|from)/ig); // Finds all names of songs or references that are a link and are enclosed by quotes and followed by "by" or "from".
 		var regexJokeTo = new RegExp(/(?:\s+)?(?:to|with|of)\s?"(?:\[\[)?((?:[^[]|)*?)(?:\]\])?"/ig); // Finds all names of songs or references that come after "to", e.g. "melody changes to "joke"".
-		var regexJokeTable = new RegExp(/(?:"[\[]{2}|")(.+?)(?:[\]]{2}"|")"?(?:\s?\((.+?)\))?/i); // 
+		var regexJokeTable = new RegExp(/(?:"[\[]{2}|")(.+?)(?:[\]]{2}|").?(?:\s?\((.+?)\))?/i); // 
 
 		// initialiser variables
 		let ripName = null;
@@ -385,7 +390,6 @@ class WikiPage {
 		function parseTableData(columnType, data) {
 			columnType = columnType.toLowerCase();
 			if (columnType.includes('joke')) {
-				console.log(data);
 				let matches = data.match(regexJokeTable);
 
 				parsedJokes.push(matches != null ? matches[1] : null);
@@ -543,9 +547,11 @@ class WikiPage {
 		}
 
 		let jokeIDs = [];
+		let genres = [];
 		await findDBKeyPairs(parsedJokes, '/rips/find-jokes', jokeIDs);
 		await findDBKeyPairs(parsedRippers, '/rips/find-rippers', rippers);
 		await findDBKeyPairs(parsedComposers, '/rips/find-composers', composers);
+		await findDBKeyPairs(parsedJokeGenres, '/rips/find-genres', genres);
 
 		// Create jokes object and group with any timestamps
 		for (let i = 0; i < parsedJokes.length; i++) {
@@ -557,11 +563,21 @@ class WikiPage {
 						break;
 					}
 				}
-				jokes.push({
+				// check if a matching genre exists.
+				let jokeObj = {
 					'Name': parsedJokes[i],
 					'StartTime': parsedJokeTimes[i],
 					'ID': id
-				});
+				}
+				for (let genreID in genres) {
+					if (parsedJokeGenres[i]?.toLowerCase() == genres[genreID].Name.toLowerCase()) {
+						jokeObj.GenreID = genres[genreID].ID;
+						jokeObj.GenreName = genres[genreID].Name;
+						break;
+					}
+				}
+
+				jokes.push(jokeObj);
 			}
 		}
 

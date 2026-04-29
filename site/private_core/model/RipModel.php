@@ -476,6 +476,20 @@ class RipModel extends Model implements ResultsetSearch
 		return $this->restructureAsyncQueryResults($qry, $names);
 	}
 
+	/**
+	 * Returns up to 250 genres for the client to parse against.
+	 */
+	public function getGenresForImport()
+	{
+		// A 250 genre limit is set to prevent large amounts of data being sent to the user. There will likely never be close to 250 genres (let alone 50), so this is just a precaution.
+		$genres = $this->db->table('Genres')
+			->columns('GenreID ID', 'GenreName Name')
+			->limit(250)
+			->findAll();
+
+			return $this->resultsetToKeyPair($genres, 'Name', 'ID');
+	}
+
 	private function restructureAsyncQueryResults(\PicoDB\Table $qry, array $names): array
 	{
 		$results = [];
