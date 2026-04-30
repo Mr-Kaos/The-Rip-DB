@@ -88,7 +88,7 @@ function importFromWiki() {
 		}
 	};
 	template.style.display = null;
-	let modal = new Modal("WikiImport", "Wiki Page Parser", template, "50%", '20%', true, true, funcs);
+	let modal = new Modal("WikiImport", "Wiki Page Parser", template, "50%", '30%', true, true, funcs);
 	modal.open();
 }
 
@@ -157,19 +157,28 @@ async function parseWikiContent(input) {
 		inputDate.value = wikiPage.uploadDate ?? null;
 		inputYTID.value = wikiPage.ytID ?? '';
 		inputAltURL.value = wikiPage.altURL ?? '';
-		inputLength.setValue(wikiPage.length ?? '');
+		inputLength.setValue(wikiPage.length ?? '00:00');
 		inputDescription.value = wikiPage.description ?? '';
-		inputGame.addPill(wikiPage.game.Name, wikiPage.game.ID);
 		inputWikiURL.value = wikiPage.wikiURL ?? '';
 
+		inputGame.clearSelection();
+		if (wikiPage.game?.ID != null && wikiPage.game?.Name != null) {
+			inputGame.addPill(wikiPage.game.Name, wikiPage.game.ID);
+		}
+
 		// composers
+		inputComposers.clearSelection();
 		for (let i = 0; i < wikiPage.composers.length; i++) {
-			if (wikiPage.composers[i]?.ID != null) {
-				inputComposers.addPill(wikiPage.composers[i].Name, wikiPage.composers[i].ID);
+			if (wikiPage.composers[i]?.ID != null && wikiPage.composers[i]?.Name != null) {
+				inputComposers.addPill(wikiPage.composers[i]?.Name, wikiPage.composers[i].ID);
 			}
 		}
 		// jokes
-		inputJokes.clear();
+		if (wikiPage.jokes.length > 0) {
+			inputJokes.clear();
+		} else if (inputJokes.getRowCount() > 0) {
+			inputJokes.clear(true);
+		}
 		for (let i = 0; i < wikiPage.jokes.length; i++) {
 			if (wikiPage.jokes[i]?.ID != null) {
 				let row = inputJokes.addRow();
@@ -185,7 +194,11 @@ async function parseWikiContent(input) {
 			}
 		}
 		// rippers
-		inputRippers.clear();
+		if (wikiPage.rippers.length > 0) {
+			inputRippers.clear();
+		} else if (inputRippers.getRowCount() > 0) {
+			inputRippers.clear(true);
+		}
 		for (let i = 0; i < wikiPage.rippers.length; i++) {
 			if (wikiPage.rippers[i]?.ID != null) {
 				let row = inputRippers.addRow();

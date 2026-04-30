@@ -165,13 +165,21 @@ class InputTable extends CustomElement {
 
 	/**
 	 * Clears all rows from the table
+	 * @param {boolean} addBlankRow If true, adds a new empty row after clearing all other rows.
 	 */
-	clear() {
+	clear(addBlankRow = false) {
 		let rows = this.#body.querySelectorAll('tr');
 
 		for (let i = 0; i < rows.length; i++) {
 			this.removeRow(rows[i]);
 		}
+		if (addBlankRow) {
+			this.addRow();
+		}
+	}
+
+	getRowCount() {
+		return this.#rowCount;
 	}
 
 	/**
@@ -359,8 +367,11 @@ class SearchElement extends CustomElement {
 	}
 
 	clearSelection() {
-		let option = this.getElement().querySelector(`.pill[value="${this.#value}"]`);
-		this.#unsetOption(option);
+		let options = this.getElement().querySelectorAll(`.pill`);
+
+		for (let i = 0; i < options.length; i++) {
+			this.#unsetOption(options[i]);
+		}
 	}
 
 	/**

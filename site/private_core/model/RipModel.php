@@ -70,12 +70,15 @@ class RipModel extends Model implements ResultsetSearch
 
 	public function getChannels(bool $idOnly = false)
 	{
-		$values = $this->db->table('Channels');
+		$values = $this->db->table('Channels')
+			->columns('ChannelID', 'ChannelName')
+			->eq('IsActive', 1)
+			->findAll();
 		if ($idOnly) {
-			$values = $this->setSubArrayValueToKey($values->columns('ChannelID')->findAll(), 'ChannelID');
+			$values = $this->setSubArrayValueToKey($values, 'ChannelID');
 			return array_keys($values);
 		} else {
-			return $values->columns('ChannelID', 'ChannelName')->findAll();
+			return $values;
 		}
 	}
 
@@ -487,7 +490,7 @@ class RipModel extends Model implements ResultsetSearch
 			->limit(250)
 			->findAll();
 
-			return $this->resultsetToKeyPair($genres, 'Name', 'ID');
+		return $this->resultsetToKeyPair($genres, 'Name', 'ID');
 	}
 
 	private function restructureAsyncQueryResults(\PicoDB\Table $qry, array $names): array

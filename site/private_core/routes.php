@@ -61,11 +61,11 @@ Flight::group('/rips', function () {
 	});
 
 	Flight::route('POST /new', function () {
-		submitForm('rips/new', 'RipController');
+		submitForm('rips/edit', 'RipController');
 	});
 
 	Flight::route('/new', function () {
-		displayPage('rips/new', 'RipController', [], 'New Rip');
+		displayPage('rips/edit', 'RipController', [], 'New Rip');
 	});
 
 	Flight::route('POST /edit/@id', function ($id) {

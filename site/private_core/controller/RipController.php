@@ -125,15 +125,18 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 				break;
 			case 'rips/edit':
 				$rip = null;
-				if (is_numeric($data['id'])) {
+				if (is_numeric($data['id'] ?? null)) {
 					$rip = $this->model->getRip($data['id']);
 					$this->setData('jokes', $this->sortJokesByTimestamp($rip['Jokes'] ?? []));
+					$this->setData('heading', 'Edit Rip');
+				} else {
+					$this->setData('heading', 'Add A New Rip');
 				}
 
 				// Modify rippers and jokes to only contain necessary data to prefill the input table elements
 				$temp = [];
-				foreach ($rip['Composers'] as $composer) {
-					array_push($temp, ['Composer' => [$composer['ComposerID'] => $composer['ComposerName']]]);
+				foreach ($rip['Composers'] ?? [] as $composer) {
+					$temp[$composer['ComposerID']] = $composer['ComposerName'];
 				}
 				$rip['Composers'] = $temp;
 
@@ -165,11 +168,11 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 				DataValidator::cleanseDatabaseDataForOutput($rip);
 				$this->setData('rip', $rip);
 			case 'rips/new':
-				$this->setData('rippers', $this->model->getRippers());
+				// $this->setData('rippers', $this->model->getRippers());
 				$this->setData('channels', $this->model->getChannels());
-				$this->setData('games', $this->model->getGames());
-				$this->setData('jokes', $this->model->getJokes());
-				$this->setData('genres', $this->model->getGenres());
+				// $this->setData('games', $this->model->getGames());
+				// $this->setData('jokes', $this->model->getJokes());
+				// $this->setData('genres', $this->model->getGenres());
 				break;
 		}
 	}
@@ -282,8 +285,10 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 		switch ($this->getPage()) {
 			case 'rips/edit':
 				// The rip ID is validated in the stored procedure to ensure it exists.
-				$validated['RipIDTarget'] = DataValidator::validateNumber($extraData['id'], 'The given Rip ID is invalid.', null, 1);
-			case 'rips/new':
+				$id = $extraData['id'] ?? null;
+				if ($id !== null) {
+					$validated['RipIDTarget'] = DataValidator::validateNumber($id, 'The given Rip ID is invalid.', null, 1);
+				}
 				// Validate data in order of stored procedure parameters.
 				$validated['Name'] = DataValidator::validateString($_POST['name'], 'The given rip name is invalid.', 1024);
 				$validated['Mix'] = DataValidator::validateString($_POST['mixName'], 'The given mix name is invalid.', 256);
@@ -356,10 +361,10 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 				$validated['Composers'] = DataValidator::validateArray($_POST['composers'] ?? [], 'validateFromList', [$this->model->getComposers(true)], 'One or more of the given composers do not exist in the database.', true);
 				$validated['WikiLink'] = DataValidator::validateString($_POST['wikiUrl'], 'The given wiki URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=\(\)]*)/');
 
-				if ($this->getPage() == 'rips/new') {
-					$result = $this->submitRequest($validated, 'usp_InsertRip', '/rips', 'Rip successfully added!');
-				} else {
+				if ($id != null) {
 					$result = $this->submitRequest($validated, 'usp_UpdateRip', '/rips/' . $extraData['id'], 'Rip successfully updated!');
+				} else {
+					$result = $this->submitRequest($validated, 'usp_InsertRip', '/rips', 'Rip successfully added!');
 				}
 
 				break;
