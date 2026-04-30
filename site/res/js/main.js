@@ -512,10 +512,6 @@ class IModal {
 
 			if (this.allowResize) {
 				contentDiv.style.resize = "both";
-				contentDiv.style.overflow = "scroll";
-				contentDiv.style.minWidth = '100%';
-				contentDiv.style.minHeight = '100%';
-				contentDiv.style.maxWidth = '100%';
 				contentDiv.style.maxHeight = '87vh';
 			}
 

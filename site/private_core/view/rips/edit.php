@@ -6,7 +6,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 ?>
 <main>
 	<h1><?= $heading ?></h1>
-	<button type="button" onclick="importFromWiki()" style="float:right">Import from Wiki page source</button>
+	<button type="button" onclick="importFromWiki()" style="float:right">Import from Wikitext</button>
 	<p>Enter rip details here to store it in the database.</p>
 	<form id="edit-rip" method="POST" class="form-grid">
 		<fieldset>
@@ -58,11 +58,24 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<button type="submit">Save Rip</button>
 		</div>
 	</form>
+	<div id="import-errors" style="display:none">
+		<br>
+		<div class="notif highlight alert">
+			<p>Some content was detected from the source but does not exist in the database!<br><br>Please check the following items and add them to the database if valid to ensure a more complete import of the wiki page:</p>
+		</div>
+		<br>
+		<div class="grid"></div>
+	</div>
 </main>
 <div id="template-import" style="display:none">
-	<p>Paste the source from a wiki page in here and click "Parse Page" to update the rip's record.</p>
-	<p><em><strong>Note that currently any jokes, games, composers or rippers that do not exist in the database will not be automatically imported.</strong></em></p>
-	<?= (new o\InputElement('Wiki Source', o\InputTypes::textarea, ['name' => 'wiki_source', 'style' => 'width:calc(100% - 12px);min-height:50px;height:150px;resize:vertical;', 'placeholder' => 'Paste wiki page source code here'], null, true))->buildElement() ?>
-	<em>The source code is what is editable when adding <code>&quest;action=edit</code> at the end of the wiki page's URL, not the HTML source code.</em>
+	<p>Paste the wikitext from a wiki page in here and click "Parse Page" to update the rip's record.</p>
+	<p><em><strong>Note that currently any jokes, games, composers or rippers that do not exist in the database will not be automatically imported and must be added manually.</strong></em></p>
+	<?= (new o\InputElement('Wiki Source', o\InputTypes::textarea, ['name' => 'wiki_source', 'style' => 'width:calc(100% - 12px);min-height:50px;height:50px;resize:vertical;', 'placeholder' => 'Paste wiki page source code here'], null, true))->buildElement() ?>
+	<details>
+		<summary>About Wikitext Import</summary>
+		<p>This import feature requires the editable source of a wiki page (the wikitext, wiki markup or wikicode). This is the markup language of a wiki page used across many wiki sites such as MediaWiki and Fandom. It can easily be accessed by appending &quot;<code>&quest;action=edit</code>&quot; at the end of a wiki page's URL.</p>
+		<p>It works by simply looking at each line of text one by one and scanning for keywords in each line to determine what type of data it is. Unfortunately, this means it is also prone to errors and may not always find something.</p>
+		<p>If you believe something should have been captured but isn't, please submit a bug report on the GitHub and the line of text in the wikitext that was not imported correctly.</p>
+		</detail>
 </div>
 <script src="/res/js/rip.js"></script>

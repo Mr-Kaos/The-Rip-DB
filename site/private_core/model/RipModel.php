@@ -390,6 +390,10 @@ class RipModel extends Model implements ResultsetSearch
 		return $qry;
 	}
 
+	public function ripLinkExists(string $link): bool
+	{
+		return $this->db->table(self::TABLE)->eq('RipURL', $link)->exists();
+	}
 	/**
 	 * Finds a game or games that match the given string.
 	 * First attempts to find an exact match, if none was found, finds all games that contain the given text.
@@ -422,7 +426,7 @@ class RipModel extends Model implements ResultsetSearch
 			->beginOr();
 
 		// Lowercase all searched joke names.
-		foreach ($names as $key => &$name) {
+		foreach ($names as $key => $name) {
 			$name = strtolower(trim($name));
 			if (!empty($name)) {
 				$qry->ilike('JokeName', "%$name%");
@@ -444,7 +448,7 @@ class RipModel extends Model implements ResultsetSearch
 
 		// Lowercase all searched composer names.
 		$qry->beginOr();
-		foreach ($names as $key => &$name) {
+		foreach ($names as $key => $name) {
 			$name = strtolower(trim($name));
 			if (!empty($name)) {
 				$qry->ilike('ComposerName', "%$name%");
@@ -467,7 +471,7 @@ class RipModel extends Model implements ResultsetSearch
 			->beginOr();
 
 		// Lowercase all searched ripper names.
-		foreach ($names as $key => &$name) {
+		foreach ($names as $key => $name) {
 			$name = strtolower(trim($name));
 			if (!empty($name)) {
 				$qry->ilike('RipperName', "%$name%");
@@ -498,19 +502,24 @@ class RipModel extends Model implements ResultsetSearch
 		$results = [];
 		// If all the names are empty, do not query.
 		if (!empty($names)) {
+			// Make a lowercased copy used for searching. The original is kept for returning to the client.
+			$lowerCased = $names;
+			foreach ($lowerCased as &$name) {
+				$name = strtolower($name);
+			}
 			$matches = $qry->closeOr()->findAll();
 
 			$results = array_combine($names, array_fill(0, count($names), []));
 
 			foreach ($matches as $row) {
 				// Exact match
-				if (($idx = array_search(trim(strtolower($row['Name'])), $names)) !== false) {
+				if (($idx = array_search(trim(strtolower($row['Name'])), $lowerCased)) !== false) {
 					// Replace the searched name with the actual name name (not lowercased)
 					unset($results[$names[$idx]]);
 					$results[$row['Name']] = $row['ID'];
-					unset($names[$idx]);
+					unset($lowerCased[$idx]);
 				} else {
-					foreach ($names as $name) {
+					foreach ($lowerCased as $name) {
 						if (str_contains(strtolower($row['Name']), $name)) {
 							array_push($results[$name], $row);
 						}

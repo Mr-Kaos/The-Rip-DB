@@ -84,11 +84,11 @@ function importFromWiki() {
 			function: function () {
 				parseWikiContent(input.value)
 			},
-			close: false
+			close: true
 		}
 	};
 	template.style.display = null;
-	let modal = new Modal("WikiImport", "Wiki Page Parser", template, "50%", '30%', true, true, funcs);
+	let modal = new Modal("WikiImport", "Wiki Page Parser", template, "50%", '35%', true, true, funcs);
 	modal.open();
 }
 
@@ -206,6 +206,35 @@ async function parseWikiContent(input) {
 				ripperInput.addPill(wikiPage.rippers[i].Name, wikiPage.rippers[i].ID);
 			}
 		}
+
+		// If any errors were found, display them
+		let errorContainer = document.getElementById('import-errors');
+		if (wikiPage.errors != null) {
+			displayNotification('Imported wiki content with some errors.', NotificationPriority.Warning);
+			let errorGrid = errorContainer.querySelector('.grid');
+			errorGrid.innerHTML = '';
+			errorContainer.style.display = 'unset';
+
+			for (let e in wikiPage.errors) {
+				let container = document.createElement('div');
+				let title = document.createElement('h4');
+				title.innerText = e + ':';
+				let list = document.createElement('ul');
+
+				for (let i = 0; i < wikiPage.errors[e].length; i++) {
+					let li = document.createElement('li');
+					li.innerText = wikiPage.errors[e][i];
+					list.append(li);
+				}
+
+				container.append(title);
+				container.append(list);
+				errorGrid.append(container);
+			}
+		} else {
+			errorContainer.style.display = 'none';
+			displayNotification('Successfully imported wiki content!', NotificationPriority.Success);
+		}
 	}
 }
 
@@ -231,6 +260,7 @@ class WikiPage {
 	game;
 	mixName;
 	genres = [];
+	errors = null;
 
 	#linkRippers = false;
 	#linkJokes = false;
@@ -256,8 +286,9 @@ class WikiPage {
 	 * @param {String} altName The rip's alternate (album release) name.
 	 * @param {String} description The description of the rip.
 	 * @param {String} wikiURL The URL of the rip's wiki page.
+	 * @param {Object} errors Used for wiki source parsing. If any errors were encountered in parsing a wiki page, they should be here. Should be key-pair values of missing values in the database that were detected.
 	 */
-	constructor(ripName, uploadDate, length, url, ytId, game, jokes = [], platforms = [], rippers = [], composers = [], mixName = null, altURL = null, altName = null, description = null, wikiURL = null) {
+	constructor(ripName, uploadDate, length, url, ytId, game, jokes = [], platforms = [], rippers = [], composers = [], mixName = null, altURL = null, altName = null, description = null, wikiURL = null, errors = null) {
 		function cleanseArray(items) {
 			if (items != null) {
 				items = Array.isArray(items) ? items : items?.split(';');
@@ -293,6 +324,20 @@ class WikiPage {
 		this.platforms = cleanseArray(platforms);
 		this.game = game;
 		this.wikiURL = wikiURL?.trim();
+
+		// Ensure the errors content is not empty.
+		let emptyErrors = true;
+		for (let e in errors) {
+			if (errors[e]?.length > 0 && errors[e] != null) {
+				emptyErrors = false;
+			} else if (errors[e]?.length == 0) {
+				delete errors[e];
+			}
+		}
+		if (emptyErrors) {
+			errors = null;
+		}
+		this.errors = errors;
 	}
 
 	/**
@@ -518,6 +563,13 @@ class WikiPage {
 			}
 		}
 
+		let errors = {
+			Jokes: [],
+			Game: [],
+			Composers: [],
+			Rippers: [],
+		};
+
 		// Find Game in database
 		if (game != null) {
 			let url = `/rips/find-game?game=${game}`;
@@ -526,7 +578,8 @@ class WikiPage {
 			if (request.ok) {
 				let response = await request.json();
 				if (response?.length > 1) {
-					console.warn("A game needs to be chosen from this list!", response);
+					// console.warn("A game needs to be chosen from this list!", response);
+					errors.Game = response;
 				} else {
 					game = response;
 				}
@@ -548,11 +601,19 @@ class WikiPage {
 					let response = await request.json();
 					// Parse each joke in the returned response. If a joke ID is given, add it to the jokes table input. Else, mark is for manual addition to the database.
 					for (let name in response) {
-						if (typeof (response[name]) == 'number') {
-							outputList.push({ Name: name, ID: response[name] })
-						} else {
-							console.warn("NEED TO ADD JOKE TO DB:", name);
-							// jokes.push({ Name: name, ...response[name] })
+						if (name != null) {
+							if (typeof (response[name]) == 'number') {
+								outputList.push({ Name: name, ID: response[name] })
+							} else {
+								if (url.includes('jokes')) {
+									errors.Jokes.push(name);
+								} else if (url.includes('rippers')) {
+									errors.Rippers.push(name);
+								} else if (url.includes('composers')) {
+									errors.Composers.push(name);
+								}
+								// jokes.push({ Name: name, ...response[name] })
+							}
 						}
 					}
 				}
@@ -594,36 +655,7 @@ class WikiPage {
 			}
 		}
 
-		// console.log(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, mixName, altURL, altName, desc);
-
-		return new WikiPage(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, mixName, altURL, altName, desc);
-	}
-
-	/**
-	 * Reads the source of a Wiki page and parses it into a rip.
-	 * @param {String} url The URL of the wiki page to retrieve.
-	 */
-	static async wikiSourceToRip(url) {
-		url = URL.parse(url);
-		if (url != null) {
-			// Validate the url
-			if (!url.search.includes('action=edit')) {
-				if (!url.search.includes('?')) {
-					url.search = '?';
-				}
-				url.search += 'action=edit';
-			}
-
-			let data = new FormData();
-			data.append('url', url.href);
-
-			let response = await fetch(url.href);
-
-			if (response.ok) {
-				let result = response.body;
-				console.log(result);
-			}
-		}
+		return new WikiPage(ripName, uploadDate, length, url, ytId, game, jokes, platforms, rippers, composers, mixName, altURL, altName, desc, null, errors);
 	}
 
 	/**

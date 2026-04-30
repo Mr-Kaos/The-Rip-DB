@@ -528,8 +528,12 @@ h1.split-heading a.inactive {
 	padding: 5px;
 }
 
-.modal-window>.content {
-	padding: 3px;
+.modal-window .content {
+	padding: 15px;
+	overflow: scroll;
+	min-width: calc(100% - 30px);
+	min-height: 100%;
+	max-width: 100%;
 }
 
 .modal-title-bar {
