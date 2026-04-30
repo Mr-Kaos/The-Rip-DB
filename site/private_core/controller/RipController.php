@@ -298,7 +298,7 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 				$validated['Length'] = DataValidator::validateTimestamp($_POST['length'] ?? null);
 				$validated['URL'] = DataValidator::validateString($_POST['url'], 'The given rip URL is invalid.', null, null, '/(?:http[s]?:\/\/.)?(?:www\.)?[-a-zA-Z0-9@%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/');
 				// Check the URL to ensure it is unique
-				if (is_string($validated['URL']) && $this->model->ripLinkExists($validated['URL'])) {
+				if (is_string($validated['URL']) && $this->model->ripLinkExists($validated['URL'], $id)) {
 					$validated['URL'] = new Error('The link given for the rip is already in use by an existing rip.');
 				}
 				$validated['YTID'] = DataValidator::validateString($_POST['ytId'], 'The given youTube ID is invalid.', null, null, '/[A-Za-z0-9_-]{11}/');;

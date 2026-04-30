@@ -390,9 +390,15 @@ class RipModel extends Model implements ResultsetSearch
 		return $qry;
 	}
 
-	public function ripLinkExists(string $link): bool
+	public function ripLinkExists(string $link, ?int $id): bool
 	{
-		return $this->db->table(self::TABLE)->eq('RipURL', $link)->exists();
+		$qry = $this->db->table(self::TABLE)->eq('RipURL', $link);
+
+		if ($id != null) {
+			$qry->neq('RipID', $id);
+		}
+		
+		return $qry->exists();
 	}
 	/**
 	 * Finds a game or games that match the given string.
