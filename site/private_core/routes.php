@@ -103,10 +103,10 @@ Flight::group('/rips', function () {
 // Jokes Pages
 Flight::group('/jokes', function () {
 	Flight::route('POST /new', function () {
-		submitForm('jokes/new', 'JokeController');
+		submitForm('jokes/edit', 'JokeController');
 	});
 	Flight::route('/new', function () {
-		displayPage('jokes/new', 'JokeController', [], 'New Joke');
+		displayPage('jokes/edit', 'JokeController', [], 'New Joke');
 	});
 	Flight::route('POST /edit/@id', function ($id) {
 		submitForm('jokes/edit', 'JokeController', ['id' => $id]);

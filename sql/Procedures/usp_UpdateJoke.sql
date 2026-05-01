@@ -45,8 +45,10 @@ BEGIN
 		);
 
 		-- Insert primary tag
-		INSERT INTO JokeTags (JokeID, TagID, IsPrimary)
-		VALUES (InJokeID, PrimaryTag, 1);
+		IF (PrimaryTag IS NOT NULL) THEN
+			INSERT INTO JokeTags (JokeID, TagID, IsPrimary)
+			VALUES (InJokeID, PrimaryTag, 1);
+		END IF;
 
 		-- ASSOCIATED META JOKES
 		-- Delete all meta jokes so they can be re-inserted again.

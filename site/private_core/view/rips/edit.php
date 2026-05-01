@@ -46,7 +46,7 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<legend>Rip Jokes</legend>
 			<p>Enter each joke that is featured in this rip below. If the same joke appears multiple times, at different timestamps, please add it for each occurrence.</p>
 			<?php
-			$jokeList = new o\SearchElement('Joke', '/search/jokes', false, null, ['name' => 'jokes[]', 'modal' => '/jokes/new', 'modal-tgt-id' => 'new-joke', 'modal-value-key' => 'InJokeName']);
+			$jokeList = new o\SearchElement('Joke', '/search/jokes', false, null, ['name' => 'jokes[]', 'modal' => '/jokes/new', 'modal-tgt-id' => 'form-joke', 'modal-value-key' => 'InJokeName']);
 			$start = new o\InputElement('Start', o\InputTypes::timestamp, ['name' => 'jokeStart[]', 'pattern' => '(?:[0-9]{0,2}:?)([0-9]{2}:[0-9]{2})', 'placeholder' => '--:--:--', 'style' => 'width:60px'], null, true);
 			$end = new o\InputElement('End', o\InputTypes::timestamp, ['name' => 'jokeEnd[]', 'pattern' => '(?:[0-9]{0,2}:?)([0-9]{2}:[0-9]{2})', 'placeholder' => '--:--:--', 'style' => 'width:60px'], null, true);
 			$comment = (new o\InputElement('Notes', o\InputTypes::text, ['name' => 'comment[]', 'maxlength' => 1024], null, true));

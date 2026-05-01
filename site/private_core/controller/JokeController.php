@@ -75,19 +75,22 @@ class JokeController extends Controller
 				}
 
 				break;
-			case 'jokes/new':
-				$this->setData('tags', $this->model->getTags());
-				break;
 			case 'jokes/edit':
-				$joke = $this->model->getJoke($data['id']);
-				if (empty($joke)) {
-					\RipDB\addNotification('That joke does not exist.', \RipDB\NotificationPriority::Warning);
-					\Flight::redirect('/jokes');
-					die();
-				}
-				DataValidator::cleanseDatabaseDataForOutput($joke);
+				$this->setData('tags', $this->model->getTags());
+				if (isset($data['id']) && is_numeric($data['id'])) {
+					$joke = $this->model->getJoke($data['id']);
+					if (empty($joke)) {
+						\RipDB\addNotification('That joke does not exist.', \RipDB\NotificationPriority::Warning);
+						\Flight::redirect('/jokes');
+						die();
+					}
+					DataValidator::cleanseDatabaseDataForOutput($joke);
 
-				$this->setData('joke', $joke);
+					$this->setData('joke', $joke);
+					$this->setData('heading', 'Edit Joke');
+				} else {
+					$this->setData('heading', 'New Joke');
+				}
 				break;
 		}
 	}
@@ -99,13 +102,22 @@ class JokeController extends Controller
 		// Validate data in order of stored procedure parameters.
 		switch ($this->getPage()) {
 			case 'jokes/edit':
-				$validated['InJokeID'] = DataValidator::validateNumber($extraData['id']);
-			case 'jokes/new':
+				$id = $extraData['id'] ?? null;
+				if ($id !== null) {
+					$validated['InJokeID'] = DataValidator::validateNumber($extraData['id']);
+				}
 				$validated['InJokeName'] = DataValidator::validateString($_POST['name'], 'The given joke name is invalid.', 128);
 				$validated['InJokeDescription'] = DataValidator::validateString($_POST['description'], 'The given description is invalid.', null);
 
-				$existingTags = $this->model->getTags();
-				$validated['PrimaryTag'] = DataValidator::validateFromList(intval($_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
+				if (isset($_POST['primary']) && is_numeric($_POST['primary'])) {
+					$existingTags = $this->model->getTags();
+					$validated['PrimaryTag'] = DataValidator::validateFromList(intval($_POST['primary']), $existingTags, 'The selected primary tag does not exist in the database.');
+				} else {
+					$validated['PrimaryTag'] = null;
+				}
+				if (!isset($existingTags)) {
+					$existingTags = $this->model->getTags();
+				}
 				$validated['TagsJSON'] = DataValidator::validateArray($_POST['tags'] ?? null, 'validateFromList', [$existingTags], 'One or more of the given tags do not exist in the database.', true);
 
 				$existingMetas = $this->model->getMetaJokes();
@@ -113,14 +125,11 @@ class JokeController extends Controller
 
 				$validated['AlternateJokeNames'] = DataValidator::validateArray($_POST['alt_names'] ?? null, 'validateString', [512], 'One or more of the alternate names are not valid.', true);
 
-				switch ($this->getPage()) {
-					case 'jokes/new':
-						$jokeId = 0;
-						$result = $this->submitRequest($validated, 'usp_InsertJoke', '/jokes', 'Joke successfully added!', $jokeId);
-						break;
-					case 'jokes/edit':
-						$result = $this->submitRequest($validated, 'usp_UpdateJoke', '/jokes', 'Joke successfully updated!');
-						break;
+				if ($id == null) {
+					$jokeId = 0;
+					$result = $this->submitRequest($validated, 'usp_InsertJoke', '/jokes', 'Joke successfully added!', $jokeId);
+				} else {
+					$result = $this->submitRequest($validated, 'usp_UpdateJoke', '/jokes', 'Joke successfully updated!');
 				}
 				break;
 		}
