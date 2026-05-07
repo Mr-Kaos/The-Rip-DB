@@ -86,7 +86,8 @@ const PROCEDURES = [
 	'usp_UpdatePlaylist',
 	'usp_DeletePlaylist',
 	'usp_ClaimPlaylists',
-	'usp_GenerateUniqueCode'
+	'usp_GenerateUniqueCode',
+	'usp_InsertBulkMissingMetadata'
 ];
 const TRIGGERS = [
 	'b_ins_EnsureSinglePrimaryTag',

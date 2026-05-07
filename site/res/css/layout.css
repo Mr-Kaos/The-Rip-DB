@@ -745,6 +745,10 @@ input[type="checkbox"]:checked+label.btn-plist>a:hover {
 	background: var(--accent-1);
 }
 
+li.no-bullet {
+	list-style-type: none;
+}
+
 /* Split container with sidebar */
 
 .sidebar-split {

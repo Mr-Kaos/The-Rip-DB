@@ -216,25 +216,84 @@ async function parseWikiContent(input) {
 			errorContainer.style.display = 'unset';
 
 			for (let e in wikiPage.errors) {
-				let container = document.createElement('div');
-				let title = document.createElement('h4');
+				let container = document.createElement('fieldset');
+				container.className = 'container';
+				let title = document.createElement('legend');
 				title.innerText = e + ':';
 				let list = document.createElement('ul');
+				let btnEnableImport = document.createElement('button');
+				btnEnableImport.innerText = "Select for Import";
+				btnEnableImport.type = "button";
+				btnEnableImport.onclick = e => enableImport(container);
 
 				for (let i = 0; i < wikiPage.errors[e].length; i++) {
 					let li = document.createElement('li');
-					li.innerText = wikiPage.errors[e][i];
+					let label = document.createElement('label');
+					let cb = document.createElement('input');
+					cb.type = 'checkbox';
+					cb.name = 'jokes[]';
+					cb.id = `errors-jokes-${i}`;
+					cb.value = wikiPage.errors[e][i];
+					cb.disabled = true;
+					cb.style.display = 'none';
+					label.innerText = wikiPage.errors[e][i];
+					label.htmlFor = `errors-jokes-${i}`;
+					li.append(cb);
+					li.append(label);
 					list.append(li);
 				}
 
 				container.append(title);
 				container.append(list);
+				container.append(btnEnableImport);
 				errorGrid.append(container);
 			}
 		} else {
 			errorContainer.style.display = 'none';
 			displayNotification('Successfully imported wiki content!', NotificationPriority.Success);
 		}
+
+		function enableImport(container) {
+			let inputs = container.querySelectorAll('input[type="checkbox"]');
+			let lis  = container.querySelectorAll('li');
+			let disabled = !inputs[0].disabled;
+
+			for (let i = 0; i < inputs.length; i++) {
+				if (disabled) {
+					lis[i].className = null;
+					inputs[i].style.display = 'none';
+				} else {
+					lis[i].className = "no-bullet";
+					inputs[i].style.display = 'unset';
+				}
+				inputs[i].disabled = disabled;
+			}
+		}
+	}
+}
+
+/**
+ * Submits all selected missing data fields.
+ * @param {Event} e The form submission event.
+ */
+async function submitMissing(e) {
+	e.preventDefault();
+
+	let formData = new FormData(e.target);
+
+	let request = await fetch('/rips/add-missing', {
+		method: "POST",
+		body: formData,
+		headers: {
+			'Accept': 'application/json'
+		}
+	});
+
+	if (request.ok) {
+		let response = await request.json();
+
+		let message = `${response._Message}\nPlease Import the wikitext again to add the new item(s).`
+		displayNotification(message);
 	}
 }
 

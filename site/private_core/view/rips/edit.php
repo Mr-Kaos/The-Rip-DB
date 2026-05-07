@@ -64,7 +64,10 @@ include_once('private_core/objects/pageElements/InputTable.php');
 			<p>Some content was detected from the source but does not exist in the database!<br><br>Please check the following items and add them to the database if valid to ensure a more complete import of the wiki page:</p>
 		</div>
 		<br>
-		<div class="grid"></div>
+		<form action="#" onsubmit="submitMissing(event)">
+			<div class="grid"></div>
+			<button type="submit">Import Selected Items</button>
+		</form>
 	</div>
 </main>
 <div id="template-import" style="display:none">
