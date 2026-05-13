@@ -448,7 +448,7 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 
 	echo '<!DOCTYPE HTML><html>';
 	define('PAGE_TITLE', "The Rip Database | " . ($pageTitle === null ? $page : $pageTitle));
-	$headMeta = $controller->getHeaderData();
+	$headMeta = $controller?->getHeaderData();
 	require("templates/head.php");
 	echo "<body>";
 	require('templates/globalScripts.php');
