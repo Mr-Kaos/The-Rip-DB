@@ -154,18 +154,20 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 				$rip['Rippers'] = $temp;
 
 				$temp = [];
-
 				foreach ($rip['Jokes'] ?? [] as $joke) {
 					$timestamps = json_decode($joke['JokeTimestamps'], true);
 					if (!empty($timestamps)) {
 						foreach ($timestamps as $timestamp) {
-							array_push($temp, [
+							$record = [
 								'Joke' => [$joke['JokeID'] => $joke['JokeName']],
 								'Start' => $this->formatTimestamp($timestamp['start'] ?? null),
 								'End' => $this->formatTimestamp($timestamp['end'] ?? null),
-								'Genre' => [$joke['GenreID'] => $joke['GenreName']],
+								'Genre' => empty($joke['GenreID']) ? null : [$joke['GenreID'] => $joke['GenreName']],
+								'Genre' => null,
 								'Notes' => $joke['JokeComment']
-							]);
+							];
+
+							array_push($temp, $record);
 						}
 					} else {
 						array_push($temp, ['Joke' => [$joke['JokeID'] => $joke['JokeName']], 'Start' => null, 'End' => null, 'Genre' => [$joke['GenreID'] => $joke['GenreName']], 'Notes' => $joke['JokeComment']]);
@@ -329,6 +331,8 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 					$validated['Jokes'] = $starts;
 				} elseif ($ends instanceof Error) {
 					$validated['Jokes'] = $ends;
+				} elseif ($genres instanceof Error) {
+					$validated['Jokes'] = $genres;
 				} else {
 					$validated['Jokes'] = [];
 					// Format the jokes array so it can be encoded in JSON.
@@ -397,7 +401,7 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 				$validated['RipperNames'] = json_encode($rippers);
 				$validated['ComposerNames'] = json_encode($composers);
 				$validated['GameName'] = $game;
-				
+
 				$totalImports = count($jokes) + count($rippers) + count($composers) + (empty($game) ? 0 : 1);
 
 				$result = $this->submitRequest($validated, 'usp_InsertBulkMissingMetadata', '/rips', "Successfully imported $totalImports missing record" . ($totalImports == 1 ? 's' : '') . "!");

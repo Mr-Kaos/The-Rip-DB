@@ -75,7 +75,12 @@ class InputTable extends InputElement
 								$col->setAttribute('selected', $rowVals[array_keys($rowVals)[$i]]);
 								break;
 							case ($col instanceof SearchElement):
-								$col->setValue($rowVals[array_keys($rowVals)[$i]]);
+								$val = $rowVals[array_keys($rowVals)[$i]];
+								if (!empty($val) && !empty(array_keys($val ?? ["" => null])[0])) {
+									$col->setValue($rowVals[array_keys($rowVals)[$i]]);
+								} else {
+									$col->setValue(null);
+								}
 								break;
 							default:
 								$col->setAttribute('value', $rowVals[array_keys($rowVals)[$i]]);
