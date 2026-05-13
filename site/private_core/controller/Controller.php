@@ -10,6 +10,7 @@ abstract class Controller
 	protected ?m\Model $model;
 	private string $page;
 	private ?string $pageTitleOverride = null;
+	private array $headerData = [];
 
 	const SUBMIT_RESPONSE_ID = '_NewID';
 	const SUBMIT_RESPONSE_MSG = '_Message';
@@ -123,5 +124,26 @@ abstract class Controller
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Sets data used for the webpage headers used in embeds.
+	 * @param string $title The title of the page to use in the header.
+	 * @param string $description The description to use in the header.
+	 * @param string $image An image to display when embedded. (CURRENTLY UNUSED)
+	 */
+	protected function setHeaderData(string $title, string $description, string $image = 'res/img/icon.png')
+	{
+		$this->headerData['description'] = htmlspecialchars($description);
+		$this->headerData['title'] = htmlspecialchars($title);
+
+		// IMAGE IS UNUSED AND IS ALWAYS SET TO THE DEFAULT ICON.
+		$image = 'res/img/icon.png';
+		$this->headerData['image'] = $image;
+	}
+
+	public function getHeaderData(): array
+	{
+		return $this->headerData;
 	}
 }

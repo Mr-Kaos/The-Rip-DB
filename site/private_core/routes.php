@@ -96,7 +96,7 @@ Flight::group('/rips', function () {
 	}
 
 	Flight::route('/@id', function ($id) {
-		displayPage('rips/rip', 'RipController', ['id' => $id], 'View Rip');
+		displayPage('rips/rip', 'RipController', ['id' => $id], 'View Rip', 'meta-rips.php');
 	});
 });
 
@@ -422,7 +422,7 @@ Flight::group('/search', function () {
 /**
  * Displays the page with a header and footer.
  */
-function displayPage(string $page, ?string $controllerName = null, array $data = [], ?string $pageTitle = null, string $headerFileOverride = 'head.php'): void
+function displayPage(string $page, ?string $controllerName = null, array $data = [], ?string $pageTitle = null, string $metadataOverride = 'meta.php'): void
 {
 	RipDB\initSession();
 	// Include page objects that are commonly used across pages
@@ -448,7 +448,8 @@ function displayPage(string $page, ?string $controllerName = null, array $data =
 
 	echo '<!DOCTYPE HTML><html>';
 	define('PAGE_TITLE', "The Rip Database | " . ($pageTitle === null ? $page : $pageTitle));
-	require("templates/$headerFileOverride");
+	$headMeta = $controller->getHeaderData();
+	require("templates/head.php");
 	echo "<body>";
 	require('templates/globalScripts.php');
 	require('templates/nav.php');

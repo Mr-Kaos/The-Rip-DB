@@ -115,6 +115,13 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 						DataValidator::cleanseDatabaseDataForOutput($rip);
 						$this->setData('rip', $rip);
 						$this->setData('hasWiki', $this->model->channelHasWiki($rip['RipChannel']));
+
+						$ripName = $rip['RipName'] . (empty($rip['MixName']) ? '' : ' (' . $rip['MixName'] . ')') . ' - ' . $rip['GameName'];
+						$this->setData('ripName', $ripName);
+						$this->setHeaderData(
+							$ripName,
+							"View the jokes and other metadata for the rip \"$ripName\""
+						);
 					}
 					if (isset($rip)) {
 						$this->setPageTitle($rip['RipName']);

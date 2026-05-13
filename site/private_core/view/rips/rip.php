@@ -3,7 +3,7 @@
 		<h2>This rip does not exist.</h2>
 	<?php else: ?>
 		<section id="summary">
-			<h1 id="title"><?= $rip['RipName'] ?><?= empty($rip['MixName']) ? '' : ' (' . $rip['MixName'] . ')' ?> - <?= $rip['GameName'] ?></h1>
+			<h1 id="title"><?= $ripName ?></h1>
 			<a href="/rips/edit/<?= $rip['RipID']; ?>">Edit Rip</a>
 		</section>
 		<div class="rip-container">
@@ -12,7 +12,7 @@
 				<?php if (empty($rip['RipDescription'])): ?>
 					<p><em>No description exists for this rip.</em></p>
 				<?php else: ?>
-					<p id="data-Sescription"><?= $rip['RipDescription'] ?></p>
+					<p id="data-Description"><?= $rip['RipDescription'] ?></p>
 				<?php endif; ?>
 				<h3>Jokes</h3>
 				<?php if (!empty($jokes)): ?>
