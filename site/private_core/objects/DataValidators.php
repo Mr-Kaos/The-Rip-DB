@@ -105,6 +105,10 @@ class DataValidator
 			$validated = null;
 		}
 
+		if (is_string($validated)) {
+			$validated = trim($validated);
+		}
+
 		return $validated;
 	}
 

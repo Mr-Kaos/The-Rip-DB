@@ -93,6 +93,9 @@ Flight::group('/rips', function () {
 		Flight::route('GET /find-genres', function () {
 			performAPIRequest('find-genres', HttpMethod::GET, 'RipController');
 		});
+		Flight::route('POST /add-missing', function () {
+			performAPIRequest('add-missing', HttpMethod::POST, 'RipController');
+		});
 	}
 
 	Flight::route('/@id', function ($id) {

@@ -388,23 +388,25 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 				}
 				break;
 			case 'add-missing':
-				$jokes = DataValidator::validateArray($_POST['jokes'] ?? [], 'validateString', ['', 512, 1], 'The given list of jokes contains an invalid value.');
-				$rippers = DataValidator::validateArray($_POST['rippers'] ?? [], 'validateString', ['', 256, 1], 'The given list of rippers contains an invalid value.');
-				$composers = DataValidator::validateArray($_POST['composers'] ?? [], 'validateString', ['', 256, 1], 'The given list of composers contains an invalid value.');
-				$game = DataValidator::validateString($_POST['game'] ?? '', 'The given game name is not valid.', 256);
-				// Filter out any already existing jokes
-				// if (is_array($jokes) && !empty($jokes)) {
-				// 	validated['jokes'] = $this->model->
-				// }
+				$jokes = DataValidator::validateArray($_POST['Jokes'] ?? [], 'validateString', ['', 512, 1], 'The given list of jokes contains an invalid value.');
+				$rippers = DataValidator::validateArray($_POST['Rippers'] ?? [], 'validateString', ['', 256, 1], 'The given list of rippers contains an invalid value.');
+				$composers = DataValidator::validateArray($_POST['Composers'] ?? [], 'validateString', ['', 256, 1], 'The given list of composers contains an invalid value.');
+				$game = DataValidator::validateString($_POST['Game'][0] ?? '', 'The given game name is not valid.', 256);
+				// Split composer names into first and last names
+				$composersNew = [];
+				foreach ($composers as $composer) {
+					$split = explode(" ", $composer, 2);
+					array_push($composersNew, ['FirstName' => $split[0], 'LastName' => $split[1] ?? null]);
+				}
 
 				$validated['JokeNames'] = json_encode($jokes);
 				$validated['RipperNames'] = json_encode($rippers);
-				$validated['ComposerNames'] = json_encode($composers);
+				$validated['ComposerNames'] = json_encode($composersNew);
 				$validated['GameName'] = $game;
 
-				$totalImports = count($jokes) + count($rippers) + count($composers) + (empty($game) ? 0 : 1);
+				$totalImports = count($jokes) + count($rippers) + count($composersNew) + (empty($game) ? 0 : 1);
 
-				$result = $this->submitRequest($validated, 'usp_InsertBulkMissingMetadata', '/rips', "Successfully imported $totalImports missing record" . ($totalImports == 1 ? 's' : '') . "!");
+				$result = $this->submitRequest($validated, 'usp_InsertBulkMissingMetadata', '/rips', "Successfully imported $totalImports missing record" . ($totalImports == 1 ? '' : 's') . "!");
 				break;
 		}
 

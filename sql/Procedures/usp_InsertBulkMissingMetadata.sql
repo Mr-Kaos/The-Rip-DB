@@ -34,6 +34,15 @@ BEGIN
 		WHERE LOWER(RipperName) = LOWER(JSON_UNQUOTE(Ripper))
 	);
 
+	INSERT INTO Composers (ComposerFirstName, ComposerLastName) 
+	SELECT JSON_UNQUOTE(FirstName), JSON_UNQUOTE(LastName)
+	FROM JSON_TABLE (ComposerNames, '$[*]' COLUMNS(FirstName JSON PATH'$.FirstName', LastName JSON PATH '$.LastName')) b
+	WHERE NOT EXISTS (
+		SELECT 1
+		FROM Composers
+		WHERE LOWER(UniqueNameCompute) = LOWER(CONCAT(JSON_UNQUOTE(FirstName), JSON_UNQUOTE(IF(LastName IS NULL, '', LastName))))
+	);
+
 	IF Game IS NOT NULL AND (SELECT GameID FROM Games WHERE LOWER(GameName) = LOWER(Game)) IS NULL THEN
 		INSERT INTO Games
 			(GameName)

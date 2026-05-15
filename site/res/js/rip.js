@@ -231,13 +231,13 @@ async function parseWikiContent(input) {
 					let label = document.createElement('label');
 					let cb = document.createElement('input');
 					cb.type = 'checkbox';
-					cb.name = 'jokes[]';
-					cb.id = `errors-jokes-${i}`;
+					cb.name = `${e}[]`;
+					cb.id = `errors-${e}-${i}`;
 					cb.value = wikiPage.errors[e][i];
 					cb.disabled = true;
 					cb.style.display = 'none';
 					label.innerText = wikiPage.errors[e][i];
-					label.htmlFor = `errors-jokes-${i}`;
+					label.htmlFor = `errors-${e}-${i}`;
 					li.append(cb);
 					li.append(label);
 					list.append(li);
@@ -636,9 +636,8 @@ class WikiPage {
 			let request = await fetch(url);
 			if (request.ok) {
 				let response = await request.json();
-				if (response?.length > 1) {
-					// console.warn("A game needs to be chosen from this list!", response);
-					errors.Game = response;
+				if (response?.ID == undefined) {
+					errors.Game = [game];
 				} else {
 					game = response;
 				}

@@ -397,7 +397,7 @@ class RipModel extends Model implements ResultsetSearch
 		if ($id != null) {
 			$qry->neq('RipID', $id);
 		}
-		
+
 		return $qry->exists();
 	}
 	/**
@@ -449,6 +449,7 @@ class RipModel extends Model implements ResultsetSearch
 	 */
 	public function findComposersByName(array $names)
 	{
+		$names = array_unique($names);
 		$qry = $this->db->table('vw_Composers')
 			->columns('ComposerID ID', 'ComposerName Name');
 
@@ -508,31 +509,35 @@ class RipModel extends Model implements ResultsetSearch
 		$results = [];
 		// If all the names are empty, do not query.
 		if (!empty($names)) {
-			// Make a lowercased copy used for searching. The original is kept for returning to the client.
-			$lowerCased = $names;
-			foreach ($lowerCased as &$name) {
-				$name = strtolower($name);
+			foreach ($names as &$name) {
+				$name = trim($name);
 			}
-			$matches = $qry->closeOr()->findAll();
+			unset($name);
 
+			$matches = $qry->closeOr()->findAll();
 			$results = array_combine($names, array_fill(0, count($names), []));
 
 			foreach ($matches as $row) {
-				// Exact match
-				if (($idx = array_search(trim(strtolower($row['Name'])), $lowerCased)) !== false) {
-					// Replace the searched name with the actual name name (not lowercased)
-					unset($results[$names[$idx]]);
-					$results[$row['Name']] = $row['ID'];
-					unset($lowerCased[$idx]);
-				} else {
-					foreach ($lowerCased as $name) {
-						if (str_contains(strtolower($row['Name']), $name)) {
-							array_push($results[$name], $row);
+				$lRowName = trim(strtolower($row['Name']));
+
+				foreach ($names as $name) {
+					$lName = trim(strtolower($name));
+
+					if ($lRowName == $lName) {
+						$results[$name] = $row['ID'];
+						unset($names[array_search($name, $names)]);
+						break;
+					} elseif (str_contains($lRowName, $lName)) {
+						if (is_array($results[$name])) {
+							array_push($results[$name], $row['ID']);
+							// Do not break here in case there is another name that contains a substring of another name but matches exactly.
+							// break;
 						}
 					}
 				}
 			}
 		}
+
 		return $results;
 	}
 }
