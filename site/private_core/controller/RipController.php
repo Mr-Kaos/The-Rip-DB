@@ -120,7 +120,8 @@ class RipController extends Controller implements \RipDB\Objects\IAsyncHandler
 						$this->setData('ripName', $ripName);
 						$this->setHeaderData(
 							$ripName,
-							"View the jokes and other metadata for the rip \"$ripName\""
+							"View the jokes and other metadata for the rip \"$ripName\"",
+							empty($rip['RipYouTubeID'] ?? null) ? null : 'https://i1.ytimg.com/vi/' . $rip['RipYouTubeID'] . '/mqdefault.jpg'
 						);
 					}
 					if (isset($rip)) {

@@ -132,13 +132,15 @@ abstract class Controller
 	 * @param string $description The description to use in the header.
 	 * @param string $image An image to display when embedded. (CURRENTLY UNUSED)
 	 */
-	protected function setHeaderData(string $title, string $description, string $image = 'res/img/icon.png')
+	protected function setHeaderData(string $title, string $description, string $image = null)
 	{
 		$this->headerData['description'] = htmlspecialchars($description);
 		$this->headerData['title'] = htmlspecialchars($title);
 
 		// IMAGE IS UNUSED AND IS ALWAYS SET TO THE DEFAULT ICON.
-		$image = 'res/img/icon.png';
+		if (is_null($image)) {
+			$image = 'https://' . $_SERVER['HTTP_HOST'] . '/res/img/icon.png';
+		}
 		$this->headerData['image'] = $image;
 	}
 
