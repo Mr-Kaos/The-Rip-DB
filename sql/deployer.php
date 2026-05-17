@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This script provides definitions and functions to aid in the deployment/updating of the database.
  */
@@ -10,6 +11,45 @@ if (!file_exists($dbConfig)) {
 	die();
 } else {
 	require_once($dbConfig);
+}
+
+function verifyConnectionDetails(string &$host, string &$port): bool
+{
+	$ready = false;
+	while (!$ready) {
+		$in = strtoupper(readline("Connecting to database " . constant("SQL_DB") . " on $host:$port. Is this OK? [Y/N, 0 to abort]"));
+		if ($in == 'N') {
+			print("Enter destination host: [default: 'localhost']\n");
+			$host = 'localhost';
+			$in = readline();
+			$host = empty($in) ? $host : trim($in);
+
+			print("Enter server port: [default: '$port']\n");
+			$in = readline();
+			$port = empty($in) ? $port : trim($in);
+		} elseif ($in == 'Y') {
+			$ready = true;
+		} elseif ($in == '0') {
+			break;
+		}
+	}
+
+	return $ready;
+}
+
+function createConnection()
+{
+	$host = constant('SQL_HOST');
+	$port = constant('SQL_PORT');
+	$pdo = null;
+
+	if (verifyConnectionDetails($host, $port)) {
+		$pdo = new PDO("mysql:host=$host;port=$port;dbname=" . constant('SQL_DB') . ';charset=UTF8mb4', constant('SQL_USER'), constant('SQL_PASS'));
+		if (!$pdo) {
+			echo "Database connection failed! Please check the connection details in this file (deploy.php).";
+		}
+	}
+	return $pdo;
 }
 
 function deployFiles($pdo, string $folder, array $fileNames)
