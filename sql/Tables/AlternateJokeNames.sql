@@ -3,7 +3,7 @@
 CREATE TABLE AlternateJokeNames (
 	JokeID int NOT NULL,
 	JokeName varchar(512) CHARACTER SET utf8mb4 NOT NULL,
-	CONSTRAINT AlternateJokeNames_Jokes_FK FOREIGN KEY (JokeId) REFERENCES Jokes(JokeID)
+	CONSTRAINT AlternateJokeNames_Jokes_FK FOREIGN KEY (JokeId) REFERENCES Jokes(JokeID) ON DELETE CASCADE
 )
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4

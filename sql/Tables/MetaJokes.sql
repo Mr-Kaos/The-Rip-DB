@@ -6,7 +6,7 @@ CREATE TABLE MetaJokes (
 	MetaJokeDescription text,
 	MetaID int NOT NULL,
 	PRIMARY KEY (MetaJokeID),
-	CONSTRAINT MetaJokes_Tag_FK FOREIGN KEY (MetaID) REFERENCES Metas(MetaID),
+	CONSTRAINT MetaJokes_Tag_FK FOREIGN KEY (MetaID) REFERENCES Metas(MetaID) ON DELETE CASCADE,
 	UNIQUE KEY UQ_MetaJokeName (MetaJokeName)
 )
 ENGINE=InnoDB
