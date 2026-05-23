@@ -255,7 +255,7 @@ async function parseWikiContent(input) {
 
 		function enableImport(container) {
 			let inputs = container.querySelectorAll('input[type="checkbox"]');
-			let lis  = container.querySelectorAll('li');
+			let lis = container.querySelectorAll('li');
 			let disabled = !inputs[0].disabled;
 
 			for (let i = 0; i < inputs.length; i++) {
@@ -431,12 +431,13 @@ class WikiPage {
 		var regexDescription = new RegExp(/catchphrase.*=(.*)/i);
 		var regexRipperCleanse = new RegExp(/<ref\b[^>]*>(.*?)<\/ref>/ig); // Used to remove all refs in a ripper line
 		var regexRipperLinked = new RegExp(/(?:\[\[)?((?:[^[]|)*?)(?:\]\])/ig); // Finds rippers enclosed between a pair of two square braces
-		var regexRipper = new RegExp(/author\s*=\s*(?:\[\[)?(.+?)(?:\]\])?\s?(?=\s*<ref>|$)/i); // Used to see if the line is a rippers line and matches any rippers that exist after "author=".
+		var regexRipper = new RegExp(/author|ripper\s*=\s*(?:\[\[)?(.+?)(?:\]\])?\s?(?=\s*<ref>|$)/i); // Used to see if the line is a rippers line and matches any rippers that exist after "author=".
 		var regexComposers = new RegExp(/composer\s*=\s*(?:\[\[)?(.+?)(?:\]\])?\s?(?=\s*<ref>|$)/i);
 		var regexAltTrack = new RegExp(/track=\s*"\[(http[^\s]+)\s+(.+?)\]"/i);
 		// var regexTime = /[0-9]{1,2}:[0-9]{1,2}(:[0-9]{2})?/;
 
-		var regexJokeFrom = new RegExp(/"([^"]*)"(?:\s+)?(?:by|from)/ig); // Finds all names of songs or references enclosed by quotes and followed by "by" or "from".
+		var regexJokeFrom = new RegExp(/"(?:\[\[)?([^"]*?)(?:\]\])?".(?:by|from[a-zA-Z ]{0,128}).(?:[\']{1,2}|"|)([^"]*?)(?:[\']{1,2}|"|,|$)/ig); // Finds all names of songs or references enclosed by quotes and followed by "by" or "from".
+		// var regexJokeFrom = new RegExp(/"([^"]*)"(?:\s+)?(?:by|from)/ig); // Finds all names of songs or references enclosed by quotes and followed by "by" or "from".
 		var regexJokeFromLink = new RegExp(/"\[(?:http[^\s]+)\s+(.+?)\]"(?:\s+)?(?:by|from)/ig); // Finds all names of songs or references that are a link and are enclosed by quotes and followed by "by" or "from".
 		var regexJokeTo = new RegExp(/(?:\s+)?(?:to|with|of)\s?"(?:\[\[)?((?:[^[]|)*?)(?:\]\])?"/ig); // Finds all names of songs or references that come after "to", e.g. "melody changes to "joke"".
 		var regexJokeTable = new RegExp(/(?:"[\[]{2}|")(.+?)(?:[\]]{2}|").?(?:\s?\((.+?)\))?/i); // 
@@ -600,6 +601,43 @@ class WikiPage {
 						}
 					}
 				} else {
+					// Alternative in-progress version to capture meta joke (artist/joke source)
+					/*
+					let abbreviations = ["ft", "feat", "mr", "ms", "sgt", "st", "dr"]
+					for (let j = 0; j < abbreviations.length; j++) {
+						lines[i] = lines[i].replace(abbreviations[j] + ".", abbreviations[j] + "_");
+					}
+					// Split the current jokes line by full stops.
+					let jokesSplit = lines[i].split(".");
+
+					for (let j = 0; j < jokesSplit.length; j++) {
+						let matches = [...jokesSplit[j].matchAll(regexJokeFromLink)];
+						if (matches.length > 0) {
+							console.log(matches);
+						}
+						for (let i = 0; i < matches.length; i++) {
+							parsedJokes.push(matches[i][1]);
+						}
+						jokesSplit[j] = jokesSplit[j].replaceAll(regexJokeFromLink, '');
+						matches = [...jokesSplit[j].matchAll(regexJokeFrom)];
+						for (let i = 0; i < matches.length; i++) {
+							parsedJokes.push(matches[i][1]);
+						}
+						if (matches.length > 0) {
+							console.log(matches);
+						}
+						matches = [...jokesSplit[j].matchAll(regexJokeTo)];
+						for (let i = 0; i < matches.length; i++) {
+							parsedJokes.push(matches[i][1]);
+						}
+						if (matches.length > 0) {
+							console.log(matches);
+						}
+						// Clear any duplicates
+						parsedJokes = [...new Set(parsedJokes)];
+					}
+					*/
+
 					// Find jokes that contain links first. Any links found will be removed from the string after
 					let matches = [...lines[i].matchAll(regexJokeFromLink)];
 					for (let i = 0; i < matches.length; i++) {

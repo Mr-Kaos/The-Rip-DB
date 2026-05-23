@@ -13,5 +13,6 @@ define('SQL_HOST', 'localhost');
 define('SQL_USER', 'root');
 define('SQL_PASS', '');
 define("SQL_DB", 'RipDB');
+define("SQL_PORT", '3306');
 
 error_log('NOTICE: Using template database connection config file.');
